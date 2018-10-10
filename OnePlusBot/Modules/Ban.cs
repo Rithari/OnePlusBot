@@ -18,7 +18,7 @@ namespace OnePlusBot.Modules
         {
             if(reason == null)
             {
-                reason = "No reason provided (Bot Ban)";
+                reason = "No reason provided.";
             } 
             try
             {
