@@ -36,7 +36,7 @@ namespace OnePlusBot
 
             int argPos = 0;
 
-            if (!(message.HasCharPrefix(':', ref argPos) ||
+            if (!(message.HasCharPrefix(';', ref argPos) ||
                 message.HasMentionPrefix(_bot.CurrentUser, ref argPos)))
                 return;
 
