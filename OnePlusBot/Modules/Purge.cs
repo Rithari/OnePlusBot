@@ -4,7 +4,6 @@ using System.Text;
 using Discord.Commands;
 using Discord;
 using System.Threading.Tasks;
-using Discord.WebSocket;
 
 namespace OnePlusBot.Modules
 {
@@ -15,12 +14,12 @@ namespace OnePlusBot.Modules
         [Summary("Deletes specified amount of messages.")]
         [RequireBotPermission(GuildPermission.ManageMessages)]
         [RequireUserPermission(GuildPermission.ManageMessages)]
-        public async Task PurgeAsync([Remainder] int delmsg)
+        public async Task PurgeAsync([Remainder] double delmsg)
         {
-
+           
             if (delmsg > 100)
             {
-                var EmoteFalse = new Emoji("❌");
+                var EmoteFalse = new Emoji("⚠");
                 await Context.Message.RemoveAllReactionsAsync();
                 await Context.Message.AddReactionAsync(EmoteFalse);
                 await ReplyAsync("Use a number below 100.");
@@ -29,6 +28,8 @@ namespace OnePlusBot.Modules
 
             try
             {
+                int delmsgInt = (int)delmsg;
+
                 // Declare the beginning message, and the emote to react with, react and then wait a second.
                 ulong oldmessage = Context.Message.Id;
                 var Emote = new Emoji(":success:499567039451758603");
@@ -36,7 +37,7 @@ namespace OnePlusBot.Modules
                 await Task.Delay(1000);
 
                 // Download all messages that the user asks for to delete, 
-                var messages = await Context.Channel.GetMessagesAsync(oldmessage, Direction.Before, delmsg).FlattenAsync();
+                var messages = await Context.Channel.GetMessagesAsync(oldmessage, Direction.Before, delmsgInt).FlattenAsync();
                 await (Context.Channel as ITextChannel).DeleteMessagesAsync(messages);
                 await Task.Delay(2000);
 

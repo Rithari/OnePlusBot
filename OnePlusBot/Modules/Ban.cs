@@ -30,7 +30,7 @@ namespace OnePlusBot.Modules
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                var EmoteFalse = new Emoji("❌");
+                var EmoteFalse = new Emoji("⚠");
                 await Context.Message.RemoveAllReactionsAsync();
                 await Context.Message.AddReactionAsync(EmoteFalse);
                 await ReplyAsync("You can not ban staff.");
