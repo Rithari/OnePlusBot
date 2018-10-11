@@ -17,6 +17,16 @@ namespace OnePlusBot.Modules
         [RequireUserPermission(GuildPermission.ManageMessages)]
         public async Task PurgeAsync([Remainder] int delmsg)
         {
+
+            if (delmsg > 100)
+            {
+                var EmoteFalse = new Emoji("❌");
+                await Context.Message.RemoveAllReactionsAsync();
+                await Context.Message.AddReactionAsync(EmoteFalse);
+                await ReplyAsync("Use a number below 100.");
+                return;
+            }
+
             try
             {
                 // Declare the beginning message, and the emote to react with, react and then wait a second.
