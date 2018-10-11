@@ -40,9 +40,9 @@ namespace OnePlusBot
                 await Task.Delay(200);
                 Environment.Exit(0);
             }
-
             await _bot.LoginAsync(TokenType.Bot, token);
             await _bot.StartAsync();
+            await _bot.SetGameAsync("dont_buy_apple.exe | ;help");
 
            await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
 

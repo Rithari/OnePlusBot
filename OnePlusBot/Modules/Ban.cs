@@ -22,27 +22,18 @@ namespace OnePlusBot.Modules
             } 
             try
             {
-               /* if(user.Id == Context.Message.Author.Id)
-                {
-                    var EmoteFalse = new Emoji("❌");
-                    await Context.Message.AddReactionAsync(EmoteFalse);
-                    await ReplyAsync("you are tring to ban yourself, fuck off.");
-                    return;
-
-                } */
                 var EmoteTrue = new Emoji(":success:499567039451758603");
                 await Context.Message.AddReactionAsync(EmoteTrue);
-                //await ReplyAsync(user.Mention + " settled.");
                 await Context.Guild.AddBanAsync(user, 0, reason);
 
             }
             catch (Exception ex)
             {
-                //   await ReplyAsync(ex.Message);
+                Console.WriteLine(ex.Message);
                 var EmoteFalse = new Emoji("❌");
                 await Context.Message.RemoveAllReactionsAsync();
                 await Context.Message.AddReactionAsync(EmoteFalse);
-                await ReplyAsync("(Un)fortunately you can not ban staff.");
+                await ReplyAsync("You can not ban staff.");
             }
         }
     }
