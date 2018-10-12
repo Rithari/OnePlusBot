@@ -12,7 +12,7 @@ namespace OnePlusBot.Modules
         public async Task PingAsync()
         {
             var timestamp = Context.Message.Timestamp;
-            var ping = timestamp - DateTime.UtcNow;
+            var ping = DateTime.UtcNow - timestamp;
 
             var sentmessage = await ReplyAsync("Pong!");
             await sentmessage.ModifyAsync(m => m.Content = "Pong....\nIn " + ping.Milliseconds + " ms");
