@@ -17,12 +17,12 @@ namespace OnePlusBot.Modules
         public async Task PurgeAsync([Remainder] double delmsg)
         {
            
-            if (delmsg > 100)
+            if (delmsg > 100 || delmsg <= 0)
             {
                 var EmoteFalse = new Emoji("⚠");
                 await Context.Message.RemoveAllReactionsAsync();
                 await Context.Message.AddReactionAsync(EmoteFalse);
-                await ReplyAsync("Use a number below 100.");
+                await ReplyAsync("Use a number between 1-100");
                 return;
             }
 
@@ -41,8 +41,7 @@ namespace OnePlusBot.Modules
                 await (Context.Channel as ITextChannel).DeleteMessagesAsync(messages);
                 await Task.Delay(2000);
 
-                messages = await Context.Channel.GetMessagesAsync(1).FlattenAsync();
-                await (Context.Channel as ITextChannel).DeleteMessagesAsync(messages);
+                await Context.Channel.DeleteMessageAsync(Context.Message);
             }
             catch(Exception ex)
             {
