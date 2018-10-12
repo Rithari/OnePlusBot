@@ -37,7 +37,8 @@ namespace OnePlusBot
             int argPos = 0;
 
             if (!(message.HasCharPrefix(';', ref argPos) ||
-                message.HasMentionPrefix(_bot.CurrentUser, ref argPos)))
+                message.HasMentionPrefix(_bot.CurrentUser, ref argPos))|| 
+                message.Author.IsBot)
                 return;
 
             var context = new SocketCommandContext(_bot, message);
