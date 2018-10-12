@@ -9,6 +9,8 @@ namespace OnePlusBot.Modules
 {
     public class SkidModule : ModuleBase<SocketCommandContext>
     {
+        [Command("skid")]
+        [Summary("A skid level mesasurement.")]
         public async Task SkidAsync([Remainder] string user)
         {
             Random random = new Random();
