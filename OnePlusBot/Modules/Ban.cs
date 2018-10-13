@@ -16,6 +16,13 @@ namespace OnePlusBot.Modules
         [RequireUserPermission(GuildPermission.BanMembers)]
         public async Task BanAsync(IGuildUser user,[Remainder] string reason = null)
         {
+            if (user.IsBot)
+            {
+                var EmoteFalse = new Emoji("⚠");
+                await Context.Message.RemoveAllReactionsAsync();
+                await Context.Message.AddReactionAsync(EmoteFalse);
+                await ReplyAsync("You humans can't make us harm each other.");
+            }
             if(reason == null)
             {
                 reason = "No reason provided.";
