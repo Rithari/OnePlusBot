@@ -42,7 +42,7 @@ namespace OnePlusBot
             }
             await _bot.LoginAsync(TokenType.Bot, token);
             await _bot.StartAsync();
-            await _bot.SetGameAsync("dont_buy_apple.exe | ;help");
+            await _bot.SetGameAsync("Made with the Fans™ | ;help");
 
            await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
 
