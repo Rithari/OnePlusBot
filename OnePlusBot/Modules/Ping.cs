@@ -9,6 +9,7 @@ namespace OnePlusBot.Modules
     public class PingModule : ModuleBase<SocketCommandContext>
     {
         [Command("ping")]
+        [Summary("Standard ping command.")]
         public async Task PingAsync()
         {
             var timestamp = Context.Message.Timestamp;

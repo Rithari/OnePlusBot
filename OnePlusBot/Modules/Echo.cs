@@ -7,12 +7,12 @@ using Discord;
 
 namespace OnePlusBot.Modules
 {
-    public class Echo : ModuleBase<SocketCommandContext>
+    public class EchoModule : ModuleBase<SocketCommandContext>
     {
         [Command("echo")]
-        [Summary("Standard echo function.")]
+        [Summary("Echoes back the remainder argument of the command.")]
         [RequireUserPermission(GuildPermission.ManageMessages)]
-        public Task EchoAsync([Remainder] string echo)
-            => ReplyAsync(echo);
+        public Task EchoAsync([Remainder] string text)
+            => ReplyAsync(text);
     }
 }

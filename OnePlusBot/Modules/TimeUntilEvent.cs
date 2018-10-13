@@ -11,7 +11,7 @@ namespace OnePlusBot.Modules
    public class TimeLeft : ModuleBase<SocketCommandContext>
     {
         [Command("timeleft")]
-        [Summary("How much time until the 6T Launch event.")]
+        [Summary("How long until the 6T Launch event.")]
         public async Task TimeleftAsync()
         {
             try
