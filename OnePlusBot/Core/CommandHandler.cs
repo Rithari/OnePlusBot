@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace OnePlusBot
 {
@@ -36,13 +38,27 @@ namespace OnePlusBot
 
             int argPos = 0;
 
+            IReadOnlyCollection<SocketGuild> guilds = _bot.Guilds;
+            SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Name == "/r/oneplus");
+            SocketGuildChannel wallpapersChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Name == "wallpapers");
+
+           if(messageParam.Channel.Id == wallpapersChannel.Id)
+            {
+                var messageContent = messageParam.Content;
+
+                if (!Regex.IsMatch(messageContent, @"^http(s)?://([\w-]+.)+[\w-]+(/[\w- ./?%&=])?$") && messageParam.Attachments.Count == 0 && messageParam.Embeds.Count == 0)
+                {
+                    await messageParam.DeleteAsync();
+                }
+            }
+
+
             if (!(message.HasCharPrefix(';', ref argPos) ||
                 message.HasMentionPrefix(_bot.CurrentUser, ref argPos))|| 
                 message.Author.IsBot)
                 return;
 
             var context = new SocketCommandContext(_bot, message);
-
 
             var result = await _commands.ExecuteAsync(
                 context: context,
