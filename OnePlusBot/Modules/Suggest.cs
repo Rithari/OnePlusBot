@@ -17,10 +17,14 @@ namespace OnePlusBot.Modules
             var channels = Context.Guild.TextChannels;
             var suggestionschannel = channels.FirstOrDefault(x => x.Name == "suggestions");
 
-            var user = Context.Message.Author; 
+            var user = Context.Message.Author;
 
-            await suggestionschannel.SendMessageAsync(suggestion + "\n **Suggested by**: " + user.Mention);
 
+            var oldmessage = await suggestionschannel.SendMessageAsync(suggestion + "\n **Suggested by**: " + user.Mention);
+            var EmoteYes = new Emoji(":OPYes:426070836269678614");
+            var EmoteNo = new Emoji(":OPNo:426072515094380555");
+            await oldmessage.AddReactionAsync(EmoteYes);
+            await oldmessage.AddReactionAsync(EmoteNo);
             await Context.Message.DeleteAsync();
 
            
