@@ -15,19 +15,20 @@ namespace OnePlusBot
     {
         private readonly DiscordSocketClient _bot;
         private readonly CommandService _commands;
-        //private readonly IServiceProvider _services;
+        private readonly IServiceProvider _services;
 
-        public CommandHandler(DiscordSocketClient bot, CommandService commands)
+        public CommandHandler(DiscordSocketClient bot, CommandService commands, IServiceProvider services)
         {
             _commands = commands;
             _bot = bot;
+            _services = services;
         }
 
 
         public async Task InstallCommandsAsync()
         {
             _bot.MessageReceived += HandleCommandAsync;
-            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), null);
+            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
         }
 
 

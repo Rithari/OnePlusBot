@@ -17,7 +17,7 @@ namespace OnePlusBot.Modules
             try
             {
 
-                DateTime daysLeft = DateTime.Parse("2018-10-30T16:00:00+02:00");
+                DateTime daysLeft = DateTime.Parse("2018-10-29T16:00:00+02:00");
                 DateTime startDate = DateTime.UtcNow;
 
                 TimeSpan t = daysLeft - startDate;

@@ -41,7 +41,8 @@ namespace OnePlusBot.Modules
                 await (Context.Channel as ITextChannel).DeleteMessagesAsync(messages);
                 await Task.Delay(2000);
 
-                await Context.Channel.DeleteMessageAsync(Context.Message);
+                await Context.Message.DeleteAsync();
+
             }
             catch(Exception ex)
             {

@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.1/linux-x64",
-    "signature": "3ad018c9ae98a1db2dd9785b07c802ff8ed03031"
+    "signature": "4ffd628fb0f266106223e87f467af2cb0775f809"
   },
   "compilationOptions": {},
   "targets": {
@@ -10,8 +10,8 @@
       "OnePlusBot/1.0.0": {
         "dependencies": {
           "CoreCompat.System.Drawing": "1.0.0-beta006",
-          "Discord.Net": "2.0.0-beta2-00999",
-          "Microsoft.NETCore.App": "2.1.4",
+          "Discord.Net": "2.0.0-beta2-01018",
+          "Microsoft.NETCore.App": "2.1.5",
           "runtime.linux-x64.CoreCompat.System.Drawing": "1.0.0-beta009",
           "runtime.osx.10.10-x64.CoreCompat.System.Drawing": "5.4.0-r8"
         },
@@ -42,18 +42,18 @@
           }
         }
       },
-      "Discord.Net/2.0.0-beta2-00999": {
+      "Discord.Net/2.0.0-beta2-01018": {
         "dependencies": {
-          "Discord.Net.Commands": "2.0.0-beta2-00999",
-          "Discord.Net.Core": "2.0.0-beta2-00999",
-          "Discord.Net.Rest": "2.0.0-beta2-00999",
-          "Discord.Net.WebSocket": "2.0.0-beta2-00999",
-          "Discord.Net.Webhook": "2.0.0-beta2-00999"
+          "Discord.Net.Commands": "2.0.0-beta2-01018",
+          "Discord.Net.Core": "2.0.0-beta2-01018",
+          "Discord.Net.Rest": "2.0.0-beta2-01018",
+          "Discord.Net.WebSocket": "2.0.0-beta2-01018",
+          "Discord.Net.Webhook": "2.0.0-beta2-01018"
         }
       },
-      "Discord.Net.Commands/2.0.0-beta2-00999": {
+      "Discord.Net.Commands/2.0.0-beta2-01018": {
         "dependencies": {
-          "Discord.Net.Core": "2.0.0-beta2-00999",
+          "Discord.Net.Core": "2.0.0-beta2-01018",
           "Microsoft.Extensions.DependencyInjection": "2.0.0"
         },
         "runtime": {
@@ -63,7 +63,7 @@
           }
         }
       },
-      "Discord.Net.Core/2.0.0-beta2-00999": {
+      "Discord.Net.Core/2.0.0-beta2-01018": {
         "dependencies": {
           "Newtonsoft.Json": "11.0.2",
           "System.Collections.Immutable": "1.3.1",
@@ -76,9 +76,9 @@
           }
         }
       },
-      "Discord.Net.Rest/2.0.0-beta2-00999": {
+      "Discord.Net.Rest/2.0.0-beta2-01018": {
         "dependencies": {
-          "Discord.Net.Core": "2.0.0-beta2-00999"
+          "Discord.Net.Core": "2.0.0-beta2-01018"
         },
         "runtime": {
           "lib/netstandard2.0/Discord.Net.Rest.dll": {
@@ -87,10 +87,10 @@
           }
         }
       },
-      "Discord.Net.Webhook/2.0.0-beta2-00999": {
+      "Discord.Net.Webhook/2.0.0-beta2-01018": {
         "dependencies": {
-          "Discord.Net.Core": "2.0.0-beta2-00999",
-          "Discord.Net.Rest": "2.0.0-beta2-00999",
+          "Discord.Net.Core": "2.0.0-beta2-01018",
+          "Discord.Net.Rest": "2.0.0-beta2-01018",
           "NETStandard.Library": "2.0.3"
         },
         "runtime": {
@@ -100,10 +100,10 @@
           }
         }
       },
-      "Discord.Net.WebSocket/2.0.0-beta2-00999": {
+      "Discord.Net.WebSocket/2.0.0-beta2-01018": {
         "dependencies": {
-          "Discord.Net.Core": "2.0.0-beta2-00999",
-          "Discord.Net.Rest": "2.0.0-beta2-00999"
+          "Discord.Net.Core": "2.0.0-beta2-01018",
+          "Discord.Net.Rest": "2.0.0-beta2-01018"
         },
         "runtime": {
           "lib/netstandard2.0/Discord.Net.WebSocket.dll": {
@@ -131,30 +131,30 @@
           }
         }
       },
-      "Microsoft.NETCore.App/2.1.4": {
+      "Microsoft.NETCore.App/2.1.5": {
         "dependencies": {
-          "Microsoft.NETCore.DotNetHostPolicy": "2.1.4",
+          "Microsoft.NETCore.DotNetHostPolicy": "2.1.5",
           "Microsoft.NETCore.Platforms": "2.1.1",
           "Microsoft.NETCore.Targets": "2.0.0",
           "NETStandard.Library": "2.0.3",
-          "runtime.linux-x64.Microsoft.NETCore.App": "2.1.4"
+          "runtime.linux-x64.Microsoft.NETCore.App": "2.1.5"
         }
       },
-      "Microsoft.NETCore.DotNetAppHost/2.1.4": {
+      "Microsoft.NETCore.DotNetAppHost/2.1.5": {
         "dependencies": {
-          "runtime.linux-x64.Microsoft.NETCore.DotNetAppHost": "2.1.4"
+          "runtime.linux-x64.Microsoft.NETCore.DotNetAppHost": "2.1.5"
         }
       },
-      "Microsoft.NETCore.DotNetHostPolicy/2.1.4": {
+      "Microsoft.NETCore.DotNetHostPolicy/2.1.5": {
         "dependencies": {
-          "Microsoft.NETCore.DotNetHostResolver": "2.1.4",
-          "runtime.linux-x64.Microsoft.NETCore.DotNetHostPolicy": "2.1.4"
+          "Microsoft.NETCore.DotNetHostResolver": "2.1.5",
+          "runtime.linux-x64.Microsoft.NETCore.DotNetHostPolicy": "2.1.5"
         }
       },
-      "Microsoft.NETCore.DotNetHostResolver/2.1.4": {
+      "Microsoft.NETCore.DotNetHostResolver/2.1.5": {
         "dependencies": {
-          "Microsoft.NETCore.DotNetAppHost": "2.1.4",
-          "runtime.linux-x64.Microsoft.NETCore.DotNetHostResolver": "2.1.4"
+          "Microsoft.NETCore.DotNetAppHost": "2.1.5",
+          "runtime.linux-x64.Microsoft.NETCore.DotNetHostResolver": "2.1.5"
         }
       },
       "Microsoft.NETCore.Platforms/2.1.1": {},
@@ -228,7 +228,7 @@
           }
         }
       },
-      "runtime.linux-x64.Microsoft.NETCore.App/2.1.4": {
+      "runtime.linux-x64.Microsoft.NETCore.App/2.1.5": {
         "runtime": {
           "runtimes/linux-x64/lib/netcoreapp2.1/Microsoft.CSharp.dll": {
             "assemblyVersion": "4.0.4.0",
@@ -331,7 +331,7 @@
             "fileVersion": "0.0.0.0"
           },
           "runtimes/linux-x64/lib/netcoreapp2.1/System.Diagnostics.DiagnosticSource.dll": {
-            "assemblyVersion": "4.0.3.0",
+            "assemblyVersion": "4.0.3.1",
             "fileVersion": "0.0.0.0"
           },
           "runtimes/linux-x64/lib/netcoreapp2.1/System.Diagnostics.FileVersionInfo.dll": {
@@ -703,7 +703,7 @@
             "fileVersion": "0.0.0.0"
           },
           "runtimes/linux-x64/lib/netcoreapp2.1/System.Security.Principal.Windows.dll": {
-            "assemblyVersion": "4.1.1.0",
+            "assemblyVersion": "4.1.1.1",
             "fileVersion": "0.0.0.0"
           },
           "runtimes/linux-x64/lib/netcoreapp2.1/System.Security.Principal.dll": {
@@ -844,7 +844,7 @@
           },
           "runtimes/linux-x64/lib/netcoreapp2.1/mscorlib.dll": {
             "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.6.26814.2"
+            "fileVersion": "4.6.26919.2"
           },
           "runtimes/linux-x64/lib/netcoreapp2.1/netstandard.dll": {
             "assemblyVersion": "2.0.0.0",
@@ -921,16 +921,16 @@
           }
         }
       },
-      "runtime.linux-x64.Microsoft.NETCore.DotNetAppHost/2.1.4": {
+      "runtime.linux-x64.Microsoft.NETCore.DotNetAppHost/2.1.5": {
         "native": {
           "runtimes/linux-x64/native/apphost": {
             "fileVersion": "0.0.0.0"
           }
         }
       },
-      "runtime.linux-x64.Microsoft.NETCore.DotNetHostPolicy/2.1.4": {
+      "runtime.linux-x64.Microsoft.NETCore.DotNetHostPolicy/2.1.5": {
         "dependencies": {
-          "Microsoft.NETCore.DotNetHostResolver": "2.1.4"
+          "Microsoft.NETCore.DotNetHostResolver": "2.1.5"
         },
         "native": {
           "runtimes/linux-x64/native/libhostpolicy.so": {
@@ -938,9 +938,9 @@
           }
         }
       },
-      "runtime.linux-x64.Microsoft.NETCore.DotNetHostResolver/2.1.4": {
+      "runtime.linux-x64.Microsoft.NETCore.DotNetHostResolver/2.1.5": {
         "dependencies": {
-          "Microsoft.NETCore.DotNetAppHost": "2.1.4"
+          "Microsoft.NETCore.DotNetAppHost": "2.1.5"
         },
         "native": {
           "runtimes/linux-x64/native/libhostfxr.so": {
@@ -1242,47 +1242,47 @@
       "path": "corecompat.system.drawing/1.0.0-beta006",
       "hashPath": "corecompat.system.drawing.1.0.0-beta006.nupkg.sha512"
     },
-    "Discord.Net/2.0.0-beta2-00999": {
+    "Discord.Net/2.0.0-beta2-01018": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-UG+z/dPb/ZhxEFirci2eI7X1bv6iyD6hvypF0dwafaWqOTkMZKCMmwnJ7cnfPkUApBavX/Ccr/2reQLmXOYOzA==",
-      "path": "discord.net/2.0.0-beta2-00999",
-      "hashPath": "discord.net.2.0.0-beta2-00999.nupkg.sha512"
+      "sha512": "sha512-HFXZEPpT37icdEJaKBq9eIAQMklYcMPXLaRVwOFqHgK0KHZbybiZEzpMzRTzcpKdJwhUj6zVRuX2/KnsKZkQkg==",
+      "path": "discord.net/2.0.0-beta2-01018",
+      "hashPath": "discord.net.2.0.0-beta2-01018.nupkg.sha512"
     },
-    "Discord.Net.Commands/2.0.0-beta2-00999": {
+    "Discord.Net.Commands/2.0.0-beta2-01018": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-T/uiYz5ebfmW6LW5jZp6v1qaCr0uxpQq44cvZY0r67IOttG0kQX0h+BC9aA/l85X9Zkb3RrVoQXx0BpF/KJdaQ==",
-      "path": "discord.net.commands/2.0.0-beta2-00999",
-      "hashPath": "discord.net.commands.2.0.0-beta2-00999.nupkg.sha512"
+      "sha512": "sha512-8djnwNmRQgXBRScfgaWN3wbkHJxnGjK37h+h38h7ACUBYpldlYgXgRJ6TrobAJz+1xbUiqPu63B9lReYWxlTog==",
+      "path": "discord.net.commands/2.0.0-beta2-01018",
+      "hashPath": "discord.net.commands.2.0.0-beta2-01018.nupkg.sha512"
     },
-    "Discord.Net.Core/2.0.0-beta2-00999": {
+    "Discord.Net.Core/2.0.0-beta2-01018": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-SJbtA+wXdBtSN6ZNkaAzwM9Y9MvLIpPGUM4MiQHEM7OQmvgLEj3ChVkjpgpHJYsQgJF9xUnWHI2XOVvPkcRQ3Q==",
-      "path": "discord.net.core/2.0.0-beta2-00999",
-      "hashPath": "discord.net.core.2.0.0-beta2-00999.nupkg.sha512"
+      "sha512": "sha512-3cYyBaCrD2qJQ1YNKPwGqC1UOEUkOahA0MlMnMHRYoQ7CpkwPJNK2yhGQRa1yA2K2WBHUyHgUyC6rP/GJic/Uw==",
+      "path": "discord.net.core/2.0.0-beta2-01018",
+      "hashPath": "discord.net.core.2.0.0-beta2-01018.nupkg.sha512"
     },
-    "Discord.Net.Rest/2.0.0-beta2-00999": {
+    "Discord.Net.Rest/2.0.0-beta2-01018": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Gn/UIpBrXTqne0WpVxwrNYyhZhBggIUBLlamjDWI3VzxdCJKObe8uLgvU290tzeERqNBguE/EYEGXnpSXoQu9g==",
-      "path": "discord.net.rest/2.0.0-beta2-00999",
-      "hashPath": "discord.net.rest.2.0.0-beta2-00999.nupkg.sha512"
+      "sha512": "sha512-JDewCE/Wx+irS4Q1bMsYqzEDvFZ8RgDNNwB+FttNDnr9VM+ix5xEaq8HSphVSdZOXNN/XmLX2EckwN8rFEeFGQ==",
+      "path": "discord.net.rest/2.0.0-beta2-01018",
+      "hashPath": "discord.net.rest.2.0.0-beta2-01018.nupkg.sha512"
     },
-    "Discord.Net.Webhook/2.0.0-beta2-00999": {
+    "Discord.Net.Webhook/2.0.0-beta2-01018": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-WTTwnhp+CzYhEbiy9yc/2IEJZZauK14kPCW8YQN9fBM/ydic944Z5iBs2hFGQyAZ+8y0YRHc/eFoNlBFgVMvdA==",
-      "path": "discord.net.webhook/2.0.0-beta2-00999",
-      "hashPath": "discord.net.webhook.2.0.0-beta2-00999.nupkg.sha512"
+      "sha512": "sha512-s+s55y/1x9+A5xqi861MfnOnqovKGtautl6tqzjwSexVFaEHUz4G9ay3OPt7U9emznvCCQP2K4CK6cdjKzbYeA==",
+      "path": "discord.net.webhook/2.0.0-beta2-01018",
+      "hashPath": "discord.net.webhook.2.0.0-beta2-01018.nupkg.sha512"
     },
-    "Discord.Net.WebSocket/2.0.0-beta2-00999": {
+    "Discord.Net.WebSocket/2.0.0-beta2-01018": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-YJJNCmyNucF9e0ytoMGwsVXp3ujKlVe++njIoMCFJvFFmh0AbUnvGVPsMMezgjsZc6usEOvyWRiXleEVashdlQ==",
-      "path": "discord.net.websocket/2.0.0-beta2-00999",
-      "hashPath": "discord.net.websocket.2.0.0-beta2-00999.nupkg.sha512"
+      "sha512": "sha512-2pLHr1QYbvAKDzws5kufqFHlgkV8JOCaX1eDgNRTwMSlpGkCdHMK+xu1CFNz6qTI7oSKNhASziyOXEEmb1jqvw==",
+      "path": "discord.net.websocket/2.0.0-beta2-01018",
+      "hashPath": "discord.net.websocket.2.0.0-beta2-01018.nupkg.sha512"
     },
     "Microsoft.Extensions.DependencyInjection/2.0.0": {
       "type": "package",
@@ -1298,33 +1298,33 @@
       "path": "microsoft.extensions.dependencyinjection.abstractions/2.0.0",
       "hashPath": "microsoft.extensions.dependencyinjection.abstractions.2.0.0.nupkg.sha512"
     },
-    "Microsoft.NETCore.App/2.1.4": {
+    "Microsoft.NETCore.App/2.1.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Y/m5pet/U7XodLG8wJ733JmZHm2Ums+5ZgPkkZiWmF1QPtR8lowPL0xU2nvUNZdOZlxvXaEr6nCG7VjMo7Moiw==",
-      "path": "microsoft.netcore.app/2.1.4",
-      "hashPath": "microsoft.netcore.app.2.1.4.nupkg.sha512"
+      "sha512": "sha512-oTQd5w0qQp32QSKPE6TqhhcybkkTKqtn4YVnNsYHwFR28s1kUAI/xg+hmKwF/G+u4vUjgy7Y7ghC0cIwRP5wdg==",
+      "path": "microsoft.netcore.app/2.1.5",
+      "hashPath": "microsoft.netcore.app.2.1.5.nupkg.sha512"
     },
-    "Microsoft.NETCore.DotNetAppHost/2.1.4": {
+    "Microsoft.NETCore.DotNetAppHost/2.1.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-qJf+WsbN3mGXW9mskmWDWzjex8t9yyiwPOCtqD4gRWr32mAS6szkTEnYUQWJLO6qL2SI8fUvk15T/ubkHJTH8Q==",
-      "path": "microsoft.netcore.dotnetapphost/2.1.4",
-      "hashPath": "microsoft.netcore.dotnetapphost.2.1.4.nupkg.sha512"
+      "sha512": "sha512-ir7AI1ywRriX1fLTLYOyiDTYSj+zpdAfTBFH0dLwvLvC8obU0EYnmrjTzbYJ8GSnza1H1Rv3Lo/lJBSccmTGMA==",
+      "path": "microsoft.netcore.dotnetapphost/2.1.5",
+      "hashPath": "microsoft.netcore.dotnetapphost.2.1.5.nupkg.sha512"
     },
-    "Microsoft.NETCore.DotNetHostPolicy/2.1.4": {
+    "Microsoft.NETCore.DotNetHostPolicy/2.1.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-o8wVgy9fRDG2jWCI/+W910Hw+ew9CNVNdrP+uNwc7qWmEWGZ+9d6tJwTvF4hI7L+FGZx3kquz6AB0/nOvQ8HSw==",
-      "path": "microsoft.netcore.dotnethostpolicy/2.1.4",
-      "hashPath": "microsoft.netcore.dotnethostpolicy.2.1.4.nupkg.sha512"
+      "sha512": "sha512-fkTeZ7G1Tf0aT+P1bMyn/qJXByFIaATNAt0DKrZ3nC7jMRAWBHJifOrOe5XnGvvc0YzqVLmHARYtzSG00/9NVw==",
+      "path": "microsoft.netcore.dotnethostpolicy/2.1.5",
+      "hashPath": "microsoft.netcore.dotnethostpolicy.2.1.5.nupkg.sha512"
     },
-    "Microsoft.NETCore.DotNetHostResolver/2.1.4": {
+    "Microsoft.NETCore.DotNetHostResolver/2.1.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-M3oGw4GwuNM2trRxURLCVsbdvj/+GI6o2mScUOGMyp0i1K7tginNR8jSnR6NCRmf4LZvf1usZNBeZVCz2kl+kA==",
-      "path": "microsoft.netcore.dotnethostresolver/2.1.4",
-      "hashPath": "microsoft.netcore.dotnethostresolver.2.1.4.nupkg.sha512"
+      "sha512": "sha512-/rPHOsRWubviDEGlxQcNKtJ7G6ML0F/Pg5vG1E+lgfdmoyLRKqrE3ZjVlYCxS18ExZGekBq9LEVb+eOKMxlJEA==",
+      "path": "microsoft.netcore.dotnethostresolver/2.1.5",
+      "hashPath": "microsoft.netcore.dotnethostresolver.2.1.5.nupkg.sha512"
     },
     "Microsoft.NETCore.Platforms/2.1.1": {
       "type": "package",
@@ -1368,33 +1368,33 @@
       "path": "runtime.linux-x64.corecompat.system.drawing/1.0.0-beta009",
       "hashPath": "runtime.linux-x64.corecompat.system.drawing.1.0.0-beta009.nupkg.sha512"
     },
-    "runtime.linux-x64.Microsoft.NETCore.App/2.1.4": {
+    "runtime.linux-x64.Microsoft.NETCore.App/2.1.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-xqKhm/TCjZjV/MrgQSoVyz+5cBSkYUiglK7P9M7fiJRQTihVIV73iXaEffw2FEpDXVPgwyVY7vxI6+foQb2jug==",
-      "path": "runtime.linux-x64.microsoft.netcore.app/2.1.4",
-      "hashPath": "runtime.linux-x64.microsoft.netcore.app.2.1.4.nupkg.sha512"
+      "sha512": "sha512-M8TIs0nh7paefSmhxCWmirqNYODnFea0qj6c6ybURb3pSiWYhlwHOZKEDFCM9/DLSMGn2brqAuoNDktrvdIneQ==",
+      "path": "runtime.linux-x64.microsoft.netcore.app/2.1.5",
+      "hashPath": "runtime.linux-x64.microsoft.netcore.app.2.1.5.nupkg.sha512"
     },
-    "runtime.linux-x64.Microsoft.NETCore.DotNetAppHost/2.1.4": {
+    "runtime.linux-x64.Microsoft.NETCore.DotNetAppHost/2.1.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-/17QC0c7wbvAGxe2RRJSOxak6tD86AYts/XZpJnchQNXEWYYI3dgZAxRm3F144dlOHPckJbMawCQnTt2Cpracw==",
-      "path": "runtime.linux-x64.microsoft.netcore.dotnetapphost/2.1.4",
-      "hashPath": "runtime.linux-x64.microsoft.netcore.dotnetapphost.2.1.4.nupkg.sha512"
+      "sha512": "sha512-KFs8THSZ8wxXeJ46l1QVOQurYBcdGXHa6Y3avZZ2PyahWOK0RRqacRwxx0X2vDr1yT921PzRF6DZw3/RmZh2VQ==",
+      "path": "runtime.linux-x64.microsoft.netcore.dotnetapphost/2.1.5",
+      "hashPath": "runtime.linux-x64.microsoft.netcore.dotnetapphost.2.1.5.nupkg.sha512"
     },
-    "runtime.linux-x64.Microsoft.NETCore.DotNetHostPolicy/2.1.4": {
+    "runtime.linux-x64.Microsoft.NETCore.DotNetHostPolicy/2.1.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-mfjGJEcwYDMDpJ/LyHW/GUuRe+rTVU+PK9tiOi77+XluR6EmGhhw1a7BTy7HRv3gtdlTwQ30GsBAoHXlCoempg==",
-      "path": "runtime.linux-x64.microsoft.netcore.dotnethostpolicy/2.1.4",
-      "hashPath": "runtime.linux-x64.microsoft.netcore.dotnethostpolicy.2.1.4.nupkg.sha512"
+      "sha512": "sha512-Lg1HHUwiD988XlYQYM0YY6MtrsFmWEjJEgH0KUojP4QUFOvR2p2yAWtsnD/5oQTpeqUjCvg8qz3Sa2XHebBe5g==",
+      "path": "runtime.linux-x64.microsoft.netcore.dotnethostpolicy/2.1.5",
+      "hashPath": "runtime.linux-x64.microsoft.netcore.dotnethostpolicy.2.1.5.nupkg.sha512"
     },
-    "runtime.linux-x64.Microsoft.NETCore.DotNetHostResolver/2.1.4": {
+    "runtime.linux-x64.Microsoft.NETCore.DotNetHostResolver/2.1.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ytXlEiZJpJjEOnaM5lEAkycCAv7YNd6VUYqMads5Nym5Qdsi6i3I1fZQdgcWBT8rtWUFfRwzsr/pNhzWzM2VDg==",
-      "path": "runtime.linux-x64.microsoft.netcore.dotnethostresolver/2.1.4",
-      "hashPath": "runtime.linux-x64.microsoft.netcore.dotnethostresolver.2.1.4.nupkg.sha512"
+      "sha512": "sha512-oU5ciqaPf3XAaT4Iqyzj1VBncrEKGSNzn0Ore/jBiVy0lmKB1MSJr5uHtn0jTJbGjiXKzgQseBa70Ss3PQ50Mg==",
+      "path": "runtime.linux-x64.microsoft.netcore.dotnethostresolver/2.1.5",
+      "hashPath": "runtime.linux-x64.microsoft.netcore.dotnethostresolver.2.1.5.nupkg.sha512"
     },
     "runtime.native.System/4.0.0": {
       "type": "package",
@@ -1427,7 +1427,7 @@
     "System.Collections.NonGeneric/4.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-00tOaRBr5u4JsckEJfBw1eI4Frc5pOFM5gSdqr6oMYjXwQLLhV/LAl2Ty0BgELDvSuqBRBETTgNCMwRuUShk9Q==",
+      "sha512": "sha512-hMxFT2RhhlffyCdKLDXjx8WEC5JfCvNozAZxCablAuFRH74SCV4AgzE8yJCh/73bFnEoZgJ9MJmkjQ0dJmnKqA==",
       "path": "system.collections.nongeneric/4.0.1",
       "hashPath": "system.collections.nongeneric.4.0.1.nupkg.sha512"
     },
