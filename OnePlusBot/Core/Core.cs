@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Discord.Commands;
+using System.Net.Http;
 
 namespace OnePlusBot
 {
@@ -54,6 +55,7 @@ namespace OnePlusBot
             .AddSingleton<DiscordSocketClient>()
             .AddSingleton<CommandHandler>()
             .AddSingleton<CommandService>()
+            .AddSingleton<HttpClient>()
             .BuildServiceProvider();
 
         private Task Log(LogMessage msg)
