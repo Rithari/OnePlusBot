@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Discord.Commands;
 using System.Net.Http;
+using System.IO;
 
 namespace OnePlusBot
 {
@@ -24,16 +25,40 @@ namespace OnePlusBot
 
             _bot.Log += Log;
 
-            Console.WriteLine("Development branch?\n1: Yes 0: No");
-            var value = Console.ReadLine();
-            Console.WriteLine();
-            if (value == "1")
+
+            if (!File.Exists("tokens.txt"))
             {
-                token = "NDk5MjIwMDAxMzMzNTc1Njgx.Dp5Ghw.6JXx_JqCenK4jnZZxbl50EP94qU";
+                Console.WriteLine("You need a tokens.txt containing the tokens properly formatted, add it and retry.");
+                Console.ReadKey();
+                return;
             }
-            else if (value == "0")
+
+
+            Console.WriteLine("Development branch?\n1: Yes 0: No");
+            var userInput = Console.ReadLine();
+            Console.WriteLine();
+            if (userInput == "1")
             {
-                token = "NDI2MDE1NTYyNTk1MDQxMjgw.Dp1iCA.STkEQT-zCzbfD5KVS5nNBBWmuCM";
+                string betaToken;
+                StreamReader reader = new StreamReader("tokens.txt");
+                {
+                    betaToken = reader.ReadLine();
+                    reader.Dispose();
+                }
+
+                token = betaToken;
+            }
+            else if (userInput == "0")
+            {
+                string mainToken;
+                StreamReader reader = new StreamReader("tokens.txt");
+                {
+                    reader.ReadLine();
+                    mainToken = reader.ReadLine();
+                    reader.Dispose();
+                }
+
+                token = mainToken;
             }
             else
             {
@@ -41,6 +66,8 @@ namespace OnePlusBot
                 await Task.Delay(200);
                 Environment.Exit(0);
             }
+
+
             await _bot.LoginAsync(TokenType.Bot, token);
             await _bot.StartAsync();
             await _bot.SetGameAsync("Made with the Fans™ | ;help");
