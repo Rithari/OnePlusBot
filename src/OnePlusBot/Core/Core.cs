@@ -34,7 +34,7 @@ namespace OnePlusBot
             }
 
 
-            Console.WriteLine("Stable?\n1: Yes 0: No");
+            Console.WriteLine("Development Branch?\n1: Yes 0: No");
             var userInput = Console.ReadLine();
             Console.WriteLine();
             if (userInput == "1")
@@ -42,6 +42,7 @@ namespace OnePlusBot
                 string betaToken;
                 StreamReader reader = new StreamReader("tokens.txt");
                 {
+                    reader.ReadLine();
                     betaToken = reader.ReadLine();
                     reader.Dispose();
                 }
@@ -53,7 +54,7 @@ namespace OnePlusBot
                 string mainToken;
                 StreamReader reader = new StreamReader("tokens.txt");
                 {
-                    reader.ReadLine();
+                    //reader.ReadLine();
                     mainToken = reader.ReadLine();
                     reader.Dispose();
                 }
@@ -62,7 +63,7 @@ namespace OnePlusBot
             }
             else
             {
-                Console.WriteLine("Fuck you");
+                Console.WriteLine("Retry I guess.");
                 await Task.Delay(200);
                 Environment.Exit(0);
             }
