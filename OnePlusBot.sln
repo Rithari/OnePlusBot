@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2041
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnePlusBot", "OnePlusBot\OnePlusBot.csproj", "{5B5102C3-8C78-4446-A16D-E4DA537E3408}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnePlusBot", "src\OnePlusBot\OnePlusBot.csproj", "{5B5102C3-8C78-4446-A16D-E4DA537E3408}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
