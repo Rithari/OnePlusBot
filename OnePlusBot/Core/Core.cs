@@ -34,7 +34,7 @@ namespace OnePlusBot
             }
 
 
-            Console.WriteLine("Development branch?\n1: Yes 0: No");
+            Console.WriteLine("Stable?\n1: Yes 0: No");
             var userInput = Console.ReadLine();
             Console.WriteLine();
             if (userInput == "1")
