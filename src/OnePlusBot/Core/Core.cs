@@ -16,6 +16,8 @@ namespace OnePlusBot
 
         private DiscordSocketClient _bot;
         private string token;
+        private string mainToken;
+        private string betaToken;
 
         public async Task MainAsync()
         {
@@ -29,19 +31,21 @@ namespace OnePlusBot
             if (!File.Exists("tokens.txt"))
             {
                 Console.WriteLine("You need a tokens.txt containing the tokens properly formatted, add it and retry.");
+               // File.OpenWrite("tokens.txt");
+
                 Console.ReadKey();
                 return;
             }
 
 
-            Console.WriteLine("Stable?\n1: Yes 0: No");
+            Console.WriteLine("Development Branch?\n1: Yes 0: No");
             var userInput = Console.ReadLine();
             Console.WriteLine();
             if (userInput == "1")
             {
-                string betaToken;
                 StreamReader reader = new StreamReader("tokens.txt");
                 {
+                    reader.ReadLine();
                     betaToken = reader.ReadLine();
                     reader.Dispose();
                 }
@@ -50,10 +54,8 @@ namespace OnePlusBot
             }
             else if (userInput == "0")
             {
-                string mainToken;
                 StreamReader reader = new StreamReader("tokens.txt");
                 {
-                    reader.ReadLine();
                     mainToken = reader.ReadLine();
                     reader.Dispose();
                 }
@@ -62,8 +64,8 @@ namespace OnePlusBot
             }
             else
             {
-                Console.WriteLine("Fuck you");
-                await Task.Delay(200);
+                Console.WriteLine("Retry I guess.");
+                await Task.Delay(1000);
                 Environment.Exit(0);
             }
 
