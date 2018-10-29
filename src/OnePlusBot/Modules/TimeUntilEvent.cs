@@ -21,8 +21,9 @@ namespace OnePlusBot.Modules
                 DateTime startDate = DateTime.UtcNow;
 
                 TimeSpan t = daysLeft - startDate;
-                string countDown = string.Format("{0} Days, {1} Hours, {2} Minutes, {3} Seconds until launch.", t.Days, t.Hours, t.Minutes, t.Seconds);
-                await ReplyAsync(countDown);
+                //string countDown = string.Format("{0} Days, {1} Hours, {2} Minutes, {3} Seconds until launch.", t.Days, t.Hours, t.Minutes, t.Seconds);
+                //  await ReplyAsync(countDown);
+                await ReplyAsync("Well, you can watch it now.");
             }
             catch(Exception ex)
             {
