@@ -20,7 +20,12 @@ namespace OnePlusBot.Modules
                     case "blu_spark":
                     case "bluspark":
                     case "twrp":
-                        if (Context.Channel.Name == "oneplus6")
+                        if (Context.Channel.Name == "oneplus6t")
+                        {
+                            await ReplyAsync("");
+
+                        }
+                        else if (Context.Channel.Name == "oneplus6")
                         {
                             await ReplyAsync("blu_spark for OnePlus 6: https://forum.xda-developers.com/oneplus-6/development/kernel-t3800965");
                         }
@@ -45,7 +50,12 @@ namespace OnePlusBot.Modules
                     case "unbrick":
                     case "bricked":
                     case "brick":
-                        if (Context.Channel.Name == "oneplus6")
+                        if (Context.Channel.Name == "oneplus6t")
+                        {
+                            await ReplyAsync("");
+
+                        }
+                       else if (Context.Channel.Name == "oneplus6")
                         {
                             await ReplyAsync("Unbrick guide for OnePlus 6: https://forums.oneplus.com/threads/guide-mega-unbrick-guide-for-a-hard-bricked-oneplus-6.840709/");
                         }
@@ -77,7 +87,12 @@ namespace OnePlusBot.Modules
                     case "gcam":
                     case "googlecam":
                     case "googlecamera":
-                        if (Context.Channel.Name == "oneplus6")
+                        if (Context.Channel.Name == "oneplus6t")
+                        {
+                            await ReplyAsync("");
+
+                        }
+                        else if (Context.Channel.Name == "oneplus6")
                         {
                             await ReplyAsync("Unbrick guide for OnePlus 6: https://forum.xda-developers.com/oneplus-6/themes/oneplus-6-google-camera-port-t3797544" + Environment.NewLine +
                                              "For all device APKs, please visit: https://www.celsoazevedo.com/files/android/google-camera/");
@@ -106,7 +121,12 @@ namespace OnePlusBot.Modules
                     case "oos":
                     case "ota":
                     case "rom":
-                        if (Context.Channel.Name == "oneplus6")
+                        if (Context.Channel.Name == "oneplus6t")
+                        {
+                            await ReplyAsync("");
+
+                        }
+                        else if (Context.Channel.Name == "oneplus6")
                         {
                             await ReplyAsync("OnePlus 6 mirrors for official OxygenOS: https://forums.oneplus.com/threads/oneplus-6-rom-ota-oxygen-os-mirrors-for-official-oxygen-os-roms-and-ota-updates.835607/");
                         }
@@ -131,8 +151,11 @@ namespace OnePlusBot.Modules
                             await ReplyAsync("For all device APKs, please visit: https://www.celsoazevedo.com/files/android/google-camera/");
                         }
                         break;
+
+
                     default:
                         await ReplyAsync("Supported commands are: bluspark, googlecamera, oxygenos, unbrick");
+                        break;
                 }
             }
             catch (Exception ex)
