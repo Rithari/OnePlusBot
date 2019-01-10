@@ -90,7 +90,8 @@ namespace OnePlusBot.Modules
                     case "googlecamera":
                         if (Context.Channel.Name == "oneplus6t")
                         {
-                            await ReplyAsync("");
+                            await ReplyAsync("Google Camera for OnePlus 6T: https://forum.xda-developers.com/oneplus-6t/themes/app-oneplus-6-google-camera-port-t3862849" + Environment.NewLine +
+                                             "For all device APKs, please visit: https://www.celsoazevedo.com/files/android/google-camera/");
 
                         }
                         else if (Context.Channel.Name == "oneplus6")
