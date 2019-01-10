@@ -28,7 +28,16 @@ namespace OnePlusBot.Modules
             if(reason == null)
             {
                 reason = "No reason provided.";
-            } 
+            }
+
+            if (user.GuildPermissions.PrioritySpeaker)
+            {
+                var EmoteFalse = new Emoji("⚠");
+                await Context.Message.RemoveAllReactionsAsync();
+                await Context.Message.AddReactionAsync(EmoteFalse);
+                await ReplyAsync("You can not ban authorities.");
+                return;
+            }
             try
             {
                 var EmoteTrue = new Emoji(":success:499567039451758603");
@@ -43,7 +52,7 @@ namespace OnePlusBot.Modules
                 var EmoteFalse = new Emoji("⚠");
                 await Context.Message.RemoveAllReactionsAsync();
                 await Context.Message.AddReactionAsync(EmoteFalse);
-                await ReplyAsync("You can not ban staff.");
+                await ReplyAsync("Something went wrong!");
             }
         }
     }
