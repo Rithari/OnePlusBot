@@ -46,13 +46,9 @@ namespace OnePlusBot.Modules
                 await Context.Guild.AddBanAsync(user, 0, reason);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine(ex.Message);
-                var EmoteFalse = new Emoji("⚠");
-                await Context.Message.RemoveAllReactionsAsync();
-                await Context.Message.AddReactionAsync(EmoteFalse);
-                await ReplyAsync("Something went wrong!");
+                await Context.Guild.AddBanAsync(user, 0, reason);
             }
         }
     }
