@@ -52,7 +52,7 @@ namespace OnePlusBot.Modules
                     case "brick":
                         if (Context.Channel.Name == "oneplus6t")
                         {
-                            await ReplyAsync("Unbrick guide for OnePlus 6T: https://forum.xda-developers.com/oneplus-6t/how-to/tool-6t-msmdownloadtool-v4-0-oos-9-0-5-t3867448"); + Environment.NewLine +
+                            await ReplyAsync("Unbrick guide for OnePlus 6T: https://forum.xda-developers.com/oneplus-6t/how-to/tool-6t-msmdownloadtool-v4-0-oos-9-0-5-t3867448" + Environment.NewLine +
                                              "Unbrick guide for OnePlus 6T TMobile: https://forum.xda-developers.com/oneplus-6t/how-to/tool-t-mobile-oneplus-6t-msmdownloadtool-t3868916");
 
                         }
