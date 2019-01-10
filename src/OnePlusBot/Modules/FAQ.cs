@@ -125,7 +125,7 @@ namespace OnePlusBot.Modules
                     case "rom":
                         if (Context.Channel.Name == "oneplus6t")
                         {
-                            await ReplyAsync("OnePlus 6T mirrors unavailable. Please use https://www.oneplus.com/fr/support/softwareupgrade/details?code=9");
+                            await ReplyAsync("OnePlus 6T mirrors unavailable. Please use https://www.oneplus.com/support/softwareupgrade/details?code=9");
 
                         }
                         else if (Context.Channel.Name == "oneplus6")
