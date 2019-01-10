@@ -22,7 +22,7 @@ namespace OnePlusBot.Modules
                     case "twrp":
                         if (Context.Channel.Name == "oneplus6t")
                         {
-                            await ReplyAsync("");
+                            await ReplyAsync("blu_spark for OnePlus 6T: https://forum.xda-developers.com/oneplus-6t/development/kernel-t3861123");
 
                         }
                         else if (Context.Channel.Name == "oneplus6")
@@ -32,7 +32,7 @@ namespace OnePlusBot.Modules
                         else if (Context.Channel.Name == "oneplus5-5t")
                         {
                             await ReplyAsync("blu_spark for OnePlus 5: https://forum.xda-developers.com/oneplus-5/development/kernel-t3651933" + Environment.NewLine +
-                                             "blu_spark for OnePlus 5T: https://forum.xda-developers.com/oneplus-6/development/kernel-t3800965");
+                                             "blu_spark for OnePlus 5T: https://forum.xda-developers.com/oneplus-5t/development/kernel-t3706295");
                         }
                         else if (Context.Channel.Name == "oneplus3-3t")
                         {
@@ -52,7 +52,8 @@ namespace OnePlusBot.Modules
                     case "brick":
                         if (Context.Channel.Name == "oneplus6t")
                         {
-                            await ReplyAsync("");
+                            await ReplyAsync("Unbrick guide for OnePlus 6T: https://forum.xda-developers.com/oneplus-6t/how-to/tool-6t-msmdownloadtool-v4-0-oos-9-0-5-t3867448"); + Environment.NewLine +
+                                             "Unbrick guide for OnePlus 6T TMobile: https://forum.xda-developers.com/oneplus-6t/how-to/tool-t-mobile-oneplus-6t-msmdownloadtool-t3868916");
 
                         }
                        else if (Context.Channel.Name == "oneplus6")
@@ -94,12 +95,12 @@ namespace OnePlusBot.Modules
                         }
                         else if (Context.Channel.Name == "oneplus6")
                         {
-                            await ReplyAsync("Unbrick guide for OnePlus 6: https://forum.xda-developers.com/oneplus-6/themes/oneplus-6-google-camera-port-t3797544" + Environment.NewLine +
+                            await ReplyAsync("Google Camera for OnePlus 6: https://forum.xda-developers.com/oneplus-6/themes/oneplus-6-google-camera-port-t3797544" + Environment.NewLine +
                                              "For all device APKs, please visit: https://www.celsoazevedo.com/files/android/google-camera/");
                         }
                         else if (Context.Channel.Name == "oneplus5-5t")
                         {
-                            await ReplyAsync("Unbrick tool for OnePlus 5 & 5T: https://forum.xda-developers.com/oneplus-5/themes/google-camera-hdr-t3655215" + Environment.NewLine +
+                            await ReplyAsync("Google Camera for OnePlus 5 & 5T: https://forum.xda-developers.com/oneplus-5/themes/google-camera-hdr-t3655215" + Environment.NewLine +
                                              "For all device APKs, please visit: https://www.celsoazevedo.com/files/android/google-camera/");
                         }
                         else if (Context.Channel.Name == "oneplus3-3t")
@@ -123,7 +124,7 @@ namespace OnePlusBot.Modules
                     case "rom":
                         if (Context.Channel.Name == "oneplus6t")
                         {
-                            await ReplyAsync("");
+                            await ReplyAsync("OnePlus 6T mirrors unavailable. Please use https://www.oneplus.com/fr/support/softwareupgrade/details?code=9");
 
                         }
                         else if (Context.Channel.Name == "oneplus6")
