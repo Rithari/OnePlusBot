@@ -83,7 +83,30 @@ namespace OnePlusBot.Modules
                         break;
                     case "root":
                     case "magisk":
-                        await ReplyAsync("Guides coming soon!");
+                        if (Context.Channel.Name == "oneplus6t")
+                        {
+                            await ReplyAsync("Unlock bootloader using `fastboot oem unlock`. Flash magisk zip using TWRP img (`fastboot boot twrp.img`) as TWRP is not meant to be flashed on A/B devices (see <https://twitter.com/topjohnwu/status/1070029212428439553> )");
+                        }
+
+                        else if (Context.Channel.Name == "oneplus6")
+                        {
+                            await ReplyAsync("Unlock bootloader using `fastboot oem unlock`. Flash magisk zip using TWRP img (`fastboot boot twrp.img`) as TWRP is not meant to be flashed on A/B devices (see <https://twitter.com/topjohnwu/status/1070029212428439553> )");
+                        }
+                        else if (Context.Channel.Name == "oneplus5-5t")
+                        {
+                            await ReplyAsync("Unlock bootloader using `fastboot oem unlock`. Flash magisk zip after installing TWRP (`fastboot flash recovery twrp.img` and `fasboot reboot`) ");
+                        }
+                        else if (Context.Channel.Name == "oneplus3-3t")
+                        {
+                            await ReplyAsync("Unlock bootloader using `fastboot oem unlock`. Flash magisk zip after installing TWRP (`fastboot flash recovery twrp.img` and `fasboot reboot`) ");
+                        }
+                        else if (Context.Channel.Name == "legacy")
+                        {
+                            await ReplyAsync("Flash magisk zip after installing TWRP (`fastboot flash recovery twrp.img` and `fasboot reboot`) ");
+                        }
+                        else
+                        {
+                            await ReplyAsync("Please refer to your device channel for detailled instructions. As a reminder, TWRP is not meant to be flashed on A/B devices (see <https://twitter.com/topjohnwu/status/1070029212428439553> )");
                         break;
                     case "gcam":
                     case "googlecam":
