@@ -107,6 +107,7 @@ namespace OnePlusBot.Modules
                         else
                         {
                             await ReplyAsync("Please refer to your device channel for detailled instructions. As a reminder, TWRP is not meant to be flashed on A/B devices (see <https://twitter.com/topjohnwu/status/1070029212428439553> )");
+                        }
                         break;
                     case "gcam":
                     case "googlecam":
@@ -179,7 +180,7 @@ namespace OnePlusBot.Modules
 
 
                     default:
-                        await ReplyAsync("Supported commands are: bluspark, googlecamera, oxygenos, unbrick");
+                        await ReplyAsync("Supported commands are: bluspark, googlecamera, oxygenos, unbrick, magisk, root");
                         break;
                 }
             }
