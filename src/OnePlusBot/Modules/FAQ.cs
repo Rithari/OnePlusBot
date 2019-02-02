@@ -20,14 +20,10 @@ namespace OnePlusBot.Modules
                     case "blu_spark":
                     case "bluspark":
                     case "twrp":
-                        if (Context.Channel.Name == "oneplus6t")
+                        else if (Context.Channel.Name == "oneplus6-6t")
                         {
-                            await ReplyAsync("blu_spark for OnePlus 6T: https://forum.xda-developers.com/oneplus-6t/development/kernel-t3861123");
-
-                        }
-                        else if (Context.Channel.Name == "oneplus6")
-                        {
-                            await ReplyAsync("blu_spark for OnePlus 6: https://forum.xda-developers.com/oneplus-6/development/kernel-t3800965");
+                            await ReplyAsync("blu_spark for OnePlus 6: https://forum.xda-developers.com/oneplus-6/development/kernel-t3800965" + Environment.NewLine +
+                                             "blu_spark for OnePlus 6T: https://forum.xda-developers.com/oneplus-6t/development/kernel-t3861123");
                         }
                         else if (Context.Channel.Name == "oneplus5-5t")
                         {
@@ -50,15 +46,11 @@ namespace OnePlusBot.Modules
                     case "unbrick":
                     case "bricked":
                     case "brick":
-                        if (Context.Channel.Name == "oneplus6t")
+                       else if (Context.Channel.Name == "oneplus6-6t")
                         {
-                            await ReplyAsync("Unbrick guide for OnePlus 6T: https://forum.xda-developers.com/oneplus-6t/how-to/tool-6t-msmdownloadtool-v4-0-oos-9-0-5-t3867448" + Environment.NewLine +
+                            await ReplyAsync("Unbrick guide for OnePlus 6: https://forums.oneplus.com/threads/guide-mega-unbrick-guide-for-a-hard-bricked-oneplus-6.840709/" + Environment.NewLine + 
+                                             "Unbrick guide for OnePlus 6T: https://forum.xda-developers.com/oneplus-6t/how-to/tool-6t-msmdownloadtool-v4-0-oos-9-0-5-t3867448" + Environment.NewLine +
                                              "Unbrick guide for OnePlus 6T TMobile: https://forum.xda-developers.com/oneplus-6t/how-to/tool-t-mobile-oneplus-6t-msmdownloadtool-t3868916");
-
-                        }
-                       else if (Context.Channel.Name == "oneplus6")
-                        {
-                            await ReplyAsync("Unbrick guide for OnePlus 6: https://forums.oneplus.com/threads/guide-mega-unbrick-guide-for-a-hard-bricked-oneplus-6.840709/");
                         }
                         else if (Context.Channel.Name == "oneplus5-5t")
                         {
@@ -83,12 +75,7 @@ namespace OnePlusBot.Modules
                         break;
                     case "root":
                     case "magisk":
-                        if (Context.Channel.Name == "oneplus6t")
-                        {
-                            await ReplyAsync("Unlock bootloader using `fastboot oem unlock`. Flash magisk zip using TWRP img (`fastboot boot twrp.img`) as TWRP is not meant to be flashed on A/B devices (see <https://twitter.com/topjohnwu/status/1070029212428439553> )");
-                        }
-
-                        else if (Context.Channel.Name == "oneplus6")
+                        else if (Context.Channel.Name == "oneplus6-6t")
                         {
                             await ReplyAsync("Unlock bootloader using `fastboot oem unlock`. Flash magisk zip using TWRP img (`fastboot boot twrp.img`) as TWRP is not meant to be flashed on A/B devices (see <https://twitter.com/topjohnwu/status/1070029212428439553> )");
                         }
@@ -112,15 +99,9 @@ namespace OnePlusBot.Modules
                     case "gcam":
                     case "googlecam":
                     case "googlecamera":
-                        if (Context.Channel.Name == "oneplus6t")
+                        else if (Context.Channel.Name == "oneplus6-6t")
                         {
-                            await ReplyAsync("Google Camera for OnePlus 6T: https://forum.xda-developers.com/oneplus-6t/themes/app-oneplus-6-google-camera-port-t3862849" + Environment.NewLine +
-                                             "For all device APKs, please visit: https://www.celsoazevedo.com/files/android/google-camera/");
-
-                        }
-                        else if (Context.Channel.Name == "oneplus6")
-                        {
-                            await ReplyAsync("Google Camera for OnePlus 6: https://forum.xda-developers.com/oneplus-6/themes/oneplus-6-google-camera-port-t3797544" + Environment.NewLine +
+                            await ReplyAsync("Google Camera for OnePlus 6 & 6T: https://forum.xda-developers.com/oneplus-6/themes/oneplus-6-google-camera-port-t3797544" + Environment.NewLine +
                                              "For all device APKs, please visit: https://www.celsoazevedo.com/files/android/google-camera/");
                         }
                         else if (Context.Channel.Name == "oneplus5-5t")
@@ -147,14 +128,10 @@ namespace OnePlusBot.Modules
                     case "oos":
                     case "ota":
                     case "rom":
-                        if (Context.Channel.Name == "oneplus6t")
+                        else if (Context.Channel.Name == "oneplus6-6t")
                         {
-                            await ReplyAsync("OnePlus 6T mirrors unavailable. Please use https://www.oneplus.com/support/softwareupgrade/details?code=9");
-
-                        }
-                        else if (Context.Channel.Name == "oneplus6")
-                        {
-                            await ReplyAsync("OnePlus 6 mirrors for official OxygenOS: https://forums.oneplus.com/threads/oneplus-6-rom-ota-oxygen-os-mirrors-for-official-oxygen-os-roms-and-ota-updates.835607/");
+                            await ReplyAsync("OnePlus 6 mirrors for official OxygenOS: https://forums.oneplus.com/threads/oneplus-6-rom-ota-oxygen-os-mirrors-for-official-oxygen-os-roms-and-ota-updates.835607/" + Environment.NewLine +
+                                             "OnePlus 6T mirrors unavailable. Please use https://www.oneplus.com/support/softwareupgrade/details?code=9");
                         }
                         else if (Context.Channel.Name == "oneplus5-5t")
                         {
