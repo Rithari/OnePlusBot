@@ -22,13 +22,15 @@ namespace OnePlusBot.Modules
                     case "twrp":
                         if (Context.Channel.Name == "oneplus6-6t")
                         {
-                            await ReplyAsync("blu_spark for OnePlus 6: <https://forum.xda-developers.com/oneplus-6/development/kernel-t3800965>" + Environment.NewLine +
-                                             "blu_spark for OnePlus 6T: <https://forum.xda-developers.com/oneplus-6t/development/kernel-t3861123>");
+                            await ReplyAsync("blu_spark XDA thread for OnePlus 6: <https://forum.xda-developers.com/oneplus-6/development/kernel-t3800965>" + Environment.NewLine +
+                                             "blu_spark XDA thread for OnePlus 6T: <https://forum.xda-developers.com/oneplus-6t/development/kernel-t3861123>" + Environment.NewLine +
+                                             "Download link for 6 and 6T: <https://github.com/engstk/android_device_oneplus_enchilada/releases>");
                         }
                         else if (Context.Channel.Name == "oneplus5-5t")
                         {
-                            await ReplyAsync("blu_spark for OnePlus 5: <https://forum.xda-developers.com/oneplus-5/development/kernel-t3651933>" + Environment.NewLine +
-                                             "blu_spark for OnePlus 5T: <https://forum.xda-developers.com/oneplus-5t/development/kernel-t3706295>");
+                            await ReplyAsync("blu_spark XDA thread for OnePlus 5: <https://forum.xda-developers.com/oneplus-5/development/kernel-t3651933>" + Environment.NewLine +
+                                             "blu_spark XDA thread for OnePlus 5T: <https://forum.xda-developers.com/oneplus-5t/development/kernel-t3706295>" + Environment.NewLine +
+                                             "Download link for 5 and 5T: <https://github.com/engstk/android_device_oneplus_cheeseburger/releases>");
                         }
                         else if (Context.Channel.Name == "oneplus3-3t")
                         {
