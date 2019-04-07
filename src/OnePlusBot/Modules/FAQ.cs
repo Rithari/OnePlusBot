@@ -34,11 +34,11 @@ namespace OnePlusBot.Modules
                         }
                         else if (Context.Channel.Name == "oneplus3-3t")
                         {
-                            await ReplyAsync("blu_spark for OnePlus 3 & 3T: <https://forum.xda-developers.com/oneplus-3/oneplus-3--3t-cross-device-development/kernel-t3404970");
+                            await ReplyAsync("blu_spark for OnePlus 3 & 3T: <https://forum.xda-developers.com/oneplus-3/oneplus-3--3t-cross-device-development/kernel-t3404970>");
                         }
                         else if (Context.Channel.Name == "legacy")
                         {
-                            await ReplyAsync("blu_spark for OnePlus X: <https://forum.xda-developers.com/oneplus-x/orig-development/kernel-t3250995");
+                            await ReplyAsync("blu_spark for OnePlus X: <https://forum.xda-developers.com/oneplus-x/orig-development/kernel-t3250995>");
                         }
                         else
                         {
@@ -137,7 +137,7 @@ namespace OnePlusBot.Modules
                         }
                         else if (Context.Channel.Name == "oneplus5-5t")
                         {
-                            await ReplyAsync("OnePlus 5 mirrors for official OxygenOS: <https://forums.oneplus.com/threads/oneplus-5-oxygenos-5-1-4-official-download-links.557183/" + Environment.NewLine +
+                            await ReplyAsync("OnePlus 5 mirrors for official OxygenOS: <https://forums.oneplus.com/threads/oneplus-5-oxygenos-5-1-4-official-download-links.557183>" + Environment.NewLine +
                                              "OnePlus 5T mirrors for official OxygenOS: <https://forums.oneplus.com/threads/oneplus-5t-rom-ota-oxygen-os-mirrors-for-official-oxygen-os-roms-and-ota-updates.686610>");
                         }
                         else if (Context.Channel.Name == "oneplus3-3t")
