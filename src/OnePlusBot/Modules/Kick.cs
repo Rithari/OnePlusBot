@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace OnePlusBot.Modules
 {
-    public class BanModule : ModuleBase<SocketCommandContext>
+    public class KickModule : ModuleBase<SocketCommandContext>
     {
-        [Command("ban", RunMode = RunMode.Async)]
-        [Summary("Bans specified user.")]
+        [Command("kick", RunMode = RunMode.Async)]
+        [Summary("Kicks specified user.")]
         [RequireBotPermission(GuildPermission.BanMembers)]
         [RequireUserPermission(GuildPermission.PrioritySpeaker)]
         public async Task BanAsync(IGuildUser user,[Remainder] string reason = null)
@@ -35,21 +35,16 @@ namespace OnePlusBot.Modules
                 var EmoteFalse = new Emoji("⚠");
                 await Context.Message.RemoveAllReactionsAsync();
                 await Context.Message.AddReactionAsync(EmoteFalse);
-                await ReplyAsync("You can not ban authorities.");
+                await ReplyAsync("You can not kick authorities.");
                 return;
             }
-            try
-            {
+
+
                 var EmoteTrue = new Emoji(":success:499567039451758603");
                 await Context.Message.AddReactionAsync(EmoteTrue);
-                await user.SendMessageAsync("You were banned on /r/OnePlus for the following reason: " + reason + "\nIf you believe this to be a mistake, please send an appeal e-mail with all the details to admin@kyot.me");
-                await Context.Guild.AddBanAsync(user, 0, reason);
+                await user.KickAsync(reason);
 
-            }
-            catch (Exception)
-            {
-                await Context.Guild.AddBanAsync(user, 0, reason);
-            }
+            
         }
     }
 }
