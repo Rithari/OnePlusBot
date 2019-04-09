@@ -21,12 +21,10 @@ namespace OnePlusBot.Modules
             else { words = Regex.Split(cacheWords, @"\s+"); }
             first = Regex.Replace(words[0], "[^0-9a-zA-Z]", "");
             second = Regex.Replace(words[1], "[^0-9a-zA-Z]", "");
-            await ReplyAsync(first + " " + second);
             if(words[0].Contains("@"))
             first = Context.Guild.GetUser(ulong.Parse(first)).Username;
             if(words[1].Contains("@"))
             second = Context.Guild.GetUser(ulong.Parse(second)).Username;
-            await ReplyAsync(first + " " + second);
             cacheWords = new WebClient().DownloadString("https://www.lovecalculator.com/love.php?name1=" + first + "&name2=" + second);
             await ReplyAsync(":cupid: Love chance between " + words[0] + " and " + words[1] + ": `" + Regex.Split(Regex.Split(cacheWords, @"\<div\s+class\=.*?result\s+score.*?\>")[1], @"\<\/div\>")[0] + "`");
         }
