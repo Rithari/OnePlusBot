@@ -12,14 +12,14 @@ namespace OnePlusBot
     public class Core
     {
        public static void Main(string[] args) 
-            => new Core().MainAsync().GetAwaiter().GetResult();
+            => new Core().MainAsync(2).GetAwaiter().GetResult();
 
         private DiscordSocketClient _bot;
         private string token;
         private string mainToken;
         private string betaToken;
 
-        public async Task MainAsync()
+        public async Task MainAsync([Remainder] int mode)
         {
             IServiceProvider _services = BuildServices();
 
@@ -39,9 +39,14 @@ namespace OnePlusBot
 
 
             Console.WriteLine("Development Branch?\n1: Yes 0: No");
-            var userInput = Console.ReadLine();
-            Console.WriteLine();
-            if (userInput == "1")
+            int userInput = 0;
+            if (mode == 0 || mode == 1) { userInput = mode; }
+            else
+            {
+                userInput = int.Parse(Console.ReadLine());
+                Console.WriteLine();
+            }
+            if (userInput == 1)
             {
                 StreamReader reader = new StreamReader("tokens.txt");
                 {
@@ -52,7 +57,7 @@ namespace OnePlusBot
 
                 token = betaToken;
             }
-            else if (userInput == "0")
+            else if (userInput == 0)
             {
                 StreamReader reader = new StreamReader("tokens.txt");
                 {
