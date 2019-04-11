@@ -51,7 +51,11 @@ namespace OnePlusBot
                     await messageParam.DeleteAsync();
                 }
             }
-
+            
+            if (Regex.IsMatch(messageParam.Content, @"retard|r3tard|tard|nigger|nickgurr|nick gurr|nigga|nibba|fag|f@g|feggit"))
+            {
+                await messageParam.DeleteAsync();
+            }
 
             if (!(message.HasCharPrefix(';', ref argPos) ||
                 message.HasMentionPrefix(_bot.CurrentUser, ref argPos))|| 
