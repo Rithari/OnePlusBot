@@ -30,7 +30,20 @@ namespace OnePlusBot
             _bot.MessageReceived += HandleCommandAsync;
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
         }
+        
+        public async Task DeleteBadWordsAsync()
+        {
+            _bot.MessageUpdated += BadwordAsync;
+            await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+        }
 
+        private async Task BadwordAsync(Cacheable<IMessage, ulong> beforeParam, SocketMessage afterParam, ISocketMessageChannel channelParam)
+        {
+            if (Regex.IsMatch(afterParam.Content, @"retard|r3tard|tard|nigger|nickgurr|nick gurr|nigga|nibba|fag|f@g|feggit|kneegrow", RegexOptions.IgnoreCase))
+            {
+                await afterParam.DeleteAsync();
+            }
+        }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
         {
@@ -51,7 +64,11 @@ namespace OnePlusBot
                     await messageParam.DeleteAsync();
                 }
             }
-
+            
+            if (Regex.IsMatch(messageParam.Content, @"retard|r3tard|tard|nigger|nickgurr|nick gurr|nigga|nibba|fag|f@g|feggit|kneegrow", RegexOptions.IgnoreCase))
+            {
+                await messageParam.DeleteAsync();
+            }
 
             if (!(message.HasCharPrefix(';', ref argPos) ||
                 message.HasMentionPrefix(_bot.CurrentUser, ref argPos))|| 
