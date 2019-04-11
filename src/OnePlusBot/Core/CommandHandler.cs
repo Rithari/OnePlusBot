@@ -40,7 +40,7 @@ namespace OnePlusBot
 
         private async Task BadwordAsync(Cacheable<IMessage, ulong> beforeParam, SocketMessage afterParam, ISocketMessageChannel channelParam)
         {
-            if (Regex.IsMatch(afterParam.Content, @"retard|r3tard|tard|nigger|nickgurr|nick gurr|nigga|nibba|fag|f@g|feggit|kneegrow", RegexOptions.IgnoreCase))
+            if (Regex.IsMatch(afterParam.Content, @"retard|r3tard|t@rd|tard|nigger|nickgurr|nick gurr|nigga|nibba|fag|f@g|feggit|kneegrow", RegexOptions.IgnoreCase))
             {
                 await afterParam.DeleteAsync();
             }
@@ -66,7 +66,7 @@ namespace OnePlusBot
                 }
             }
             
-            if (Regex.IsMatch(messageParam.Content, @"retard|r3tard|tard|nigger|nickgurr|nick gurr|nigga|nibba|fag|f@g|feggit|kneegrow", RegexOptions.IgnoreCase))
+            if (Regex.IsMatch(messageParam.Content, @"retard|r3tard|t@rd|tard|nigger|nickgurr|nick gurr|nigga|nibba|fag|f@g|feggit|kneegrow", RegexOptions.IgnoreCase))
             {
                 await messageParam.DeleteAsync();
             }
