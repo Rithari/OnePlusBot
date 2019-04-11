@@ -74,8 +74,9 @@ namespace OnePlusBot
             await _bot.StartAsync();
             await _bot.SetGameAsync("Made with the Fans™ | ;help");
 
-           await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
-
+            await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
+            await _services.GetRequiredService<CommandHandler>().DeleteBadWordsAsync();
+            
             await Task.Delay(-1);
         }
 
