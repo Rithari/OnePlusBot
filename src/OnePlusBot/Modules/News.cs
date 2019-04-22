@@ -17,17 +17,20 @@ namespace OnePlusBot.Modules
         {
             var channels = Context.Guild.TextChannels;
             var newschannel = channels.FirstOrDefault(x => x.Name == "news");
-            var newspingchannel = channels.FirstOrDefault(x => x.Name == "news-alerts");
+            var role = Context.Guild.Roles.FirstOrDefault(x => x.Name == "News");
 
             var user = Context.Message.Author;
 
             if (news.Contains("@everyone") || news.Contains("@here"))
                 return;
 
-            await newschannel.SendMessageAsync(news + "\n **Sent by**: " + user);
-            await newspingchannel.SendMessageAsync("@everyone" + news + "\n **Sent by**: " + user);
-            await Context.Message.DeleteAsync();
+            await role.ModifyAsync(x => x.Mentionable = true);
 
+            await newschannel.SendMessageAsync(role.mention + news + "\n **Sent by**: " + user);
+
+            await role.ModifyAsync(x => x.Mentionable = false);
+
+            await Context.Message.DeleteAsync();
          }
     }
 }
