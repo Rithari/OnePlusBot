@@ -24,12 +24,9 @@ namespace OnePlusBot.Modules
             if (news.Contains("@everyone") || news.Contains("@here"))
                 return;
 
-            var oldmessage = await newschannel.SendMessageAsync(news + "\n **Sent by**: " + user);
-            var oldmessage = await newspingchannel.SendMessageAsync("@everyone" + news + "\n **Sent by**: " + user);
+            await newschannel.SendMessageAsync(news + "\n **Sent by**: " + user);
+            await newspingchannel.SendMessageAsync("@everyone" + news + "\n **Sent by**: " + user);
             await Context.Message.DeleteAsync();
-
-           
-
 
          }
     }
