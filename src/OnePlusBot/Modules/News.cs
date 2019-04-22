@@ -26,7 +26,7 @@ namespace OnePlusBot.Modules
 
             await role.ModifyAsync(x => x.Mentionable = true);
 
-            await newschannel.SendMessageAsync(role.mention + news + "\n **Sent by**: " + user);
+            await newschannel.SendMessageAsync(role.Mention + news + "\n **Sent by**: " + user);
 
             await role.ModifyAsync(x => x.Mentionable = false);
 
