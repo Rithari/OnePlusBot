@@ -1,13 +1,18 @@
-dependencies:
-  override:
-    - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-    - echo "deb http://download.mono-project.com/repo/debian wheezy main" | sudo tee /etc/apt/sources.list.d/mono-xamarin.list
-    - sudo apt-get update
-    - sudo apt-get install mono-complete
-    - wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
-    - mono nuget.exe restore OnePlusBot.sln
-    - xbuild /p:Configuration=Release OnePlusBot.sln
-
-test:
-  override:
-- echo "test"
+version: 2
+jobs:
+  build:
+    working_directory: ~/oneplusbot
+    steps:
+      - checkout
+      - run: sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+      - run: echo "deb http://download.mono-project.com/repo/debian wheezy main" | sudo tee /etc/apt/sources.list.d/mono-xamarin.list
+      - run: sudo apt-get update
+      - run: sudo apt-get install mono-complete
+      - run: wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+      - run: mono nuget.exe restore OnePlusBot.sln
+      - run: xbuild /p:Configuration=Release OnePlusBot.sln
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
