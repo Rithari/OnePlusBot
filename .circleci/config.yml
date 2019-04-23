@@ -11,7 +11,7 @@ jobs:
       - run: sudo apt-get install mono-complete
       - run: wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
       - run: mono nuget.exe restore OnePlusBot.sln
-      - run: xbuild /p:Configuration=Release OnePlusBot.sln
+      - run: msbuild OnePlusBot.sln
 workflows:
   version: 2
   build:
