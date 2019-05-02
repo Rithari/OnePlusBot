@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using System.Linq;
+using OnePlusBot._Extensions;
 
 namespace OnePlusBot.Modules
 {
@@ -22,7 +20,8 @@ namespace OnePlusBot.Modules
             if (suggestion.Contains("@everyone") || suggestion.Contains("@here"))
                 return;
 
-            var oldmessage = await suggestionschannel.SendMessageAsync(suggestion + "\n **Suggested by**: " + user);
+            var oldmessage = await suggestionschannel.EmbedAsync(new EmbedBuilder().WithDescription(suggestion + "\n **Suggested by**: " + user));
+
             var EmoteYes = new Emoji(":OPYes:426070836269678614");
             var EmoteNo = new Emoji(":OPNo:426072515094380555");
             await oldmessage.AddReactionAsync(EmoteYes);
