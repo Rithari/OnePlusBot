@@ -156,10 +156,16 @@ namespace OnePlusBot.Modules
                             await ReplyAsync("For all device APKs, please visit: <https://www.celsoazevedo.com/files/android/google-camera>");
                         }
                         break;
-
-
-                    default:
-                        await ReplyAsync("Supported commands are: bluspark, googlecamera, oxygenos, unbrick, magisk, root");
+                    case "edl":
+                    case "9008":
+                    case "9008mode":
+                        {
+                            await ReplyAsync("To enter in Qualcomm EDL mode, you can use `adb reboot edl` or use any version of blu_spark TWRP based on TWRP 3.3.0 or later by clicking on `Reboot to EDL`.>" + Environment.NewLine +
+                                             "If you want to exit EDL mode, maintain power button during at least 10 seconds ");
+                        }
+                        break;
+                            default:
+                        await ReplyAsync("Supported commands are: bluspark, googlecamera, oxygenos, unbrick, magisk, root, edl");
                         break;
                 }
             }
