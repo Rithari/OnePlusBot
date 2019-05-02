@@ -164,8 +164,15 @@ namespace OnePlusBot.Modules
                                              "If you want to exit EDL mode, maintain power button during at least 10 seconds ");
                         }
                         break;
-                            default:
-                        await ReplyAsync("Supported commands are: bluspark, googlecamera, oxygenos, unbrick, magisk, root, edl");
+                    case "whiteled":
+                    case "qualcommdiagnostics":
+                        {
+                            await ReplyAsync("If you have a persistent white LED while trying to boot your phone and a black screen, it means that your device is stuck in Qualcomm Diagnostics mode." + Environment.NewLine +
+                                             "You can turn off your phone by maintaining power button during at least 10 seconds and then use MSM tool to recover it to a working state");
+                        }
+                        break;
+                    default:
+                        await ReplyAsync("Supported commands are: bluspark, googlecamera, oxygenos, unbrick, magisk, root, edl, whiteled");
                         break;
                 }
             }
