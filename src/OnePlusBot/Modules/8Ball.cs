@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Discord;
+using OnePlusBot._Extensions;
 
 namespace OnePlusBot.Modules
 {
@@ -21,7 +20,9 @@ namespace OnePlusBot.Modules
                         "My sources say no."
                     }[new Random().Next(0, 20)];
 
-                await ReplyAsync(answer);
+                await Context.Channel.EmbedAsync(new EmbedBuilder()
+                    .WithDescription(Context.User.ToString())
+                    .AddField(efb => efb.WithName("🎱 The 8 Ball Says:").WithValue(answer).WithIsInline(false)));
             }
             catch(Exception ex)
             {
