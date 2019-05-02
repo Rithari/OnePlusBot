@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using Discord;
 using Discord.Commands;
-using System.Text.RegularExpressions;
-using System.Net;
 using System.Linq;
 using System.Net.Http;
-using Newtonsoft.Json;
 using QuickType;
 
 namespace OnePlusBot.Modules
