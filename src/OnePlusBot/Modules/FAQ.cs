@@ -171,8 +171,15 @@ namespace OnePlusBot.Modules
                                              "You can turn off your phone by maintaining power button during at least 10 seconds and then use MSM tool to recover it to a working state");
                         }
                         break;
+                    case "smt":
+                    case "smtdownloadmode":
+                        {
+                            await ReplyAsync("If you're reading this, stop what you are doing. Please." + Environment.NewLine +
+                                             "The reason why aftersales support of OnePlus use Upgrade Mode in MSM tool during remote assistance sessions rather than SMT mode is that it is meant for factory only as it wipes NV (non volatile) items suh as IMEI (source <https://forum.xda-developers.com/showpost.php?p=77937552&postcount=90>)");
+                        }
+                        break;
                     default:
-                        await ReplyAsync("Supported commands are: bluspark, googlecamera, oxygenos, unbrick, magisk, root, edl, whiteled");
+                        await ReplyAsync("Supported commands are: bluspark, googlecamera, oxygenos, unbrick, magisk, root, edl, whiteled, smt");
                         break;
                 }
             }
