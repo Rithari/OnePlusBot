@@ -18,7 +18,7 @@ namespace OnePlusBot.Modules
                 var EmoteFalse = new Emoji("⚠");
                 await Context.Message.RemoveAllReactionsAsync();
                 await Context.Message.AddReactionAsync(EmoteFalse);
-                await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("You humans can't make us harm each other."));
+                await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("⚠ You humans can't make us harm each other."));
                 return;
             }
 
@@ -32,7 +32,7 @@ namespace OnePlusBot.Modules
                 var EmoteFalse = new Emoji("⚠");
                 await Context.Message.RemoveAllReactionsAsync();
                 await Context.Message.AddReactionAsync(EmoteFalse);
-                await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("You can not kick authorities."));
+                await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("⚠ You can not kick authorities."));
                 return;
             }
 
