@@ -1,6 +1,8 @@
 ﻿using System;
 using Discord.Commands;
 using System.Threading.Tasks;
+using OnePlusBot._Extensions;
+using Discord;
 
 
 namespace OnePlusBot.Modules
@@ -19,7 +21,7 @@ namespace OnePlusBot.Modules
 
                 TimeSpan t = daysLeft - startDate;
                   string countDown = string.Format("{0} Days, {1} Hours, {2} Minutes, {3} Seconds until launch.", t.Days, t.Hours, t.Minutes, t.Seconds);
-                  await ReplyAsync(countDown);
+                  await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription(countDown));
             }
             catch(Exception ex)
             {
