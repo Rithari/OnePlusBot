@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Discord;
+using System;
 using Discord.Commands;
 using System.Linq;
+using OnePlusBot._Extensions;
 
 namespace OnePlusBot.Modules
 {
@@ -26,7 +25,7 @@ namespace OnePlusBot.Modules
 
             await role.ModifyAsync(x => x.Mentionable = true);
 
-            await newschannel.SendMessageAsync(role.Mention + news + "\n **Sent by**: " + user);
+            await newschannel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription(news).WithFooter("" + user), role.Mention);
 
             await role.ModifyAsync(x => x.Mentionable = false);
 
