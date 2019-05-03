@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord;
 using System;
 using Discord.Commands;
@@ -20,12 +20,16 @@ namespace OnePlusBot.Modules
 
             var user = Context.Message.Author;
 
-            if (news.Contains("@everyone") || news.Contains("@here"))
+            if (news.Contains("@everyone") || news.Contains("@here") || news.Contains("@news"))
+            {
+                await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("⚠ That news contained a ping! Don't do that!"));
                 return;
+            }
+
 
             await role.ModifyAsync(x => x.Mentionable = true);
 
-            await newschannel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription(news).WithFooter("" + user), role.Mention);
+            await newschannel.SendMessageAsync(news + Environment.NewLine + Environment.NewLine + role.Mention + Environment.NewLine + user);
 
             await role.ModifyAsync(x => x.Mentionable = false);
 
