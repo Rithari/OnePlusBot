@@ -21,7 +21,7 @@ namespace OnePlusBot.Modules
                     }[new Random().Next(0, 20)];
 
                 await Context.Channel.EmbedAsync(new EmbedBuilder()
-                    .WithColor(9896005).WithDescription(Context.User.ToString())
+                    .WithColor(9896005)
                     .AddField(efb => efb.WithName("🎱 The 8 Ball Says:").WithValue(answer).WithIsInline(false)));
             }
             catch(Exception ex)
