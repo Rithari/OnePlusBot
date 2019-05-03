@@ -7,7 +7,8 @@ namespace OnePlusBot.Modules
 {
     public class Uinfo : ModuleBase<SocketCommandContext>
     {
-        [RequireContext(ContextType.Guild)]
+        [Command("userinfo")]
+        [Summary("Displays User Information")]
         public async Task UserInfo(IGuildUser usr = null)
         {
             var user = usr ?? Context.User as IGuildUser;
@@ -23,7 +24,8 @@ namespace OnePlusBot.Modules
             }
             embed.AddField(fb => fb.WithName("ID").WithValue(user.Id.ToString()).WithIsInline(true))
                 .AddField(fb => fb.WithName("Joined Server").WithValue($"{user.JoinedAt?.ToString("dd.MM.yyyy HH:mm") ?? "?"}").WithIsInline(true))
-                .AddField(fb => fb.WithName("Joined Discord").WithValue($"{user.CreatedAt:dd.MM.yyyy HH:mm}").WithIsInline(true));
+                .AddField(fb => fb.WithName("Joined Discord").WithValue($"{user.CreatedAt:dd.MM.yyyy HH:mm}").WithIsInline(true))
+                .WithColor(9896005);
 
             var av = user.RealAvatarUrl();
             if (av != null && av.IsAbsoluteUri)
