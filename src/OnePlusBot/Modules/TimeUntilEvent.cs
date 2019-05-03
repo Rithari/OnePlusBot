@@ -7,7 +7,7 @@ using Discord;
 
 namespace OnePlusBot.Modules
 {
-   public class TimeLeft : ModuleBase<SocketCommandContext>
+    public class TimeLeft : ModuleBase<SocketCommandContext>
     {
         [Command("timeleft")]
         [Summary("How long until the 7 Launch event.")]
@@ -20,10 +20,10 @@ namespace OnePlusBot.Modules
                 DateTime startDate = DateTime.UtcNow;
 
                 TimeSpan t = daysLeft - startDate;
-                  string countDown = string.Format("{0} Days, {1} Hours, {2} Minutes, {3} Seconds until launch.", t.Days, t.Hours, t.Minutes, t.Seconds);
-                  await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription(countDown));
+                string countDown = string.Format("{0} Days, {1} Hours, {2} Minutes, {3} Seconds until launch.", t.Days, t.Hours, t.Minutes, t.Seconds);
+                await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription(countDown));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await ReplyAsync(ex.Message);
             }

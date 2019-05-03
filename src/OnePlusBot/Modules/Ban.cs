@@ -12,18 +12,18 @@ namespace OnePlusBot.Modules
         [Summary("Bans specified user.")]
         [RequireBotPermission(GuildPermission.BanMembers)]
         [RequireUserPermission(GuildPermission.PrioritySpeaker)]
-        public async Task BanAsync(IGuildUser user,[Remainder] string reason = null)
+        public async Task BanAsync(IGuildUser user, [Remainder] string reason = null)
         {
             if (user.IsBot)
             {
                 var EmoteFalse = new Emoji("⚠");
                 await Context.Message.RemoveAllReactionsAsync();
                 await Context.Message.AddReactionAsync(EmoteFalse);
-                await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("⚠ You humans can't make us harm each other.").WithTitle(""+user));
+                await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("⚠ You humans can't make us harm each other.").WithTitle("" + user));
                 return;
             }
 
-            if(reason == null)
+            if (reason == null)
             {
                 reason = "No reason provided.";
             }
@@ -33,7 +33,7 @@ namespace OnePlusBot.Modules
                 var EmoteFalse = new Emoji("⚠");
                 await Context.Message.RemoveAllReactionsAsync();
                 await Context.Message.AddReactionAsync(EmoteFalse);
-                await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("⚠ You can not ban authorities.").WithTitle(""+user));
+                await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("⚠ You can not ban authorities.").WithTitle("" + user));
                 return;
             }
             try

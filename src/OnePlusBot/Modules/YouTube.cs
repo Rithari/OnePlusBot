@@ -6,7 +6,7 @@ using System.Net;
 
 namespace OnePlusBot.Modules
 {
-   public class YTModule : ModuleBase<SocketCommandContext>
+    public class YTModule : ModuleBase<SocketCommandContext>
     {
         [Command("yt")]
         [Summary("YouTube search for Discord!")]
@@ -18,7 +18,7 @@ namespace OnePlusBot.Modules
                 await ReplyAsync("https://www.youtube.com/watch?" + Regex.Split(Regex.Split(html, @"\/watch\?")[1], "\"")[0]);
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await ReplyAsync(ex.Message);
             }

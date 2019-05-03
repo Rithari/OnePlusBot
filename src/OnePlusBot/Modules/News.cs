@@ -34,6 +34,6 @@ namespace OnePlusBot.Modules
             await role.ModifyAsync(x => x.Mentionable = false);
 
             await Context.Message.DeleteAsync();
-         }
+        }
     }
 }

@@ -47,9 +47,9 @@ namespace OnePlusBot.Modules
                     case "unbrick":
                     case "bricked":
                     case "brick":
-                       if (Context.Channel.Name == "oneplus6-6t")
+                        if (Context.Channel.Name == "oneplus6-6t")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Unbrick guide for OnePlus 6: <https://forums.oneplus.com/threads/guide-mega-unbrick-guide-for-a-hard-bricked-oneplus-6.840709>" + Environment.NewLine + 
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Unbrick guide for OnePlus 6: <https://forums.oneplus.com/threads/guide-mega-unbrick-guide-for-a-hard-bricked-oneplus-6.840709>" + Environment.NewLine +
                                              "Unbrick guide for OnePlus 6T: <https://forum.xda-developers.com/oneplus-6t/how-to/tool-6t-msmdownloadtool-v4-0-oos-9-0-5-t386744>" + Environment.NewLine +
                                              "Unbrick guide for OnePlus 6T TMobile: <https://forum.xda-developers.com/oneplus-6t/how-to/tool-t-mobile-oneplus-6t-msmdownloadtool-t3868916>"));
                         }

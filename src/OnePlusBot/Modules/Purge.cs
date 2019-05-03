@@ -14,7 +14,7 @@ namespace OnePlusBot.Modules
         [RequireUserPermission(GuildPermission.ManageMessages)]
         public async Task PurgeAsync([Remainder] double delmsg)
         {
-           
+
             if (delmsg > 100 || delmsg <= 0)
             {
                 var EmoteFalse = new Emoji("⚠");
@@ -42,7 +42,7 @@ namespace OnePlusBot.Modules
                 await Context.Message.DeleteAsync();
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await ReplyAsync(ex.Message);
             }
