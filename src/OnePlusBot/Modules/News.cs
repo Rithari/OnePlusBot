@@ -22,7 +22,7 @@ namespace OnePlusBot.Modules
 
             if (news.Contains("@everyone") || news.Contains("@here") || news.Contains("@news"))
             {
-                await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("⚠ That news contained a ping! Don't do that!"));
+                await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("⚠ That news contains an illegal ping! Don't do that!"));
                 return;
             }
 
