@@ -262,6 +262,3 @@ __pycache__/
 
 # Ignore .vscode folder
 .vscode/
-
-# Out folder
-src/out-linux
