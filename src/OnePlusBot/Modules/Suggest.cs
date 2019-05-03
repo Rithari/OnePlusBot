@@ -20,7 +20,7 @@ namespace OnePlusBot.Modules
             if (suggestion.Contains("@everyone") || suggestion.Contains("@here"))
                 return;
 
-            var oldmessage = await suggestionschannel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription(suggestion).WithFooter(""+ user));
+            var oldmessage = await suggestionschannel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription(suggestion).WithFooter("" + user));
 
             var EmoteYes = new Emoji(":OPYes:426070836269678614");
             var EmoteNo = new Emoji(":OPNo:426072515094380555");
@@ -28,9 +28,9 @@ namespace OnePlusBot.Modules
             await oldmessage.AddReactionAsync(EmoteNo);
             await Context.Message.DeleteAsync();
 
-           
 
 
-         }
+
+        }
     }
 }

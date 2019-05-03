@@ -24,7 +24,7 @@ namespace OnePlusBot.Modules
                     .WithColor(9896005)
                     .AddField(efb => efb.WithName("🎱 The 8 Ball Says:").WithValue(answer).WithIsInline(false)));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await ReplyAsync(ex.Message);
             }

@@ -35,7 +35,7 @@ namespace OnePlusBot.Modules
                         {
                             //Return an error message saying the user does not exist
                             await ReplyAsync("That user does not exist, try to use the custom profile link instead.");
-                        } 
+                        }
 
                         //If the user exists
                         else
