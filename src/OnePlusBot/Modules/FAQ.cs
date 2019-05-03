@@ -157,10 +157,30 @@ namespace OnePlusBot.Modules
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("For all device APKs, please visit: <https://www.celsoazevedo.com/files/android/google-camera>"));
                         }
                         break;
-
-
+                    case "edl":
+                    case "9008":
+                    case "9008mode":
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("To enter in Qualcomm EDL mode, you can use `adb reboot edl` or use any version of blu_spark TWRP based on TWRP 3.3.0 or later by clicking on `Reboot to EDL`." + Environment.NewLine +
+                                             "If you want to exit EDL mode, maintain power button during at least 10 seconds "));
+                        }
+                        break;
+                    case "whiteled":
+                    case "qualcommdiagnostics":
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("If you have a persistent white LED while trying to boot your phone and a black screen, it means that your device is stuck in Qualcomm Diagnostics mode." + Environment.NewLine +
+                                             "You can turn off your phone by maintaining power button during at least 10 seconds and then use MSM tool to recover it to a working state"));
+                        }
+                        break;
+                    case "smt":
+                    case "smtdownloadmode":
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("If you're reading this, stop what you are doing. Please." + Environment.NewLine +
+                                             "The reason why aftersales support of OnePlus use Upgrade Mode in MSM tool during remote assistance sessions rather than SMT mode is that it is meant for factory only as it wipes NV (non volatile) items suh as IMEI (source <https://forum.xda-developers.com/showpost.php?p=77937552&postcount=90>)"));
+                        }
+                        break;
                     default:
-                        await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Supported commands are: bluspark, googlecamera, oxygenos, unbrick, magisk, root"));
+                        await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Supported commands are: bluspark, googlecamera, oxygenos, unbrick, edl, magisk, root"));
                         break;
                 }
             }
