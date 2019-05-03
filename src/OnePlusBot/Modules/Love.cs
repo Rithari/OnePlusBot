@@ -24,7 +24,7 @@ namespace OnePlusBot.Modules
             if(words[1].Contains("@"))
             second = Context.Guild.GetUser(ulong.Parse(second)).Username;
             cacheWords = new WebClient().DownloadString("https://www.lovecalculator.com/love.php?name1=" + first + "&name2=" + second);
-            await Context.Channel.EmbedAsync(new EmbedBuilder().WithDescription(":cupid: Love chance between " + words[0] + " and " + words[1] + ": `" + Regex.Split(Regex.Split(cacheWords, @"\<div\s+class\=.*?result\s+score.*?\>")[1], @"\<\/div\>")[0] + "`"));
+            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription(":cupid: Love chance between " + words[0] + " and " + words[1] + ": `" + Regex.Split(Regex.Split(cacheWords, @"\<div\s+class\=.*?result\s+score.*?\>")[1], @"\<\/div\>")[0] + "`"));
         }
     }
 }
