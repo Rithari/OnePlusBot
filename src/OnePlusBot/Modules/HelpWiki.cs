@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using OnePlusBot._Extensions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using System;
 
 namespace OnePlusBot.Modules
 {
@@ -13,9 +11,10 @@ namespace OnePlusBot.Modules
 
         [Command("help")]
         [Summary("Lists all available commands.")]
+  
         public async Task HelpAsync()
         {
-            await ReplyAsync("The command list was moved to: https://github.com/sapic/OnePlusBot/wiki/Command-List");
+            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("The command list was moved to: https://github.com/Rithari/OnePlusBot/wiki/Command-List"));
         }
 
 
