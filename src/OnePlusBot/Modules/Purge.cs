@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Discord.Commands;
 using Discord;
 using System.Threading.Tasks;
