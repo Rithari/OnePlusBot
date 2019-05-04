@@ -23,7 +23,8 @@ namespace OnePlusBot.Modules
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("blu_spark XDA thread for OnePlus 6: <https://forum.xda-developers.com/oneplus-6/development/kernel-t3800965>" + Environment.NewLine +
                                              "blu_spark XDA thread for OnePlus 6T: <https://forum.xda-developers.com/oneplus-6t/development/kernel-t3861123>" + Environment.NewLine +
-                                             "Download link for 6 and 6T: <https://github.com/engstk/android_device_oneplus_enchilada/releases>"));
+                                             "Download link for OnePlus 6: <https://github.com/engstk/android_device_oneplus_enchilada/releases>" + Environment.NewLine +
+                                             "Download link for OnePlus 6T: <https://github.com/engstk/android_device_oneplus_fajita/releases>"));
                         }
                         else if (Context.Channel.Name == "oneplus5-5t")
                         {
