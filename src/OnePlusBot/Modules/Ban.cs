@@ -52,6 +52,7 @@ namespace OnePlusBot.Modules
             }
             catch (Exception)
             {
+                await Context.Guild.AddBanAsync(user, 0, reason);
             }
         }
     }
