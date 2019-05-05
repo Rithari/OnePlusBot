@@ -16,7 +16,6 @@ namespace OnePlusBot.Modules
             var ping = DateTime.UtcNow - timestamp;
 
             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Pong....\nIn " + ping.Milliseconds + " ms"));
-            await ReplyAsync("Ping...\nIn " + ping.Milliseconds + " ms");
         }
     }
 }
