@@ -23,8 +23,8 @@ namespace OnePlusBot.Modules
                 embed.AddField(fb => fb.WithName("Nickname").WithValue(user.Nickname).WithIsInline(true));
             }
             embed.AddField(fb => fb.WithName("ID").WithValue(user.Id.ToString()).WithIsInline(true))
-                .AddField(fb => fb.WithName("Joined Server").WithValue($"{user.JoinedAt?.ToString("yyyy/MM/dd HH:mm") ?? "?"}").WithIsInline(true))
-                .AddField(fb => fb.WithName("Joined Discord").WithValue($"{user.CreatedAt:yyyy/MM/dd HH:mm}").WithIsInline(true))
+                .AddField(fb => fb.WithName("Joined Server").WithValue($"{user.JoinedAt?.ToString("dd/MM/yyyy HH:mm") ?? "?"}").WithIsInline(true))
+                .AddField(fb => fb.WithName("Joined Discord").WithValue($"{user.CreatedAt:dd/MM/yyyy HH:mm}").WithIsInline(true))
                 .WithColor(9896005);
 
             var av = user.RealAvatarUrl();

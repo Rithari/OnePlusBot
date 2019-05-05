@@ -27,6 +27,8 @@ namespace OnePlusBot
 
             _bot.Log += Log;
 
+            _bot.ReactionAdded += OnReactionAdded;
+
 
             if (!File.Exists("tokens.txt"))
             {
@@ -77,6 +79,22 @@ namespace OnePlusBot
            await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
 
             await Task.Delay(-1);
+        }
+
+        private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
+        {
+            if(reaction.MessageId == Global.ReactBuilderMsgId)
+            {
+                if (reaction.Emote.Name == "1️⃣")
+                {
+                    await channel.SendMessageAsync("Someone reacted with number 1");
+                }
+                else if (reaction.Emote.Name == "2️⃣")
+                {
+
+                }
+            }
+
         }
 
         public IServiceProvider BuildServices()
