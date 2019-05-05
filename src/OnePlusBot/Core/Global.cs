@@ -4,7 +4,7 @@ using System.Text;
 
 namespace OnePlusBot
 {
-   internal static class Global
+    internal static class Global
     {
         internal static ulong ReactBuilderMsgId { get; set; }
     }

@@ -40,7 +40,7 @@ namespace OnePlusBot
             SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Name == "r/oneplus");
             SocketGuildChannel wallpapersChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Name == "set-ups");
 
-           if(messageParam.Channel.Id == wallpapersChannel.Id)
+            if (messageParam.Channel.Id == wallpapersChannel.Id)
             {
                 var messageContent = messageParam.Content;
 
@@ -52,7 +52,7 @@ namespace OnePlusBot
 
 
             if (!(message.HasCharPrefix(';', ref argPos) ||
-                message.HasMentionPrefix(_bot.CurrentUser, ref argPos))|| 
+                message.HasMentionPrefix(_bot.CurrentUser, ref argPos)) ||
                 message.Author.IsBot)
                 return;
 

@@ -32,7 +32,7 @@ namespace OnePlusBot.Modules
                 "\n\n *Leaving a role you have joined is currently unsupported and wil be added soon, for now, please contact administration.*");
 
             Global.ReactBuilderMsgId = reactmsg.Id;
-            await reactmsg.AddReactionsAsync(new Emoji[] 
+            await reactmsg.AddReactionsAsync(new Emoji[]
               { new Emoji(":1_:574655515586592769"),
                 new Emoji(":2_:574655515548844073"),
                 new Emoji(":X_:574655515481866251"),

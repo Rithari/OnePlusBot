@@ -13,8 +13,8 @@ namespace OnePlusBot
 {
     public class Core
     {
-       public static void Main(string[] args) 
-            => new Core().MainAsync().GetAwaiter().GetResult();
+        public static void Main(string[] args)
+             => new Core().MainAsync().GetAwaiter().GetResult();
 
         private DiscordSocketClient _bot;
         private string token;
@@ -35,7 +35,7 @@ namespace OnePlusBot
             if (!File.Exists("tokens.txt"))
             {
                 Console.WriteLine("You need a tokens.txt containing the tokens properly formatted, add it and retry.");
-               // File.OpenWrite("tokens.txt");
+                // File.OpenWrite("tokens.txt");
 
                 Console.ReadKey();
                 return;
@@ -78,7 +78,7 @@ namespace OnePlusBot
             await _bot.StartAsync();
             await _bot.SetGameAsync("Made with the Fans™ | ;help");
 
-           await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
+            await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
 
             await Task.Delay(-1);
         }
@@ -96,19 +96,19 @@ namespace OnePlusBot
             var role6 = Guild.Roles.FirstOrDefault(x => x.Name == "OnePlus 5T");
             var role7 = Guild.Roles.FirstOrDefault(x => x.Name == "OnePlus 6");
             var role8 = Guild.Roles.FirstOrDefault(x => x.Name == "OnePlus 6T");
-            var rolehelper = Guild.Roles.FirstOrDefault(x => x.Name == "News");
-            var rolenews = Guild.Roles.FirstOrDefault(x => x.Name == "Helper");
-            
+            var rolehelper = Guild.Roles.FirstOrDefault(x => x.Name == "Helper");
+            var rolenews = Guild.Roles.FirstOrDefault(x => x.Name == "News");
+
 
 
 
             if (reaction.MessageId == Global.ReactBuilderMsgId)
-               {
+            {
 
                 if (reaction.User.Value.IsBot)
                     return;
 
-                switch(reaction.Emote.Name)
+                switch (reaction.Emote.Name)
                 {
                     case ":1_:574655515586592769":
                         var msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus One.");
@@ -189,7 +189,7 @@ namespace OnePlusBot
                     default:
                         msg = await channel.SendMessageAsync("invalid emote");
                         await Task.Delay(1200);
-                         await msg.DeleteAsync();
+                        await msg.DeleteAsync();
                         break;
                 }
             }
