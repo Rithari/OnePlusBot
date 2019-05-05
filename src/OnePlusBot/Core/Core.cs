@@ -110,62 +110,62 @@ namespace OnePlusBot
 
                 switch(reaction.Emote.Name)
                 {
-                    case "\U00000030\U000020e3":
+                    case ":1_:574655515586592769":
                         var msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus One.");
                         await (user as IGuildUser).AddRoleAsync(role0);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
-                    case "\U00000031\U000020e3":
+                    case ":2_:574655515548844073":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus 2.");
                         await (user as IGuildUser).AddRoleAsync(role1);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
 
-                    case "\U00000032\U000020e3":
+                    case ":X_:574655515481866251":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus X");
                         await (user as IGuildUser).AddRoleAsync(role2);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
 
-                    case "\U00000033\U000020e3":
+                    case ":3_:574655515452506132":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus 3.");
                         await (user as IGuildUser).AddRoleAsync(role3);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
 
-                    case "\U00000034\U000020e3":
+                    case ":3T:574655515846508554":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus 3T.");
                         await (user as IGuildUser).AddRoleAsync(role4);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
 
-                    case "\U00000035\U000020e3":
+                    case ":5_:574655515745976340":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus 5.");
                         await (user as IGuildUser).AddRoleAsync(role5);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
 
-                    case "\U00000036\U000020e3":
+                    case ":5T:574655515494318109":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus 5T.");
                         await (user as IGuildUser).AddRoleAsync(role6);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
 
-                    case "\U00000037\U000020e3":
+                    case ":6_:574655515615952896":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus 6.");
                         await (user as IGuildUser).AddRoleAsync(role7);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
 
-                    case "\U00000038\U000020e3":
+                    case ":6T:574655515846508573":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus 6T.");
                         await (user as IGuildUser).AddRoleAsync(role8);
                         await Task.Delay(1200);
