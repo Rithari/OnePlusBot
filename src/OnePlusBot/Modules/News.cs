@@ -29,7 +29,7 @@ namespace OnePlusBot.Modules
 
             await role.ModifyAsync(x => x.Mentionable = true);
 
-            await newschannel.SendMessageAsync(news + Environment.NewLine + Environment.NewLine + role.Mention + Environment.NewLine + user);
+            await newschannel.SendMessageAsync(news + Environment.NewLine + Environment.NewLine + role.Mention + Environment.NewLine + "- " + user);
 
             await role.ModifyAsync(x => x.Mentionable = false);
 
