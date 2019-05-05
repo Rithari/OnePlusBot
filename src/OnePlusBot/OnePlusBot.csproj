@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="CoreCompat.System.Drawing" Version="1.0.0-beta006" />
+    <PackageReference Include="Discord.Addons.Interactive" Version="1.0.1" />
     <PackageReference Include="Discord.Net" Version="2.0.1" />
     <PackageReference Include="Discord.Net.Commands" Version="2.0.1" />
     <PackageReference Include="Discord.Net.Core" Version="2.0.1" />

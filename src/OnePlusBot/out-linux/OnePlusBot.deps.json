@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.1/linux-x64",
-    "signature": "2363500f6347b45de4cb73156c4d27fb5cf457d6"
+    "signature": "6bedc771b933b0682d23a17ecc4d85f681e7d04b"
   },
   "compilationOptions": {},
   "targets": {
@@ -10,6 +10,7 @@
       "OnePlusBot/1.0.0": {
         "dependencies": {
           "CoreCompat.System.Drawing": "1.0.0-beta006",
+          "Discord.Addons.Interactive": "1.0.1",
           "Discord.Net": "2.0.1",
           "Discord.Net.Commands": "2.0.1",
           "Discord.Net.Core": "2.0.1",
@@ -43,6 +44,19 @@
           "lib/netstandard1.3/CoreCompat.System.Drawing.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Discord.Addons.Interactive/1.0.1": {
+        "dependencies": {
+          "Discord.Net.Commands": "2.0.1",
+          "Discord.Net.WebSocket": "2.0.1",
+          "NETStandard.Library": "2.0.3"
+        },
+        "runtime": {
+          "lib/netstandard1.1/Discord.Addons.Interactive.dll": {
+            "assemblyVersion": "1.0.1.0",
+            "fileVersion": "1.0.1.0"
           }
         }
       },
@@ -1242,9 +1256,16 @@
     "CoreCompat.System.Drawing/1.0.0-beta006": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-KOBeVy8FHx9zkXrIZAM8OdXPrimROmvfB02fOegrYIelNN/zWhsOwzONgD7gw7wOTJgAFfdwpme5CiMraJj47Q==",
+      "sha512": "sha512-pMq2FWNVZxZ97kWp+uvjzMD4Z9SAcwTT1S523r57GW1wE6qb1S6s5B7evy2l1OREDNNeeRqFlKu69Mjz8gg1Sg==",
       "path": "corecompat.system.drawing/1.0.0-beta006",
       "hashPath": "corecompat.system.drawing.1.0.0-beta006.nupkg.sha512"
+    },
+    "Discord.Addons.Interactive/1.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jpLtwySgRtkng2DVu8Q0ZKQjCUW9WpxEJ62eqwO1LYmnqrnhFl0mbRz7HlJCJiWay4FsS3vap3pixW+sXE4Y+Q==",
+      "path": "discord.addons.interactive/1.0.1",
+      "hashPath": "discord.addons.interactive.1.0.1.nupkg.sha512"
     },
     "Discord.Net/2.0.1": {
       "type": "package",
@@ -1263,7 +1284,7 @@
     "Discord.Net.Core/2.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-DvmLszJW3Ry1KwiqtWvNMV16sXek/6oievfX/pOiIdECibEARMqVdP2VQi3IpmPPUON5jsc2CPNZ7hJZGHNWRA==",
+      "sha512": "sha512-Y6fAICX141Jvnqf8RSjn23LOG7JG31eHpfMCdwTJvapnvgBtb/gcobNPX8itUeIVp0PgESMiwpUFs9xMgAlefw==",
       "path": "discord.net.core/2.0.1",
       "hashPath": "discord.net.core.2.0.1.nupkg.sha512"
     },
@@ -1284,21 +1305,21 @@
     "Discord.Net.WebSocket/2.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-qxBuN+SMtwo9BkOIYiiZKnTQkhdhaQIuiw+HJJj1Cn34G5PBiFLs2r0aBJvAsFmveWFlz16eoz4DVQG0SP6bVw==",
+      "sha512": "sha512-hHjcwUWO3CrjDFVJFfWJNOJajlPhLKYhvnFb+ERbfEmGPLg/Fh3WoeKHdfSy+6CDUPioURC0KgQYj1CJnQ02Fw==",
       "path": "discord.net.websocket/2.0.1",
       "hashPath": "discord.net.websocket.2.0.1.nupkg.sha512"
     },
     "Microsoft.Extensions.DependencyInjection/2.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-wakg18gHYiUL1pcjjyZuYk6OvDpbSw1E7IWxm78TMepsr+gQ8W0tWzuRm0q/9RFblngwPwo15rrgZSUV51W5Iw==",
+      "sha512": "sha512-aimtR3Dh78z3NuaLXvsvOFz77bIgF/NAQ/03Dvgk9Grl6VqFq7rorVSyXoBmjpVK+G64iIf54JXVFOQB93FzlA==",
       "path": "microsoft.extensions.dependencyinjection/2.0.0",
       "hashPath": "microsoft.extensions.dependencyinjection.2.0.0.nupkg.sha512"
     },
     "Microsoft.Extensions.DependencyInjection.Abstractions/2.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-eUdJ0Q/GfVyUJc0Jal5L1QZLceL78pvEM9wEKcHeI24KorqMDoVX+gWsMGLulQMfOwsUaPtkpQM2pFERTzSfSg==",
+      "sha512": "sha512-VN6zV4xkMKIxIP48kQzXieZPWXUeGL3M1nQvgXCm44EAvi2eC0gYj/ldrfPde4JF3TOypAENZvuJX1qkTFAgew==",
       "path": "microsoft.extensions.dependencyinjection.abstractions/2.0.0",
       "hashPath": "microsoft.extensions.dependencyinjection.abstractions.2.0.0.nupkg.sha512"
     },
@@ -1340,7 +1361,7 @@
     "Microsoft.NETCore.Targets/2.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-odP/tJj1z6GylFpNo7pMtbd/xQgTC3Ex2If63dRTL38bBNMwsBnJ+RceUIyHdRBC0oik/3NehYT+oECwBhIM3Q==",
+      "sha512": "sha512-mJnCMoBfWL0lxxlBFJ/8cZKTfPpI82TekZkUqvSCBtunUaaqr2LVeWl1zQYdanAdk4Ddf1HCwb8+DNYaNFBk1w==",
       "path": "microsoft.netcore.targets/2.0.0",
       "hashPath": "microsoft.netcore.targets.2.0.0.nupkg.sha512"
     },
@@ -1368,7 +1389,7 @@
     "runtime.linux-x64.CoreCompat.System.Drawing/1.0.0-beta009": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-6t5B23rZDy6xXWKWZ34Tj2mVeq+CCW4nFZmBCcC1U4lbdhWu2KCQi6Mr1fPJ0F8LErfT7ict8yL0MXL/xBvswQ==",
+      "sha512": "sha512-an4yz1QN9plALEF/e1/t4wV6YzMt40cO+wdvMhjFVr+w6Pq3YmzceIiuHr1YP3KsXuNmqMqCg5DS1HbzpthkbQ==",
       "path": "runtime.linux-x64.corecompat.system.drawing/1.0.0-beta009",
       "hashPath": "runtime.linux-x64.corecompat.system.drawing.1.0.0-beta009.nupkg.sha512"
     },
@@ -1410,7 +1431,7 @@
     "runtime.osx.10.10-x64.CoreCompat.System.Drawing/5.4.0-r8": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-vFlcpPSTQkGPh97HGTEVm51JlA+COgWv36t/Di9lQblF14GuzICCW2Qj5urqvFhBe3d8B61bkT2tGA+PSh0T0Q==",
+      "sha512": "sha512-09obQXXeZFMuc2yQfHLVGDM03+lrrHPsuQ11mL6VTaWPrbMNHK+7R+rJTzDp1JsG+M8ISsbtAHSMHQy/2T6f4g==",
       "path": "runtime.osx.10.10-x64.corecompat.system.drawing/5.4.0-r8",
       "hashPath": "runtime.osx.10.10-x64.corecompat.system.drawing.5.4.0-r8.nupkg.sha512"
     },
@@ -1452,14 +1473,14 @@
     "System.ComponentModel.Primitives/4.1.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-sc/7eVCdxPrp3ljpgTKVaQGUXiW05phNWvtv/m2kocXqrUQvTVWKou1Edas2aDjTThLPZOxPYIGNb/HN0QjURg==",
+      "sha512": "sha512-mAaj8PXxM7hUSIJYm9chhSe90HaIVyl8vb4JJO0M7fRaeBqSaaveHdRAmOL0LcOxp7kf9Vb8HujCe02DUqG5HQ==",
       "path": "system.componentmodel.primitives/4.1.0",
       "hashPath": "system.componentmodel.primitives.4.1.0.nupkg.sha512"
     },
     "System.ComponentModel.TypeConverter/4.1.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-MnDAlaeJZy9pdB5ZdOlwdxfpI+LJQ6e0hmH7d2+y2LkiD8DRJynyDYl4Xxf3fWFm7SbEwBZh4elcfzONQLOoQw==",
+      "sha512": "sha512-jcj79VC96yxc/rgLB59+g4675iVts1XrfC97dniMEvmJhRl8cG7qRO3EsJQwNw8cFL6RenFxn/CGfUhgj32SdQ==",
       "path": "system.componentmodel.typeconverter/4.1.0",
       "hashPath": "system.componentmodel.typeconverter.4.1.0.nupkg.sha512"
     },
@@ -1473,7 +1494,7 @@
     "System.Drawing.Primitives/4.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-9lVRG1voBwzLGZkf1XFJrobdZDZ5ZHMU4FVTbXAbzehpN90yYgkUeo9GoEYdvkt/EXaaHZJAeuffXP4JBbY+Ig==",
+      "sha512": "sha512-dkRqm4Q3fbCoYFI8oPphtwkDfzNB4Y55O/ND78Bzi7Z+ElQwU28CY3hsw/zU+WYwT0I58cGRZAIJJEIia9xWeA==",
       "path": "system.drawing.primitives/4.0.0",
       "hashPath": "system.drawing.primitives.4.0.0.nupkg.sha512"
     },

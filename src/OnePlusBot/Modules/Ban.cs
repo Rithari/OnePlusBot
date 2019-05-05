@@ -40,7 +40,7 @@ namespace OnePlusBot.Modules
             {
                 var EmoteTrue = new Emoji(":success:499567039451758603");
                 await Context.Message.AddReactionAsync(EmoteTrue);
-                await user.SendMessageAsync("You were banned on /r/OnePlus for the following reason: " + reason + "\nIf you believe this to be a mistake, please send an appeal e-mail with all the details to admin@kyot.me");
+                await user.SendMessageAsync("You were banned on r/OnePlus for the following reason: " + reason + "\nIf you believe this to be a mistake, please send an appeal e-mail with all the details to admin@kyot.me");
                 await Context.Guild.AddBanAsync(user, 0, reason);
 
             }

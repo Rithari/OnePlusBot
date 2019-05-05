@@ -37,7 +37,7 @@ namespace OnePlusBot
             int argPos = 0;
 
             IReadOnlyCollection<SocketGuild> guilds = _bot.Guilds;
-            SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Name == "/r/oneplus");
+            SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Name == "r/oneplus");
             SocketGuildChannel wallpapersChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Name == "set-ups");
 
            if(messageParam.Channel.Id == wallpapersChannel.Id)
