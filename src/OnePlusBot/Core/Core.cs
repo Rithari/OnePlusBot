@@ -108,64 +108,66 @@ namespace OnePlusBot
                 if (reaction.User.Value.IsBot)
                     return;
 
+               // await channel.SendMessageAsync(reaction.Emote.Name + " is the reaction name");
+
                 switch (reaction.Emote.Name)
                 {
-                    case ":1_:574655515586592769":
+                    case "1_":
                         var msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus One.");
                         await (user as IGuildUser).AddRoleAsync(role0);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
-                    case ":2_:574655515548844073":
+                    case "2_":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus 2.");
                         await (user as IGuildUser).AddRoleAsync(role1);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
 
-                    case ":X_:574655515481866251":
+                    case "X_":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus X");
                         await (user as IGuildUser).AddRoleAsync(role2);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
 
-                    case ":3_:574655515452506132":
+                    case "3_":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus 3.");
                         await (user as IGuildUser).AddRoleAsync(role3);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
 
-                    case ":3T:574655515846508554":
+                    case "3T":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus 3T.");
                         await (user as IGuildUser).AddRoleAsync(role4);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
 
-                    case ":5_:574655515745976340":
+                    case "5_":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus 5.");
                         await (user as IGuildUser).AddRoleAsync(role5);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
 
-                    case ":5T:574655515494318109":
+                    case "5T":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus 5T.");
                         await (user as IGuildUser).AddRoleAsync(role6);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
 
-                    case ":6_:574655515615952896":
+                    case "6_":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus 6.");
                         await (user as IGuildUser).AddRoleAsync(role7);
                         await Task.Delay(1200);
                         await msg.DeleteAsync();
                         break;
 
-                    case ":6T:574655515846508573":
+                    case "6T":
                         msg = await channel.SendMessageAsync(user.Mention + " joined OnePlus 6T.");
                         await (user as IGuildUser).AddRoleAsync(role8);
                         await Task.Delay(1200);
@@ -180,7 +182,7 @@ namespace OnePlusBot
                         break;
 
                     case "📰":
-                        msg = await channel.SendMessageAsync(user.Mention + " subscribed to the news outlet.");
+                        msg = await channel.SendMessageAsync(user.Mention + " subscribed to the news feed.");
                         await (user as IGuildUser).AddRoleAsync(rolenews);
                         await Task.Delay(12000);
                         await msg.DeleteAsync();
