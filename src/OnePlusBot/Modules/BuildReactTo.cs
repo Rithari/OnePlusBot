@@ -28,7 +28,7 @@ namespace OnePlusBot.Modules
 
             RestUserMessage reactmsg = await Context.Channel.SendMessageAsync("**Self Assignable Roles**" +
                 "\n\n__You can assign yourself one of the following roles by reacting to its corresponding emote.__\n" +
-                "\n" + emote1 +"OnePlus One" +
+                "\n" + emote1 + "OnePlus One" +
                 "\n" + emote2 + " OnePlus 2" +
                 "\n" + emote3 + " OnePlus X" +
                 "\n" + emote4 + " OnePlus 3" +
