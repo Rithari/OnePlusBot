@@ -13,32 +13,19 @@ namespace OnePlusBot.Modules
 
         public async Task BuildReactToAsync()
         {
-
-            var emote1 = new Emoji(":1_:574655515586592769");
-            var emote2 = new Emoji(":2_:574655515548844073");
-            var emote3 = new Emoji(":X_:574655515481866251");
-            var emote4 = new Emoji(":3_:574655515452506132");
-            var emote5 = new Emoji(":3T:574655515846508554");
-            var emote6 = new Emoji(":5_:574655515745976340");
-            var emote7 = new Emoji(":5T:574655515494318109");
-            var emote8 = new Emoji(":6_:574655515615952896");
-            var emote9 = new Emoji(":6T:574655515846508573");
-            var emote10 = new Emoji("❓");
-            var emote11 = new Emoji("📰");
-
             RestUserMessage reactmsg = await Context.Channel.SendMessageAsync("**Self Assignable Roles**" +
                 "\n\n__You can assign yourself one of the following roles by reacting to its corresponding emote.__\n" +
-                "\n" + emote1 + "OnePlus One" +
-                "\n" + emote2 + " OnePlus 2" +
-                "\n" + emote3 + " OnePlus X" +
-                "\n" + emote4 + " OnePlus 3" +
-                "\n" + emote5 + " OnePlus 3T" +
-                "\n" + emote6 + " OnePlus 5" +
-                "\n" + emote7 + " OnePlus 5T" +
-                "\n" + emote8 + " OnePlus 6" +
-                "\n" + emote9 + " OnePlus 6T" +
-                "\n" + emote10 + " Helper" +
-                "\n" + emote11 + " News" +
+                "\n <:1_:574655515586592769> OnePlus One" +
+                "\n <2_:574655515548844073> OnePlus 2" +
+                "\n <:X_:574655515481866251> OnePlus X" +
+                "\n <:3_:574655515452506132> OnePlus 3" +
+                "\n <:3T:574655515846508554> OnePlus 3T" +
+                "\n <:5_:574655515745976340> OnePlus 5" +
+                "\n <:5T:574655515494318109> OnePlus 5T" +
+                "\n <:6_:574655515615952896> OnePlus 6" +
+                "\n <:6T:574655515846508573> OnePlus 6T" +
+                "\n ❓ Helper" +
+                "\n 📰 News" +
                 "\n\n *To leave a role, remove your reaction. Spam will be punished by ban until countermeasures are in place.*");
 
             Global.ReactBuilderMsgId = reactmsg.Id;
