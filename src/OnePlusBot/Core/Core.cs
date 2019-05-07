@@ -108,23 +108,23 @@ namespace OnePlusBot
                 if (reaction.User.Value.IsBot)
                     return;
 
-               // await reaction.User.Value.SendMessageAsync(reaction.Emote.Name + " is the reaction name");
+                // await reaction.User.Value.SendMessageAsync(reaction.Emote.Name + " is the reaction name");
 
                 switch (reaction.Emote.Name)
                 {
                     case "1_":
                         await (user as IGuildUser).AddRoleAsync(role0);
-                        
+
                         break;
 
                     case "2_":
                         await (user as IGuildUser).AddRoleAsync(role1);
-                        
+
                         break;
 
                     case "X_":
                         await (user as IGuildUser).AddRoleAsync(role2);
-                        
+
                         break;
 
                     case "3_":
@@ -134,37 +134,37 @@ namespace OnePlusBot
 
                     case "3T":
                         await (user as IGuildUser).AddRoleAsync(role4);
-                        
+
                         break;
 
                     case "5_":
                         await (user as IGuildUser).AddRoleAsync(role5);
-                        
+
                         break;
 
                     case "5T":
                         await (user as IGuildUser).AddRoleAsync(role6);
-                        
+
                         break;
 
                     case "6_":
                         await (user as IGuildUser).AddRoleAsync(role7);
-                        
+
                         break;
 
                     case "6T":
                         await (user as IGuildUser).AddRoleAsync(role8);
-                        
+
                         break;
 
                     case "❓":
                         await (user as IGuildUser).AddRoleAsync(rolehelper);
-                        
+
                         break;
 
                     case "📰":
-                         await (user as IGuildUser).AddRoleAsync(rolenews);
-                        
+                        await (user as IGuildUser).AddRoleAsync(rolenews);
+
                         break;
                 }
             }
@@ -201,57 +201,57 @@ namespace OnePlusBot
                 switch (reaction.Emote.Name)
                 {
                     case "1_":
-                        await(user as IGuildUser).RemoveRoleAsync(role0);
+                        await (user as IGuildUser).RemoveRoleAsync(role0);
 
                         break;
 
                     case "2_":
-                        await(user as IGuildUser).RemoveRoleAsync(role1);
+                        await (user as IGuildUser).RemoveRoleAsync(role1);
 
                         break;
 
                     case "X_":
-                        await(user as IGuildUser).RemoveRoleAsync(role2);
+                        await (user as IGuildUser).RemoveRoleAsync(role2);
 
                         break;
 
                     case "3_":
 
-                        await(user as IGuildUser).RemoveRoleAsync(role3);
+                        await (user as IGuildUser).RemoveRoleAsync(role3);
                         break;
 
                     case "3T":
-                        await(user as IGuildUser).RemoveRoleAsync(role4);
+                        await (user as IGuildUser).RemoveRoleAsync(role4);
 
                         break;
 
                     case "5_":
-                        await(user as IGuildUser).RemoveRoleAsync(role5);
+                        await (user as IGuildUser).RemoveRoleAsync(role5);
 
                         break;
 
                     case "5T":
-                        await(user as IGuildUser).RemoveRoleAsync(role6);
+                        await (user as IGuildUser).RemoveRoleAsync(role6);
 
                         break;
 
                     case "6_":
-                        await(user as IGuildUser).RemoveRoleAsync(role7);
+                        await (user as IGuildUser).RemoveRoleAsync(role7);
 
                         break;
 
                     case "6T":
-                        await(user as IGuildUser).RemoveRoleAsync(role8);
+                        await (user as IGuildUser).RemoveRoleAsync(role8);
 
                         break;
 
                     case "❓":
-                        await(user as IGuildUser).RemoveRoleAsync(rolehelper);
+                        await (user as IGuildUser).RemoveRoleAsync(rolehelper);
 
                         break;
 
                     case "📰":
-                        await(user as IGuildUser).RemoveRoleAsync(rolenews);
+                        await (user as IGuildUser).RemoveRoleAsync(rolenews);
 
                         break;
                 }
