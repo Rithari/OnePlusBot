@@ -36,53 +36,63 @@ namespace OnePlusBot
 
             if (!File.Exists("tokens.txt"))
             {
-                Console.WriteLine("You need a tokens.txt containing the tokens properly formatted, add it and retry.");
+                Console.WriteLine("Please paste in your bot's token:");
 
-                Console.ReadKey();
-                return;
-            }
+                var inputKey = Console.ReadLine();
+                token = inputKey;
 
+                await _bot.LoginAsync(TokenType.Bot, token);
+                await _bot.StartAsync();
+                await _bot.SetGameAsync("Made with the Fans™ | ;help");
 
-            Console.WriteLine("Development Branch?\n1: Yes 0: No");
-            var userInput = Console.ReadLine();
-            Console.WriteLine();
-            if (userInput == "1")
-            {
-                StreamReader reader = new StreamReader("tokens.txt");
-                {
-                    reader.ReadLine();
-                    betaToken = reader.ReadLine();
-                    reader.Dispose();
-                }
+                await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
 
-                token = betaToken;
-            }
-            else if (userInput == "0")
-            {
-                StreamReader reader = new StreamReader("tokens.txt");
-                {
-                    mainToken = reader.ReadLine();
-                    reader.Dispose();
-                }
-
-                token = mainToken;
+                await Task.Delay(-1);
             }
             else
             {
-                Console.WriteLine("Retry I guess.");
-                await Task.Delay(1000);
-                Environment.Exit(0);
+                Console.WriteLine("Development Branch?\n1: Yes 0: No");
+                var userInput = Console.ReadLine();
+                Console.WriteLine();
+                if (userInput == "1")
+                {
+                    StreamReader reader = new StreamReader("tokens.txt");
+                    {
+                        reader.ReadLine();
+                        betaToken = reader.ReadLine();
+                        reader.Dispose();
+                    }
+
+                    token = betaToken;
+                }
+                else if (userInput == "0")
+                {
+                    StreamReader reader = new StreamReader("tokens.txt");
+                    {
+                        mainToken = reader.ReadLine();
+                        reader.Dispose();
+                    }
+
+                    token = mainToken;
+                }
+                else
+                {
+                    Console.WriteLine("Retry I guess.");
+                    await Task.Delay(1000);
+                    Environment.Exit(0);
+                }
+
+
+                await _bot.LoginAsync(TokenType.Bot, token);
+                await _bot.StartAsync();
+                await _bot.SetGameAsync("Made with the Fans™ | ;help");
+
+                await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
+
+                await Task.Delay(-1);
             }
-
-
-            await _bot.LoginAsync(TokenType.Bot, token);
-            await _bot.StartAsync();
-            await _bot.SetGameAsync("Made with the Fans™ | ;help");
-
-            await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
-
-            await Task.Delay(-1);
         }
+
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
         {
             var Guild = (channel as IGuildChannel).Guild;
