@@ -23,14 +23,14 @@ namespace OnePlusBot.Modules
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("blu_spark XDA thread for OnePlus 6: <https://forum.xda-developers.com/oneplus-6/development/kernel-t3800965>" + Environment.NewLine +
                                              "blu_spark XDA thread for OnePlus 6T: <https://forum.xda-developers.com/oneplus-6t/development/kernel-t3861123>" + Environment.NewLine +
-                                             "Download link for OnePlus 6: <https://github.com/engstk/android_device_oneplus_enchilada/releases>" + Environment.NewLine +
-                                             "Download link for OnePlus 6T: <https://github.com/engstk/android_device_oneplus_fajita/releases>"));
+                                             "blu_spark TWRP Download link for OnePlus 6: <https://github.com/engstk/android_device_oneplus_enchilada/releases>" + Environment.NewLine +
+                                             "blu_spark TWRP Download link for OnePlus 6T: <https://github.com/engstk/android_device_oneplus_fajita/releases>"));
                         }
                         else if (Context.Channel.Name == "oneplus5-5t")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("blu_spark XDA thread for OnePlus 5: <https://forum.xda-developers.com/oneplus-5/development/kernel-t3651933>" + Environment.NewLine +
                                              "blu_spark XDA thread for OnePlus 5T: <https://forum.xda-developers.com/oneplus-5t/development/kernel-t3706295>" + Environment.NewLine +
-                                             "Download link for 5 and 5T: <https://github.com/engstk/android_device_oneplus_cheeseburger/releases>"));
+                                             "blu_spark TWRP Download link for 5 and 5T: <https://github.com/engstk/android_device_oneplus_cheeseburger/releases>"));
                         }
                         else if (Context.Channel.Name == "oneplus3-3t")
                         {
@@ -83,15 +83,15 @@ namespace OnePlusBot.Modules
                         }
                         else if (Context.Channel.Name == "oneplus5-5t")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Unlock bootloader using `fastboot oem unlock`. Flash magisk zip after installing TWRP (`fastboot flash recovery twrp.img` and `fasboot reboot`) "));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Unlock bootloader using `fastboot oem unlock`. Flash magisk zip after installing TWRP (`fastboot flash recovery twrp.img` and `fastboot reboot`) "));
                         }
                         else if (Context.Channel.Name == "oneplus3-3t")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Unlock bootloader using `fastboot oem unlock`. Flash magisk zip after installing TWRP (`fastboot flash recovery twrp.img` and `fasboot reboot`) "));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Unlock bootloader using `fastboot oem unlock`. Flash magisk zip after installing TWRP (`fastboot flash recovery twrp.img` and `fastboot reboot`) "));
                         }
                         else if (Context.Channel.Name == "legacy")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Flash magisk zip after installing TWRP (`fastboot flash recovery twrp.img` and `fasboot reboot`) "));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Flash magisk zip after installing TWRP (`fastboot flash recovery twrp.img` and `fastboot reboot`) "));
                         }
                         else
                         {
@@ -137,7 +137,7 @@ namespace OnePlusBot.Modules
                         }
                         else if (Context.Channel.Name == "oneplus5-5t")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("OnePlus 5 mirrors for official OxygenOS: <https://forums.oneplus.com/threads/oneplus-5-oxygenos-5-1-4-official-download-links.557183>" + Environment.NewLine +
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("OnePlus 5 mirrors for official OxygenOS: <https://forums.oneplus.com/threads/oneplus-5-rom-ota-oxygen-os-mirrors-for-official-oxygen-os-roms-and-ota-updates.556580>" + Environment.NewLine +
                                              "OnePlus 5T mirrors for official OxygenOS: <https://forums.oneplus.com/threads/oneplus-5t-rom-ota-oxygen-os-mirrors-for-official-oxygen-os-roms-and-ota-updates.686610>"));
                         }
                         else if (Context.Channel.Name == "oneplus3-3t")
@@ -179,7 +179,7 @@ namespace OnePlusBot.Modules
                         }
                         break;
                     default:
-                        await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Supported commands are: bluspark, googlecamera, oxygenos, unbrick, edl, magisk, root"));
+                        await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Supported commands are: bluspark, googlecamera, oxygenos, unbrick, edl, magisk, root, qualcommdiagnostics, smt"));
                         break;
                 }
             }

@@ -39,7 +39,7 @@ namespace OnePlusBot.Modules
                 "\n" + emote9 + " OnePlus 6T" +
                 "\n" + emote10 + " Helper" +
                 "\n" + emote11 + " News" +
-                "\n\n *Leaving a role you have joined is currently unsupported and wil be added soon, for now, please contact administration.*");
+                "\n\n *To leave a role, remove your reaction. Spam will be punished by ban until countermeasures are in place.*");
 
             Global.ReactBuilderMsgId = reactmsg.Id;
             await reactmsg.AddReactionsAsync(new Emoji[]
