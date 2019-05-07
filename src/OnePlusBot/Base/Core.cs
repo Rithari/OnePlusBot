@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.IO;
 using System.Linq;
 
-namespace OnePlusBot
+namespace OnePlusBot.Base
 {
     public class Core
     {

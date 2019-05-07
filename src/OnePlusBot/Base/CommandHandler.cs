@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.IO;
 
-namespace OnePlusBot
+namespace OnePlusBot.Base
 {
     public class CommandHandler
     {

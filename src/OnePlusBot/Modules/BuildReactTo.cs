@@ -2,6 +2,7 @@
 using Discord;
 using Discord.Commands;
 using Discord.Rest;
+using OnePlusBot.Base;
 
 namespace OnePlusBot.Modules
 {
@@ -14,15 +15,15 @@ namespace OnePlusBot.Modules
         public async Task BuildReactToAsync()
         {
 
-            var emote1 = new Emoji(":1_:574655515586592769");
-            var emote2 = new Emoji(":2_:574655515548844073");
-            var emote3 = new Emoji(":X_:574655515481866251");
-            var emote4 = new Emoji(":3_:574655515452506132");
-            var emote5 = new Emoji(":3T:574655515846508554");
-            var emote6 = new Emoji(":5_:574655515745976340");
-            var emote7 = new Emoji(":5T:574655515494318109");
-            var emote8 = new Emoji(":6_:574655515615952896");
-            var emote9 = new Emoji(":6T:574655515846508573");
+            var emote1 = Emote.Parse("<:1_:574655515586592769>");
+            var emote2 = Emote.Parse("<:2_:574655515548844073>");
+            var emote3 = Emote.Parse("<:X_:574655515481866251>");
+            var emote4 = Emote.Parse("<:3_:574655515452506132>");
+            var emote5 = Emote.Parse("<:3T:574655515846508554>");
+            var emote6 = Emote.Parse("<:5_:574655515745976340>");
+            var emote7 = Emote.Parse("<:5T:574655515494318109>");
+            var emote8 = Emote.Parse("<:6_:574655515615952896>");
+            var emote9 = Emote.Parse("<:6T:574655515846508573>");
             var emote10 = new Emoji("❓");
             var emote11 = new Emoji("📰");
 
@@ -42,6 +43,7 @@ namespace OnePlusBot.Modules
                 "\n\n *To leave a role, remove your reaction. Spam will be punished by ban until countermeasures are in place.*");
 
             Global.ReactBuilderMsgId = reactmsg.Id;
+
             await reactmsg.AddReactionsAsync(new Emoji[]
               { new Emoji(":1_:574655515586592769"),
                 new Emoji(":2_:574655515548844073"),
