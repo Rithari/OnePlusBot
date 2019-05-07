@@ -36,45 +36,44 @@ namespace OnePlusBot
 
             if (!File.Exists("tokens.txt"))
             {
-                Console.WriteLine("You need a tokens.txt containing the tokens properly formatted, add it and retry.");
+                Console.WriteLine("Please paste in your bot's token:");
 
-                Console.ReadKey();
-                return;
-            }
-
-
-            Console.WriteLine("Development Branch?\n1: Yes 0: No");
-            var userInput = Console.ReadLine();
-            Console.WriteLine();
-            if (userInput == "1")
-            {
-                StreamReader reader = new StreamReader("tokens.txt");
-                {
-                    reader.ReadLine();
-                    betaToken = reader.ReadLine();
-                    reader.Dispose();
-                }
-
-                token = betaToken;
-            }
-            else if (userInput == "0")
-            {
-                StreamReader reader = new StreamReader("tokens.txt");
-                {
-                    mainToken = reader.ReadLine();
-                    reader.Dispose();
-                }
-
-                token = mainToken;
+                var inputKey = Console.ReadLine();
+                token = inputKey;
             }
             else
             {
-                Console.WriteLine("Retry I guess.");
-                await Task.Delay(1000);
-                Environment.Exit(0);
+                Console.WriteLine("Development Branch?\n1: Yes 0: No");
+                var userInput = Console.ReadLine();
+                Console.WriteLine();
+                if (userInput == "1")
+                {
+                    StreamReader reader = new StreamReader("tokens.txt");
+                    {
+                        reader.ReadLine();
+                        betaToken = reader.ReadLine();
+                        reader.Dispose();
+                    }
+
+                    token = betaToken;
+                }
+                else if (userInput == "0")
+                {
+                    StreamReader reader = new StreamReader("tokens.txt");
+                    {
+                        mainToken = reader.ReadLine();
+                        reader.Dispose();
+                    }
+
+                    token = mainToken;
+                }
+                else
+                {
+                    Console.WriteLine("Retry I guess.");
+                    await Task.Delay(1000);
+                    Environment.Exit(0);
+                }
             }
-
-
             await _bot.LoginAsync(TokenType.Bot, token);
             await _bot.StartAsync();
             await _bot.SetGameAsync("Made with the Fans™ | ;help");
@@ -83,6 +82,7 @@ namespace OnePlusBot
 
             await Task.Delay(-1);
         }
+
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
         {
             var Guild = (channel as IGuildChannel).Guild;
@@ -108,23 +108,23 @@ namespace OnePlusBot
                 if (reaction.User.Value.IsBot)
                     return;
 
-               // await reaction.User.Value.SendMessageAsync(reaction.Emote.Name + " is the reaction name");
+                // await reaction.User.Value.SendMessageAsync(reaction.Emote.Name + " is the reaction name");
 
                 switch (reaction.Emote.Name)
                 {
                     case "1_":
                         await (user as IGuildUser).AddRoleAsync(role0);
-                        
+
                         break;
 
                     case "2_":
                         await (user as IGuildUser).AddRoleAsync(role1);
-                        
+
                         break;
 
                     case "X_":
                         await (user as IGuildUser).AddRoleAsync(role2);
-                        
+
                         break;
 
                     case "3_":
@@ -134,37 +134,37 @@ namespace OnePlusBot
 
                     case "3T":
                         await (user as IGuildUser).AddRoleAsync(role4);
-                        
+
                         break;
 
                     case "5_":
                         await (user as IGuildUser).AddRoleAsync(role5);
-                        
+
                         break;
 
                     case "5T":
                         await (user as IGuildUser).AddRoleAsync(role6);
-                        
+
                         break;
 
                     case "6_":
                         await (user as IGuildUser).AddRoleAsync(role7);
-                        
+
                         break;
 
                     case "6T":
                         await (user as IGuildUser).AddRoleAsync(role8);
-                        
+
                         break;
 
                     case "❓":
                         await (user as IGuildUser).AddRoleAsync(rolehelper);
-                        
+
                         break;
 
                     case "📰":
-                         await (user as IGuildUser).AddRoleAsync(rolenews);
-                        
+                        await (user as IGuildUser).AddRoleAsync(rolenews);
+
                         break;
                 }
             }
@@ -201,57 +201,57 @@ namespace OnePlusBot
                 switch (reaction.Emote.Name)
                 {
                     case "1_":
-                        await(user as IGuildUser).RemoveRoleAsync(role0);
+                        await (user as IGuildUser).RemoveRoleAsync(role0);
 
                         break;
 
                     case "2_":
-                        await(user as IGuildUser).RemoveRoleAsync(role1);
+                        await (user as IGuildUser).RemoveRoleAsync(role1);
 
                         break;
 
                     case "X_":
-                        await(user as IGuildUser).RemoveRoleAsync(role2);
+                        await (user as IGuildUser).RemoveRoleAsync(role2);
 
                         break;
 
                     case "3_":
 
-                        await(user as IGuildUser).RemoveRoleAsync(role3);
+                        await (user as IGuildUser).RemoveRoleAsync(role3);
                         break;
 
                     case "3T":
-                        await(user as IGuildUser).RemoveRoleAsync(role4);
+                        await (user as IGuildUser).RemoveRoleAsync(role4);
 
                         break;
 
                     case "5_":
-                        await(user as IGuildUser).RemoveRoleAsync(role5);
+                        await (user as IGuildUser).RemoveRoleAsync(role5);
 
                         break;
 
                     case "5T":
-                        await(user as IGuildUser).RemoveRoleAsync(role6);
+                        await (user as IGuildUser).RemoveRoleAsync(role6);
 
                         break;
 
                     case "6_":
-                        await(user as IGuildUser).RemoveRoleAsync(role7);
+                        await (user as IGuildUser).RemoveRoleAsync(role7);
 
                         break;
 
                     case "6T":
-                        await(user as IGuildUser).RemoveRoleAsync(role8);
+                        await (user as IGuildUser).RemoveRoleAsync(role8);
 
                         break;
 
                     case "❓":
-                        await(user as IGuildUser).RemoveRoleAsync(rolehelper);
+                        await (user as IGuildUser).RemoveRoleAsync(rolehelper);
 
                         break;
 
                     case "📰":
-                        await(user as IGuildUser).RemoveRoleAsync(rolenews);
+                        await (user as IGuildUser).RemoveRoleAsync(rolenews);
 
                         break;
                 }

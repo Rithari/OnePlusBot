@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace OnePlusBot
 {
@@ -37,19 +38,22 @@ namespace OnePlusBot
             int argPos = 0;
 
             IReadOnlyCollection<SocketGuild> guilds = _bot.Guilds;
-            SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Name == "r/oneplus");
-            SocketGuildChannel wallpapersChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Name == "set-ups");
 
-            if (messageParam.Channel.Id == wallpapersChannel.Id)
+            if (guilds.Equals(378969558574432277))
             {
-                var messageContent = messageParam.Content;
+                SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Name == "r/oneplus");
+                SocketGuildChannel wallpapersChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Name == "set-ups");
 
-                if (!Regex.IsMatch(messageContent, @"^http(s)?://([\w-]+.)+[\w-]+(/[\w- ./?%&=])?$") && messageParam.Attachments.Count == 0 && messageParam.Embeds.Count == 0)
+                if (messageParam.Channel.Id == wallpapersChannel.Id)
                 {
-                    await messageParam.DeleteAsync();
+                    var messageContent = messageParam.Content;
+
+                    if (!Regex.IsMatch(messageContent, @"^http(s)?://([\w-]+.)+[\w-]+(/[\w- ./?%&=])?$") && messageParam.Attachments.Count == 0 && messageParam.Embeds.Count == 0)
+                    {
+                        await messageParam.DeleteAsync();
+                    }
                 }
             }
-
 
             if (!(message.HasCharPrefix(';', ref argPos) ||
                 message.HasMentionPrefix(_bot.CurrentUser, ref argPos)) ||
