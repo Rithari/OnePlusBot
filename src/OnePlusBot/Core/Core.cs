@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Discord.Commands;
 using System.Net.Http;
 using System.IO;
-using Discord.Addons.Interactive;
 using System.Linq;
 
 namespace OnePlusBot
@@ -74,8 +73,17 @@ namespace OnePlusBot
                     Environment.Exit(0);
                 }
             }
-            await _bot.LoginAsync(TokenType.Bot, token);
-            await _bot.StartAsync();
+            try
+            {
+                await _bot.LoginAsync(TokenType.Bot, token);
+                await _bot.StartAsync();
+            }
+            catch
+            {
+                Console.WriteLine("You must have input an incorrect key.");
+                return;
+            }
+
             await _bot.SetGameAsync("Made with the Fans™ | ;help");
 
             await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
