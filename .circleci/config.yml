@@ -17,7 +17,7 @@ jobs:
       - run: dotnet publish -c Release -o out-linux -r linux-x64
       - run: git config --global user.name "${GH_NAME}"
       - run: git config --global user.email "${GH_MAIL}"
-      - run: rm -rf .git && cd src/OnePlusBot/out-linux/ && git init && git remote add origin https://github.com/Rithari/oneplusbot-linux.git && git pull origin master && git add ./ -f
+      - run: rm -rf .git && cd src/OnePlusBot/out-linux/ && git init && git remote add origin https://github.com/Rithari/oneplusbot-linux.git && git add ./ -f
       - run: cd src/OnePlusBot/out-linux/ && git commit -m 'Built for Linux'
       - run: cd src/OnePlusBot/out-linux/ && git push --force --quiet "https://${GH_ATOKEN}@github.com/Rithari/oneplusbot-linux"> /dev/null 2>&1
 workflows:
