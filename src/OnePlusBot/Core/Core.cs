@@ -40,14 +40,6 @@ namespace OnePlusBot
 
                 var inputKey = Console.ReadLine();
                 token = inputKey;
-
-                await _bot.LoginAsync(TokenType.Bot, token);
-                await _bot.StartAsync();
-                await _bot.SetGameAsync("Made with the Fans™ | ;help");
-
-                await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
-
-                await Task.Delay(-1);
             }
             else
             {
@@ -81,16 +73,14 @@ namespace OnePlusBot
                     await Task.Delay(1000);
                     Environment.Exit(0);
                 }
-
-
-                await _bot.LoginAsync(TokenType.Bot, token);
-                await _bot.StartAsync();
-                await _bot.SetGameAsync("Made with the Fans™ | ;help");
-
-                await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
-
-                await Task.Delay(-1);
             }
+            await _bot.LoginAsync(TokenType.Bot, token);
+            await _bot.StartAsync();
+            await _bot.SetGameAsync("Made with the Fans™ | ;help");
+
+            await _services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
+
+            await Task.Delay(-1);
         }
 
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
