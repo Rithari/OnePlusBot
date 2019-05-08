@@ -186,7 +186,7 @@ namespace OnePlusBot.Modules
                     case "androidqpreview":
                         if (Context.Channel.Name == "oneplus6-6t")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Android Q Dev Preview is now available to download for OnePlus 6 and 6T (source <https://forums.oneplus.com/threads/android-q-beta-developer-preview-for-oneplus-6-6t.1020398/>" + Environment.NewLine +
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Android Q Dev Preview is now available to download for OnePlus 6 and 6T (source <https://forums.oneplus.com/threads/android-q-beta-developer-preview-for-oneplus-6-6t.1020398/> )" + Environment.NewLine +
                                              "Direct download link for OnePlus 6: <https://oxygenos.oneplus.net/OnePlus6Oxygen_22_OTA_001_all_1905032150_wipe_2fa26de80dec40fb.zip>" + Environment.NewLine +
                                              "Direct download link for OnePlus 6T: <https://oxygenos.oneplus.net/OnePlus6TOxygen_34_OTA_001_all_1905032146_wipe_221b43d22d9b4dd4.zip>" + Environment.NewLine +
                                              "Place the relevant zip at the root of the system storage of your phone and use local update feature (Settings --> System --> System Updates --> click on the wheel) to update to Android Q dev preview" + Environment.NewLine +
