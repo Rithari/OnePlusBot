@@ -10,6 +10,6 @@ namespace OnePlusBot.Modules
         [Summary("Echoes back the remainder argument of the command.")]
         [RequireUserPermission(GuildPermission.ManageMessages)]
         public Task EchoAsync([Remainder] string text)
-            => ReplyAsync(text);
+            => ReplyAsync(text + "newest");
     }
 }
