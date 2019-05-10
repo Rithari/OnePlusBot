@@ -29,10 +29,10 @@ workflows:
     - build:
         filters:
           branches:
-            ignore: master
+            ignore: main
   linuxbuild:
     jobs:
     - linux:
         filters:
           branches:
-            only: master
+            only: main
