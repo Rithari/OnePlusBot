@@ -45,15 +45,7 @@ namespace OnePlusBot.Modules
             Global.ReactBuilderMsgId = reactmsg.Id;
 
             await reactmsg.AddReactionsAsync(new Emoji[]
-              { new Emoji(":1_:574655515586592769"),
-                new Emoji(":2_:574655515548844073"),
-                new Emoji(":X_:574655515481866251"),
-                new Emoji(":3_:574655515452506132"),
-                new Emoji(":3T:574655515846508554"),
-                new Emoji(":5_:574655515745976340"),
-                new Emoji(":5T:574655515494318109"),
-                new Emoji(":6_:574655515615952896"),
-                new Emoji(":6T:574655515846508573"),
+              { 
                 new Emoji("❓"), new Emoji("📰") });
 
         }

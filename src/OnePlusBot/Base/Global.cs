@@ -7,5 +7,6 @@ namespace OnePlusBot.Base
     internal static class Global
     {
         internal static ulong ReactBuilderMsgId { get; set; }
+        internal static ulong ReactBuilderModMsgId { get; set; }
     }
 }

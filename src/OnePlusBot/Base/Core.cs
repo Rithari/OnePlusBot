@@ -106,8 +106,7 @@ namespace OnePlusBot.Base
             var role8 = Guild.Roles.FirstOrDefault(x => x.Name == "OnePlus 6T");
             var rolehelper = Guild.Roles.FirstOrDefault(x => x.Name == "Helper");
             var rolenews = Guild.Roles.FirstOrDefault(x => x.Name == "News");
-
-
+            var rolejournalist = Guild.Roles.FirstOrDefault(x => x.Name == "Journalist");
 
 
             if (reaction.MessageId == Global.ReactBuilderMsgId)
@@ -175,6 +174,15 @@ namespace OnePlusBot.Base
 
                         break;
                 }
+            } else if (reaction.MessageId == Global.ReactBuilderModMsgId)
+            {
+                switch (reaction.Emote.Name)
+                {
+                    case "📰":
+                        await (user as IGuildUser).AddRoleAsync(rolejournalist);
+
+                        break;
+                }
             }
 
         }
@@ -194,8 +202,7 @@ namespace OnePlusBot.Base
             var role8 = Guild.Roles.FirstOrDefault(x => x.Name == "OnePlus 6T");
             var rolehelper = Guild.Roles.FirstOrDefault(x => x.Name == "Helper");
             var rolenews = Guild.Roles.FirstOrDefault(x => x.Name == "News");
-
-
+            var rolejournalist = Guild.Roles.FirstOrDefault(x => x.Name == "Journalist");
 
 
             if (reaction.MessageId == Global.ReactBuilderMsgId)
@@ -260,6 +267,15 @@ namespace OnePlusBot.Base
 
                     case "📰":
                         await (user as IGuildUser).RemoveRoleAsync(rolenews);
+
+                        break;
+                }
+            } else if (reaction.MessageId == Global.ReactBuilderModMsgId)
+            {
+                switch (reaction.Emote.Name)
+                {
+                    case "📰":
+                        await (user as IGuildUser).RemoveRoleAsync(rolejournalist);
 
                         break;
                 }
