@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.Rest;
@@ -43,6 +44,12 @@ namespace OnePlusBot.Modules
                 "\n\n *To leave a role, remove your reaction. Spam will be punished by ban until countermeasures are in place.*");
 
             Global.AddRemoveRoleMsgID = reactmsg.Id;
+
+            StreamWriter reader = new StreamWriter("tokens.txt");
+            {
+                reader.WriteLine(reactmsg.Id);
+                reader.Dispose();
+            }
 
             await reactmsg.AddReactionsAsync(new Emoji[]
               { new Emoji(":1_:574655515586592769"),
