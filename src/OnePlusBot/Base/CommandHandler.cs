@@ -39,10 +39,8 @@ namespace OnePlusBot.Base
 
             IReadOnlyCollection<SocketGuild> guilds = _bot.Guilds;
 
-            if (guilds.Equals(378969558574432277))
-            {
-                SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Name == "r/oneplus");
-                SocketGuildChannel wallpapersChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Name == "set-ups");
+                SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Id == 378969558574432277);
+                SocketGuildChannel wallpapersChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Id == 473051502022361119);
 
                 if (messageParam.Channel.Id == wallpapersChannel.Id)
                 {
@@ -53,7 +51,6 @@ namespace OnePlusBot.Base
                         await messageParam.DeleteAsync();
                     }
                 }
-            }
 
             if (!(message.HasCharPrefix(';', ref argPos) ||
                 message.HasMentionPrefix(_bot.CurrentUser, ref argPos)) ||
