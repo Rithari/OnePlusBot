@@ -35,7 +35,7 @@ namespace OnePlusBot.Base
 
             if (!File.Exists("tokens.txt"))
             {
-                Console.WriteLine("Please paste in your bot's token:");
+                Console.Write("Please paste in your bot's token: ");
 
                 var inputKey = Console.ReadLine();
                 token = inputKey;
@@ -110,7 +110,7 @@ namespace OnePlusBot.Base
 
 
 
-            if (reaction.MessageId == Global.ReactBuilderMsgId)
+            if (reaction.MessageId == Global.AddRemoveRoleMsgID)
             {
 
                 if (reaction.User.Value.IsBot)
@@ -198,7 +198,7 @@ namespace OnePlusBot.Base
 
 
 
-            if (reaction.MessageId == Global.ReactBuilderMsgId)
+            if (reaction.MessageId == Global.AddRemoveRoleMsgID)
             {
 
                 if (reaction.User.Value.IsBot)

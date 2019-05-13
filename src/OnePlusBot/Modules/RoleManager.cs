@@ -6,9 +6,9 @@ using OnePlusBot.Base;
 
 namespace OnePlusBot.Modules
 {
-    public class BuildReactModule : ModuleBase<SocketCommandContext>
+    public class RoleManager : ModuleBase<SocketCommandContext>
     {
-        [Command("buildreact", RunMode = RunMode.Async)]
+        [Command("buildroles", RunMode = RunMode.Async)]
         [Summary("Build a message that logs reactions added, hardcoded.")]
         [RequireOwner]
 
@@ -42,7 +42,7 @@ namespace OnePlusBot.Modules
                 "\n" + emote11 + " News" +
                 "\n\n *To leave a role, remove your reaction. Spam will be punished by ban until countermeasures are in place.*");
 
-            Global.ReactBuilderMsgId = reactmsg.Id;
+            Global.AddRemoveRoleMsgID = reactmsg.Id;
 
             await reactmsg.AddReactionsAsync(new Emoji[]
               { new Emoji(":1_:574655515586592769"),

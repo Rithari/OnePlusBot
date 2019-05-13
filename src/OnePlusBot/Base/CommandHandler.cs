@@ -1,12 +1,12 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
-using System.IO;
+using System.Threading.Tasks;
 
 namespace OnePlusBot.Base
 {
@@ -37,20 +37,26 @@ namespace OnePlusBot.Base
 
             int argPos = 0;
 
+            // Getting the bot's guilds and setting variables for the OnePlus Guild and their set-ups channel.
             IReadOnlyCollection<SocketGuild> guilds = _bot.Guilds;
+            SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Id == 378969558574432277);
+            SocketGuildChannel setupsChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Id == 473051502022361119);
+            var channel = messageParam as ITextChannel;
 
-                SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Id == 378969558574432277);
-                SocketGuildChannel wallpapersChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Id == 473051502022361119);
 
-                if (messageParam.Channel.Id == wallpapersChannel.Id)
+            if (channel.GuildId == oneplusGuild.Id)
+            {
+                if (messageParam.Channel.Id == setupsChannel.Id)
                 {
-                    var messageContent = messageParam.Content;
-
-                    if (!Regex.IsMatch(messageContent, @"^http(s)?://([\w-]+.)+[\w-]+(/[\w- ./?%&=])?$") && messageParam.Attachments.Count == 0 && messageParam.Embeds.Count == 0)
+                   // Deleting any messages that don't contain an embed, an image or a url.
+                    if (!Regex.IsMatch(messageParam.Content, @"^http(s)?://([\w-]+.)+[\w-]+(/[\w- ./?%&=])?$") 
+                        && messageParam.Attachments.Count == 0
+                        && messageParam.Embeds.Count == 0)
                     {
                         await messageParam.DeleteAsync();
                     }
                 }
+            }
 
             if (!(message.HasCharPrefix(';', ref argPos) ||
                 message.HasMentionPrefix(_bot.CurrentUser, ref argPos)) ||
