@@ -45,22 +45,24 @@ namespace OnePlusBot.Base
                 Console.WriteLine("Development Branch?\n1: Yes 0: No");
                 var userInput = Console.ReadLine();
                 Console.WriteLine();
+
                 if (userInput == "1")
                 {
                     StreamReader reader = new StreamReader("tokens.txt");
                     {
                         reader.ReadLine();
                         betaToken = reader.ReadLine();
+                        Global.AddRemoveRoleMsgID = ulong.Parse(reader.ReadLine());
                         reader.Dispose();
+                        token = betaToken;
                     }
-
-                    token = betaToken;
                 }
                 else if (userInput == "0")
                 {
                     StreamReader reader = new StreamReader("tokens.txt");
                     {
                         mainToken = reader.ReadLine();
+                        Global.AddRemoveRoleMsgID = ulong.Parse(reader.ReadLine());
                         reader.Dispose();
                     }
 
