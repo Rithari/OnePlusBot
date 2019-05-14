@@ -33,6 +33,7 @@ namespace OnePlusBot.Base
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
         {
+            
             if (!(messageParam is SocketUserMessage message)) return;
 
             int argPos = 0;
@@ -41,7 +42,7 @@ namespace OnePlusBot.Base
             IReadOnlyCollection<SocketGuild> guilds = _bot.Guilds;
             SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Id == 378969558574432277);
             SocketGuildChannel setupsChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Id == 473051502022361119);
-            var channel = messageParam as ITextChannel;
+            var channel = messageParam.Channel as ITextChannel;
 
 
             if (channel.GuildId == oneplusGuild.Id)
