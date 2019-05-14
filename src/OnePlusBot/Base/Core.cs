@@ -52,10 +52,10 @@ namespace OnePlusBot.Base
                     {
                         reader.ReadLine();
                         betaToken = reader.ReadLine();
-                        token = betaToken
+                        token = betaToken;
                         reader.Dispose();
                     }
-                    token = betaToken
+                    token = betaToken;
                 }
                 else if (userInput == "0")
                 {
