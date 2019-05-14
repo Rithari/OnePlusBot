@@ -52,17 +52,16 @@ namespace OnePlusBot.Base
                     {
                         reader.ReadLine();
                         betaToken = reader.ReadLine();
-                        Global.AddRemoveRoleMsgID = ulong.Parse(reader.ReadLine());
+                        token = betaToken
                         reader.Dispose();
-                        token = betaToken;
                     }
+                    token = betaToken
                 }
                 else if (userInput == "0")
                 {
                     StreamReader reader = new StreamReader("tokens.txt");
                     {
                         mainToken = reader.ReadLine();
-                        Global.AddRemoveRoleMsgID = ulong.Parse(reader.ReadLine());
                         reader.Dispose();
                     }
 
