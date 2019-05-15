@@ -17,8 +17,8 @@ namespace OnePlusBot.Base
 
         private DiscordSocketClient _bot;
         private string token;
-        private string mainToken;
-        private string betaToken;
+       // private string mainToken;
+       // private string betaToken;
 
         public async Task MainAsync()
         {
@@ -51,21 +51,18 @@ namespace OnePlusBot.Base
                     StreamReader reader = new StreamReader("tokens.txt");
                     {
                         reader.ReadLine();
-                        betaToken = reader.ReadLine();
-                        token = betaToken;
+                        token = reader.ReadLine();
                         reader.Dispose();
                     }
-                    token = betaToken;
                 }
                 else if (userInput == "0")
                 {
                     StreamReader reader = new StreamReader("tokens.txt");
                     {
-                        mainToken = reader.ReadLine();
+                        token = reader.ReadLine();
                         reader.Dispose();
                     }
 
-                    token = mainToken;
                 }
                 else
                 {
