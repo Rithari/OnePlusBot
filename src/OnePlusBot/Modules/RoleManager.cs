@@ -49,12 +49,6 @@ namespace OnePlusBot.Modules
 
             Global.AddRemoveRoleMsgID = reactmsg.Id;
 
-            StreamWriter reader = new StreamWriter("tokens.txt");
-            {
-                reader.WriteLine(reactmsg.Id);
-                reader.Dispose();
-            }
-
             await reactmsg.AddReactionsAsync(new Emoji[]
               { new Emoji(":1_:574655515586592769"),
                 new Emoji(":2_:574655515548844073"),
