@@ -101,7 +101,7 @@ namespace OnePlusBot.Base
             var role7 = Guild.Roles.FirstOrDefault(x => x.Name == "OnePlus 6");
             var role8 = Guild.Roles.FirstOrDefault(x => x.Name == "OnePlus 6T");
             var role9 = Guild.Roles.FirstOrDefault(x => x.Name == "OnePlus 7");
-            var role10 = Guild.Roles.FirstOrDefault(x => x.Name == "Oneplus 7 Pro");
+            var role10 = Guild.Roles.FirstOrDefault(x => x.Name == "OnePlus 7 Pro");
             var rolehelper = Guild.Roles.FirstOrDefault(x => x.Name == "Helper");
             var rolenews = Guild.Roles.FirstOrDefault(x => x.Name == "News");
 
