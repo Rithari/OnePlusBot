@@ -199,6 +199,8 @@ namespace OnePlusBot.Base
             var role6 = Guild.Roles.FirstOrDefault(x => x.Name == "OnePlus 5T");
             var role7 = Guild.Roles.FirstOrDefault(x => x.Name == "OnePlus 6");
             var role8 = Guild.Roles.FirstOrDefault(x => x.Name == "OnePlus 6T");
+            var role9 = Guild.Roles.FirstOrDefault(x => x.Name == "OnePlus 7");
+            var role10 = Guild.Roles.FirstOrDefault(x => x.Name == "OnePlus 7 Pro");
             var rolehelper = Guild.Roles.FirstOrDefault(x => x.Name == "Helper");
             var rolenews = Guild.Roles.FirstOrDefault(x => x.Name == "News");
 
@@ -257,6 +259,16 @@ namespace OnePlusBot.Base
 
                     case "6T":
                         await (user as IGuildUser).RemoveRoleAsync(role8);
+
+                        break;
+
+                    case "7_":
+                        await (user as IGuildUser).AddRoleAsync(role9);
+
+                        break;
+
+                    case "7P":
+                        await (user as IGuildUser).AddRoleAsync(role10);
 
                         break;
 
