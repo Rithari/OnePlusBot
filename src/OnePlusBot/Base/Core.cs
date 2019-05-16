@@ -263,12 +263,12 @@ namespace OnePlusBot.Base
                         break;
 
                     case "7_":
-                        await (user as IGuildUser).AddRoleAsync(role9);
+                        await (user as IGuildUser).RemoveRoleAsync(role9);
 
                         break;
 
                     case "7P":
-                        await (user as IGuildUser).AddRoleAsync(role10);
+                        await (user as IGuildUser).RemoveRoleAsync(role10);
 
                         break;
 
