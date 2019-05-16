@@ -203,8 +203,37 @@ namespace OnePlusBot.Modules
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithImageUrl("https://forums.oneplus.com/attachments/806308"));
                         }
                         break;
+                    case "release":
+                    case "releasedate":
+                    case "release_date":
+                        if (Context.Channel.Name == "oneplus7-series")
+                            {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("OnePlus 7 and 7 Pro were released to public 14th May 2019."));
+                            }
+                        else if (Context.Channel.Name == "oneplus6-6t")
+                            {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("OnePlus 6 was released to public 21st May 2018." + Environment.NewLine +
+                                             "OnePlus 6T was released to public 29th October 2018."));
+                            }
+                        else if (Context.Channel.Name == "oneplus5-5t")
+                            {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("OnePlus 5 was released to public 11th June 2017." + Environment.NewLine +
+                                             "OnePlus 5T was released to public 21st November 2017."));
+                            }
+                        else if (Context.Channel.Name == "oneplus3-3t")
+                            {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("OnePlus 3 was released to public 14th June 2016." + Environment.NewLine +
+                                             "OnePlus 3T was released to public 15th November 2016."));
+                            }
+                        else if (Context.Channel.Name == "legacy")
+                            {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("OnePlus 2 was released to public 28th July 2015." + Environment.NewLine +
+                                             "OnePlus X was released to public 29th October 2015." + Environment.NewLine +
+                                             "OnePlus One was released to public 23rd April 2014."));
+                            }
+                        break;
                     default:
-                        await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Supported FAQ commands are: bluspark, googlecamera, oxygenos, unbrick, edl, magisk, root, qualcommdiagnostics, smt, qpreview, updateschedule"));
+                        await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Supported FAQ commands are: bluspark, googlecamera, oxygenos, unbrick, edl, magisk, root, qualcommdiagnostics, smt, qpreview, updateschedule, releasedate"));
                         break;
                 }
             }
