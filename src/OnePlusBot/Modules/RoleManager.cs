@@ -25,8 +25,10 @@ namespace OnePlusBot.Modules
             var emote7 = Emote.Parse("<:5T:574655515494318109>");
             var emote8 = Emote.Parse("<:6_:574655515615952896>");
             var emote9 = Emote.Parse("<:6T:574655515846508573>");
-            var emote10 = new Emoji("❓");
-            var emote11 = new Emoji("📰");
+            var emote10 = Emote.Parse("<:7_:574655515603501077>");
+            var emote11 = Emote.Parse("<:7P:574655515230076940>");
+            var emote12 = new Emoji("❓");
+            var emote13 = new Emoji("📰");
 
             RestUserMessage reactmsg = await Context.Channel.SendMessageAsync("**Self Assignable Roles**" +
                 "\n\n__You can assign yourself one of the following roles by reacting to its corresponding emote.__\n" +
@@ -39,8 +41,10 @@ namespace OnePlusBot.Modules
                 "\n" + emote7 + " OnePlus 5T" +
                 "\n" + emote8 + " OnePlus 6" +
                 "\n" + emote9 + " OnePlus 6T" +
-                "\n" + emote10 + " Helper" +
-                "\n" + emote11 + " News" +
+                "\n" + emote10 + " OnePlus 7" +
+                "\n" + emote11 + " Oneplus 7 Pro" +
+                "\n" + emote12 + " Helper" +
+                "\n" + emote13 + " News" +
                 "\n\n *To leave a role, remove your reaction. Spam will be punished by ban until countermeasures are in place.*");
 
             Global.AddRemoveRoleMsgID = reactmsg.Id;
@@ -61,6 +65,8 @@ namespace OnePlusBot.Modules
                 new Emoji(":5T:574655515494318109"),
                 new Emoji(":6_:574655515615952896"),
                 new Emoji(":6T:574655515846508573"),
+                new Emoji(":7_:574655515603501077"),
+                new Emoji(":7P:574655515230076940"),
                 new Emoji("❓"), new Emoji("📰") });
 
         }
