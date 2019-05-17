@@ -11,6 +11,7 @@ namespace OnePlusBot.Modules
         [Summary("Kicks specified user.")]
         [RequireBotPermission(GuildPermission.BanMembers)]
         [RequireUserPermission(GuildPermission.PrioritySpeaker)]
+        [RequireUserPermission(GuildPermission.ManageNicknames)]
         public async Task BanAsync(IGuildUser user, [Remainder] string reason = null)
         {
             if (user.IsBot)
