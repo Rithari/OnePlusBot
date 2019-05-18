@@ -12,6 +12,7 @@ namespace OnePlusBot.Modules
         [Command("news")]
         [Summary("Posts a News article to the server.")]
         [RequireUserPermission(GuildPermission.PrioritySpeaker)]
+        [RequireUserPermission(GuildPermission.ManageNicknames)]
         public async Task NewsAsync([Remainder] string news)
         {
             var channels = Context.Guild.TextChannels;
