@@ -4,6 +4,7 @@ using System;
 using Discord.Commands;
 using System.Linq;
 using OnePlusBot._Extensions;
+using Discord.WebSocket;
 
 namespace OnePlusBot.Modules
 {
@@ -15,26 +16,27 @@ namespace OnePlusBot.Modules
         {
             var channels = Context.Guild.TextChannels;
             var newschannel = channels.FirstOrDefault(x => x.Name == "news");
-            var role = Context.Guild.Roles.FirstOrDefault(x => x.Name == "News");
+            var newsrole = Context.Guild.Roles.FirstOrDefault(x => x.Name == "News");
+            var journalist = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Journalist");
 
-            var user = Context.Message.Author;
-            if (Context.Channel.Name == "news")
-            {
-                if (news.Contains("@everyone") || news.Contains("@here") || news.Contains("@news"))
+                if (news.Contains("@everyone") || news.Contains("@here") || news.Contains("@news")) 
                 {
                     await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("⚠ That news contains an illegal ping! Don't do that!"));
                     return;
                 }
 
+            var user = Context.Message.Author as SocketGuildUser;
 
-                await role.ModifyAsync(x => x.Mentionable = true);
+            if (!user.Roles.Contains(journalist))
+                return;
 
-                await newschannel.SendMessageAsync(news + Environment.NewLine + Environment.NewLine + role.Mention + Environment.NewLine + "- " + user);
+                await newsrole.ModifyAsync(x => x.Mentionable = true);
 
-                await role.ModifyAsync(x => x.Mentionable = false);
+                await newschannel.SendMessageAsync(news + Environment.NewLine + Environment.NewLine + newsrole.Mention + Environment.NewLine + "- " + Context.Message.Author);
+
+                await newsrole.ModifyAsync(x => x.Mentionable = false);
 
                 await Context.Message.DeleteAsync();
-            }
         }
     }
 }
