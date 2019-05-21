@@ -42,8 +42,8 @@ namespace OnePlusBot.Base
             try
             {
                 IReadOnlyCollection<SocketGuild> guilds = _bot.Guilds;
-                SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Id == 500105004082790400);
-                SocketGuildChannel setupsChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Id == 573675582278074379);
+                SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Id == 378969558574432277);
+                SocketGuildChannel setupsChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Id == 473051502022361119);
                 var channel = messageParam.Channel as ITextChannel;
 
                 if (channel.GuildId == oneplusGuild.Id)
