@@ -39,24 +39,29 @@ namespace OnePlusBot.Base
             int argPos = 0;
 
             // Getting the bot's guilds and setting variables for the OnePlus Guild and their set-ups channel.
-            IReadOnlyCollection<SocketGuild> guilds = _bot.Guilds;
-            SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Id == 378969558574432277);
-            SocketGuildChannel setupsChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Id == 473051502022361119);
-            var channel = messageParam.Channel as ITextChannel;
-
-
-            if (channel.GuildId == oneplusGuild.Id)
+            try
             {
-                if (messageParam.Channel.Id == setupsChannel.Id)
+                IReadOnlyCollection<SocketGuild> guilds = _bot.Guilds;
+                SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Id == 378969558574432277);
+                SocketGuildChannel setupsChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Id == 473051502022361119);
+                var channel = messageParam.Channel as ITextChannel;
+
+                if (channel.GuildId == oneplusGuild.Id)
                 {
-                   // Deleting any messages that don't contain an embed, an image or a url.
-                    if (!Regex.IsMatch(messageParam.Content, @"^http(s)?://([\w-]+.)+[\w-]+(/[\w- ./?%&=])?$") 
-                        && messageParam.Attachments.Count == 0
-                        && messageParam.Embeds.Count == 0)
+                    if (messageParam.Channel.Id == setupsChannel.Id)
                     {
-                        await messageParam.DeleteAsync();
+                        // Deleting any messages that don't contain an embed, an image or a url.
+                        if (!Regex.IsMatch(messageParam.Content, @"^http(s)?://([\w-]+.)+[\w-]+(/[\w- ./?%&=])?$")
+                            && messageParam.Attachments.Count == 0
+                            && messageParam.Embeds.Count == 0)
+                        {
+                            await messageParam.DeleteAsync();
+                        }
                     }
                 }
+            } catch
+            {
+
             }
 
             if (!(message.HasCharPrefix(';', ref argPos) ||
