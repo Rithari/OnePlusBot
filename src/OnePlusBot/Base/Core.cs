@@ -29,6 +29,20 @@ namespace OnePlusBot.Base
             _bot.ReactionAdded += OnReactionAdded;
 
             _bot.ReactionRemoved += OnReactionRemoved;
+            
+            try
+            {
+                using (StreamReader mr = new StreamReader("messageid.txt"))
+                { Global.RoleManagerId = ulong.Parse(mr.ReadLine()); }
+            }
+
+            catch { }
+            
+            if (!File.Exists("messageid.txt"))
+            {
+                Console.WriteLine("You need a message.txt, role reactions won't work otherwise.");
+                return;
+            }
 
 
             if (!File.Exists("tokens.txt"))

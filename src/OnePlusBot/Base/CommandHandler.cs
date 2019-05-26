@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.Rest;
+using System.IO;
 
 namespace OnePlusBot.Base
 {
@@ -34,8 +35,18 @@ namespace OnePlusBot.Base
         public async Task RoleReact(IUserMessage message)
         {
             Console.WriteLine("RoleReact called.");
-
             Global.RoleManagerId = message.Id;
+            try
+            {
+                using (StreamWriter mw = new StreamWriter("messageid.txt"))
+                {
+                    mw.WriteLine(message.Id);
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Cannot write to messageid.txt");
+            }
 
             await message.AddReactionsAsync(new Emoji[]
             {
