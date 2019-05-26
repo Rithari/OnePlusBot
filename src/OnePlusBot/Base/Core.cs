@@ -40,7 +40,7 @@ namespace OnePlusBot.Base
             
             if (!File.Exists("messageid.txt"))
             {
-                Console.WriteLine("You need a message.txt, role reactions won't work otherwise.");
+                Console.WriteLine("You need a messageid.txt file, role reactions won't work otherwise.");
                 return;
             }
 
