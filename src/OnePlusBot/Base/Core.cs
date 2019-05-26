@@ -30,19 +30,15 @@ namespace OnePlusBot.Base
 
             _bot.ReactionRemoved += OnReactionRemoved;
             
-            try
-            {
-                using (StreamReader mr = new StreamReader("messageid.txt"))
-                { Global.RoleManagerId = ulong.Parse(mr.ReadLine()); }
-            }
-
-            catch { }
-            
             if (!File.Exists("messageid.txt"))
             {
                 File.Create("messageid.txt");
             }
-
+            else
+            {
+                using (StreamReader mr = new StreamReader("messageid.txt"))
+                { Global.RoleManagerId = ulong.Parse(mr.ReadLine()); }
+            }
 
             if (!File.Exists("tokens.txt"))
             {
