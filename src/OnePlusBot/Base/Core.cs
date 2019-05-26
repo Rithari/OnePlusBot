@@ -108,7 +108,7 @@ namespace OnePlusBot.Base
 
 
 
-            if (reaction.MessageId == Global.AddRemoveRoleMsgID)
+            if (reaction.MessageId == Global.RoleManagerId)
             {
 
                 if (reaction.User.Value.IsBot)
@@ -207,7 +207,7 @@ namespace OnePlusBot.Base
 
 
 
-            if (reaction.MessageId == Global.AddRemoveRoleMsgID)
+            if (reaction.MessageId == Global.RoleManagerId)
             {
 
                 if (reaction.User.Value.IsBot)

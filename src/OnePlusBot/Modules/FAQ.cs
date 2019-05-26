@@ -95,7 +95,7 @@ namespace OnePlusBot.Modules
                         }
                         else
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Please refer to your device channel for detailled instructions. As a reminder, TWRP is not meant to be flashed on A/B devices (see <https://twitter.com/topjohnwu/status/1070029212428439553> )"));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Please refer to your device channel for detailled instructions."));
                         }
                         break;
                     case "gcam":
