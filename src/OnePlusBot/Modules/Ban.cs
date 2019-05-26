@@ -7,6 +7,24 @@ using System.Linq;
 
 namespace OnePlusBot.Modules
 {
+        [Command("oban", RunMode = RunMode.Async)]
+        [Summary("Bans specified user.")]
+        [RequireBotPermission(GuildPermission.BanMembers)]
+        [RequireUserPermission(GuildPermission.PrioritySpeaker)]
+        [RequireUserPermission(GuildPermission.ManageNicknames)]
+
+        public async Task OBanAsync(ulong name, [Remainder] string reason = null)
+        {
+            var modlog = Context.Guild.GetTextChannel(378983972174168066);
+            await Context.Guild.AddBanAsync(name, 0, reason);
+            var EmoteTrue = new Emoji(":success:499567039451758603");
+            await Context.Message.AddReactionAsync(EmoteTrue);
+            await modlog.EmbedAsync(new EmbedBuilder().WithColor(9896005)
+                .WithTitle("⛔️ Banned User")
+                .AddField(efb => efb.WithName("Username").WithValue(("<@"+name.ToString())+">").WithIsInline(true))
+                .AddField(efb => efb.WithName("ID").WithValue(name.ToString()).WithIsInline(true)));
+        }
+    
     public class BanModule : ModuleBase<SocketCommandContext>
     {
         [Command("ban", RunMode = RunMode.Async)]
