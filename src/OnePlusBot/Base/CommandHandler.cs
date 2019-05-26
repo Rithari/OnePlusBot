@@ -36,18 +36,11 @@ namespace OnePlusBot.Base
         {
             Console.WriteLine("RoleReact called.");
             Global.RoleManagerId = message.Id;
-            try
+            using (StreamWriter mw = new StreamWriter("messageid.txt"))
             {
-                using (StreamWriter mw = new StreamWriter("messageid.txt"))
-                {
-                    mw.WriteLine(message.Id);
-                }
+                mw.WriteLine(message.Id);
             }
-            catch
-            {
-                Console.WriteLine("Cannot write to messageid.txt");
-            }
-
+            
             await message.AddReactionsAsync(new Emoji[]
             {
                 new Emoji(":1_:574655515586592769"),
