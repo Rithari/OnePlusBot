@@ -2,7 +2,6 @@
 using OnePlusBot._Extensions;
 using Discord.Commands;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 
 namespace OnePlusBot
 {
