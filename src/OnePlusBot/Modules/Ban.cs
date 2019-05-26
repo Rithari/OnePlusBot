@@ -7,6 +7,8 @@ using System.Linq;
 
 namespace OnePlusBot.Modules
 {
+    public class BanModule : ModuleBase<SocketCommandContext>
+    {
         [Command("oban", RunMode = RunMode.Async)]
         [Summary("Bans specified user.")]
         [RequireBotPermission(GuildPermission.BanMembers)]
@@ -25,8 +27,6 @@ namespace OnePlusBot.Modules
                 .AddField(efb => efb.WithName("ID").WithValue(name.ToString()).WithIsInline(true)));
         }
     
-    public class BanModule : ModuleBase<SocketCommandContext>
-    {
         [Command("ban", RunMode = RunMode.Async)]
         [Summary("Bans specified user.")]
         [RequireBotPermission(GuildPermission.BanMembers)]
