@@ -38,7 +38,7 @@ namespace OnePlusBot.Base
             Global.RoleManagerId = message.Id;
             using (StreamWriter mw = new StreamWriter("messageid.txt"))
             {
-                mw.WriteLine(message.Id);
+                    mw.WriteLine(Global.RoleManagerId);
             }
             
             await message.AddReactionsAsync(new Emoji[]
