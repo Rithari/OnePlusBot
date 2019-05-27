@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.Rest;
 using System.IO;
+using OnePlusBot._Extensions;
 
 namespace OnePlusBot.Base
 {
@@ -28,8 +29,17 @@ namespace OnePlusBot.Base
 
         public async Task InstallCommandsAsync()
         {
+            _commands.CommandExecuted += OnCommandExecutedAsync;
             _bot.MessageReceived += HandleCommandAsync;
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+        }
+
+        public async Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
+        {
+            if (!string.IsNullOrEmpty(result?.ErrorReason))
+            {
+                await context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("⚠ "+ result.ErrorReason).WithTitle("" + context.Message.Author));
+            }
         }
 
         public async Task RoleReact(IUserMessage message)
