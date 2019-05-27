@@ -95,7 +95,7 @@ namespace OnePlusBot.Modules
                         }
                         else
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Please refer to your device channel for detailled instructions."));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Please refer to your device channel for detailed instructions."));
                         }
                         break;
                     case "gcam":
