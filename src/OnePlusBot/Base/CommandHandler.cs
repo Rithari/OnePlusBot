@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord.Rest;
 using System.IO;
+using OnePlusBot._Extensions;
 
 namespace OnePlusBot.Base
 {
