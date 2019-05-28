@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Discord.Rest;
 using System.IO;
 using OnePlusBot._Extensions;
 
@@ -44,7 +43,6 @@ namespace OnePlusBot.Base
 
         public async Task RoleReact(IUserMessage message)
         {
-            Console.WriteLine("RoleReact called.");
             Global.RoleManagerId = message.Id;
             using (StreamWriter mw = new StreamWriter("messageid.txt"))
             {
@@ -100,11 +98,9 @@ namespace OnePlusBot.Base
 
                     else if(messageParam.Channel.Id == infoChannel.Id)
                     {
-                        Console.WriteLine("We're in info channel");
 
                         if (messageParam.Embeds.Count == 1)
                         {
-                            Console.WriteLine("The message contains check passed.");
                             var userMessage = messageParam as IUserMessage;
                             await RoleReact(userMessage);
                         }
