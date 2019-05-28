@@ -15,39 +15,35 @@ namespace OnePlusBot.Modules
         {
             var reportChannel = Context.Guild.TextChannels.FirstOrDefault(x => x.Name == "reports");
 
-            var plaintiff = Context.Message.Author;
+            var reporter = Context.Message.Author;
+
             var builder = new EmbedBuilder()
-            .WithTitle("Report # ")
-            .WithUrl("https://discordapp.com/channels/"+ Context.Guild.Id + "/" + Context.Channel.Id + "/" + Context.Message.Id)
-            .WithColor(new Color(0xBB6AAF))
+            .WithTitle("...a new report has emerged from outer space!")
+            .WithColor(new Color(0x3E518))
             .WithTimestamp(Context.Message.Timestamp)
             .WithFooter(footer => 
             {
               footer
-                   .WithText("Case #0000")
+                // TO DO: Implement incremential Cases with database.
+                   .WithText("Case # (WIP)")
                    .WithIconUrl("https://a.kyot.me/0WPy.png");
              })
             .WithThumbnailUrl("https://a.kyot.me/ab-y.png")
             .WithAuthor(author =>
             {
                 author
-                .WithName("New Report!")
-                .WithUrl("https://discordapp.com")
-                .WithIconUrl("https://a.kyot.me/ab-y.png");
+                .WithName("Woah...")
+                .WithIconUrl("https://a.kyot.me/cno0.png");
             })
 
-            .AddField("Defendant", user)
-            .AddField("Plaintiff", plaintiff)
-            .AddField("Location of the incident", Context.Message.Channel)
+            .AddField("Reported User", user)
+            .AddField("Reported by", reporter)
+            .AddField("Location of the incident", Context.Message.Channel.Name + " [Warp!](https://discordapp.com/channels/"+ Context.Guild.Id + "/" + Context.Channel.Id + "/" + Context.Message.Id + ")")
             .AddField("Reason", reason);
+
+
             var embed = builder.Build();
-            await reportChannel.SendMessageAsync(
-                null,
-                embed: embed)
-                .ConfigureAwait(false);
-
-
-            //await reportChannel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription(reason).WithFooter("" + plaintiff));
+            await reportChannel.SendMessageAsync(null,embed: embed).ConfigureAwait(false);
 
             //await Context.Message.DeleteAsync();
             await ReplyAsync(user + " successfully reported.");
