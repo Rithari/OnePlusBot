@@ -37,7 +37,16 @@ namespace OnePlusBot.Base
             else
             {
                 using (StreamReader mr = new StreamReader("messageid.txt"))
-                { Global.RoleManagerId = ulong.Parse(mr.ReadLine()); }
+                {
+                    if (mr.ReadLine() != null)
+                    {
+                        mr.DiscardBufferedData();
+                        mr.BaseStream.Seek(0, System.IO.SeekOrigin.Begin);
+                        Global.RoleManagerId = ulong.Parse(mr.ReadLine());
+                    }
+
+                }
+
             }
 
             if (!File.Exists("tokens.txt"))
