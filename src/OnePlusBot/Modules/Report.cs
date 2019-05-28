@@ -19,7 +19,7 @@ namespace OnePlusBot.Modules
 
             var builder = new EmbedBuilder()
             .WithTitle("...a new report has emerged from outer space!")
-            .WithColor(new Color(0x3E518))
+            .WithColor(9896005)
             .WithTimestamp(Context.Message.Timestamp)
             .WithFooter(footer => 
             {
@@ -28,7 +28,7 @@ namespace OnePlusBot.Modules
                    .WithText("Case # (WIP)")
                    .WithIconUrl("https://a.kyot.me/0WPy.png");
              })
-            .WithThumbnailUrl("https://a.kyot.me/ab-y.png")
+            .WithThumbnailUrl(user.RealAvatarUrl().ToString())
             .WithAuthor(author =>
             {
                 author
@@ -46,7 +46,7 @@ namespace OnePlusBot.Modules
             await reportChannel.SendMessageAsync(null,embed: embed).ConfigureAwait(false);
 
             //await Context.Message.DeleteAsync();
-            await ReplyAsync(user + " successfully reported.");
+            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription(user+" Successfully reported"));
 
 
 
