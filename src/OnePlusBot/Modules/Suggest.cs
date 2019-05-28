@@ -19,7 +19,7 @@ namespace OnePlusBot.Modules
             var user = Context.Message.Author;
             var userpfp = RealAvatarUrl(Context.Message.Author);
 
-            if (suggestion.Contains("@everyone") || suggestion.Contains("@here")) suggestion = suggestion.Replace(suggestion, @"@(everyone|here)", "")
+            if (suggestion.Contains("@everyone") || suggestion.Contains("@here")) suggestion = suggestion.Replace(suggestion, @"@(everyone|here)", "");
 
             var oldmessage = await suggestionschannel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithTitle(title).WithDescription(suggestion).WithAuthor(user, userpfp).WithFooter("Made by Rithari#0001", RealAvatarUrl(Context.Client.CurrentUser)).WithCurrentTimestamp);
 
