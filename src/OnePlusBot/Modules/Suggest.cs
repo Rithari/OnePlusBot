@@ -17,11 +17,11 @@ namespace OnePlusBot.Modules
             var suggestionschannel = channels.FirstOrDefault(x => x.Name == "suggestions");
 
             var user = Context.Message.Author;
-            var userpfp = Extensions.RealAvatarUrl(Context.Message.Author);
+            var userpfp = Context.Message.Author.GetAvatarUrl();
 
-            if (suggestion.Contains("@everyone") || suggestion.Contains("@here")) suggestion = suggestion.Replace("" + suggestion, @"@(everyone|here)", "");
+            if (suggestion.Contains("@everyone") || suggestion.Contains("@here")) suggestion = suggestion.Replace(suggestion as string, @"@(everyone|here)", "");
 
-            var oldmessage = await suggestionschannel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithTitle(title).WithDescription(suggestion).WithAuthor(user, userpfp).WithFooter("Made by Rithari#0001", Extensions.RealAvatarUrl(Context.Client.CurrentUser)).WithCurrentTimestamp);
+            var oldmessage = await suggestionschannel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithTitle(title).WithDescription(suggestion).WithAuthor(user, userpfp).WithFooter("Made by Rithari#0001", Context.Client.CurrentUser.GetAvatarUrl()).WithCurrentTimestamp);
 
             await oldmessage.AddReactionsAsync(new Emoji[] { new Emoji(":OPYes:426070836269678614"), new Emoji(":OPNo:426072515094380555") });
             await Context.Message.DeleteAsync();
