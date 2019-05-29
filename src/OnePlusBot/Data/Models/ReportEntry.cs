@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnePlusBot.Data.Models
 {
-    [Table("Report")]
+    [Table("Reports")]
     public class ReportEntry
     {
         [Key]

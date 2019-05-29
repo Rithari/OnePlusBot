@@ -4,15 +4,14 @@
 //
 //    var response = Response.FromJson(jsonString);
 
-namespace QuickType
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace OnePlusBot.Base
 {
-    using System;
-    using System.Collections.Generic;
-
-    using System.Globalization;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-
     public partial class Response
     {
         [JsonProperty("tags")]
@@ -60,12 +59,12 @@ namespace QuickType
 
     public partial class Response
     {
-        public static Response FromJson(string json) => JsonConvert.DeserializeObject<Response>(json, QuickType.Converter.Settings);
+        public static Response FromJson(string json) => JsonConvert.DeserializeObject<Response>(json, Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this Response self) => JsonConvert.SerializeObject(self, QuickType.Converter.Settings);
+        public static string ToJson(this Response self) => JsonConvert.SerializeObject(self, Converter.Settings);
     }
 
     internal static class Converter

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using OnePlusBot.Base;
 
 namespace OnePlusBot.Modules
 {
@@ -23,39 +24,38 @@ namespace OnePlusBot.Modules
         [Summary("Lists all available commands.")]
         public async Task Help(string path = "")
         {
-            Random random = new Random();
-            int r= random.Next(0, 255);
-            int g = random.Next(0, 255);
-            int b = random.Next(0, 255);
+            int r = Global.Random.Next(256);
+            int g = Global.Random.Next(256);
+            int b = Global.Random.Next(256);
 
 
-            EmbedBuilder output = new EmbedBuilder();
-            if (path == "")
+            var output = new EmbedBuilder();
+            if (path == string.Empty)
             {
                 output.Title = "OnePlusBot - help";
                 output.WithColor(r, g, b);
-
 
                 foreach (var mod in _commands.Modules.Where(m => m.Parent == null))
                 {
                     AddHelp(mod, ref output);
                 }
 
-                output.Footer = new EmbedFooterBuilder
-                {
-                    Text = "Use 'help <module>' to get help with a module."
-                };
+                output.WithFooter("Use 'help <module>' to get help with a module.");
             }
             else
             {
-                var mod = _commands.Modules.FirstOrDefault(m => m.Name.Replace("Module", "").ToLower() == path.ToLower());
-                if (mod == null) { await ReplyAsync("No module could be found with that name."); return; }
+                var mod = _commands.Modules.FirstOrDefault(m => string.Equals(m.Name.Replace("Module", ""), path, StringComparison.OrdinalIgnoreCase));
+                if (mod == null)
+                {
+                    await ReplyAsync("No module could be found with that name."); 
+                    return;
+                }
 
                 output.Title = mod.Name;
                 output.Description = $"{mod.Summary}\n" +
-                (!string.IsNullOrEmpty(mod.Remarks) ? $"({mod.Remarks})\n" : "") +
-                (mod.Aliases.Any() ? $"Prefix(es): {string.Join(",", mod.Aliases)}\n" : "") +
-                (mod.Submodules.Any() ? $"Submodules: {mod.Submodules.Select(m => m.Name)}\n" : "") + " ";
+                    (!string.IsNullOrEmpty(mod.Remarks) ? $"({mod.Remarks})\n" : "") +
+                    (mod.Aliases.Any() ? $"Prefix(es): {string.Join(",", mod.Aliases)}\n" : "") +
+                    (mod.Submodules.Any() ? $"Submodules: {mod.Submodules.Select(m => m.Name)}\n" : "") + " ";
                 AddCommands(mod, ref output);
             }
 
@@ -96,33 +96,39 @@ namespace OnePlusBot.Modules
             });
         }
 
-        public string GetAliases(CommandInfo command)
+        private static string GetAliases(CommandInfo command)
         {
-            StringBuilder output = new StringBuilder();
-            if (!command.Parameters.Any()) return output.ToString();
+            if (!command.Parameters.Any()) 
+                return string.Empty;
+            
+            var output = new StringBuilder();
             foreach (var param in command.Parameters)
             {
                 if (param.IsOptional)
-                    output.Append($"[{param.Name} = {param.DefaultValue}] ");
+                    output.AppendFormat("[{0} = {1}] ", param.Name, param.DefaultValue);
                 else if (param.IsMultiple)
-                    output.Append($"|{param.Name}| ");
+                    output.AppendFormat("|{0}| ", param.Name);
                 else if (param.IsRemainder)
-                    output.Append($"...{param.Name} ");
+                    output.AppendFormat("...{0} ", param.Name);
                 else
-                    output.Append($"<{param.Name}> ");
+                    output.AppendFormat("<{0}> ", param.Name);
             }
             return output.ToString();
         }
-        public string GetPrefix(CommandInfo command)
+
+        private static string GetPrefix(CommandInfo command)
         {
             var output = GetPrefix(command.Module);
             output += $"{command.Aliases.FirstOrDefault()} ";
             return output;
         }
-        public string GetPrefix(ModuleInfo module)
+
+        private static string GetPrefix(ModuleInfo module)
         {
             string output = "";
-            if (module.Parent != null) output = $"{GetPrefix(module.Parent)}{output}";
+            if (module.Parent != null) 
+                output = $"{GetPrefix(module.Parent)}";
+            
             if (module.Aliases.Any())
                 output += string.Concat(module.Aliases.FirstOrDefault(), " ");
             return output;

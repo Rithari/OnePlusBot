@@ -1,32 +1,49 @@
-﻿using Discord;
-using OnePlusBot._Extensions;
+﻿using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
-using System.Threading.Tasks;
+using OnePlusBot.Helpers;
 
-namespace OnePlusBot
+namespace OnePlusBot.Modules
 {
     public class ShowAvatar : ModuleBase<SocketCommandContext>
     {
         [Command("showavatar")]
         [Summary("Shows avatar of a user.")]
-        public async Task Avatar(IGuildUser usr = null)
+        public async Task Avatar(IGuildUser user = null)
         {
-            if (usr == null)
-                usr = (IGuildUser)Context.User;
+            if (user == null)
+                user = (IGuildUser) Context.User;
 
-            var uri = usr.RealAvatarUrl().ToString().Replace("?size=128", "?size=4096");
+            var uri = user.RealAvatarUrl(4096).ToString();
 
             if (uri == null)
             {
-                await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("User has no avatar."));
+                await Context.Channel.EmbedAsync(new EmbedBuilder()
+                    .WithColor(9896005)
+                    .WithDescription("User has no avatar."));
                 return;
             }
 
-            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005)
-                .AddField(efb => efb.WithName("Username").WithValue(usr.ToString()).WithIsInline(false))
-                .AddField(efb => efb.WithName("Avatar Url").WithValue(uri).WithIsInline(false))
-                .WithThumbnailUrl(uri)
-                .WithImageUrl(uri));
+            var embed = new EmbedBuilder();
+            embed.WithColor(9896005);
+            embed.Url = uri;
+
+            embed.AddField(x =>
+            {
+                x.Name = "Username";
+                x.Value = user.Mention;
+                x.IsInline = true;
+            });
+            embed.AddField(x =>
+            {
+                x.Name = "Image";
+                x.Value = $"[Link]({uri})";
+                x.IsInline = true;
+            });
+
+            embed.ImageUrl = uri;
+            
+            await Context.Channel.EmbedAsync(embed);
         }
     }
 }

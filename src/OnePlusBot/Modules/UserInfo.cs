@@ -1,36 +1,62 @@
-﻿using Discord;
-using OnePlusBot._Extensions;
+﻿using System.Globalization;
+using Discord;
 using Discord.Commands;
 using System.Threading.Tasks;
+using OnePlusBot.Helpers;
 
 namespace OnePlusBot.Modules
 {
     public class Uinfo : ModuleBase<SocketCommandContext>
     {
-        [Command("userinfo")]
+        [Command("user")]
         [Summary("Displays User Information")]
-        public async Task UserInfo(IGuildUser usr = null)
+        public async Task UserInfo(IGuildUser user = null)
         {
-            var user = usr ?? Context.User as IGuildUser;
+            user = user ?? (IGuildUser) Context.User;
+            
+            var embed = new EmbedBuilder();
 
-            if (user == null)
-                return;
-
-            var embed = new EmbedBuilder()
-                .AddField(fb => fb.WithName("Name").WithValue($"**{user.Username}**#{user.Discriminator}").WithIsInline(true));
-            if (!string.IsNullOrWhiteSpace(user.Nickname))
+            embed.WithColor(9896005);
+            embed.WithAuthor(x =>
             {
-                embed.AddField(fb => fb.WithName("Nickname").WithValue(user.Nickname).WithIsInline(true));
-            }
-            embed.AddField(fb => fb.WithName("ID").WithValue(user.Id.ToString()).WithIsInline(true))
-                .AddField(fb => fb.WithName("Joined Server").WithValue($"{user.JoinedAt?.ToString("dd/MM/yyyy HH:mm") ?? "?"}").WithIsInline(true))
-                .AddField(fb => fb.WithName("Joined Discord").WithValue($"{user.CreatedAt:dd/MM/yyyy HH:mm}").WithIsInline(true))
-                .WithColor(9896005);
+                x.Name = user.Username;
+            });
 
-            var av = user.RealAvatarUrl();
-            if (av != null && av.IsAbsoluteUri)
-                embed.WithThumbnailUrl(av.ToString());
-            await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
+            embed.ThumbnailUrl = user.GetAvatarUrl();
+            
+            embed.AddField(x =>
+            {
+                x.Name = "Status";
+                x.Value = user.Status.ToString();
+                x.IsInline = true;
+            });
+            
+            embed.AddField(x =>
+            {
+                x.Name = "Activity";
+                x.Value = user.Activity.Name;
+                x.IsInline = true;
+            });
+
+            if (user.JoinedAt.HasValue)
+            {
+                embed.AddField(x =>
+                {
+                    x.Name = "Joined";
+                    x.Value = user.JoinedAt.Value.DateTime.ToString("ddd, MMM dd, yyyy, HH:mm tt", CultureInfo.InvariantCulture);
+                    x.IsInline = true;
+                });
+            }
+            
+            embed.AddField(x =>
+            {
+                x.Name = "Registered";
+                x.Value = user.CreatedAt.DateTime.ToString("ddd, MMM dd, yyyy, HH:mm tt", CultureInfo.InvariantCulture);
+                x.IsInline = true;
+            });
+            
+            
+            await Context.Channel.EmbedAsync(embed);
         }
     }
 }

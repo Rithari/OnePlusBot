@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using System.Linq;
 using System.Net.Http;
-using QuickType;
+using OnePlusBot.Base;
 
 namespace OnePlusBot.Modules
 {

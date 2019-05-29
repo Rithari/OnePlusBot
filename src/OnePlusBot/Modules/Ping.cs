@@ -2,7 +2,7 @@
 using Discord.Commands;
 using Discord;
 using System.Threading.Tasks;
-using OnePlusBot._Extensions;
+using OnePlusBot.Helpers;
 
 namespace OnePlusBot.Modules
 {
@@ -15,7 +15,11 @@ namespace OnePlusBot.Modules
             var timestamp = Context.Message.Timestamp;
             var ping = DateTime.UtcNow - timestamp;
 
-            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Pong....\nIn " + ping.Milliseconds + " ms"));
+            const string reply = "Pong....\nWithin {0} ms";
+            
+            await Context.Channel.EmbedAsync(new EmbedBuilder()
+                .WithColor(9896005)
+                .WithDescription(string.Format(reply, ping.Milliseconds)));
         }
     }
 }
