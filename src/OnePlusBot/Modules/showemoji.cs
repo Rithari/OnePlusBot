@@ -1,8 +1,8 @@
 ﻿using Discord;
-using OnePlusBot._Extensions;
 using Discord.Commands;
 using System.Threading.Tasks;
 using System.Linq;
+using OnePlusBot.Helpers;
 
 namespace OnePlusBot.Modules
 {

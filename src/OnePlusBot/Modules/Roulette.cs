@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord.Commands;
+using OnePlusBot.Base;
 
 namespace OnePlusBot.Modules
 {
@@ -10,7 +11,14 @@ namespace OnePlusBot.Modules
         [Summary("Russian roulette for Discord!")]
         public async Task RouletteAsync()
         {
-            await ReplyAsync(new[] { ":gun: :boom:, you died! :skull:\r\n", ":gun: *click*, no bullet in there for you this round.\r\n", ":gun: *click*, no bullet in there for you this round.\r\n", ":gun: *click*, no bullet in there for you this round.\r\n" }[new Random().Next(0, 4)]);
+            var answers = new[]
+            {
+                ":gun: *click*, no bullet in there for you this round.\r\n",
+                ":gun: :boom:, you died! :skull:\r\n", ":gun: *click*, no bullet in there for you this round.\r\n"
+            };
+
+            var answer = answers[Global.Random.Next(3) % 2]; // 1 out of 3 possibility of death
+            await ReplyAsync(answer);
         }
     }
 }
