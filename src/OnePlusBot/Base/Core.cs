@@ -23,7 +23,7 @@ namespace OnePlusBot.Base
             bot.ReactionAdded += OnReactionAdded;
             bot.ReactionRemoved += OnReactionRemoved;
 
-            await bot.LoginAsync(TokenType.Bot, Global.TokenBeta);
+            await bot.LoginAsync(TokenType.Bot, Global.Token);
             await bot.StartAsync();
 
             await bot.SetGameAsync("Made with the Fans™ | ;help");
