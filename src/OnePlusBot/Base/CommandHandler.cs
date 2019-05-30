@@ -102,6 +102,7 @@ namespace OnePlusBot.Base
             }
             else if (channelId == Global.Channels["info"])
             {
+                Console.WriteLine("info channel");
                 if (message.Embeds.Count == 1)
                 {
                     var userMessage = (IUserMessage) message;
