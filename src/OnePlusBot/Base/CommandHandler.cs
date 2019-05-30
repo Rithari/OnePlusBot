@@ -8,7 +8,11 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.IO;
-using OnePlusBot._Extensions;
+using System.Runtime.CompilerServices;
+using MySql.Data.MySqlClient;
+using OnePlusBot.Data;
+using OnePlusBot.Data.Models;
+using OnePlusBot.Helpers;
 
 namespace OnePlusBot.Base
 {
@@ -20,110 +24,145 @@ namespace OnePlusBot.Base
 
         public CommandHandler(DiscordSocketClient bot, CommandService commands, IServiceProvider services)
         {
-            _commands = commands;
             _bot = bot;
+            _commands = commands;
             _services = services;
         }
 
-
         public async Task InstallCommandsAsync()
         {
+            _bot.MessageReceived += OnCommandReceived;
+            _bot.MessageReceived += OnMessageReceived;  
             _commands.CommandExecuted += OnCommandExecutedAsync;
-            _bot.MessageReceived += HandleCommandAsync;
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
         }
 
-        public async Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
+        private static async Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
             if (!string.IsNullOrEmpty(result?.ErrorReason))
             {
-                await context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("⚠ "+ result.ErrorReason).WithTitle("" + context.Message.Author));
+                await context.Channel.EmbedAsync(
+                    new EmbedBuilder()
+                        .WithColor(9896005)
+                        .WithDescription("\u26A0 " + result.ErrorReason)
+                        .WithTitle(context.Message.Author.ToString()));
             }
         }
 
-        public async Task RoleReact(IUserMessage message)
+        private static async Task RoleReact(IUserMessage message)
         {
-            Global.RoleManagerId = message.Id;
-            using (StreamWriter mw = new StreamWriter("messageid.txt"))
-            {
-                    mw.WriteLine(Global.RoleManagerId);
-            }
+            Global.RoleManagerMessageId = message.Id;
             
-            await message.AddReactionsAsync(new Emoji[]
+            await message.AddReactionsAsync(new IEmote[]
             {
-                new Emoji(":1_:574655515586592769"),
-                new Emoji(":2_:574655515548844073"),
-                new Emoji(":X_:574655515481866251"),
-                new Emoji(":3_:574655515452506132"),
-                new Emoji(":3T:574655515846508554"),
-                new Emoji(":5_:574655515745976340"),
-                new Emoji(":5T:574655515494318109"),
-                new Emoji(":6_:574655515615952896"),
-                new Emoji(":6T:574655515846508573"),
-                new Emoji(":7_:574655515603501077"),
-                new Emoji(":7P:574655515230076940"),
-                new Emoji("❓"), new Emoji("📰")
+                Emote.Parse("<:1_:574655515586592769>"),
+                Emote.Parse("<:2_:574655515548844073>"),
+                Emote.Parse("<:X_:574655515481866251>"),
+                Emote.Parse("<:3_:574655515452506132>"),
+                Emote.Parse("<:3T:574655515846508554>"),
+                Emote.Parse("<:5_:574655515745976340>"),
+                Emote.Parse("<:5T:574655515494318109>"),
+                Emote.Parse("<:6_:574655515615952896>"),
+                Emote.Parse("<:6T:574655515846508573>"),
+                Emote.Parse("<:7_:574655515603501077>"),
+                Emote.Parse("<:7P:574655515230076940>"),
+                new Emoji("\u2753"), 
+                new Emoji("\uD83D\uDCF0")
             });
         }
 
-
-        private async Task HandleCommandAsync(SocketMessage messageParam)
+        private static async Task ValidateSetupsMessage(SocketMessage message)
         {
-            
-            if (!(messageParam is SocketUserMessage message)) return;
-
-            int argPos = 0;
-
-            // Getting the bot's guilds and setting variables for the OnePlus Guild and their set-ups channel.
-            try
+            if (!Regex.IsMatch(message.Content, @"^http(s)?://([\w-]+.)+[\w-]+(/[\w- ./?%&=])?$")
+                && message.Attachments.Count == 0
+                && message.Embeds.Count == 0)
             {
-                IReadOnlyCollection<SocketGuild> guilds = _bot.Guilds;
-                SocketGuild oneplusGuild = guilds.FirstOrDefault(x => x.Id == 378969558574432277);
-                SocketGuildChannel setupsChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Id == 473051502022361119);
-                SocketGuildChannel infoChannel = oneplusGuild.Channels.FirstOrDefault(x => x.Id == 448846923596562432);
-                var channel = messageParam.Channel as ITextChannel;
+                await message.DeleteAsync();
+            }
+        }
 
-                if (channel.GuildId == oneplusGuild.Id)
+        private static bool IsValidReferralMessage(SocketMessage message)
+        {
+            if (!Regex.IsMatch(message.Content, @"^https?:\/\/[^\s]+$"))
+                return false;
+            
+            using (var db = new Database())
+            {
+                return db.ReferralCodes.All(x => x.Sender != message.Author.Id ||
+                                                 (DateTime.UtcNow - x.Date).Days >= 14);
+            }
+        }
+
+        private static async Task OnMessageReceived(SocketMessage message)
+        {
+            var channelId = message.Channel.Id;
+            if (channelId == Global.Channels["setups"])
+            {
+                await ValidateSetupsMessage(message);
+            }
+            else if (channelId == Global.Channels["info"])
+            {
+                if (message.Embeds.Count == 1)
                 {
-                    if (messageParam.Channel.Id == setupsChannel.Id)
+                    var userMessage = (IUserMessage) message;
+                    await RoleReact(userMessage);
+                }
+            }
+            else if (channelId == Global.Channels["referralcodes"])
+            {
+                if (message.Author.IsBot)
+                    return;
+                
+                if (IsValidReferralMessage(message))
+                {
+                    var index = message.Content.IndexOf("invite#", StringComparison.OrdinalIgnoreCase);
+                    var code = message.Content.Substring(index + 7);
+                    
+                    using (var db = new Database())
                     {
-                        // Deleting any messages that don't contain an embed, an image or a url.
-                        if (!Regex.IsMatch(messageParam.Content, @"^http(s)?://([\w-]+.)+[\w-]+(/[\w- ./?%&=])?$")
-                            && messageParam.Attachments.Count == 0
-                            && messageParam.Embeds.Count == 0)
+                        db.ReferralCodes.Add(new ReferralCode
                         {
-                            await messageParam.DeleteAsync();
-                        }
-                    }
-
-                    else if(messageParam.Channel.Id == infoChannel.Id)
-                    {
-
-                        if (messageParam.Embeds.Count == 1)
-                        {
-                            var userMessage = messageParam as IUserMessage;
-                            await RoleReact(userMessage);
-                        }
+                            Code = code,
+                            Date = message.Timestamp.Date,
+                            Sender = message.Author.Id
+                        });
+                        db.SaveChanges();
                     }
                 }
+                else
+                {
+                    await message.DeleteAsync();
+                    const string msg = "{0} Please include only the link in the message.\n" +
+                                       "Invites can be bumped once every 2 weeks.";
+                    var reply = await message.Channel.SendMessageAsync(string.Format(msg, message.Author.Mention));
+                    
+                    new Task(async () =>
+                    {
+                        await Task.Delay(5000);
+                        await reply.DeleteAsync();
+                    }).Start();
+                }
+            }
+        }
 
-            } catch
-            {}
-
-            if (!(message.HasCharPrefix(';', ref argPos) ||
-                message.HasMentionPrefix(_bot.CurrentUser, ref argPos)) ||
-                message.Author.IsBot)
+        private async Task OnCommandReceived(SocketMessage messageParam)
+        {
+            if (!(messageParam is SocketUserMessage message)) 
+                return;
+            if (message.Author.IsBot)
+                return;
+            
+            int argPos = 0;
+            if (!message.HasCharPrefix(';', ref argPos) && 
+                !message.HasMentionPrefix(_bot.CurrentUser, ref argPos))
                 return;
 
             var context = new SocketCommandContext(_bot, message);
 
-            var result = await _commands.ExecuteAsync(
+            await _commands.ExecuteAsync(
                 context: context,
                 argPos: argPos,
                 services: _services);
-
         }
     }
-
-
 }
