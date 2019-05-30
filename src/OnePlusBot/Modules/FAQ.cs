@@ -2,7 +2,7 @@ using System;
 using Discord.Commands;
 using System.Threading.Tasks;
 using Discord;
-using OnePlusBot._Extensions;
+using OnePlusBot.Helpers;
 
 namespace OnePlusBot.Modules
 {

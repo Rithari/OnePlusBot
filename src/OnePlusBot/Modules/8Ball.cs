@@ -2,7 +2,8 @@
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord;
-using OnePlusBot._Extensions;
+using OnePlusBot.Base;
+using OnePlusBot.Helpers;
 
 namespace OnePlusBot.Modules
 {
@@ -14,11 +15,8 @@ namespace OnePlusBot.Modules
         {
             try
             {
-                string answer = new[]
-                    {
-                        "It is certain.", "It is decidedly so.", "Without a doubt.", "Yes, definitely.", "You may rely on it.", "As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.", "Reply hazy to try again.", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.", "Don't count on it.", "My reply is no.", "Outlook not so good.", "Very doubtful.",
-                        "My sources say no."
-                    }[new Random().Next(0, 20)];
+                var answers = GetAnswers();
+                var answer = answers[Global.Random.Next(answers.Length)];
 
                 await Context.Channel.EmbedAsync(new EmbedBuilder()
                     .WithColor(9896005)
@@ -28,6 +26,19 @@ namespace OnePlusBot.Modules
             {
                 await ReplyAsync(ex.Message);
             }
+        }
+        
+        private static string[] GetAnswers()
+        {
+            return new[]
+            {
+                "It is certain.", "It is decidedly so.", "Without a doubt.", "Yes, definitely.", "You may rely on it.",
+                "As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.",
+                "Reply hazy to try again.", "Ask again later.", "Better not tell you now.", "Cannot predict now.",
+                "Concentrate and ask again.", "Don't count on it.", "My reply is no.", "Outlook not so good.",
+                "Very doubtful.",
+                "My sources say no."
+            };
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using Discord;
 using Discord.Commands;
-using OnePlusBot._Extensions;
+using OnePlusBot.Helpers;
 using Discord.WebSocket;
 using System.Linq;
 using System.Threading.Tasks;

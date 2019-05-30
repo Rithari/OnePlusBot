@@ -1,9 +1,9 @@
-using OnePlusBot._Extensions;
 using System.Threading.Tasks;
 using Discord.Commands;
 using System.Text.RegularExpressions;
 using System.Net;
 using Discord;
+using OnePlusBot.Helpers;
 
 namespace OnePlusBot.Modules
 {
