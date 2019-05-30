@@ -3,8 +3,9 @@ using Discord;
 using System;
 using Discord.Commands;
 using System.Linq;
-using OnePlusBot._Extensions;
 using Discord.WebSocket;
+using OnePlusBot.Base;
+using OnePlusBot.Helpers;
 
 namespace OnePlusBot.Modules
 {
@@ -14,29 +15,30 @@ namespace OnePlusBot.Modules
         [Summary("Posts a News article to the server.")]
         public async Task NewsAsync([Remainder] string news)
         {
-            var channels = Context.Guild.TextChannels;
-            var newschannel = channels.FirstOrDefault(x => x.Name == "news");
-            var newsrole = Context.Guild.Roles.FirstOrDefault(x => x.Name == "News");
-            var journalist = Context.Guild.Roles.FirstOrDefault(x => x.Name == "Journalist");
+            var guild = Context.Guild;
 
-                if (news.Contains("@everyone") || news.Contains("@here") || news.Contains("@news")) 
-                {
-                    await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("⚠ That news contains an illegal ping! Don't do that!"));
-                    return;
-                }
+            var newsChannel = guild.GetTextChannel(Global.Channels["news"]);
+            var newsRole = guild.GetRole(Global.Roles["news"]);
+            var journalistRole = guild.GetRole(Global.Roles["journalist"]);
 
-            var user = Context.Message.Author as SocketGuildUser;
+            if (news.Contains("@everyone") || news.Contains("@here") || news.Contains("@news")) 
+            {
+                await Context.Channel.EmbedAsync(new EmbedBuilder()
+                    .WithColor(9896005)
+                    .WithDescription("⚠ That news contains an illegal ping!"));
+                return;
+            }
 
-            if (!user.Roles.Contains(journalist))
+            var user = (SocketGuildUser) Context.Message.Author;
+
+            if (!user.Roles.Contains(journalistRole))
                 return;
 
-                await newsrole.ModifyAsync(x => x.Mentionable = true);
+            await newsRole.ModifyAsync(x => x.Mentionable = true);
+            await newsChannel.SendMessageAsync(news + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author);
+            await newsRole.ModifyAsync(x => x.Mentionable = false);
 
-                await newschannel.SendMessageAsync(news + Environment.NewLine + Environment.NewLine + newsrole.Mention + Environment.NewLine + "- " + Context.Message.Author);
-
-                await newsrole.ModifyAsync(x => x.Mentionable = false);
-
-                await Context.Message.DeleteAsync();
+            await Context.Message.DeleteAsync();
         }
     }
 }
