@@ -13,6 +13,9 @@ namespace OnePlusBot.Modules
     {
         [Command("warn")]
         [Summary("Warn someone.")]
+        [RequireBotPermission(GuildPermission.KickMembers)]
+        [RequireUserPermission(GuildPermission.PrioritySpeaker)]
+        [RequireUserPermission(GuildPermission.ManageNicknames)]
         public async Task WarnAsync(IGuildUser user, [Optional] [Remainder] string reason)
         {
             var warningsChannel = Context.Guild.GetTextChannel(Global.Channels["warnings"]);;
