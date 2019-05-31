@@ -32,9 +32,21 @@ namespace OnePlusBot.Base
         public async Task InstallCommandsAsync()
         {
             _bot.MessageReceived += OnCommandReceived;
-            _bot.MessageReceived += OnMessageReceived;  
+            _bot.MessageReceived += OnMessageReceived;
+            _bot.MessageDeleted += OnMessageRemoved;
+            _bot.MessageUpdated += OnMessageUpdated;
             _commands.CommandExecuted += OnCommandExecutedAsync;
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+        }
+
+        private Task OnMessageUpdated(Cacheable<IMessage, ulong> arg1, SocketMessage arg2, ISocketMessageChannel arg3)
+        {
+            throw new NotImplementedException();
+        }
+
+        private Task OnMessageRemoved(Cacheable<IMessage, ulong> arg1, ISocketMessageChannel arg2)
+        {
+            throw new NotImplementedException();
         }
 
         private static async Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
