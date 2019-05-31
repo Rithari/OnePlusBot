@@ -78,7 +78,7 @@ namespace OnePlusBot.Base
             if (reaction.MessageId != Global.RoleManagerMessageId)
                 return;
             
-            var dict = new Dictionary<string, string> //TODO: Change from string to emote and role IDs
+            var dict = new Dictionary<string, string> //TODO: Change from string to emote and role IDs // It won't work with the IDs, iirc. -Rith
             {
                 { "1_", "OnePlus One" },
                 { "2_", "OnePlus 2" },
