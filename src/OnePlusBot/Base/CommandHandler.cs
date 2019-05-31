@@ -41,6 +41,9 @@ namespace OnePlusBot.Base
         {
             if (!string.IsNullOrEmpty(result?.ErrorReason))
             {
+                if (result.ErrorReason == "Unknown command.")
+                    return;
+
                 await context.Channel.EmbedAsync(
                     new EmbedBuilder()
                         .WithColor(9896005)
