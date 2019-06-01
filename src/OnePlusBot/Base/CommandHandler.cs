@@ -41,14 +41,11 @@ namespace OnePlusBot.Base
 
         private async Task OnMessageUpdatedAsync(Cacheable<IMessage, ulong> cacheable, SocketMessage message, ISocketMessageChannel socketChannel)
         {
-            var channel = socketChannel as SocketTextChannel;
+            var channel = (SocketTextChannel)socketChannel;
             var before = await cacheable.GetOrDownloadAsync();
             var author = before.Author;
 
-            if (
-                before.Author == _bot.CurrentUser || message.Author == _bot.CurrentUser ||
-                before.Content == "" || message.Content == ""
-               )
+            if (before.Author == _bot.CurrentUser || message.Author == _bot.CurrentUser || before.Content == "" || message.Content == "")
                 return;
 
             var embed = new EmbedBuilder
@@ -56,8 +53,18 @@ namespace OnePlusBot.Base
                 Color = Color.Blue,
                 Description = $":bulb: Message from '{author.Username}' edited in {channel.Mention}",
                 Fields = {
-                    new EmbedFieldBuilder() { IsInline = false, Name = $":x: Original message: ", Value = before.Content },
-                    new EmbedFieldBuilder() { IsInline = false, Name = $":pencil2: New message: ", Value = message.Content }
+                    new EmbedFieldBuilder()
+                    {
+                        IsInline = false,
+                        Name = $":x: Original message: ",
+                        Value = before.Content
+                    },
+                    new EmbedFieldBuilder()
+                    {
+                        IsInline = false,
+                        Name = $":pencil2: New message: ",
+                        Value = message.Content
+                    }
                 },
                 ThumbnailUrl = author.GetAvatarUrl(),
                 Timestamp = DateTime.Now
@@ -81,7 +88,6 @@ namespace OnePlusBot.Base
                 ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
                 Timestamp = DateTime.Now
             };
-
             await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: embed.Build());
 
         }
@@ -149,7 +155,6 @@ namespace OnePlusBot.Base
         {
             if (Regex.IsMatch(message.Content, @"discord(?:\.gg|app\.com\/invite)\/([\w\-]+)") && message.Channel.Id != Global.Channels["referralcodes"])
                 await message.DeleteAsync();
-
 
             var channelId = message.Channel.Id;
 
