@@ -18,7 +18,7 @@ namespace OnePlusBot.Modules
         [RequireUserPermission(GuildPermission.ManageNicknames)]
         public async Task WarnAsync(IGuildUser user, [Optional] [Remainder] string reason)
         {
-            var warningsChannel = Context.Guild.GetTextChannel(Global.Channels["warnings"]);;
+            var warningsChannel = Context.Guild.GetTextChannel(Global.Channels["warnings"]);
 
             var monitor = Context.Message.Author;
 

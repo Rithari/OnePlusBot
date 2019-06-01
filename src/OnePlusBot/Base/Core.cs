@@ -112,7 +112,7 @@ namespace OnePlusBot.Base
         private static IServiceProvider BuildServices()
         {
             return new ServiceCollection()
-                .AddSingleton<DiscordSocketClient>()
+                .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig {MessageCacheSize = 350 }))
                 .AddSingleton<InteractiveService>()
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<CommandService>()
