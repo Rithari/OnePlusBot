@@ -34,19 +34,56 @@ namespace OnePlusBot.Base
             _bot.MessageReceived += OnCommandReceived;
             _bot.MessageReceived += OnMessageReceived;
             _bot.MessageDeleted += OnMessageRemoved;
-            _bot.MessageUpdated += OnMessageUpdated;
+            _bot.MessageUpdated += OnMessageUpdatedAsync;
             _commands.CommandExecuted += OnCommandExecutedAsync;
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
         }
 
-        private Task OnMessageUpdated(Cacheable<IMessage, ulong> arg1, SocketMessage arg2, ISocketMessageChannel arg3)
+        private async Task OnMessageUpdatedAsync(Cacheable<IMessage, ulong> cacheable, SocketMessage message, ISocketMessageChannel socketChannel)
         {
-            throw new NotImplementedException();
+            var channel = socketChannel as SocketTextChannel;
+            var before = await cacheable.GetOrDownloadAsync();
+            var author = before.Author;
+
+            if (
+                before.Author == _bot.CurrentUser || message.Author == _bot.CurrentUser ||
+                before.Content == "" || message.Content == ""
+               )
+                return;
+
+            var embed = new EmbedBuilder
+            {
+                Color = Color.Blue,
+                Description = $":bulb: Message from '{author.Username}' edited in {channel.Mention}",
+                Fields = {
+                    new EmbedFieldBuilder() { IsInline = false, Name = $":x: Original message: ", Value = before.Content },
+                    new EmbedFieldBuilder() { IsInline = false, Name = $":pencil2: New message: ", Value = message.Content }
+                },
+                ThumbnailUrl = author.GetAvatarUrl(),
+                Timestamp = DateTime.Now
+            };
+
+            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: embed.Build());
         }
 
-        private Task OnMessageRemoved(Cacheable<IMessage, ulong> arg1, ISocketMessageChannel arg2)
+        private async Task OnMessageRemoved(Cacheable<IMessage, ulong> cacheable, ISocketMessageChannel socketChannel)
         {
-            throw new NotImplementedException();
+            var deletedMessage = await cacheable.GetOrDownloadAsync();
+            var channel = (SocketTextChannel)socketChannel;
+
+            var embed = new EmbedBuilder
+            {
+                Color = Color.Blue,
+                Description = $":bulb: Message from '{cacheable.Value.Author.Username}' removed in {channel.Mention}",
+                Fields = {
+                    new EmbedFieldBuilder() { IsInline = false, Name = $":x: Original message: ", Value = cacheable.Value.Content },
+                },
+                ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
+                Timestamp = DateTime.Now
+            };
+
+            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: embed.Build());
+
         }
 
         private static async Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
@@ -110,7 +147,12 @@ namespace OnePlusBot.Base
 
         private static async Task OnMessageReceived(SocketMessage message)
         {
+            if (Regex.IsMatch(message.Content, @"discord(?:\.gg|app\.com\/invite)\/([\w\-]+)") && message.Channel.Id != Global.Channels["referralcodes"])
+                await message.DeleteAsync();
+
+
             var channelId = message.Channel.Id;
+
             if (channelId == Global.Channels["setups"])
             {
                 await ValidateSetupsMessage(message);
