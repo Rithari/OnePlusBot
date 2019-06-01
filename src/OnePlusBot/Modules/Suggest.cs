@@ -27,7 +27,7 @@ namespace OnePlusBot.Modules
             await oldmessage.AddReactionsAsync(new IEmote[]
             {
                 Emote.Parse("<:OPYes:426070836269678614>"), 
-                Emote.Parse("<:OPYes:426070836269678614>")
+                Emote.Parse("<:OPNo:426072515094380555>")
             });
             
             await Context.Message.DeleteAsync();

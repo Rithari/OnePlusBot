@@ -54,7 +54,7 @@ namespace OnePlusBot.Properties
                     fb.WithName("Custom emojis" + $"({guild.Emotes.Count})")
                     .WithValue(string.Join(" ", guild.Emotes
                         .Take(20)
-                        .Select(e => $"{e.Name} {e.ToString()}"))));
+                        .Select(e => $"{e.ToString()}"))));
             }
             await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
         }
