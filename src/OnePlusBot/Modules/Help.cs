@@ -20,6 +20,7 @@ namespace OnePlusBot.Modules
         }
 
         [Command("help")]
+        [Alias("h")]
         [Summary("Lists all available commands.")]
         public async Task Help(string path = "")
         {

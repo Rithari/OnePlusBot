@@ -18,6 +18,7 @@ namespace OnePlusBot.Modules
 
 
         [Command("define")]
+        [Alias("ud")]
         [Summary("Grabs the first Urban Dictionary result based on the parameter.")]
         public async Task DefineAsync([Remainder] string searchquery)
         {

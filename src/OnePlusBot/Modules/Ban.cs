@@ -10,6 +10,7 @@ namespace OnePlusBot.Modules
     public class BanModule : ModuleBase<SocketCommandContext>
     {
         [Command("ban", RunMode = RunMode.Async)]
+        [Alias("b")]
         [Summary("Bans specified user.")]
         [RequireBotPermission(GuildPermission.BanMembers)]
         [RequireUserPermission(GuildPermission.PrioritySpeaker)]

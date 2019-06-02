@@ -13,6 +13,7 @@ namespace OnePlusBot.Properties
         public readonly DiscordSocketClient _client;
 
         [Command("serverinfo")]
+        [Alias("server")]
         [Summary("Shows server information.")]
         public async Task sinfo(string guildName = null)
         {

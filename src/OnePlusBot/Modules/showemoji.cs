@@ -8,7 +8,8 @@ namespace OnePlusBot.Modules
 {
     public class ShowEmoji : ModuleBase<SocketCommandContext>
     {
-        [Command("se")]
+        [Command("showemotes")]
+        [Alias("se")]
         [Summary("Shows avatar of a user.")]
         public async Task Showemojis([Remainder] string _) // need to have the parameter so that the message.tags gets populated
         {

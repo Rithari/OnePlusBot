@@ -8,6 +8,7 @@ namespace OnePlusBot.Modules
     public class KickModule : ModuleBase<SocketCommandContext>
     {
         [Command("kick", RunMode = RunMode.Async)]
+        [Alias("k")]
         [Summary("Kicks specified user.")]
         [RequireBotPermission(GuildPermission.BanMembers)]
         [RequireUserPermission(GuildPermission.PrioritySpeaker)]

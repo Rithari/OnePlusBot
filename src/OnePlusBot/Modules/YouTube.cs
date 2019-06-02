@@ -8,7 +8,8 @@ namespace OnePlusBot.Modules
 {
     public class YTModule : ModuleBase<SocketCommandContext>
     {
-        [Command("yt")]
+        [Command("youtube")]
+        [Alias("yt")]
         [Summary("YouTube search for Discord!")]
         public async Task YouTubeAsync([Remainder] string parameter)
         {

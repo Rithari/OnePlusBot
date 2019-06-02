@@ -13,6 +13,7 @@ namespace OnePlusBot.Modules
     public class WarningModule : ModuleBase<SocketCommandContext>
     {
         [Command("warn")]
+        [Alias("w")]
         [Summary("Warn someone.")]
         [RequireBotPermission(GuildPermission.KickMembers)]
         [RequireUserPermission(GuildPermission.PrioritySpeaker)]
