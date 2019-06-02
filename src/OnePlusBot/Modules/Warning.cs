@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using System.Runtime.InteropServices;
@@ -25,14 +26,16 @@ namespace OnePlusBot.Modules
             var entry = new WarnEntry
             {
                 WarnedUser = user.Username + '#' + user.Discriminator,
+                WarnedUserID = user.Id,
                 WarnedBy = monitor.Username + '#' + monitor.Discriminator,
+                WarnedByID = monitor.Id,
                 Reason = reason,
                 Date = Context.Message.Timestamp.DateTime,
             };
 
             using (var db = new Database())
             {
-                db.WarnEntries.Add(entry);
+                db.Warnings.Add(entry);
                 db.SaveChanges();
             }
 
@@ -71,6 +74,23 @@ namespace OnePlusBot.Modules
             await warningsChannel.SendMessageAsync(null,embed: embed).ConfigureAwait(false);
             
             await Context.Message.AddReactionAsync(Emote.Parse("<:success:499567039451758603>"));
+        }
+
+        [Command("warnings")]
+        [Summary("Gets all warnings of given user")]
+        public async Task GetWarnings([Optional] IGuildUser user)
+        {
+            using (var db = new Database())
+            {
+                IQueryable<WarnEntry> warnings = db.Warnings;
+                if (user != null)
+                    warnings = warnings.Where(x => x.WarnedUserID == user.Id);
+
+                foreach (var warning in warnings)
+                {
+                    await ReplyAsync(warning.Reason);
+                }
+            }
         }
     }
 }

@@ -15,8 +15,14 @@ namespace OnePlusBot.Data.Models
         [Column("warned_user")]
         public string WarnedUser { get; set; }
         
+        [Column("warned_user_id")]
+        public ulong WarnedUserID { get; set; }
+        
         [Column("warned_by")]
         public string WarnedBy { get; set; }
+        
+        [Column("warned_by_id")]
+        public ulong WarnedByID { get; set; }
         
         [Column("reason")]
         public string Reason { get; set; }
