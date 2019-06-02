@@ -13,13 +13,12 @@ namespace OnePlusBot.Modules
         public async Task PingAsync()
         {
             var timestamp = Context.Message.Timestamp;
-            var ping = DateTime.UtcNow - timestamp;
 
             const string reply = "Pong....\nWithin {0} ms";
             
             await Context.Channel.EmbedAsync(new EmbedBuilder()
                 .WithColor(9896005)
-                .WithDescription(string.Format(reply, ping.Milliseconds)));
+                .WithDescription(string.Format(reply, Context.Client.Latency)));
         }
     }
 }

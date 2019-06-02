@@ -1,18 +1,14 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using OnePlusBot.Data;
+using OnePlusBot.Data.Models;
+using OnePlusBot.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.IO;
-using System.Runtime.CompilerServices;
-using MySql.Data.MySqlClient;
-using OnePlusBot.Data;
-using OnePlusBot.Data.Models;
-using OnePlusBot.Helpers;
 
 namespace OnePlusBot.Base
 {
@@ -31,12 +27,85 @@ namespace OnePlusBot.Base
 
         public async Task InstallCommandsAsync()
         {
+            _bot.UserJoined += OnuserUserJoined;
+            _bot.UserLeft += OnUserLeft;
             _bot.MessageReceived += OnCommandReceived;
             _bot.MessageReceived += OnMessageReceived;
             _bot.MessageDeleted += OnMessageRemoved;
             _bot.MessageUpdated += OnMessageUpdatedAsync;
+            _bot.UserBanned += OnUserBanned;
+            _bot.UserUnbanned += OnUserUnbanned;
             _commands.CommandExecuted += OnCommandExecutedAsync;
+
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+        }
+
+        private async Task OnUserLeft(SocketGuildUser socketGuildUser)
+        {
+            var modlog = socketGuildUser.Guild.GetTextChannel(Global.Channels["joinlog"]);
+            await modlog.SendMessageAsync(socketGuildUser.Mention + " left the guild");
+        }
+
+        private async Task OnuserUserJoined(SocketGuildUser socketGuildUser)
+        {
+            var modlog = socketGuildUser.Guild.GetTextChannel(Global.Channels["joinlog"]);
+            await modlog.SendMessageAsync(socketGuildUser.Mention + " joined the guild");
+        }
+
+        private async Task OnUserUnbanned(SocketUser socketUser, SocketGuild socketGuild)
+        {
+            var modlog = socketGuild.GetTextChannel(Global.Channels["modlog"]);
+
+            var restAuditLogs = await socketGuild.GetAuditLogsAsync(10).FlattenAsync();
+
+            var unbanLog = restAuditLogs.FirstOrDefault(x => x.Action == ActionType.Unban);
+
+
+            await modlog.EmbedAsync(new EmbedBuilder()
+                .WithColor(9896005)
+                .WithTitle("♻️ Unbanned User")
+                .AddField(efb => efb
+                    .WithName("Username")
+                    .WithValue(socketUser.ToString())
+                    .WithIsInline(true))
+                .AddField(efb => efb
+                    .WithName("ID")
+                    .WithValue(socketUser.Id.ToString())
+                    .WithIsInline(true))
+                .AddField(efb => efb
+                    .WithName("By")
+                    .WithValue(unbanLog.User)
+                    .WithIsInline(true)));
+        }
+
+        private async Task OnUserBanned(SocketUser socketUser, SocketGuild socketGuild)
+        {
+            var modlog = socketGuild.GetTextChannel(Global.Channels["modlog"]);
+
+            var restAuditLogs = await socketGuild.GetAuditLogsAsync(10).FlattenAsync(); //As above, might be unnecessary as requests come in packs of 100.
+
+            var banLog = restAuditLogs.FirstOrDefault(x => x.Action == ActionType.Ban);
+
+
+            await modlog.EmbedAsync(new EmbedBuilder()
+                .WithColor(9896005)
+                .WithTitle("⛔️ Banned User")
+                .AddField(efb => efb
+                    .WithName("Username")
+                    .WithValue(socketUser.ToString())
+                    .WithIsInline(true))
+                .AddField(efb => efb
+                    .WithName("ID")
+                    .WithValue(socketUser.Id.ToString())
+                    .WithIsInline(true))
+                .AddField(efb => efb
+                    .WithName("Reason")
+                    .WithValue(banLog.Reason)
+                    .WithIsInline(true))
+                .AddField(efb => efb
+                    .WithName("By")
+                    .WithValue(banLog.User)
+                    .WithIsInline(true)));
         }
 
         private async Task OnMessageUpdatedAsync(Cacheable<IMessage, ulong> cacheable, SocketMessage message, ISocketMessageChannel socketChannel)

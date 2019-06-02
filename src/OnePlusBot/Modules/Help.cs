@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Discord;
+using Discord.Commands;
+using OnePlusBot.Base;
+using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Discord;
-using Discord.Commands;
-using OnePlusBot.Base;
 
 namespace OnePlusBot.Modules
 {
-   public class HelpModule : ModuleBase<SocketCommandContext>
+    public class HelpModule : ModuleBase<SocketCommandContext>
     {
         private readonly CommandService _commands;
         private readonly IServiceProvider _services;

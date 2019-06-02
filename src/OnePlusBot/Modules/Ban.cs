@@ -1,10 +1,9 @@
-﻿using System;
-using Discord;
+﻿using Discord;
 using Discord.Commands;
-using System.Threading.Tasks;
-using System.Linq;
 using OnePlusBot.Base;
 using OnePlusBot.Helpers;
+using System;
+using System.Threading.Tasks;
 
 namespace OnePlusBot.Modules
 {
@@ -23,10 +22,6 @@ namespace OnePlusBot.Modules
             
             var emoteTrue = Emote.Parse("<:success:499567039451758603>");
             await Context.Message.AddReactionAsync(emoteTrue);
-            await modlog.EmbedAsync(new EmbedBuilder().WithColor(9896005)
-                .WithTitle("⛔️ Banned User")
-                .AddField(efb => efb.WithName("Username").WithValue(("<@"+name.ToString())+">").WithIsInline(true))
-                .AddField(efb => efb.WithName("ID").WithValue(name.ToString()).WithIsInline(true)));
         }
     
         [Command("ban", RunMode = RunMode.Async)]
@@ -65,19 +60,6 @@ namespace OnePlusBot.Modules
             {
                 var emoteTrue = Emote.Parse("<:success:499567039451758603>");
                 await Context.Message.AddReactionAsync(emoteTrue);
-
-                var modlog = Context.Guild.GetTextChannel(Global.Channels["modlog"]);
-                await modlog.EmbedAsync(new EmbedBuilder()
-                    .WithColor(9896005)
-                    .WithTitle("⛔️ Banned User")
-                    .AddField(efb => efb
-                        .WithName("Username")
-                        .WithValue(user.ToString())
-                        .WithIsInline(true))
-                    .AddField(efb => efb
-                        .WithName("ID")
-                        .WithValue(user.Id.ToString())
-                        .WithIsInline(true)));
 
                 const string banMessage = "You were banned on r/OnePlus for the following reason: {0}\n" +
                                           "If you believe this to be a mistake, please send an appeal e-mail with all the details to admin@kyot.me";
