@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using System.Runtime.InteropServices;
@@ -25,14 +26,16 @@ namespace OnePlusBot.Modules
             var entry = new WarnEntry
             {
                 WarnedUser = user.Username + '#' + user.Discriminator,
+                WarnedUserID = user.Id,
                 WarnedBy = monitor.Username + '#' + monitor.Discriminator,
+                WarnedByID = monitor.Id,
                 Reason = reason,
                 Date = Context.Message.Timestamp.DateTime,
             };
 
             using (var db = new Database())
             {
-                db.WarnEntries.Add(entry);
+                db.Warnings.Add(entry);
                 db.SaveChanges();
             }
 
@@ -49,7 +52,7 @@ namespace OnePlusBot.Modules
                     .WithIconUrl("https://a.kyot.me/0WPy.png");
             });
             
-            builder.ThumbnailUrl = user.RealAvatarUrl().ToString();
+            builder.ThumbnailUrl = user.GetAvatarUrl();
             
             builder.WithAuthor(author =>
             {
@@ -71,6 +74,62 @@ namespace OnePlusBot.Modules
             await warningsChannel.SendMessageAsync(null,embed: embed).ConfigureAwait(false);
             
             await Context.Message.AddReactionAsync(Emote.Parse("<:success:499567039451758603>"));
+        }
+
+        [Command("warnings")]
+        [Summary("Gets all warnings of given user")]
+        public async Task GetWarnings(IGuildUser user)
+        {
+            using (var db = new Database())
+            {
+                IQueryable<WarnEntry> warnings = db.Warnings;
+                var embed = new EmbedBuilder();
+                int iWarning = 0;
+
+                if (user != null)
+                {
+                    warnings = warnings.Where(x => x.WarnedUserID == user.Id);
+                    var warningsCount = warnings.Count().ToString();
+
+                    embed
+                     .WithColor(9896005)
+                     .WithTitle("\u26A0\uFE0F" + user.Username + " has " + warningsCount + " warnings.");
+
+                }
+                else
+                {
+                    embed
+                    .WithColor(9896005)
+                    .WithTitle("\u26A0\uFE0F" + "There are " + warnings.Count() + " warnings.");
+                }
+
+
+                foreach (var warning in warnings)
+                {
+                    iWarning++;
+                    if (user != null)
+                    {
+                        embed
+                        .AddField(efb => efb
+                        .WithName("Warning #" + iWarning)
+                        .WithValue("Reason: " + warning.Reason));
+
+                        embed.ThumbnailUrl = user.GetAvatarUrl();
+                    }
+                    else
+                    {
+                        embed
+                        .AddField(efb => efb
+                        .WithName("User")
+                        .WithValue(warning.WarnedUser))
+                        .AddField(efb => efb
+                        .WithName("Warning #" + iWarning)
+                        .WithValue("Reason: " + warning.Reason));
+                    }
+                }
+
+                await ReplyAsync(embed: embed.Build());
+            }
         }
     }
 }
