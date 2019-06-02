@@ -52,7 +52,7 @@ namespace OnePlusBot.Modules
                     .WithIconUrl("https://a.kyot.me/0WPy.png");
             });
             
-            builder.ThumbnailUrl = user.RealAvatarUrl().ToString();
+            builder.ThumbnailUrl = user.GetAvatarUrl();
             
             builder.WithAuthor(author =>
             {
@@ -78,18 +78,57 @@ namespace OnePlusBot.Modules
 
         [Command("warnings")]
         [Summary("Gets all warnings of given user")]
-        public async Task GetWarnings([Optional] IGuildUser user)
+        public async Task GetWarnings(IGuildUser user)
         {
             using (var db = new Database())
             {
                 IQueryable<WarnEntry> warnings = db.Warnings;
+                var embed = new EmbedBuilder();
+                int iWarning = 0;
+
                 if (user != null)
+                {
                     warnings = warnings.Where(x => x.WarnedUserID == user.Id);
+                    var warningsCount = warnings.Count().ToString();
+
+                    embed
+                     .WithColor(9896005)
+                     .WithTitle("\u26A0\uFE0F" + user.Username + " has " + warningsCount + " warnings.");
+
+                }
+                else
+                {
+                    embed
+                    .WithColor(9896005)
+                    .WithTitle("\u26A0\uFE0F" + "There are " + warnings.Count() + " warnings.");
+                }
+
 
                 foreach (var warning in warnings)
                 {
-                    await ReplyAsync(warning.Reason);
+                    iWarning++;
+                    if (user != null)
+                    {
+                        embed
+                        .AddField(efb => efb
+                        .WithName("Warning #" + iWarning)
+                        .WithValue("Reason: " + warning.Reason));
+
+                        embed.ThumbnailUrl = user.GetAvatarUrl();
+                    }
+                    else
+                    {
+                        embed
+                        .AddField(efb => efb
+                        .WithName("User")
+                        .WithValue(warning.WarnedUser))
+                        .AddField(efb => efb
+                        .WithName("Warning #" + iWarning)
+                        .WithValue("Reason: " + warning.Reason));
+                    }
                 }
+
+                await ReplyAsync(embed: embed.Build());
             }
         }
     }
