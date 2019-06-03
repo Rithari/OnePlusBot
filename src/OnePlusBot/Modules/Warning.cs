@@ -32,7 +32,7 @@ namespace OnePlusBot.Modules
 
             using (var db = new Database())
             {
-                db.WarnEntries.Add(entry);
+                db.Warnings.Add(entry);
                 db.SaveChanges();
             }
 
@@ -65,6 +65,7 @@ namespace OnePlusBot.Modules
                     "Location of the incident",
                     $"[#{Context.Message.Channel.Name}]({string.Format(discordUrl, Context.Guild.Id, Context.Channel.Id, Context.Message.Id)})")
                 .AddField("Reason", reason ?? "No reason was provided.");
+               
 
 
             var embed = builder.Build();

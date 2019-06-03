@@ -116,6 +116,8 @@ namespace OnePlusBot.Base
 
             if (before.Author == _bot.CurrentUser || message.Author == _bot.CurrentUser || before.Content == "" || message.Content == "")
                 return;
+            if (before.Content == message.Content)
+                return;
 
             var embed = new EmbedBuilder
             {

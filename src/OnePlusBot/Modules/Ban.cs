@@ -41,7 +41,7 @@ namespace OnePlusBot.Modules
                         .WithColor(9896005)
                         .WithDescription("⚠ You humans can't make us harm each other.")
                         .WithTitle(user.ToString()));
-                return;
+                return RuntimeResult(CommandError.UnmetPrecondition, "You can't ban bots.");
             }
 
             if (user.GuildPermissions.PrioritySpeaker)
