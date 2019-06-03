@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using OnePlusBot.Base;
 
 namespace OnePlusBot.Base
 {
@@ -165,6 +166,28 @@ namespace OnePlusBot.Base
 
         private static async Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
+            switch(result)
+            {
+                case result.IsSuccess:
+
+                var emoteTrue = Emote.Parse("<:success:499567039451758603>");
+                await context.Message.AddReactionAsync(emoteTrue);
+
+                break;
+
+                default:
+                 if (!string.IsNullOrEmpty(result?.ErrorReason))
+                 {
+                    if(result.ErrorReason == "Unknown command.")
+                            return;
+
+                    await context.Channel.SendMessageAsync("\u26A0 " + result.ErrorReason);
+                    
+                 }
+                break;
+            }
+
+
             if (!string.IsNullOrEmpty(result?.ErrorReason))
             {
                 if (result.ErrorReason == "Unknown command.")
