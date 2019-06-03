@@ -32,7 +32,7 @@ namespace OnePlusBot.Base
             _bot.MessageReceived += OnCommandReceived;
             _bot.MessageReceived += OnMessageReceived;
             _bot.MessageDeleted += OnMessageRemoved;
-            _bot.MessageUpdated += OnMessageUpdatedAsync;
+            _bot.MessageUpdated += OnMessageUpdated;
             _bot.UserBanned += OnUserBanned;
             _bot.UserUnbanned += OnUserUnbanned;
             _commands.CommandExecuted += OnCommandExecutedAsync;
@@ -108,7 +108,7 @@ namespace OnePlusBot.Base
                     .WithIsInline(true)));
         }
 
-        private async Task OnMessageUpdatedAsync(Cacheable<IMessage, ulong> cacheable, SocketMessage message, ISocketMessageChannel socketChannel)
+        private async Task OnMessageUpdated(Cacheable<IMessage, ulong> cacheable, SocketMessage message, ISocketMessageChannel socketChannel)
         {
             var channel = (SocketTextChannel)socketChannel;
             var before = await cacheable.GetOrDownloadAsync();
