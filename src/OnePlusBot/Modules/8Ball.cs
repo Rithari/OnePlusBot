@@ -13,15 +13,16 @@ namespace OnePlusBot.Modules
         [Summary("Magic 8Ball for Discord!")]
         public async Task MagicBallAsync([Remainder] string search)
         {
-                var answers = GetAnswers();
-                var answer = answers[Global.Random.Next(answers.Length)];
+            var answers = GetAnswers();
+            var answer = answers[Global.Random.Next(answers.Length)];
 
-                await Context.Channel.EmbedAsync(new EmbedBuilder()
-                    .WithColor(9896005)
-                    .AddField(efb => efb.WithName("🎱 The 8 Ball Says:")
-                    .WithValue(answer)));
-
-                await ReplyAsync(ex.Message);
+            await Context.Channel.EmbedAsync(new EmbedBuilder()
+                .WithColor(9896005)
+                .AddField(efb =>
+                {
+                    efb.Name = "🎱 The 8 Ball Says:";
+                    efb.Value = answer;
+                }));
         }
         
         private static string[] GetAnswers()
