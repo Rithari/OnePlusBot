@@ -48,27 +48,26 @@ namespace OnePlusBot.Modules
                     case "unbrick":
                     case "bricked":
                     case "brick":
-                        if (Context.Channel.Name == "oneplus6-6t")
+                    
+                        if (Context.Channel.Name == "oneplus7-series")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Unbrick guide for OnePlus 6: <https://forums.oneplus.com/threads/guide-mega-unbrick-guide-for-a-hard-bricked-oneplus-6.840709>" + Environment.NewLine +
-                                             "Unbrick guide for OnePlus 6T: <https://forum.xda-developers.com/oneplus-6t/how-to/tool-6t-msmdownloadtool-v4-0-oos-9-0-5-t386744>" + Environment.NewLine +
-                                             "Unbrick guide for OnePlus 6T TMobile: <https://forum.xda-developers.com/oneplus-6t/how-to/tool-t-mobile-oneplus-6t-msmdownloadtool-t3868916>"));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out #useful-links for all Unbrick Tools for the OnePlus 7-series. Those also include the needed software and a manual"));
+                        }
+                        else if (Context.Channel.Name == "oneplus6-6t")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out #useful-links for all Unbrick Tools for the OnePlus 6 and 6T. Those also include the needed software and a manual"));
                         }
                         else if (Context.Channel.Name == "oneplus5-5t")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Unbrick tool for OnePlus 5: <https://forums.oneplus.com/threads/guide-mega-unbrick-guide-for-a-hard-bricked-oneplus-5.594957>" + Environment.NewLine +
-                                             "Unbrick tool for OnePlus 5T: <https://forums.oneplus.com/threads/guide-mega-unbrick-guide-for-a-hard-bricked-oneplus-5t.751497>"));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out #useful-links for all Unbrick Tools for the OnePlus 5 and 5T. Those also include the needed software and a manual"));
                         }
                         else if (Context.Channel.Name == "oneplus3-3t")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Unbrick tool for OnePlus 3: <https://forums.oneplus.com/threads/guide-mega-unbrick-guide-for-a-hard-bricked-oneplus-3.452634>" + Environment.NewLine +
-                                             "Unbrick tool for OnePlus 3T: <https://forums.oneplus.com/threads/guide-oneplus-3-3t-unbrick.531047>"));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out #useful-links for all Unbrick Tools for the OnePlus 3 and 3T. Those also include the needed software and a manual"));
                         }
                         else if (Context.Channel.Name == "legacy")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Unbrick guide for OnePlus 2: <https://forums.oneplus.com/threads/updated-28-06-2016-mega-unbrick-guide-for-a-hard-bricked-oneplus-2.347607>" + Environment.NewLine +
-                                             "Unbrick guide for OnePlus X: <https://forums.oneplus.com/threads/guide-mega-unbrick-guide-for-a-hard-bricked-oneplus-x.417648>" + Environment.NewLine +
-                                             "Unbrick guide for OnePlus One: <https://forum.xda-developers.com/oneplus-one/general/guide-unbrick-oneplus-one-t3013732>"));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out #useful-links for all Unbrick Tools for legacy devices. Those also include the needed software and a manual"));
                         }
                         else
                         {
@@ -77,7 +76,11 @@ namespace OnePlusBot.Modules
                         break;
                     case "root":
                     case "magisk":
-                        if (Context.Channel.Name == "oneplus6-6t")
+                        if (Context.Channel.Name == "oneplus7-series")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Unlock bootloader using `fastboot oem unlock`. Boot temporarily into TWRP using `fastboot boot twrp.img` and select option `Install recovery to ramdisk`. Reboot your phone, come back to TWRP installed in ramdisk and then flash Magisk zip."));
+                        }    
+                        else if (Context.Channel.Name == "oneplus6-6t")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Unlock bootloader using `fastboot oem unlock`. Boot temporarily into TWRP using `fastboot boot twrp.img` and select option `Install recovery to ramdisk`. Reboot your phone, come back to TWRP installed in ramdisk and then flash Magisk zip."));
                         }
@@ -130,7 +133,11 @@ namespace OnePlusBot.Modules
                     case "oos":
                     case "ota":
                     case "rom":
-                        if (Context.Channel.Name == "oneplus6-6t")
+                        if (Context.Channel.Name == "oneplus7-series")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("OnePlus 7 Pro mirrors for official OxygenOS: <https://forums.oneplus.com/threads/oneplus-7-pro-5g-rom-ota-oxygen-os-repo-of-oxygen-os-builds.1033129/>"));
+                        }
+                        else if (Context.Channel.Name == "oneplus6-6t")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("OnePlus 6 mirrors for official OxygenOS: <https://forums.oneplus.com/threads/oneplus-6-rom-ota-oxygen-os-mirrors-for-official-oxygen-os-roms-and-ota-updates.835607>" + Environment.NewLine +
                                              "OnePlus 6T mirrors unavailable. Please use <https://www.oneplus.com/support/softwareupgrade/details?code=9>"));
