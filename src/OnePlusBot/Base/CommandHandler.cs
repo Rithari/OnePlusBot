@@ -208,16 +208,64 @@ namespace OnePlusBot.Base
             }
         }
 
-        private static bool IsValidReferralMessage(SocketMessage message)
+        private static async Task HandleReferralMessage(SocketMessage message)
         {
-            if (!Regex.IsMatch(message.Content, @"^https?:\/\/[^\s]+$"))
-                return false;
-            
             using (var db = new Database())
             {
-                return db.ReferralCodes.All(x => x.Sender != message.Author.Id ||
-                                                 (DateTime.UtcNow - x.Date).Days >= 14);
+                if (db.ReferralCodes.Any(x => (DateTime.UtcNow - x.Date).Days < 14 && 
+                                              x.Sender == message.Author.Id))
+                {
+                    var msg = await message.Channel.SendMessageAsync($"{message.Author.Mention} You already have sent a referral in the last 2 weeks");
+                    await Task.Delay(2000);
+                    await msg.DeleteAsync();
+                    return;
+                }
             }
+
+            var matches = Regex.Matches(message.Content, @"https?:\/\/(?:www\.)?oneplus\.com[^\s]*invite(?:\#([^\s]+)|.+\=([^\s\&]+))", RegexOptions.IgnoreCase);
+
+            if (matches.Count > 2)
+            {
+                var msg = await message.Channel.SendMessageAsync($"{message.Author.Mention} Max 2 referrals per message");
+                await Task.Delay(2000);
+                await msg.DeleteAsync();
+                return;
+            }
+            
+            var embed = new EmbedBuilder();
+            embed.WithColor(9896005);
+            embed.Author = new EmbedAuthorBuilder()
+                .WithName(message.Author.Username)
+                .WithIconUrl(message.Author.GetAvatarUrl());
+            embed.Description = $"Sent by {message.Author.Mention}";
+            
+            foreach (Match match in matches)
+            {
+                using (var db = new Database())
+                {
+                    db.ReferralCodes.Add(new ReferralCode
+                    {
+                        Code = match.Groups[1].Value,
+                        Date = message.CreatedAt.DateTime,
+                        Sender = message.Author.Id
+                    });
+                    db.SaveChanges();
+                }
+
+                string name;
+                // Cheap way to check without having a command
+                if (match.Groups[1].Length < 20) 
+                    name = "Smartphone";
+                else
+                    name = "Wireless Bullets 2";
+                embed.AddField(new EmbedFieldBuilder()
+                    .WithName(name)
+                    .WithValue($"Referral: [#{match.Groups[1].Value}]({match.Value})"));
+            }
+
+            await message.Channel.EmbedAsync(embed);
+            
+            await message.DeleteAsync();
         }
 
         private static async Task OnMessageReceived(SocketMessage message)
@@ -243,36 +291,8 @@ namespace OnePlusBot.Base
             {
                 if (message.Author.IsBot)
                     return;
-                
-                if (IsValidReferralMessage(message))
-                {
-                    var index = message.Content.IndexOf("invite#", StringComparison.OrdinalIgnoreCase);
-                    var code = message.Content.Substring(index + 7);
-                    
-                    using (var db = new Database())
-                    {
-                        db.ReferralCodes.Add(new ReferralCode
-                        {
-                            Code = code,
-                            Date = message.Timestamp.Date,
-                            Sender = message.Author.Id
-                        });
-                        db.SaveChanges();
-                    }
-                }
-                else
-                {
-                    await message.DeleteAsync();
-                    const string msg = "{0} Please include only the link in the message.\n" +
-                                       "Invites can be bumped once every 2 weeks.";
-                    var reply = await message.Channel.SendMessageAsync(string.Format(msg, message.Author.Mention));
-                    
-                    new Task(async () =>
-                    {
-                        await Task.Delay(5000);
-                        await reply.DeleteAsync();
-                    }).Start();
-                }
+
+                await HandleReferralMessage(message);
             }
         }
 
