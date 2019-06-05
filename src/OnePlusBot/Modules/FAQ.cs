@@ -76,7 +76,11 @@ namespace OnePlusBot.Modules
                         break;
                     case "root":
                     case "magisk":
-                        if (Context.Channel.Name == "oneplus6-6t")
+                        if (Context.Channel.Name == "oneplus7-series")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Unlock bootloader using `fastboot oem unlock`. Boot temporarily into TWRP using `fastboot boot twrp.img` and select option `Install recovery to ramdisk`. Reboot your phone, come back to TWRP installed in ramdisk and then flash Magisk zip."));
+                        }    
+                        else if (Context.Channel.Name == "oneplus6-6t")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Unlock bootloader using `fastboot oem unlock`. Boot temporarily into TWRP using `fastboot boot twrp.img` and select option `Install recovery to ramdisk`. Reboot your phone, come back to TWRP installed in ramdisk and then flash Magisk zip."));
                         }
@@ -129,6 +133,10 @@ namespace OnePlusBot.Modules
                     case "oos":
                     case "ota":
                     case "rom":
+                        if (Context.Channel.Name == "oneplus7-series")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("OnePlus 7 Pro mirrors for official OxygenOS: <https://forums.oneplus.com/threads/oneplus-7-pro-5g-rom-ota-oxygen-os-repo-of-oxygen-os-builds.1033129/>"));
+                        }
                         if (Context.Channel.Name == "oneplus6-6t")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("OnePlus 6 mirrors for official OxygenOS: <https://forums.oneplus.com/threads/oneplus-6-rom-ota-oxygen-os-mirrors-for-official-oxygen-os-roms-and-ota-updates.835607>" + Environment.NewLine +
