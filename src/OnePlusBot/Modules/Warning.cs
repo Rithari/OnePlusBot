@@ -1,12 +1,10 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using System.Runtime.InteropServices;
 using OnePlusBot.Base;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
-using OnePlusBot.Helpers;
 
 namespace OnePlusBot.Modules
 {
@@ -69,68 +67,10 @@ namespace OnePlusBot.Modules
                     $"[#{Context.Message.Channel.Name}]({string.Format(discordUrl, Context.Guild.Id, Context.Channel.Id, Context.Message.Id)})")
                 .AddField("Reason", reason ?? "No reason was provided.");
                
-
-
             var embed = builder.Build();
             await warningsChannel.SendMessageAsync(null,embed: embed).ConfigureAwait(false);
 
             return CustomResult.FromSuccess();
-        }
-
-        [Command("warnings")]
-        [Summary("Gets all warnings of given user")]
-        public async Task GetWarnings(IGuildUser user)
-        {
-            using (var db = new Database())
-            {
-                IQueryable<WarnEntry> warnings = db.Warnings;
-                var embed = new EmbedBuilder();
-                int iWarning = 0;
-
-                if (user != null)
-                {
-                    warnings = warnings.Where(x => x.WarnedUserID == user.Id);
-                    var warningsCount = warnings.Count().ToString();
-
-                    embed
-                     .WithColor(9896005)
-                     .WithTitle("\u26A0\uFE0F" + user.Username + " has " + warningsCount + " warnings.");
-
-                }
-                else
-                {
-                    embed
-                    .WithColor(9896005)
-                    .WithTitle("\u26A0\uFE0F" + "There are " + warnings.Count() + " warnings.");
-                }
-
-
-                foreach (var warning in warnings)
-                {
-                    iWarning++;
-                    if (user != null)
-                    {
-                        embed
-                        .AddField(efb => efb
-                        .WithName("Warning #" + iWarning)
-                        .WithValue("Reason: " + warning.Reason));
-
-                        embed.ThumbnailUrl = user.GetAvatarUrl();
-                    }
-                    else
-                    {
-                        embed
-                        .AddField(efb => efb
-                        .WithName("User")
-                        .WithValue(warning.WarnedUser))
-                        .AddField(efb => efb
-                        .WithName("Warning #" + iWarning)
-                        .WithValue("Reason: " + warning.Reason));
-                    }
-                }
-
-                await ReplyAsync(embed: embed.Build());
-            }
         }
     }
 }
