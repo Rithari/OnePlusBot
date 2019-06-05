@@ -17,7 +17,7 @@ namespace OnePlusBot.Modules
         [RequireBotPermission(GuildPermission.KickMembers)]
         [RequireUserPermission(GuildPermission.PrioritySpeaker)]
         [RequireUserPermission(GuildPermission.ManageNicknames)]
-        public async Task WarnAsync(IGuildUser user, [Optional] [Remainder] string reason)
+        public async Task<RuntimeResult> WarnAsync(IGuildUser user, [Optional] [Remainder] string reason)
         {
             var warningsChannel = Context.Guild.GetTextChannel(Global.Channels["warnings"]);
 
@@ -68,12 +68,13 @@ namespace OnePlusBot.Modules
                     "Location of the incident",
                     $"[#{Context.Message.Channel.Name}]({string.Format(discordUrl, Context.Guild.Id, Context.Channel.Id, Context.Message.Id)})")
                 .AddField("Reason", reason ?? "No reason was provided.");
+               
 
 
             var embed = builder.Build();
             await warningsChannel.SendMessageAsync(null,embed: embed).ConfigureAwait(false);
-            
-            await Context.Message.AddReactionAsync(Emote.Parse("<:success:499567039451758603>"));
+
+            return CustomResult.FromSuccess();
         }
 
         [Command("warnings")]

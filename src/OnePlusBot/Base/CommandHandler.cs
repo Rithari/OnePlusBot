@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using OnePlusBot.Base;
 
 namespace OnePlusBot.Base
 {
@@ -116,6 +117,8 @@ namespace OnePlusBot.Base
 
             if (before.Author == _bot.CurrentUser || message.Author == _bot.CurrentUser || before.Content == "" || message.Content == "")
                 return;
+            if (before.Content == message.Content)
+                return;
 
             var embed = new EmbedBuilder
             {
@@ -163,16 +166,31 @@ namespace OnePlusBot.Base
 
         private static async Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
-            if (!string.IsNullOrEmpty(result?.ErrorReason))
+            switch(result)
             {
-                if (result.ErrorReason == "Unknown command.")
+                case CustomResult customResult:
+                    if (customResult.IsSuccess)
+                    {
+                        await context.Message.AddReactionAsync(Emote.Parse("<:success:499567039451758603>"));
+                    }
+                    else
+                    {
+                        await context.Message.AddReactionAsync(new Emoji("⚠"));
+                        await context.Channel.SendMessageAsync(customResult.Reason);
+                    }
+                    break;
+
+                default:
+                 if (!string.IsNullOrEmpty(result?.ErrorReason))
+                 {
+                    if (result.ErrorReason == "Unknown command.")
                     return;
 
-                await context.Channel.EmbedAsync(
-                    new EmbedBuilder()
-                        .WithColor(9896005)
-                        .WithDescription("\u26A0 " + result.ErrorReason)
-                        .WithTitle(context.Message.Author.ToString()));
+                    await context.Message.AddReactionAsync(new Emoji("⚠"));
+                    await context.Channel.SendMessageAsync("\u26A0 " + result.ErrorReason);
+                    return;
+                 }
+                break;
             }
         }
 
