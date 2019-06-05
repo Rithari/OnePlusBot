@@ -31,10 +31,11 @@ namespace OnePlusBot.Modules
                 x.IsInline = true;
             });
             
+
             embed.AddField(x =>
             {
                 x.Name = "Activity";
-                x.Value = user.Activity.Name;
+                x.Value = user.Activity?.Name ?? "Nothing";
                 x.IsInline = true;
             });
 

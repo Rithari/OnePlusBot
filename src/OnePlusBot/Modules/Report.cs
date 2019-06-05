@@ -50,7 +50,7 @@ namespace OnePlusBot.Modules
                     .WithIconUrl("https://a.kyot.me/0WPy.png");
             });
             
-            builder.ThumbnailUrl = user.RealAvatarUrl().ToString();
+            builder.ThumbnailUrl = user.GetAvatarUrl();
             
             builder.WithAuthor(author =>
             {
