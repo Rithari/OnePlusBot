@@ -12,10 +12,10 @@ namespace OnePlusBot.Base
         {
         }
 
-        public static MyCustomResult FromError(string reason) 
-            => new MyCustomResult(CommandError.Unsuccessful, reason);
+        public static CustomResult FromError(string reason) 
+            => new CustomResult(CommandError.Unsuccessful, reason);
 
-        public static MyCustomResult FromSuccess(string reason = null)
-            => new MyCustomResult(null, reason);
+        public static CustomResult FromSuccess(string reason = null)
+            => new CustomResult(null, reason);
     }
 }

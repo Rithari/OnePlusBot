@@ -22,6 +22,8 @@ namespace OnePlusBot.Modules
             var modlog = Context.Guild.GetTextChannel(Global.Channels["modlog"]);
             await Context.Guild.AddBanAsync(name, 0, reason);
 
+            return CustomResult.FromSuccess();
+
         }
     
 
@@ -35,10 +37,10 @@ namespace OnePlusBot.Modules
         public async Task<RuntimeResult> BanAsync(IGuildUser user, [Remainder] string reason = null)
         {
             if (user.IsBot)
-                return RuntimeResult.FromError("You can't ban bots.");
+                return CustomResult.FromError("You can't ban bots.");
 
             if (user.GuildPermissions.PrioritySpeaker)
-                return RuntimeResult.FromError("You can't ban staff.");
+                return CustomResult.FromError("You can't ban staff.");
 
             try
             {
@@ -46,11 +48,13 @@ namespace OnePlusBot.Modules
                                           "If you believe this to be a mistake, please send an appeal e-mail with all the details to admin@kyot.me";
                 await user.SendMessageAsync(string.Format(banMessage, reason));
                 await Context.Guild.AddBanAsync(user, 0, reason);
+                return CustomResult.FromSuccess();
 
             }
-            catch (Exception)
-            {
-                await Context.Guild.AddBanAsync(user, 0, reason);
+            catch (Exception ex)
+            {   //  may not be needed
+                // await Context.Guild.AddBanAsync(user, 0, reason);
+                return CustomResult.FromError(ex.Message);
             }
         }
     }

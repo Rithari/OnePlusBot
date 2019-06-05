@@ -168,11 +168,11 @@ namespace OnePlusBot.Base
         {
             switch(result)
             {
-                case result.IsSuccess:
+                case CustomResult customResult:
+                    Console.WriteLine($"Custom Result was {customResult.Error}, with message {customResult.Reason}");
 
-                var emoteTrue = Emote.Parse("<:success:499567039451758603>");
-                await context.Message.AddReactionAsync(emoteTrue);
-
+                    var emoteTrue = Emote.Parse("\u26A0");
+                    await context.Message.AddReactionAsync(emoteTrue);
                 break;
 
                 default:

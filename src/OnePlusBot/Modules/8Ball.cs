@@ -19,8 +19,6 @@ namespace OnePlusBot.Modules
                 await Context.Channel.EmbedAsync(new EmbedBuilder()
                     .WithColor(9896005)
                     .AddField(efb => efb.WithName("🎱 The 8 Ball Says:").WithValue(answer).WithIsInline(false)));
-
-                await ReplyAsync(ex.Message);
         }
         
         private static string[] GetAnswers()
