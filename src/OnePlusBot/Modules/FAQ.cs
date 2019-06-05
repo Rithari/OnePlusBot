@@ -53,7 +53,7 @@ namespace OnePlusBot.Modules
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out #useful-links for all Unbrick Tools for the OnePlus 7-series. Those also include the needed software and a manual"));
                         }
-                        if (Context.Channel.Name == "oneplus6-6t")
+                        else if (Context.Channel.Name == "oneplus6-6t")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out #useful-links for all Unbrick Tools for the OnePlus 6 and 6T. Those also include the needed software and a manual"));
                         }
