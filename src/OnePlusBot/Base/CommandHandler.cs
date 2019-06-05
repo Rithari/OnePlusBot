@@ -249,6 +249,15 @@ namespace OnePlusBot.Base
                 await msg.DeleteAsync();
                 return;
             }
+
+            if(matches.Count == 0)
+            {
+                var msg = await message.Channel.SendMessageAsync($"{message.Author.Mention} Post a referral code!");
+                await message.DeleteAsync();
+                await Task.Delay(2000);
+                await msg.DeleteAsync();
+                return;
+            }
             
             var embed = new EmbedBuilder();
             embed.WithColor(9896005);
