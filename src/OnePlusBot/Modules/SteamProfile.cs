@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
+using OnePlusBot.Base;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Pomelo.EntityFrameworkCore.MySql;
 
@@ -20,7 +21,7 @@ namespace OnePlusBot.Modules
         
         [Command("steamp")]
         [Summary("Steam profile banner for Discord!")]
-        public async Task SteampAsync([Remainder] string user)
+        public async Task<RuntimeResult> SteampAsync([Remainder] string user)
         {
             await Context.Message.AddReactionAsync(Emote.Parse("<:success:499567039451758603>"));
 
@@ -31,8 +32,7 @@ namespace OnePlusBot.Modules
             {
                 if (stream == null)
                 {
-                    await ReplyAsync("Could not establish connession steam API");
-                    return;
+                    return CustomResult.FromError("Could not establish a connection to the Steam API");
                 }
                 
                 using (var fs = File.Open("output.png", FileMode.Create, FileAccess.Write, FileShare.Read))
@@ -44,6 +44,7 @@ namespace OnePlusBot.Modules
             }
 
             File.Delete("output.png");
+            return CustomResult.FromSuccess();
         }
     }
 }
