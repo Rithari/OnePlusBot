@@ -178,20 +178,17 @@ namespace OnePlusBot.Base
                         await context.Message.AddReactionAsync(new Emoji("⚠"));
                         await context.Channel.SendMessageAsync(customResult.Reason);
                     }
-                    //.WriteLine($"Custom Result was {customResult.Error}, with message {customResult.Reason}");
-
                     break;
 
                 default:
                  if (!string.IsNullOrEmpty(result?.ErrorReason))
                  {
-                        if (result.ErrorReason == "Unknown command.")
-                            return;
+                    if (result.ErrorReason == "Unknown command.")
+                    return;
 
                     await context.Message.AddReactionAsync(new Emoji("⚠"));
                     await context.Channel.SendMessageAsync("\u26A0 " + result.ErrorReason);
                     return;
-                    
                  }
                 break;
             }

@@ -21,11 +21,11 @@ namespace OnePlusBot.Modules
             var journalistRole = guild.GetRole(Global.Roles["journalist"]);
 
             if (news.Contains("@everyone") || news.Contains("@here") || news.Contains("@news")) 
-                return CustomResult.FromError("Do not use illegal pings!");
+                return CustomResult.FromError("Your news article contained one or more illegal pings!");
 
 
             if (!user.Roles.Contains(journalistRole))
-                return CustomResult.FromError("Jounralists only!");
+                return CustomResult.FromError("Only Journalists can post news.");
 
             await newsRole.ModifyAsync(x => x.Mentionable = true);
             await newsChannel.SendMessageAsync(news + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author);

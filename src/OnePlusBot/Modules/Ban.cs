@@ -23,7 +23,6 @@ namespace OnePlusBot.Modules
             await Context.Guild.AddBanAsync(name, 0, reason);
 
             return CustomResult.FromSuccess();
-
         }
     
 
@@ -41,7 +40,6 @@ namespace OnePlusBot.Modules
 
             if (user.GuildPermissions.PrioritySpeaker)
                 return CustomResult.FromError("You can't ban staff.");
-
             try
             {
                 const string banMessage = "You were banned on r/OnePlus for the following reason: {0}\n" +
@@ -52,7 +50,8 @@ namespace OnePlusBot.Modules
 
             }
             catch (Exception ex)
-            {   //  may not be needed
+            {   
+                //  may not be needed
                 // await Context.Guild.AddBanAsync(user, 0, reason);
                 return CustomResult.FromError(ex.Message);
             }

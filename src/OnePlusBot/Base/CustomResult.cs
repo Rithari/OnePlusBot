@@ -7,7 +7,6 @@ namespace OnePlusBot.Base
 {
     public class CustomResult : RuntimeResult
     {
-
         public CustomResult(CommandError? error, string reason) : base(error, reason)
         {
         }

@@ -32,7 +32,7 @@ namespace OnePlusBot.Modules
             {
                 if (stream == null)
                 {
-                    return CustomResult.FromError("Could not establish connession steam API");
+                    return CustomResult.FromError("Could not establish a connection to the Steam API");
                 }
                 
                 using (var fs = File.Open("output.png", FileMode.Create, FileAccess.Write, FileShare.Read))
