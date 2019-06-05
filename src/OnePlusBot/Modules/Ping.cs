@@ -12,8 +12,6 @@ namespace OnePlusBot.Modules
         [Summary("Standard ping command.")]
         public async Task PingAsync()
         {
-            var timestamp = Context.Message.Timestamp;
-
             const string reply = "Pong....\nWithin {0} ms";
             
             await Context.Channel.EmbedAsync(new EmbedBuilder()

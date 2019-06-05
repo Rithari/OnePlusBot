@@ -169,35 +169,31 @@ namespace OnePlusBot.Base
             switch(result)
             {
                 case CustomResult customResult:
-                    Console.WriteLine($"Custom Result was {customResult.Error}, with message {customResult.Reason}");
+                    if (customResult.IsSuccess)
+                    {
+                        await context.Message.AddReactionAsync(Emote.Parse("<:success:499567039451758603>"));
+                    }
+                    else
+                    {
+                        await context.Message.AddReactionAsync(new Emoji("⚠"));
+                        await context.Channel.SendMessageAsync(customResult.Reason);
+                    }
+                    //.WriteLine($"Custom Result was {customResult.Error}, with message {customResult.Reason}");
 
-                    var emoteTrue = Emote.Parse("\u26A0");
-                    await context.Message.AddReactionAsync(emoteTrue);
-                break;
+                    break;
 
                 default:
                  if (!string.IsNullOrEmpty(result?.ErrorReason))
                  {
-                    if(result.ErrorReason == "Unknown command.")
+                        if (result.ErrorReason == "Unknown command.")
                             return;
 
+                    await context.Message.AddReactionAsync(new Emoji("⚠"));
                     await context.Channel.SendMessageAsync("\u26A0 " + result.ErrorReason);
+                    return;
                     
                  }
                 break;
-            }
-
-
-            if (!string.IsNullOrEmpty(result?.ErrorReason))
-            {
-                if (result.ErrorReason == "Unknown command.")
-                    return;
-
-                await context.Channel.EmbedAsync(
-                    new EmbedBuilder()
-                        .WithColor(9896005)
-                        .WithDescription("\u26A0 " + result.ErrorReason)
-                        .WithTitle(context.Message.Author.ToString()));
             }
         }
 
