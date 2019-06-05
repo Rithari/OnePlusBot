@@ -128,13 +128,13 @@ namespace OnePlusBot.Base
                     new EmbedFieldBuilder()
                     {
                         IsInline = false,
-                        Name = $":x: Original message: ",
+                        Name = $"Original message: ",
                         Value = before.Content
                     },
                     new EmbedFieldBuilder()
                     {
                         IsInline = false,
-                        Name = $":pencil2: New message: ",
+                        Name = $"New message: ",
                         Value = message.Content
                     }
                 },
