@@ -137,7 +137,7 @@ namespace OnePlusBot.Modules
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("OnePlus 7 Pro mirrors for official OxygenOS: <https://forums.oneplus.com/threads/oneplus-7-pro-5g-rom-ota-oxygen-os-repo-of-oxygen-os-builds.1033129/>"));
                         }
-                        if (Context.Channel.Name == "oneplus6-6t")
+                        else if (Context.Channel.Name == "oneplus6-6t")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("OnePlus 6 mirrors for official OxygenOS: <https://forums.oneplus.com/threads/oneplus-6-rom-ota-oxygen-os-mirrors-for-official-oxygen-os-roms-and-ota-updates.835607>" + Environment.NewLine +
                                              "OnePlus 6T mirrors unavailable. Please use <https://www.oneplus.com/support/softwareupgrade/details?code=9>"));
