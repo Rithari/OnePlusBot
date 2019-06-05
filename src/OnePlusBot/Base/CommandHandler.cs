@@ -186,8 +186,7 @@ namespace OnePlusBot.Base
                     if (result.ErrorReason == "Unknown command.")
                     return;
 
-                    await context.Message.AddReactionAsync(new Emoji("⚠"));
-                    await context.Channel.SendMessageAsync("\u26A0 " + result.ErrorReason);
+                    await context.Channel.SendMessageAsync(result.ErrorReason);
                     return;
                  }
                 break;
