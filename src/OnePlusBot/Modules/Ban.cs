@@ -10,13 +10,12 @@ namespace OnePlusBot.Modules
     public class BanModule : ModuleBase<SocketCommandContext>
     {
         [
-            Command("ban", RunMode = RunMode.Async),
+            Command("banid", RunMode = RunMode.Async),
             Summary("Bans specified user."),
             RequireBotPermission(GuildPermission.BanMembers),
             RequireUserPermission(GuildPermission.PrioritySpeaker),
             RequireUserPermission(GuildPermission.ManageNicknames)
         ]
-
         public async Task<RuntimeResult> OBanAsync(ulong name, [Remainder] string reason = null)
         {
             var modlog = Context.Guild.GetTextChannel(Global.Channels["modlog"]);
