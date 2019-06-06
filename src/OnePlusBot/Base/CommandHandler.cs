@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using OnePlusBot.Base;
 
 namespace OnePlusBot.Base
 {
@@ -32,7 +33,7 @@ namespace OnePlusBot.Base
             _bot.MessageReceived += OnCommandReceived;
             _bot.MessageReceived += OnMessageReceived;
             _bot.MessageDeleted += OnMessageRemoved;
-            _bot.MessageUpdated += OnMessageUpdatedAsync;
+            _bot.MessageUpdated += OnMessageUpdated;
             _bot.UserBanned += OnUserBanned;
             _bot.UserUnbanned += OnUserUnbanned;
             _commands.CommandExecuted += OnCommandExecutedAsync;
@@ -108,13 +109,15 @@ namespace OnePlusBot.Base
                     .WithIsInline(true)));
         }
 
-        private async Task OnMessageUpdatedAsync(Cacheable<IMessage, ulong> cacheable, SocketMessage message, ISocketMessageChannel socketChannel)
+        private async Task OnMessageUpdated(Cacheable<IMessage, ulong> cacheable, SocketMessage message, ISocketMessageChannel socketChannel)
         {
             var channel = (SocketTextChannel)socketChannel;
             var before = await cacheable.GetOrDownloadAsync();
             var author = before.Author;
 
             if (before.Author == _bot.CurrentUser || message.Author == _bot.CurrentUser || before.Content == "" || message.Content == "")
+                return;
+            if (before.Content == message.Content)
                 return;
 
             var embed = new EmbedBuilder
@@ -125,13 +128,13 @@ namespace OnePlusBot.Base
                     new EmbedFieldBuilder()
                     {
                         IsInline = false,
-                        Name = $":x: Original message: ",
+                        Name = $"Original message: ",
                         Value = before.Content
                     },
                     new EmbedFieldBuilder()
                     {
                         IsInline = false,
-                        Name = $":pencil2: New message: ",
+                        Name = $"New message: ",
                         Value = message.Content
                     }
                 },
@@ -163,16 +166,30 @@ namespace OnePlusBot.Base
 
         private static async Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
-            if (!string.IsNullOrEmpty(result?.ErrorReason))
+            switch(result)
             {
-                if (result.ErrorReason == "Unknown command.")
+                case CustomResult customResult:
+                    if (customResult.IsSuccess)
+                    {
+                        await context.Message.AddReactionAsync(Emote.Parse("<:success:499567039451758603>"));
+                    }
+                    else
+                    {
+                        await context.Message.AddReactionAsync(new Emoji("⚠"));
+                        await context.Channel.SendMessageAsync(customResult.Reason);
+                    }
+                    break;
+
+                default:
+                 if (!string.IsNullOrEmpty(result?.ErrorReason))
+                 {
+                    if (result.ErrorReason == "Unknown command.")
                     return;
 
-                await context.Channel.EmbedAsync(
-                    new EmbedBuilder()
-                        .WithColor(9896005)
-                        .WithDescription("\u26A0 " + result.ErrorReason)
-                        .WithTitle(context.Message.Author.ToString()));
+                    await context.Channel.SendMessageAsync(result.ErrorReason);
+                    return;
+                 }
+                break;
             }
         }
 
@@ -208,21 +225,78 @@ namespace OnePlusBot.Base
             }
         }
 
-        private static bool IsValidReferralMessage(SocketMessage message)
+        private static async Task HandleReferralMessage(SocketMessage message)
         {
-            if (!Regex.IsMatch(message.Content, @"^https?:\/\/[^\s]+$"))
-                return false;
-            
             using (var db = new Database())
             {
-                return db.ReferralCodes.All(x => x.Sender != message.Author.Id ||
-                                                 (DateTime.UtcNow - x.Date).Days >= 14);
+                if (db.ReferralCodes.Any(x => (DateTime.UtcNow - x.Date).Days < 14 && 
+                                              x.Sender == message.Author.Id))
+                {
+                    var msg = await message.Channel.SendMessageAsync($"{message.Author.Mention} You already have sent a referral in the last 2 weeks");
+                    await Task.Delay(2000);
+                    await msg.DeleteAsync();
+                    return;
+                }
             }
+
+            var matches = Regex.Matches(message.Content, @"https?:\/\/(?:www\.)?oneplus\.com[^\s]*invite(?:\#([^\s]+)|.+\=([^\s\&]+))", RegexOptions.IgnoreCase);
+
+            if (matches.Count > 2)
+            {
+                var msg = await message.Channel.SendMessageAsync($"{message.Author.Mention} Max 2 referrals per message");
+                await Task.Delay(2000);
+                await msg.DeleteAsync();
+                return;
+            }
+
+            if(matches.Count == 0)
+            {
+                var msg = await message.Channel.SendMessageAsync($"{message.Author.Mention} Post a referral code!");
+                await message.DeleteAsync();
+                await Task.Delay(2000);
+                await msg.DeleteAsync();
+                return;
+            }
+            
+            var embed = new EmbedBuilder();
+            embed.WithColor(9896005);
+            embed.Author = new EmbedAuthorBuilder()
+                .WithName(message.Author.Username)
+                .WithIconUrl(message.Author.GetAvatarUrl());
+            embed.Description = $"Sent by {message.Author.Mention}";
+            
+            foreach (Match match in matches)
+            {
+                using (var db = new Database())
+                {
+                    db.ReferralCodes.Add(new ReferralCode
+                    {
+                        Code = match.Groups[1].Value,
+                        Date = message.CreatedAt.DateTime,
+                        Sender = message.Author.Id
+                    });
+                    db.SaveChanges();
+                }
+
+                string name;
+                // Cheap way to check without having a command
+                if (match.Groups[1].Length < 20) 
+                    name = "Smartphone";
+                else
+                    name = "Wireless Bullets 2";
+                embed.AddField(new EmbedFieldBuilder()
+                    .WithName(name)
+                    .WithValue($"Referral: [#{match.Groups[1].Value}]({match.Value})"));
+            }
+
+            await message.Channel.EmbedAsync(embed);
+            
+            await message.DeleteAsync();
         }
 
         private static async Task OnMessageReceived(SocketMessage message)
         {
-            if (Regex.IsMatch(message.Content, @"discord(?:\.gg|app\.com\/invite)\/([\w\-]+)") && message.Channel.Id != Global.Channels["referralcodes"])
+            if (Regex.IsMatch(message.Content, @"discord(?:\.gg|app\.com\/invite)\/([\w\-]+)") && message.Channel.Id != Global.Channels["referralcodes"] && !message.Content.Contains("discord.gg/oneplus"))
                 await message.DeleteAsync();
 
             var channelId = message.Channel.Id;
@@ -243,36 +317,8 @@ namespace OnePlusBot.Base
             {
                 if (message.Author.IsBot)
                     return;
-                
-                if (IsValidReferralMessage(message))
-                {
-                    var index = message.Content.IndexOf("invite#", StringComparison.OrdinalIgnoreCase);
-                    var code = message.Content.Substring(index + 7);
-                    
-                    using (var db = new Database())
-                    {
-                        db.ReferralCodes.Add(new ReferralCode
-                        {
-                            Code = code,
-                            Date = message.Timestamp.Date,
-                            Sender = message.Author.Id
-                        });
-                        db.SaveChanges();
-                    }
-                }
-                else
-                {
-                    await message.DeleteAsync();
-                    const string msg = "{0} Please include only the link in the message.\n" +
-                                       "Invites can be bumped once every 2 weeks.";
-                    var reply = await message.Channel.SendMessageAsync(string.Format(msg, message.Author.Mention));
-                    
-                    new Task(async () =>
-                    {
-                        await Task.Delay(5000);
-                        await reply.DeleteAsync();
-                    }).Start();
-                }
+
+                await HandleReferralMessage(message);
             }
         }
 

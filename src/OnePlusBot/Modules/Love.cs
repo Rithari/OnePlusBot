@@ -5,7 +5,7 @@ using System.Net;
 using Discord;
 using OnePlusBot.Helpers;
 
-namespace OnePlusBot.Modules
+namespace OnePlusBot.Modules // TODO: fix
 {
     public class LoveCalcModule : ModuleBase<SocketCommandContext>
     {

@@ -2,6 +2,7 @@
 using Discord.Commands;
 using System.Threading.Tasks;
 using OnePlusBot.Helpers;
+using OnePlusBot.Base;
 
 namespace OnePlusBot.Modules
 {
@@ -13,35 +14,17 @@ namespace OnePlusBot.Modules
         [RequireBotPermission(GuildPermission.BanMembers)]
         [RequireUserPermission(GuildPermission.PrioritySpeaker)]
         [RequireUserPermission(GuildPermission.ManageNicknames)]
-        public async Task KickAsync(IGuildUser user, [Remainder] string reason = null)
+        public async Task<RuntimeResult> KickAsync(IGuildUser user, [Remainder] string reason = null)
         {
             if (user.IsBot)
-            {
-                var emoteFalse = new Emoji("⚠");
-                await Context.Message.RemoveAllReactionsAsync();
-                await Context.Message.AddReactionAsync(emoteFalse);
-                await Context.Channel.EmbedAsync(new EmbedBuilder()
-                    .WithColor(9896005)
-                    .WithDescription("⚠ You humans can't make us harm each other.")
-                    .WithTitle(user.ToString()));
-                return;
-            }
-            
-            if (user.GuildPermissions.PrioritySpeaker)
-            {
-                var emoteFalse = new Emoji("⚠");
-                await Context.Message.RemoveAllReactionsAsync();
-                await Context.Message.AddReactionAsync(emoteFalse);
-                await Context.Channel.EmbedAsync(new EmbedBuilder()
-                    .WithColor(9896005)
-                    .WithDescription("⚠ You can not kick authorities.")
-                    .WithTitle(user.ToString()));
-                return;
-            }
+                return CustomResult.FromError("You can't kick bots.");
 
-            var emoteTrue = Emote.Parse("<:success:499567039451758603>");
-            await Context.Message.AddReactionAsync(emoteTrue);
+
+            if (user.GuildPermissions.PrioritySpeaker)
+                return CustomResult.FromError("You can't kick staff.");
+
             await user.KickAsync(reason);
+            return CustomResult.FromSuccess();
         }
     }
 }

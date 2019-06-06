@@ -11,8 +11,9 @@ namespace OnePlusBot.Modules
         [RequireOwner]
         public async Task ShutdownAsync()
         {
-            var emoteTrue = Emote.Parse("<:success:499567039451758603>");
-            await Context.Message.AddReactionAsync(emoteTrue);
+            var successEmote = Emote.Parse("<:success:499567039451758603>");
+
+            await Context.Message.AddReactionAsync(successEmote);
             Environment.Exit(0);
         }
 

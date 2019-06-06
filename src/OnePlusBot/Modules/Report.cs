@@ -6,6 +6,7 @@ using OnePlusBot.Base;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
 using OnePlusBot.Helpers;
+using System;
 
 namespace OnePlusBot.Modules
 {
@@ -14,7 +15,7 @@ namespace OnePlusBot.Modules
         [Command("report")]
         [Alias("r")]
         [Summary("Suggests something to the server.")]
-        public async Task ReportAsync(IGuildUser user, [Optional] [Remainder] string reason)
+        public async Task<RuntimeResult> ReportAsync(IGuildUser user, [Optional] [Remainder] string reason)
         {
             var reportChannel = Context.Guild.GetTextChannel(Global.Channels["reports"]);;
 
@@ -70,8 +71,7 @@ namespace OnePlusBot.Modules
 
             var embed = builder.Build();
             await reportChannel.SendMessageAsync(null,embed: embed).ConfigureAwait(false);
-
-            await Context.Message.AddReactionAsync(Emote.Parse("<:success:499567039451758603>"));
+            return CustomResult.FromSuccess();
         }
     }
 }
