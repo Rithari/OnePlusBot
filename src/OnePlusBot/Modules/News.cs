@@ -32,7 +32,6 @@ namespace OnePlusBot.Modules
             await newsChannel.SendMessageAsync(news + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author);
             await newsRole.ModifyAsync(x => x.Mentionable = false);
 
-            await Context.Message.DeleteAsync();
             return CustomResult.FromSuccess();
         }
     }

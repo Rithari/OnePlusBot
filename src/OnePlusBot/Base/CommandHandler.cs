@@ -233,6 +233,7 @@ namespace OnePlusBot.Base
                                               x.Sender == message.Author.Id))
                 {
                     var msg = await message.Channel.SendMessageAsync($"{message.Author.Mention} You already have sent a referral in the last 2 weeks");
+                    await message.DeleteAsync();
                     await Task.Delay(2000);
                     await msg.DeleteAsync();
                     return;
