@@ -10,7 +10,6 @@ namespace OnePlusBot.Modules
     public class NewsModule : ModuleBase<SocketCommandContext>
     {
         [Command("news")]
-        [Alias("n")]
         [Summary("Posts a News article to the server.")]
         public async Task<RuntimeResult> NewsAsync([Remainder] string news)
         {

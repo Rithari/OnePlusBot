@@ -13,7 +13,6 @@ namespace OnePlusBot.Modules
     public class ReportModule : ModuleBase<SocketCommandContext>
     {
         [Command("report")]
-        [Alias("r")]
         [Summary("Suggests something to the server.")]
         public async Task<RuntimeResult> ReportAsync(IGuildUser user, [Optional] [Remainder] string reason)
         {
