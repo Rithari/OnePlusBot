@@ -8,7 +8,7 @@ namespace OnePlusBot.Modules
     public class ShowAvatar : ModuleBase<SocketCommandContext>
     {
         [Command("showavatar")]
-        [Alias("ava")]
+        [Alias("avatar")]
         [Summary("Shows avatar of a user.")]
         public async Task Avatar(IGuildUser user = null)
         {

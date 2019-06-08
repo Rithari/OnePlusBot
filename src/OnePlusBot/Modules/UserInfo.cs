@@ -9,7 +9,7 @@ namespace OnePlusBot.Modules
     public class Uinfo : ModuleBase<SocketCommandContext>
     {
         [Command("userinfo")]
-        [Alias("u")]
+        [Alias("uinfo")]
         [Summary("Displays User Information")]
         public async Task UserInfo(IGuildUser user = null)
         {

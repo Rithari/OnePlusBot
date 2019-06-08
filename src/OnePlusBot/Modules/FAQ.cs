@@ -9,7 +9,6 @@ namespace OnePlusBot.Modules
     public class FAQModule : ModuleBase<SocketCommandContext>
     {
         [Command("faq")]
-        [Alias("f")]
         [Summary("Answers frequently asked questions with a predetermined response.")]
         public async Task FAQAsync([Remainder] string parameter)
         {
