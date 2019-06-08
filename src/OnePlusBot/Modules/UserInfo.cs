@@ -20,7 +20,7 @@ namespace OnePlusBot.Modules
             embed.WithColor(9896005);
             embed.WithAuthor(x =>
             {
-                x.Name = user.Username;
+                x.Name = user.Username + "#" + user.Discriminator;
             });
 
             embed.ThumbnailUrl = user.GetAvatarUrl();

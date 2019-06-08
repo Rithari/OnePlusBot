@@ -123,7 +123,7 @@ namespace OnePlusBot.Base
             var embed = new EmbedBuilder
             {
                 Color = Color.Blue,
-                Description = $":bulb: Message from '{author.Username}' edited in {channel.Mention}",
+                Description = $":bulb: Message from `{author.Username}#{author.Discriminator}` edited in {channel.Mention}",
                 Fields = {
                     new EmbedFieldBuilder()
                     {
