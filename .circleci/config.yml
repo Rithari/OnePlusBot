@@ -6,7 +6,6 @@ jobs:
     working_directory: ~/oneplusbot
     steps:
     - checkout
-    - run: msbuild /t:Restore OnePlusBot.sln
     - run: msbuild /t:Build OnePlusBot.sln
   linux:
     docker:
