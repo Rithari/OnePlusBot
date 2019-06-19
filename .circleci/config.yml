@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-    - image: aparker/circleci-dotnet-mono:latest
+    - image: mcr.microsoft.com/dotnet/core/sdk:2.1
     working_directory: ~/oneplusbot
     steps:
     - checkout
