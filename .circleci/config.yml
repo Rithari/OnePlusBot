@@ -10,7 +10,7 @@ jobs:
     - run: msbuild /t:Build OnePlusBot.sln
   linux:
     docker:
-    - image: aparker/circleci-dotnet-mono:latest
+    - image: andrewlock/dotnet-mono
     working_directory: ~/oneplusbot
     steps:
     - checkout
@@ -28,10 +28,10 @@ workflows:
     - build:
         filters:
           branches:
-            ignore: main
+            ignore: master
   linuxbuild:
     jobs:
     - linux:
         filters:
           branches:
-            only: main
+            only: master
