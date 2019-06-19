@@ -23,35 +23,29 @@ namespace OnePlusBot.Modules
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Repair prices for the OnePlus 7: <https://www.oneplus.com/support/repair-pricing/details?code=10>" + Environment.NewLine +
                                              "Repair prices for the OnePlus 7 Pro: <https://www.oneplus.com/support/repair-pricing/details?code=11>"));
-                    case "repairprices":
-                    case "repair":
-                    case "repairing":
+                        }
                         else if (Context.Channel.Name == "oneplus6-6t")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Repair prices for the OnePlus 6: <https://www.oneplus.com/support/repair-pricing/details?code=8>" + Environment.NewLine +
                                              "Repair prices for the OnePlus 6T: <https://www.oneplus.com/support/repair-pricing/details?code=9>"));
-                    case "repairprices":
-                    case "repair":
-                    case "repairing":
+                        }
                         else if (Context.Channel.Name == "oneplus5-5t")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Repair prices for the OnePlus 5: <https://www.oneplus.com/support/repair-pricing/details?code=5>" + Environment.NewLine +
                                              "Repair prices for the OnePlus 5T: <https://www.oneplus.com/support/repair-pricing/details?code=7>"));
-                    case "repairprices":
-                    case "repair":
-                    case "repairing":
+                        }
                         else if (Context.Channel.Name == "oneplus3-3t")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Repair prices for the OnePlus 3: <https://www.oneplus.com/support/repair-pricing/details?code=4>" + Environment.NewLine +
                                              "Repair prices for the OnePlus 3T: <https://www.oneplus.com/support/repair-pricing/details?code=6>"));
-                    case "repairprices":
-                    case "repair":
-                    case "repairing":
+                        }
                         else if (Context.Channel.Name == "legacy")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Repair prices for the OnePlus One: <https://www.oneplus.com/support/repair-pricing/details?code=1>" + Environment.NewLine +
                                              "Repair prices for the OnePlus 2: <https://www.oneplus.com/support/repair-pricing/details?code=2>" + Environment.NewLine +
                                              "Repair prices for the OnePlus X: <https://www.oneplus.com/support/repair-pricing/details?code=3>"));
+                        }
+                        break;
                     case "blu_spark":
                     case "bluspark":
                     case "twrp":
