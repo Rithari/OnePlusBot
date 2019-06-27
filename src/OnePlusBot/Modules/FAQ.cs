@@ -78,6 +78,7 @@ namespace OnePlusBot.Modules
                     case "unbrick":
                     case "bricked":
                     case "brick":
+                    case "unbricktool":
                     
                         if (Context.Channel.Name == "oneplus7-series")
                         {
@@ -252,7 +253,7 @@ namespace OnePlusBot.Modules
                         }
                         break;
                     default:
-                        await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Supported FAQ commands are: bluspark, googlecamera, oxygenos, unbrick, edl, magisk, root, qualcommdiagnostics, smt, qpreview, updateschedule, adbfastbootpath"));
+                        await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Supported FAQ commands are: repairprices, bluspark, googlecamera, oxygenos, unbrick, edl, magisk, root, qualcommdiagnostics, smt, qpreview, updateschedule, adbfastbootpath. Mind that some commands can only be used in specific (device)channels"));
                         break;
                 }
             }
