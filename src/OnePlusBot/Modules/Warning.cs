@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using System.Runtime.InteropServices;
 using OnePlusBot.Base;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
+using System.Linq;
 
 namespace OnePlusBot.Modules
 {
@@ -70,6 +71,26 @@ namespace OnePlusBot.Modules
             var embed = builder.Build();
             await warningsChannel.SendMessageAsync(null,embed: embed).ConfigureAwait(false);
 
+            return CustomResult.FromSuccess();
+        }
+
+        private IGuildUser _user;
+        [Command("clearwarn")]
+        [Summary("Clear warnings.")]
+        [RequireBotPermission(GuildPermission.KickMembers)]
+        [RequireUserPermission(GuildPermission.PrioritySpeaker)]
+        [RequireUserPermission(GuildPermission.ManageNicknames)]
+        public async Task<RuntimeResult> ClearwarnAsync(uint index)
+        {
+            var warningsChannel = Context.Guild.GetTextChannel(Global.Channels["warnings"]);
+            var monitor = Context.Message.Author;
+
+            using (var db = new Database())
+            {
+                IQueryable<WarnEntry> warnings = db.Warnings;
+                warnings = warnings.Where(x => x.ID == index);
+                db.Warnings.RemoveRange(warnings);
+            }
             return CustomResult.FromSuccess();
         }
     }
