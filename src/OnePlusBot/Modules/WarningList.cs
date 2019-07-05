@@ -58,9 +58,9 @@ namespace OnePlusBot.Modules
             embed.WithColor(9896005);
             
             if (_user != null)
-                embed.Title = $"Listing warning of user {_user.Username}.";
+                embed.Title = $"Listing warnings of user {_user.Username}.";
             else
-                embed.Title = $"There are {_total} warnings.";
+                embed.Title = $"There are {_total} warnings in total.";
             
             var counter = _index * TakeAmount;
             foreach (var warning in warns)
@@ -70,7 +70,7 @@ namespace OnePlusBot.Modules
                 if (_user != null)
                 {
                     embed.AddField(new EmbedFieldBuilder()
-                        .WithName("Warning #" + counter)
+                        .WithName("Warning #" + counter + " (" + warning.ID + ")")
                         .WithValue($"**Reason**: {warning.Reason}\n" +
                                    $"**Warned by**: {warnedBy?.Mention ?? warning.WarnedBy}"));
                 }
@@ -97,6 +97,7 @@ namespace OnePlusBot.Modules
 
         [Command("warnings")]
         [Summary("Gets all warnings of given user")]
+        [RequireUserPermission(GuildPermission.PrioritySpeaker)]
         public async Task GetWarnings([Optional] IGuildUser user)
         {
             _user = user;
@@ -109,6 +110,12 @@ namespace OnePlusBot.Modules
                     warnings = warnings.Where(x => x.WarnedUserID == user.Id);
 
                 _total = warnings.Count();
+
+                if (_total == 0)
+                {
+                    await ReplyAsync("The specified user has no warnings.");
+                    return;
+                }
                 
                 warnings = warnings.Take(TakeAmount);
 
