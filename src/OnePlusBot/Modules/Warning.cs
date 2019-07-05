@@ -74,7 +74,6 @@ namespace OnePlusBot.Modules
             return CustomResult.FromSuccess();
         }
 
-        private IGuildUser _user;
         [Command("clearwarn")]
         [Summary("Clear warnings.")]
         [RequireBotPermission(GuildPermission.KickMembers)]
@@ -85,13 +84,17 @@ namespace OnePlusBot.Modules
             var warningsChannel = Context.Guild.GetTextChannel(Global.Channels["warnings"]);
             var monitor = Context.Message.Author;
 
+            await ReplyAsync($"we are going to delete {index}");
+
             using (var db = new Database())
             {
                 IQueryable<WarnEntry> warnings = db.Warnings;
-                warnings = warnings.Where(x => x.ID == index);
-                db.Warnings.RemoveRange(warnings);
+                var selection = warnings.First(x => x.ID == index);
+                db.Warnings.Remove(selection);
+               await db.SaveChangesAsync();
             }
-            return CustomResult.FromSuccess();
+
+           return CustomResult.FromSuccess();
         }
     }
 }
