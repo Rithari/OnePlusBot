@@ -6,6 +6,7 @@ using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
+using OnePlusBot.Base;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
 using OnePlusBot.Helpers;
@@ -26,6 +27,8 @@ namespace OnePlusBot.Modules
             if (reaction.User.Value.IsBot)
                 return;
             if (reaction.MessageId != _message.Id)
+                return;
+            if (reaction.UserId != Global.CommandExecutorId)
                 return;
 
             switch (reaction.Emote.Name)
@@ -75,16 +78,18 @@ namespace OnePlusBot.Modules
                     embed.AddField(new EmbedFieldBuilder()
                         .WithName("Warning #" + counter + " (" + warning.ID + ")")
                         .WithValue($"**Reason**: {warning.Reason}\n" +
-                                   $"**Warned by**: {warnedBy?.Mention ?? warning.WarnedBy}"));
+                                   $"**Warned by**: {warnedBy?.Mention ?? warning.WarnedBy}\n" + 
+                                   $"*{warning.Date}*"));
                 }
                 else
                 {
                     var warned = Context.Guild.GetUser(warning.WarnedUserID);
                     embed.AddField(new EmbedFieldBuilder()
-                        .WithName($"Warning #{counter}")
+                        .WithName($"Warning #{counter} - {warning.Date}")
                         .WithValue($"**Warned user**: {warned?.Mention ?? warning.WarnedUser}\n" +
                                    $"**Reason**: {warning.Reason}\n" +
-                                   $"**Warned by**: {warnedBy?.Mention ?? warning.WarnedBy}"));
+                                   $"**Warned by**: {warnedBy?.Mention ?? warning.WarnedBy}"))
+                        .WithFooter("*For more detailed info, consult the individual lists.*");
                 }
             }
 
@@ -105,6 +110,7 @@ namespace OnePlusBot.Modules
         public async Task GetWarnings([Optional] IGuildUser user)
         {
             _user = user;
+            Global.CommandExecutorId = Context.User.Id;
             
             using (var db = new Database())
             {

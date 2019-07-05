@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Discord;
 using OnePlusBot.Data;
 
 namespace OnePlusBot.Base
@@ -8,12 +9,14 @@ namespace OnePlusBot.Base
     internal static class Global
     {
         private static readonly ulong MessageId;
-        
+
         public static Random Random { get; }
-        
+
         public static ulong ServerID { get; }
         public static Dictionary<string, ulong> Roles { get; }
         public static Dictionary<string, ulong> Channels { get; }
+
+        public static ulong CommandExecutorId { get; set; }
         
         public static string Token
         {
