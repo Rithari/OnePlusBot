@@ -39,6 +39,9 @@ namespace OnePlusBot.Modules
                     await reaction.Message.Value.DeleteAsync();
                     _index++;
                     break;
+                case "🗑":
+                    await reaction.Message.Value.DeleteAsync();
+                    return;
             }
             
             var skip = TakeAmount * _index;
@@ -91,6 +94,7 @@ namespace OnePlusBot.Modules
                 await msg.AddReactionAsync(new Emoji("⬅"));
             if (_index * TakeAmount + TakeAmount < _total)
                 await msg.AddReactionAsync(new Emoji("➡"));
+            await msg.AddReactionAsync(new Emoji("🗑"));
 
             return msg;
         }
@@ -124,7 +128,7 @@ namespace OnePlusBot.Modules
                 Context.Client.ReactionAdded += OnReactionAdded;
                 _ = Task.Run(async () =>
                 {
-                    await Task.Delay(60_000);
+                    await Task.Delay(120_000);
                     Context.Client.ReactionAdded -= OnReactionAdded;
                     await _message.DeleteAsync();
                 });
