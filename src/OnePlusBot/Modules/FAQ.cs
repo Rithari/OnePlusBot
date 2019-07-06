@@ -82,23 +82,23 @@ namespace OnePlusBot.Modules
                     
                         if (Context.Channel.Name == "oneplus7-series")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out #useful-links for all Unbrick Tools for the OnePlus 7-series. Those also include the needed software and a manual"));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out <#451373145010470912> for all Unbrick Tools for the OnePlus 7-series. Those also include the needed software and a manual")); // 451373145010470912 is channel ID of #useful-links in /r/oneplus server
                         }
                         else if (Context.Channel.Name == "oneplus6-6t")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out #useful-links for all Unbrick Tools for the OnePlus 6 and 6T. Those also include the needed software and a manual"));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out <#451373145010470912> for all Unbrick Tools for the OnePlus 6 and 6T. Those also include the needed software and a manual"));
                         }
                         else if (Context.Channel.Name == "oneplus5-5t")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out #useful-links for all Unbrick Tools for the OnePlus 5 and 5T. Those also include the needed software and a manual"));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out <#451373145010470912> for all Unbrick Tools for the OnePlus 5 and 5T. Those also include the needed software and a manual"));
                         }
                         else if (Context.Channel.Name == "oneplus3-3t")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out #useful-links for all Unbrick Tools for the OnePlus 3 and 3T. Those also include the needed software and a manual"));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out <#451373145010470912> for all Unbrick Tools for the OnePlus 3 and 3T. Those also include the needed software and a manual"));
                         }
                         else if (Context.Channel.Name == "legacy")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out #useful-links for all Unbrick Tools for legacy devices. Those also include the needed software and a manual"));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Check out <#451373145010470912> for all Unbrick Tools for legacy devices. Those also include the needed software and a manual"));
                         }
                         else
                         {
