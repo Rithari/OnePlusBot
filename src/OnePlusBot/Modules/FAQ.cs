@@ -19,7 +19,12 @@ namespace OnePlusBot.Modules
                     case "repairprices":
                     case "repair":
                     case "repairing":
-                        if (Context.Channel.Name == "oneplus7-series")
+                    
+                        if (Context.Channel.Name == "general")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Repair prices for all OnePlus-devices: <https://www.oneplus.com/support/repair-pricing>"));
+                        }
+                        else if (Context.Channel.Name == "oneplus7-series")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Repair prices for the OnePlus 7: <https://www.oneplus.com/support/repair-pricing/details?code=10>" + Environment.NewLine +
                                              "Repair prices for the OnePlus 7 Pro: <https://www.oneplus.com/support/repair-pricing/details?code=11>"));
@@ -237,7 +242,7 @@ namespace OnePlusBot.Modules
                     case "updateschedule":
                     case "updatewhen":
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Oneplus software maintenance schedule is described at <https://forums.oneplus.com/threads/oneplus-software-maintenance-schedule.862347/>"));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("If you want to skip the incremental roll-out from OnePlus, you can use Oxygen Updater to receive updates quicker: https://play.google.com/store/apps/details?id=com.arjanvlek.oxygenupdater. OnePlus software maintenance schedule is described at <https://forums.oneplus.com/threads/oneplus-software-maintenance-schedule.862347/>"));
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithImageUrl("https://forums.oneplus.com/attachments/806308"));
                         }
                         break;
