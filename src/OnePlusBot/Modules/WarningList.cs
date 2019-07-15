@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -75,17 +77,18 @@ namespace OnePlusBot.Modules
                 var warnedBy = Context.Guild.GetUser(warning.WarnedByID);
                 if (_user != null)
                 {
+
                     embed.AddField(new EmbedFieldBuilder()
                         .WithName("Warning #" + counter + " (" + warning.ID + ")")
                         .WithValue($"**Reason**: {warning.Reason}\n" +
                                    $"**Warned by**: {warnedBy?.Mention ?? warning.WarnedBy}\n" + 
-                                   $"*{warning.Date}*"));
+                                   $"*{warning.Date.ToString("dd/M/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture)}*"));
                 }
                 else
                 {
                     var warned = Context.Guild.GetUser(warning.WarnedUserID);
                     embed.AddField(new EmbedFieldBuilder()
-                        .WithName($"Warning #{counter} - {warning.Date}")
+                        .WithName($"Warning #{counter} - {warning.Date.ToString("dd/M/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture)}")
                         .WithValue($"**Warned user**: {warned?.Mention ?? warning.WarnedUser}\n" +
                                    $"**Reason**: {warning.Reason}\n" +
                                    $"**Warned by**: {warnedBy?.Mention ?? warning.WarnedBy}"))

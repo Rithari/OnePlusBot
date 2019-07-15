@@ -24,10 +24,11 @@ namespace OnePlusBot.Modules
             // Download all messages that the user asks for to delete
             var messages = await Context.Channel.GetMessagesAsync(oldmessage, Direction.Before, delmsgInt).FlattenAsync();
             await ((ITextChannel) Context.Channel).DeleteMessagesAsync(messages);
-            await Task.Delay(950);
 
-            await Context.Message.DeleteAsync();
-            return CustomResult.FromSuccess();
+            // await Context.Message.DeleteAsync();
+
+
+            return CustomResult.FromSuccess(); //This will generate an error, because we delete the message, TODO: Implement a workaround.
 
 
 
