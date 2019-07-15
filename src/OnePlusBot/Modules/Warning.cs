@@ -84,8 +84,6 @@ namespace OnePlusBot.Modules
             var warningsChannel = Context.Guild.GetTextChannel(Global.Channels["warnings"]);
             var monitor = Context.Message.Author;
 
-            await ReplyAsync($"we are going to delete {index}");
-
             using (var db = new Database())
             {
                 IQueryable<WarnEntry> warnings = db.Warnings;
