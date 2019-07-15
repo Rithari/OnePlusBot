@@ -23,7 +23,7 @@ namespace OnePlusBot.Modules
         [Summary("Steam profile banner for Discord!")]
         public async Task<RuntimeResult> SteampAsync([Remainder] string user)
         {
-            await Context.Message.AddReactionAsync(Emote.Parse("<:success:499567039451758603>"));
+            await Context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
 
             var request = (HttpWebRequest) WebRequest.Create(string.Format(BadgeUrl, user));
             
