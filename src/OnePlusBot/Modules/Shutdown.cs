@@ -2,6 +2,7 @@
 using Discord;
 using Discord.Commands;
 using System.Threading.Tasks;
+using OnePlusBot.Base;
 namespace OnePlusBot.Modules
 {
     public class ShutdownModule : ModuleBase<SocketCommandContext>
@@ -11,9 +12,7 @@ namespace OnePlusBot.Modules
         [RequireOwner]
         public async Task ShutdownAsync()
         {
-            var successEmote = Emote.Parse("<:success:499567039451758603>");
-
-            await Context.Message.AddReactionAsync(successEmote);
+            await Context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
             Environment.Exit(0);
         }
 
