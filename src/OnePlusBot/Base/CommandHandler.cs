@@ -120,6 +120,9 @@ namespace OnePlusBot.Base
             if (before.Content == message.Content)
                 return;
 
+            if(before.Author.IsBot)
+                return;
+
             var embed = new EmbedBuilder
             {
                 Color = Color.Blue,
@@ -171,11 +174,11 @@ namespace OnePlusBot.Base
                 case CustomResult customResult:
                     if (customResult.IsSuccess)
                     {
-                        await context.Message.AddReactionAsync(Emote.Parse("<:success:499567039451758603>"));
+                        await context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
                     }
                     else
                     {
-                        await context.Message.AddReactionAsync(new Emoji("⚠"));
+                        await context.Message.AddReactionAsync(Global.OnePlusEmote.FAIL);
                         await context.Channel.SendMessageAsync(customResult.Reason);
                     }
                     break;

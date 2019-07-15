@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using OnePlusBot.Base;
 using MySql.Data.MySqlClient;
 
 namespace OnePlusBot.Modules
@@ -41,7 +42,7 @@ namespace OnePlusBot.Modules
                         await sql.ExecuteNonQueryAsync();
                     }
                 }
-                await Context.Message.AddReactionAsync(Emote.Parse("<:success:499567039451758603>"));
+                await Context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
             }
             catch
             {
