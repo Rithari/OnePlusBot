@@ -83,5 +83,12 @@ namespace OnePlusBot.Base
                     .Value;
             }
         }
+
+        public static class OnePlusEmote {
+            public static IEmote SUCCESS = Emote.Parse("<:success:499567039451758603>");
+            public static IEmote FAIL = new Emoji("⚠");
+            public static IEmote OP_YES =  Emote.Parse("<:OPYes:426070836269678614>");
+            public static IEmote OP_NO = Emote.Parse("<:OPNo:426072515094380555>");
+        }
     }
 }
