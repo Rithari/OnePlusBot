@@ -171,7 +171,7 @@ namespace OnePlusBot.Base
                 case CustomResult customResult:
                     if (customResult.IsSuccess)
                     {
-                        await context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS));
+                        await context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
                     }
                     else
                     {
