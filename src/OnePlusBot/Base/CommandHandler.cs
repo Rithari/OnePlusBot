@@ -120,6 +120,9 @@ namespace OnePlusBot.Base
             if (before.Content == message.Content)
                 return;
 
+            if(before.Author.IsBot)
+                return;
+
             var embed = new EmbedBuilder
             {
                 Color = Color.Blue,
