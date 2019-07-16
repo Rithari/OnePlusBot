@@ -54,7 +54,13 @@ namespace OnePlusBot.Modules
                     case "blu_spark":
                     case "bluspark":
                     case "twrp":
-                        if (Context.Channel.Name == "oneplus6-6t")
+                        if (Context.Channel.Name == "oneplus7-series")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("blu_spark XDA thread for OnePlus 7 Pro: <https://forum.xda-developers.com/oneplus-7-pro/development/kernel-t3944179/>" + Environment.NewLine +
+                                             "blu_spark XDA thread for OnePlus 7: <https://forum.xda-developers.com/oneplus-7/development/kernel-t3944855>" + Environment.NewLine +
+                                             "blu_spark TWRP Download link for OnePlus 7 and 7 Pro: <https://github.com/engstk/android_device_oneplus_guacamole_unified_TWRP/releases>"));
+                        }
+                        else if (Context.Channel.Name == "oneplus6-6t")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("blu_spark XDA thread for OnePlus 6: <https://forum.xda-developers.com/oneplus-6/development/kernel-t3800965>" + Environment.NewLine +
                                              "blu_spark XDA thread for OnePlus 6T: <https://forum.xda-developers.com/oneplus-6t/development/kernel-t3861123>" + Environment.NewLine +
