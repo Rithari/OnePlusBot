@@ -189,10 +189,53 @@ namespace OnePlusBot.Base
             {
                 var targetFileName = attachments.ElementAt(index).Filename;
                 var url = attachments.ElementAt(index).Url;
-                client.DownloadFile(url, targetFileName);
                 try 
                 {
+                    client.DownloadFile(url, targetFileName);
                     await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendFileAsync(targetFileName, "Attachment: #" + (index + 1));
+                }
+                catch(WebException ex)
+                {
+                    if (ex.Status == WebExceptionStatus.ProtocolError)
+                    {
+                        var response = ex.Response as HttpWebResponse;
+                        if (response != null)
+                        {
+                            var exceptionEmbed = new EmbedBuilder    
+                            {
+                                Color = Color.Blue,
+                                Description = $"Discord did not let us download attachment #" + (index +1),
+                                Fields = {new EmbedFieldBuilder() { IsInline = false, Name = $":x: It returned: ", Value = (int)response.StatusCode }},
+                                ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
+                                Timestamp = DateTime.Now
+                            };
+                            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: exceptionEmbed.Build());
+                        }
+                        else
+                        {
+                           var exceptionEmbed = new EmbedBuilder    
+                            {
+                                Color = Color.Blue,
+                                Description = $"Error when downloading the attachment.",
+                                Fields = {new EmbedFieldBuilder() { IsInline = false, Name = $":x: Exception message ", Value = ex.Message }},
+                                ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
+                                Timestamp = DateTime.Now
+                            };
+                            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: embed.Build());
+                        }
+                    }
+                    else
+                    {
+                        var exceptionEmbed = new EmbedBuilder    
+                            {
+                                Color = Color.Blue,
+                                Description = $"Error when downloading the attachment.",
+                                Fields = {new EmbedFieldBuilder() { IsInline = false, Name = $":x: Exception message ", Value = ex.Message }},
+                                ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
+                                Timestamp = DateTime.Now
+                            };
+                            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: embed.Build());
+                    }
                 }
                 finally 
                 {
