@@ -194,11 +194,11 @@ namespace OnePlusBot.Base
                     client.DownloadFile(url, targetFileName);
                     await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendFileAsync(targetFileName, "Attachment: #" + (index + 1));
                 }
-                catch(WebException ex)
+                catch(WebException webEx)
                 {
-                    if (ex.Status == WebExceptionStatus.ProtocolError)
+                    if (webEx.Status == WebExceptionStatus.ProtocolError)
                     {
-                        var response = ex.Response as HttpWebResponse;
+                        var response = webEx.Response as HttpWebResponse;
                         if (response != null)
                         {
                             var exceptionEmbed = new EmbedBuilder    
@@ -213,35 +213,39 @@ namespace OnePlusBot.Base
                         }
                         else
                         {
-                           var exceptionEmbed = new EmbedBuilder    
-                            {
-                                Color = Color.Blue,
-                                Description = $"Error when downloading the attachment.",
-                                Fields = {new EmbedFieldBuilder() { IsInline = false, Name = $":x: Exception message ", Value = ex.Message }},
-                                ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
-                                Timestamp = DateTime.Now
-                            };
-                            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: embed.Build());
+                            SendExceptionEmbed(cacheable, webEx, channel);
                         }
                     }
                     else
                     {
-                        var exceptionEmbed = new EmbedBuilder    
-                            {
-                                Color = Color.Blue,
-                                Description = $"Error when downloading the attachment.",
-                                Fields = {new EmbedFieldBuilder() { IsInline = false, Name = $":x: Exception message ", Value = ex.Message }},
-                                ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
-                                Timestamp = DateTime.Now
-                            };
-                            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: embed.Build());
+                       SendExceptionEmbed(cacheable, webEx, channel);
                     }
+                }
+                catch(Exception ex)
+                {
+                    SendExceptionEmbed(cacheable, ex, channel);
                 }
                 finally 
                 {
                     File.Delete(targetFileName);  
                 }     
             }
+        }
+
+        private static async void SendExceptionEmbed(Cacheable<IMessage, ulong> cacheable, Exception exception, SocketTextChannel channel)
+        {
+            var exceptionEmbed = new EmbedBuilder    
+            {
+                Color = Color.Blue,
+                Description = $"Error when downloading or posting the attachment.",
+                Fields = {
+                    new EmbedFieldBuilder() { IsInline = false, Name = $":x: Exception type ", Value = exception.GetType().FullName },
+                    new EmbedFieldBuilder() { IsInline = false, Name = $" Exception message", Value = exception.Message }
+                },
+                ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
+                Timestamp = DateTime.Now
+            };
+            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: exceptionEmbed.Build());
         }
 
         private static async Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
