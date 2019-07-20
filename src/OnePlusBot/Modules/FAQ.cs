@@ -319,6 +319,12 @@ namespace OnePlusBot.Modules
                         await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Supported FAQ commands are: repairprices, bluspark, googlecamera, oxygenos, unbrick, edl, magisk, root, qualcommdiagnostics, smt, qpreview, updateschedule, adbfastbootpath, saharacommunicationfailed." + Environment.NewLine + 
                                          "Mind that some commands can only be used in specific (device)channels"));
                         break;
+                    case "oneplusswitch":
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("You can use OnePlus Switch <https://play.google.com/store/apps/details?id=com.oneplus.backuprestore> to backup and restore your data. Most of applications data will be backed up as well." + Environment.NewLine +
+                                             "If you want to avoid data of a specific application to be restored, you can get in `MobileBackup --> App` in `opbackup` folder to delete the .tar file associated to the app (eg: `com.whatsapp.tar` for data of WhatsApp.)"));
+                        }
+                        break;
                 }
             }
             catch (Exception ex)
