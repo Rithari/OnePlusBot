@@ -315,15 +315,16 @@ namespace OnePlusBot.Modules
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("To use ADB and fastboot tools, download them from <https://dl.google.com/android/repository/platform-tools-latest-windows.zip> (source <https://developer.android.com/studio/releases/platform-tools> ) and unzip them. If you wish to add them to your PATH (meaning being able to use them without having to navigate to the folder they're stored first), search in Start Menu for `Environment variables` and click on `Modify system environment variables`. On the next window click on `Environment variables`. Go to `System variables`, select `Path` and click on `Edit`. Click on `New` and input the location of where you unzipped `platform-tools` folder."));
                         }
                         break;
-                    default:
-                        await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Supported FAQ commands are: repairprices, bluspark, googlecamera, oxygenos, unbrick, edl, magisk, root, qualcommdiagnostics, smt, qpreview, updateschedule, adbfastbootpath, saharacommunicationfailed." + Environment.NewLine + 
-                                         "Mind that some commands can only be used in specific (device)channels"));
-                        break;
                     case "oneplusswitch":
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("You can use OnePlus Switch <https://play.google.com/store/apps/details?id=com.oneplus.backuprestore> to backup and restore your data. Most of applications data will be backed up as well." + Environment.NewLine +
-                                             "If you want to avoid data of a specific application to be restored, you can get in `MobileBackup --> App` in `opbackup` folder to delete the .tar file associated to the app (eg: `com.whatsapp.tar` for data of WhatsApp.)"));
+                                             "If you want to avoid data of a specific application to be restored, you can get in `MobileBackup --> App` in `opbackup` folder to delete the .tar file associated to the app (eg: `com.whatsapp.tar` for data of WhatsApp)"));
                         }
+                        break;
+                    //placeholder for any new FAQ entry that might be added in the future
+                    default:
+                        await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Supported FAQ commands are: repairprices, bluspark, googlecamera, oxygenos, unbrick, edl, magisk, root, qualcommdiagnostics, smt, qpreview, updateschedule, adbfastbootpath, saharacommunicationfailed, oneplusswitch" + Environment.NewLine + 
+                                         "Mind that some commands can only be used in specific (device)channels"));
                         break;
                 }
             }
