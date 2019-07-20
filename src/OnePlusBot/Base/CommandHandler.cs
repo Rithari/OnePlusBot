@@ -153,52 +153,125 @@ namespace OnePlusBot.Base
 
         private async Task OnMessageRemoved(Cacheable<IMessage, ulong> cacheable, ISocketMessageChannel socketChannel)
         {
-            var deletedMessage = await cacheable.GetOrDownloadAsync();
+
             var channel = (SocketTextChannel)socketChannel;
+            IMessage deletedMessage = null;
+            // this happened sometimes
+            try 
+            {
+                deletedMessage = await cacheable.GetOrDownloadAsync();
+            }
+            catch(NullReferenceException ex)
+            {
+                await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(ex.ToString());
+            }
+            // it was sometimes null
+            if(deletedMessage == null)
+            {
+                return;
+            }
 
             List<EmbedFieldBuilder> fields = new List<EmbedFieldBuilder>();
             var originalMessage = "";
             // I distinctly remember having a null value once, couldnt find the situation again for that tho
             // the check should not be too bad, it should short circuit anyway
-            if(cacheable.Value.Content == "" || cacheable.Value.Content == null){
+            if(cacheable.Value == null || cacheable.Value.Content == "" || cacheable.Value.Content == null)
+            {
                 originalMessage = "none";
-            } else {
+            } 
+            else 
+            {
                 originalMessage = cacheable.Value.Content;
             }
             fields.Add(new EmbedFieldBuilder() { IsInline = false, Name = $":x: Original message: ", Value = originalMessage });
+            if(deletedMessage != null && deletedMessage.Attachments != null){
+                    // you can upload multiple attachments at once on mobile
+                var attachments = deletedMessage.Attachments.ToList();
+                if(attachments.Count > 0)
+                {
+                    fields.Add(new EmbedFieldBuilder() { IsInline = false, Name = $":frame_photo: Amount of attachments: ", Value = attachments.Count });
+                }
+                
+                var embed = new EmbedBuilder
+                {
+                    Color = Color.Blue,
+                    Description = $":bulb: Message from '{cacheable.Value.Author.Username}' removed in {channel.Mention}",
+                    Fields = fields,
+                    ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
+                    Timestamp = DateTime.Now
+                };
+                await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: embed.Build());
 
-            // you can upload multiple attachments at once on mobile
-            var attachments = deletedMessage.Attachments.ToList();
-            if(attachments.Count > 0)
-            {
-                fields.Add(new EmbedFieldBuilder() { IsInline = false, Name = $":frame_photo: Amount of attachments: ", Value = attachments.Count });
+                WebClient client = new WebClient();
+                for(int index = 0; index < attachments.Count; index++)
+                {
+                    var oneBasedIndex = index + 1;
+                    var targetFileName = attachments.ElementAt(index).Filename;
+                    var url = attachments.ElementAt(index).Url;
+                    try 
+                    {
+                        client.DownloadFile(url, targetFileName);
+                        var attachmentString = $"attachment://{targetFileName}";
+                        var pictureEmbed = new EmbedBuilder()
+                        {
+                            Color = Color.Blue,
+                            Footer = new EmbedFooterBuilder() { Text = "Attachment #" + oneBasedIndex },
+                            ImageUrl = attachmentString,
+                        };
+                        await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendFileAsync(targetFileName, "", embed: pictureEmbed.Build());
+                    }
+                    catch(WebException webEx)
+                    {
+                        if (webEx.Status == WebExceptionStatus.ProtocolError)
+                        {
+                            var response = webEx.Response as HttpWebResponse;
+                            if (response != null)
+                            {
+                                var exceptionEmbed = new EmbedBuilder    
+                                {
+                                    Color = Color.Blue,
+                                    Description = $"Discord did not let us download attachment #" + (index +1),
+                                    Fields = {new EmbedFieldBuilder() { IsInline = false, Name = $":x: It returned ", Value = (int)response.StatusCode }},
+                                    ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
+                                };
+                                await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: exceptionEmbed.Build());
+                            }
+                            else
+                            {
+                                SendExceptionEmbed(cacheable, webEx, channel);
+                            }
+                        }
+                        else
+                        {
+                            SendExceptionEmbed(cacheable, webEx, channel);
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        SendExceptionEmbed(cacheable, ex, channel);
+                    }
+                    finally 
+                    {
+                        File.Delete(targetFileName);  
+                    }     
+                }
             }
-            
-            var embed = new EmbedBuilder
+        }
+
+        private static async void SendExceptionEmbed(Cacheable<IMessage, ulong> cacheable, Exception exception, SocketTextChannel channel)
+        {
+            var exceptionEmbed = new EmbedBuilder    
             {
                 Color = Color.Blue,
-                Description = $":bulb: Message from '{cacheable.Value.Author.Username}' removed in {channel.Mention}",
-                Fields = fields,
+                Description = $"Error when downloading or posting the attachment.",
+                Fields = {
+                    new EmbedFieldBuilder() { IsInline = false, Name = $":x: Exception type ", Value = exception.GetType().FullName },
+                    new EmbedFieldBuilder() { IsInline = false, Name = $" Exception message", Value = exception.Message }
+                },
                 ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
                 Timestamp = DateTime.Now
             };
-            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: embed.Build());
-
-            WebClient client = new WebClient();
-            for(int index = 0; index < attachments.Count; index++)
-            {
-                var targetFileName = attachments.ElementAt(index).Filename;
-                var url = attachments.ElementAt(index).Url;
-                client.DownloadFile(url, targetFileName);
-                try 
-                {
-                    await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendFileAsync(targetFileName, "Attachment: #" + (index + 1));
-                }
-                finally 
-                {
-                    File.Delete(targetFileName);  
-                }     
-            }
+            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: exceptionEmbed.Build());
         }
 
         private static async Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
