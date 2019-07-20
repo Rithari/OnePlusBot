@@ -253,13 +253,23 @@ namespace OnePlusBot.Modules
                     case "androidqpreview":
                         if (Context.Channel.Name == "oneplus6-6t")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Android Q Dev Preview is now available to download for OnePlus 6 and 6T (source <https://forums.oneplus.com/threads/android-q-beta-developer-preview-for-oneplus-6-6t.1020398/> )" + Environment.NewLine +
-                                             "Direct download link for OnePlus 6: <https://oxygenos.oneplus.net/OnePlus6Oxygen_22_OTA_001_all_1905032150_wipe_2fa26de80dec40fb.zip>" + Environment.NewLine +
-                                             "Direct download link for OnePlus 6T: <https://oxygenos.oneplus.net/OnePlus6TOxygen_34_OTA_001_all_1905032146_wipe_221b43d22d9b4dd4.zip>" + Environment.NewLine +
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Android Q Dev Preview is now available to download for OnePlus 6 and 6T (source <https://forums.oneplus.com/threads/android-q-developer-preview-3-for-oneplus-6-and-6t.1076551/> )" + Environment.NewLine +
+                                             "Direct download link for OnePlus 6: <https://oxygenos.oneplus.net/OnePlus6Oxygen_22_OTA_003_all_1907120020_wipe_ae2a3b38959345b1.zip>" + Environment.NewLine +
+                                             "Direct download link for OnePlus 6T: <https://oxygenos.oneplus.net/OnePlus6TOxygen_34_OTA_003_all_1907120039_wipe_d9154a280c58444c.zip>" + Environment.NewLine +
                                              "Place the relevant zip at the root of the system storage of your phone and use local update feature (Settings --> System --> System Updates --> click on the wheel) to update to Android Q dev preview." + Environment.NewLine +
-                                             "If you want to rollback to stable release of Android Pie, use again local update feature with these zips <https://oxygenos.oneplus.net/fulldowngrade_wipe_MSM_17819_181025_2315_user_MP1_release.zip> (for OP6) / https://oxygenos.oneplus.net/Fulldowngrade_wipe_18801_181024_2027_user_MP2_release.zip (for OP6T)" + Environment.NewLine +
+                                             "If you want to rollback to stable release of Android Pie, use again local update feature with these zips <https://oxygenos.oneplus.net/fulldowngrade_wipe_MSM_17819_181025_2315_user_MP1_release.zip> (for OP6) / <https://oxygenos.oneplus.net/Fulldowngrade_wipe_18801_181024_2027_user_MP2_release.zip> (for OP6T)" + Environment.NewLine +
                                               Environment.NewLine +
                                              "**WARNING**: T-Mobile OP6T converted users can flash Q Preview but will have to use MSM tool to recover their device if they wish to downgrade as the rollback zip provided by OnePlus will lead to a device mismatch according to reports on XDA forums (sources <https://forum.xda-developers.com/showpost.php?p=79482702&postcount=2295> and <https://forum.xda-developers.com/showpost.php?p=79483602&postcount=57> )"));
+                        }
+                        else if (Context.Channel.Name == "oneplus7-series")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Android Q Dev Preview is now available to download for OnePlus 7 and 7 Pro (source <https://forums.oneplus.com/threads/android-q-developer-preview-3-for-oneplus-7-pro-and-7.1076548/> )" + Environment.NewLine +
+                                             "Direct download link for OnePlus 7: <https://oxygenos.oneplus.net/OnePlus7Oxygen_13.X.03_OTA_003_all_1907122243_d7884229b8c84a8a.zip>" + Environment.NewLine +
+                                             "Direct download link for OnePlus 7 Pro: <https://oxygenos.oneplus.net/OnePlus7ProOxygen_13.X.03_OTA_003_all_1907122236_87975de9b3b048f2.zip>" + Environment.NewLine +
+                                             "Place the relevant zip at the root of the system storage of your phone and use local update feature (Settings --> System --> System Updates --> click on the wheel) to update to Android Q dev preview." + Environment.NewLine +
+                                             "If you want to rollback to stable release of Android Pie, use again local update feature with these zips <https://oxygenos.oneplus.net/fulldowngrade_wipe_MSM_18857_190505_1527_user.zip> (for OP7) / <https://oxygenos.oneplus.net/Fulldowngrade_wipe_18821_190425_0253_user_fix_revision_MP_release.zip> (for OP 7 Pro)" + Environment.NewLine +
+                                              Environment.NewLine +
+                                             "**WARNING**: T-Mobile OP 7 Pro converted users can flash Q Preview but will have to use MSM tool to recover their device if they wish to downgrade as the rollback zip provided by OnePlus will lead to a device mismatch.)"));
                         }
                         break;
                     case "softwaremaintenanceschedule":
