@@ -212,14 +212,23 @@ namespace OnePlusBot.Base
                     {
                         await Task.Delay(500);
                         client.DownloadFile(url, targetFileName);
-                        var attachmentString = $"attachment://{targetFileName}";
-                        var pictureEmbed = new EmbedBuilder()
+                        var upperFileName = targetFileName.ToUpper();
+                        var attachmentDescription = "Attachment #" + oneBasedIndex;
+                        if(upperFileName.EndsWith("JPG") || upperFileName.EndsWith("PNG") || upperFileName.EndsWith("GIF"))
                         {
-                            Color = Color.Blue,
-                            Footer = new EmbedFooterBuilder() { Text = "Attachment #" + oneBasedIndex },
-                            ImageUrl = attachmentString,
-                        };
-                        await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendFileAsync(targetFileName, "", embed: pictureEmbed.Build());
+                            var attachmentString = $"attachment://{targetFileName}";
+                            var pictureEmbed = new EmbedBuilder()
+                            {
+                                Color = Color.Blue,
+                                Footer = new EmbedFooterBuilder() { Text =  attachmentDescription},
+                                ImageUrl = attachmentString,
+                            };
+                            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendFileAsync(targetFileName, "", embed: pictureEmbed.Build());
+                        } 
+                        else 
+                        {
+                            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendFileAsync(targetFileName, attachmentDescription);
+                        }
                     }
                     catch(WebException webEx)
                     {
@@ -231,7 +240,7 @@ namespace OnePlusBot.Base
                                 var exceptionEmbed = new EmbedBuilder    
                                 {
                                     Color = Color.Red,
-                                    Description = $"Discord did not let us download attachment #" + (index +1),
+                                    Description = $"Discord did not let us download attachment #" + oneBasedIndex,
                                     Fields = {new EmbedFieldBuilder() { IsInline = false, Name = $":x: It returned ", Value = (int)response.StatusCode }},
                                     ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
                                 };
