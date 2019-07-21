@@ -210,6 +210,7 @@ namespace OnePlusBot.Base
                     var url = attachments.ElementAt(index).Url;
                     try 
                     {
+                        await Task.Delay(500);
                         client.DownloadFile(url, targetFileName);
                         var attachmentString = $"attachment://{targetFileName}";
                         var pictureEmbed = new EmbedBuilder()
@@ -229,7 +230,7 @@ namespace OnePlusBot.Base
                             {
                                 var exceptionEmbed = new EmbedBuilder    
                                 {
-                                    Color = Color.Blue,
+                                    Color = Color.Red,
                                     Description = $"Discord did not let us download attachment #" + (index +1),
                                     Fields = {new EmbedFieldBuilder() { IsInline = false, Name = $":x: It returned ", Value = (int)response.StatusCode }},
                                     ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
@@ -262,7 +263,7 @@ namespace OnePlusBot.Base
         {
             var exceptionEmbed = new EmbedBuilder    
             {
-                Color = Color.Blue,
+                Color = Color.Red,
                 Description = $"Error when downloading or posting the attachment.",
                 Fields = {
                     new EmbedFieldBuilder() { IsInline = false, Name = $":x: Exception type ", Value = exception.GetType().FullName },
