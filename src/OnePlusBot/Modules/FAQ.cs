@@ -242,6 +242,30 @@ namespace OnePlusBot.Modules
                         break;
                     case "smt":
                     case "smtdownloadmode":
+                        if (Context.Channel.Name == "oneplus7-series")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("If you're reading this, stop what you are doing. Please." + Environment.NewLine +
+                                             "The reason why aftersales support of OnePlus use Upgrade Mode in MSM tool during remote assistance sessions rather than SMT mode is that it is meant for factory only as it wipes NV (non volatile) items such as IMEI (source <https://forum.xda-developers.com/showpost.php?p=77937552&postcount=90>)" + Environment.NewLine +
+                                             "You will also lose your Widevine L1 certificate."));
+                        }
+                        else if (Context.Channel.Name == "oneplus6-6t")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("If you're reading this, stop what you are doing. Please." + Environment.NewLine +
+                                             "The reason why aftersales support of OnePlus use Upgrade Mode in MSM tool during remote assistance sessions rather than SMT mode is that it is meant for factory only as it wipes NV (non volatile) items such as IMEI (source <https://forum.xda-developers.com/showpost.php?p=77937552&postcount=90>)." + Environment.NewLine +
+                                             "You will also lose your Widevine L1 certificate."));
+                        }
+                        else if (Context.Channel.Name == "oneplus5-5t")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("If you're reading this, stop what you are doing. Please." + Environment.NewLine +
+                                             "The reason why aftersales support of OnePlus use Upgrade Mode in MSM tool during remote assistance sessions rather than SMT mode is that it is meant for factory only as it wipes NV (non volatile) items such as IMEI (source <https://forum.xda-developers.com/showpost.php?p=77937552&postcount=90>)." + Environment.NewLine +
+                                             "You will also lose your Widevine L1 certificate (if your device is one of the units released before march 2018 with Widevine level being L3 and that you bothered sending your device back to OnePlus to get it updated to L1). Devices manufactured after March 2018 should have L1 certificate out of the box."));
+                        }
+                        else if (Context.Channel.Name == "oneplus3-3t")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("If you're reading this, stop what you are doing. Please." + Environment.NewLine +
+                                             "The reason why aftersales support of OnePlus use Upgrade Mode in MSM tool during remote assistance sessions rather than SMT mode is that it is meant for factory only as it wipes NV (non volatile) items such as IMEI (source <https://forum.xda-developers.com/showpost.php?p=77937552&postcount=90>)"));
+                        }
+                        else if (Context.Channel.Name == "legacy")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("If you're reading this, stop what you are doing. Please." + Environment.NewLine +
                                              "The reason why aftersales support of OnePlus use Upgrade Mode in MSM tool during remote assistance sessions rather than SMT mode is that it is meant for factory only as it wipes NV (non volatile) items such as IMEI (source <https://forum.xda-developers.com/showpost.php?p=77937552&postcount=90>)"));
@@ -291,8 +315,15 @@ namespace OnePlusBot.Modules
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("To use ADB and fastboot tools, download them from <https://dl.google.com/android/repository/platform-tools-latest-windows.zip> (source <https://developer.android.com/studio/releases/platform-tools> ) and unzip them. If you wish to add them to your PATH (meaning being able to use them without having to navigate to the folder they're stored first), search in Start Menu for `Environment variables` and click on `Modify system environment variables`. On the next window click on `Environment variables`. Go to `System variables`, select `Path` and click on `Edit`. Click on `New` and input the location of where you unzipped `platform-tools` folder."));
                         }
                         break;
+                    case "oneplusswitch":
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("You can use OnePlus Switch <https://play.google.com/store/apps/details?id=com.oneplus.backuprestore> to backup and restore your data. Most of applications data will be backed up as well." + Environment.NewLine +
+                                             "If you want to avoid data of a specific application to be restored, you can get in `MobileBackup --> App` in `opbackup` folder to delete the .tar file associated to the app (eg: `com.whatsapp.tar` for data of WhatsApp)"));
+                        }
+                        break;
+                    //placeholder for any new FAQ entry that might be added in the future
                     default:
-                        await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Supported FAQ commands are: repairprices, bluspark, googlecamera, oxygenos, unbrick, edl, magisk, root, qualcommdiagnostics, smt, qpreview, updateschedule, adbfastbootpath, saharacommunicationfailed." + Environment.NewLine + 
+                        await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Supported FAQ commands are: repairprices, bluspark, googlecamera, oxygenos, unbrick, edl, magisk, root, qualcommdiagnostics, smt, qpreview, updateschedule, adbfastbootpath, saharacommunicationfailed, oneplusswitch" + Environment.NewLine + 
                                          "Mind that some commands can only be used in specific (device)channels"));
                         break;
                 }
