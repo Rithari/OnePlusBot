@@ -17,7 +17,6 @@ namespace OnePlusBot.Base
         public static async Task Main()
         {
             var services = BuildServices();
-
             var bot = services.GetRequiredService<DiscordSocketClient>();
             bot.Log += Log;
             bot.ReactionAdded += OnReactionAdded;

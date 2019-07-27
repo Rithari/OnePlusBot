@@ -15,7 +15,7 @@ namespace OnePlusBot.Base
     public class MuteTimer : System.Timers.Timer {
       
       public MuteTimer()
-        : base( 1000 * 60 * 1)
+        : base( 1000 * 60 * 2 * 1)
       {
 
       }

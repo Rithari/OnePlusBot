@@ -24,15 +24,22 @@ namespace OnePlusBot.Helpers
             
             return new Uri(usr.GetAvatarUrl(ImageFormat.Auto, size));
         }
-        public static async Task MuteUser(IGuildUser user){
+        public static async Task MuteUser(IGuildUser user)
+        {
             var muteRole = user.Guild.GetRole(Global.Roles["muted"]);
             await user.AddRoleAsync(muteRole);
         }
 
 
-        public static async Task UnMuteUser(IGuildUser user){
+        public static async Task UnMuteUser(IGuildUser user)
+        {
             var muteRole = user.Guild.GetRole(Global.Roles["muted"]);
             await user.RemoveRoleAsync(muteRole);
+        }
+
+        public static String FormatUserName(IUser user)
+        {
+            return user.Username + '#' + user.Discriminator;
         }
     }
 }

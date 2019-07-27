@@ -77,6 +77,15 @@ namespace OnePlusBot.Modules
 
             var author = Context.Message.Author;
 
+            var guild = Context.Guild;
+            var mutedRoleName = "muted";
+            if(!Global.Roles.ContainsKey(mutedRoleName))
+            {
+                return CustomResult.FromError("Mute role has not been configured");
+            }
+
+            await Extensions.MuteUser(user);
+
             var muteData = new Mute
             {
                 MuteDate = startTime,
@@ -85,24 +94,38 @@ namespace OnePlusBot.Modules
                 MutedUserID = user.Id,
                 MutedByID = author.Id,
                 MutedBy = author.Username + '#' + author.Discriminator,
-                Reason = reason,
+                Reason = reason ?? "No reason provided",
                 MuteEnded = false
             };
 
-             using (var db = new Database())
+            using (var db = new Database())
             {
                 db.Mutes.Add(muteData);
                 db.SaveChanges();
-            }
+            }        
 
-            var guild = Context.Guild;
-            var mutedRoleName = "muted";
-            if(!Global.Roles.ContainsKey(mutedRoleName)){
-                return CustomResult.FromError("Mute role has not been configured");
-            }
-
-            await Extensions.MuteUser(user);
-            if(targetTime <= DateTime.Now.AddHours(24)){
+            var builder = new EmbedBuilder();
+            builder.Title = "A user has been muted!";
+            builder.Color = Color.Red;
+            
+            builder.Timestamp = Context.Message.Timestamp;
+            
+            builder.ThumbnailUrl = user.GetAvatarUrl();
+            
+            const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
+            builder.AddField("Muted User", Extensions.FormatUserName(user))
+                .AddField("Muted by", Extensions.FormatUserName(author))
+                .AddField(
+                    "Location of the mute",
+                    $"[#{Context.Message.Channel.Name}]({string.Format(discordUrl, Context.Guild.Id, Context.Channel.Id, Context.Message.Id)})")
+                .AddField("Reason", reason ?? "No reason was provided.")
+                .AddField("Muted until", $"{ targetTime:dd.MM.yyyy HH:mm}")
+                .AddField("Mute id", muteData.ID);
+               
+            var embed = builder.Build();
+            await guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: builder.Build());
+            
+            if(targetTime <= DateTime.Now.AddMinutes(0)){
                 var difference = targetTime - DateTime.Now;
                 MuteTimerManager.UnmuteUserIn(user.Id, difference, muteData.ID);
             }
