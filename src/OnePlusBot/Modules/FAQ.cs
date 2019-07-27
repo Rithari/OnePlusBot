@@ -53,38 +53,61 @@ namespace OnePlusBot.Modules
                         break;
                     case "blu_spark":
                     case "bluspark":
-                    case "twrp":
                         if (Context.Channel.Name == "oneplus7-series")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("blu_spark XDA thread for OnePlus 7 Pro: <https://forum.xda-developers.com/oneplus-7-pro/development/kernel-t3944179/>" + Environment.NewLine +
-                                             "blu_spark XDA thread for OnePlus 7: <https://forum.xda-developers.com/oneplus-7/development/kernel-t3944855>" + Environment.NewLine +
-                                             "blu_spark TWRP Download link for OnePlus 7 and 7 Pro: <https://github.com/engstk/android_device_oneplus_guacamole_unified_TWRP/releases>"));
+                                             "blu_spark XDA thread for OnePlus 7: <https://forum.xda-developers.com/oneplus-7/development/kernel-t3944855>"));
                         }
                         else if (Context.Channel.Name == "oneplus6-6t")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("blu_spark XDA thread for OnePlus 6: <https://forum.xda-developers.com/oneplus-6/development/kernel-t3800965>" + Environment.NewLine +
-                                             "blu_spark XDA thread for OnePlus 6T: <https://forum.xda-developers.com/oneplus-6t/development/kernel-t3861123>" + Environment.NewLine +
-                                             "blu_spark TWRP Download link for OnePlus 6: <https://github.com/engstk/android_device_oneplus_enchilada/releases>" + Environment.NewLine +
-                                             "blu_spark TWRP Download link for OnePlus 6T: <https://github.com/engstk/android_device_oneplus_fajita/releases>"));
+                                             "blu_spark XDA thread for OnePlus 6T: <https://forum.xda-developers.com/oneplus-6t/development/kernel-t3861123>"));
                         }
                         else if (Context.Channel.Name == "oneplus5-5t")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("blu_spark XDA thread for OnePlus 5: <https://forum.xda-developers.com/oneplus-5/development/kernel-t3651933>" + Environment.NewLine +
-                                             "blu_spark XDA thread for OnePlus 5T: <https://forum.xda-developers.com/oneplus-5t/development/kernel-t3706295>" + Environment.NewLine +
-                                             "blu_spark TWRP Download link for 5 and 5T: <https://github.com/engstk/android_device_oneplus_cheeseburger/releases>"));
+                                             "blu_spark XDA thread for OnePlus 5T: <https://forum.xda-developers.com/oneplus-5t/development/kernel-t3706295>"));
                         }
                         else if (Context.Channel.Name == "oneplus3-3t")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Official TWRP for OnePlus 3 & 3T: <https://forum.xda-developers.com/oneplus-3/oneplus-3--3t-cross-device-development/recovery-official-twrp-touch-recovery-t3742894>." + Environment.NewLine +
-                                             "Download link: <https://twrp.me/oneplus/oneplusthree.html>"));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("blu_spark XDA thread for OnePlus 3 and 3T: <https://forum.xda-developers.com/oneplus-3/oneplus-3--3t-cross-device-development/kernel-t3404970>"));
                         }
                         else if (Context.Channel.Name == "legacy")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("blu_spark for OnePlus X: <https://forum.xda-developers.com/oneplus-x/orig-development/kernel-t3250995>"));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("blu_spark XDA thread for OnePlus X: <https://forum.xda-developers.com/oneplus-x/orig-development/kernel-t3250995>"));
                         }
                         else
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Please perform your request in the correct device channel."));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Please perform your request in a device channel."));
+                        }
+                        break;
+                    case "twrp":
+                        if (Context.Channel.Name == "oneplus7-series")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("blu_spark TWRP download link for OnePlus 7 and 7 Pro: <https://github.com/engstk/android_device_oneplus_guacamole_unified_TWRP/releases>"));
+                        }
+                        else if (Context.Channel.Name == "oneplus6-6t")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("blu_spark TWRP download link for OnePlus 6: <https://github.com/engstk/android_device_oneplus_enchilada/releases>" + Environment.NewLine +
+                                             "blu_spark TWRP Download link for OnePlus 6T: <https://github.com/engstk/android_device_oneplus_fajita/releases>"));
+                        }
+                        else if (Context.Channel.Name == "oneplus5-5t")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("blu_spark TWRP download link for OnePlus 5 and 5T: <https://github.com/engstk/android_device_oneplus_cheeseburger/releases>"));
+                        }
+                        else if (Context.Channel.Name == "oneplus3-3t")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Official TWRP download link for OnePlus 3 and 3T: <https://twrp.me/oneplus/oneplusthree.html>"));
+                        }
+                        else if (Context.Channel.Name == "legacy")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Official TWRP download link for OnePlus X: <https://twrp.me/oneplus/oneplusx.html>" + Environment.NewLine +
+                                             "Official TWRP download link for OnePlus 2: <https://twrp.me/oneplus/oneplustwo.html>" + Environment.NewLine +
+                                             "Official TWRP download link for OnePlus One: <https://twrp.me/oneplus/oneplusone.html>"));
+                        }
+                        else
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Please perform your request in a device channel."));
                         }
                         break;
                     case "unbrick":
