@@ -121,7 +121,6 @@ namespace OnePlusBot.Base
                 .AddSingleton<InteractiveService>()
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<CommandService>()
-                .AddSingleton<MuteTimerManager>()
                 .AddSingleton<HttpClient>()
                 .BuildServiceProvider();
         }
