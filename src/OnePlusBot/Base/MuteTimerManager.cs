@@ -42,7 +42,7 @@ namespace OnePlusBot.Base
           }
           if(startup)
           {
-            MuteTimer timer1 = new MuteTimer();
+            System.Timers.Timer timer1 = new System.Timers.Timer(1000 * 60 * 60);
             timer1.Elapsed += new System.Timers.ElapsedEventHandler(TriggerTimer);
             timer1.Enabled = true;
           }
@@ -51,9 +51,7 @@ namespace OnePlusBot.Base
 
         public static async void TriggerTimer(object sender, System.Timers.ElapsedEventArgs e)
         {
-          MuteTimer timer = (MuteTimer)sender;
-          var bot = Global.Bot;
-          var guild = bot.GetGuild(Global.ServerID);
+          System.Timers.Timer timer = (System.Timers.Timer)sender;
           await SetupTimers(false);
         }        
 
