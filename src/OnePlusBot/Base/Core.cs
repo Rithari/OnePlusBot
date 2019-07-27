@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using System.Data.Common;
+using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -22,12 +23,17 @@ namespace OnePlusBot.Base
             bot.ReactionAdded += OnReactionAdded;
             bot.ReactionRemoved += OnReactionRemoved;
 
+            bot.Ready += () => {
+                return MuteTimerManager.setupTimers(true);
+            };
+
             await bot.LoginAsync(TokenType.Bot, Global.Token);
             await bot.StartAsync();
 
             await bot.SetGameAsync(name: "Made with the Fans™ ", streamUrl: "https://www.twitch.tv/monstercat", ActivityType.Streaming);
 
             await services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
+            Global.Bot = bot;
 
             await Task.Delay(-1);
         }
@@ -115,6 +121,7 @@ namespace OnePlusBot.Base
                 .AddSingleton<InteractiveService>()
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<CommandService>()
+                .AddSingleton<MuteTimerManager>()
                 .AddSingleton<HttpClient>()
                 .BuildServiceProvider();
         }

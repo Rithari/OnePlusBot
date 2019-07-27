@@ -15,6 +15,8 @@ namespace OnePlusBot.Data
         public DbSet<ReferralCode> ReferralCodes { get; set; }
         public DbSet<WarnEntry> Warnings { get; set; }
 
+        public DbSet<Mute> Mutes {get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var server = Environment.GetEnvironmentVariable("Server");

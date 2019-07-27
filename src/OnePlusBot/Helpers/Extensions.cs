@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Discord;
+using OnePlusBot.Base;
 
 namespace OnePlusBot.Helpers
 {
@@ -22,6 +23,16 @@ namespace OnePlusBot.Helpers
                 return null;
             
             return new Uri(usr.GetAvatarUrl(ImageFormat.Auto, size));
+        }
+        public static async Task MuteUser(IGuildUser user){
+            var muteRole = user.Guild.GetRole(Global.Roles["muted"]);
+            await user.AddRoleAsync(muteRole);
+        }
+
+
+        public static async Task UnMuteUser(IGuildUser user){
+            var muteRole = user.Guild.GetRole(Global.Roles["muted"]);
+            await user.RemoveRoleAsync(muteRole);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Discord;
 using OnePlusBot.Data;
+using Discord.WebSocket;
 
 namespace OnePlusBot.Base
 {
@@ -85,10 +86,12 @@ namespace OnePlusBot.Base
         }
 
         public static class OnePlusEmote {
-            public static IEmote SUCCESS = Emote.Parse("<:success:499567039451758603>");
+            public static IEmote SUCCESS = Emote.Parse("<:shelAva:404330255025831939>");
             public static IEmote FAIL = new Emoji("⚠");
             public static IEmote OP_YES =  Emote.Parse("<:OPYes:426070836269678614>");
             public static IEmote OP_NO = Emote.Parse("<:OPNo:426072515094380555>");
         }
+
+        public static DiscordSocketClient Bot { get; set;}
     }
 }
