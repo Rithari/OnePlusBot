@@ -42,14 +42,12 @@ namespace OnePlusBot.Modules
                 Array.Copy(arguments, 1, reasons, 0, arguments.Length - 1);
                 reason = String.Join(" ", reasons);
 
-            } else 
+            } 
+            else 
             {
                 reason = "No reason provided";
             }
-            int duration = 0;
 
-            Regex rx = new Regex(@"(\d+[a-z]+)+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            MatchCollection matches = rx.Matches(durationStr);
             CaptureCollection captures =  Regex.Match(durationStr, @"(\d+[a-z]+)+").Groups[1].Captures;
 
             DateTime targetTime = DateTime.Now;
@@ -73,14 +71,13 @@ namespace OnePlusBot.Modules
                         var isNumeric = int.TryParse(durationSplit[0], out int n);
                         if(durationSplit.Length == 2 && durationSplit[1] == "" && isNumeric && n > 0)
                         {
-                            duration = n;
                             switch(format)
                             {
-                                case 'm': targetTime = targetTime.AddMinutes(duration); break;
-                                case 'h': targetTime = targetTime.AddHours(duration); break;
-                                case 'd': targetTime = targetTime.AddDays(duration); break;
-                                case 'w': targetTime = targetTime.AddDays(duration * 7); break;
-                                case 's': targetTime = targetTime.AddSeconds(duration); break;
+                                case 'm': targetTime = targetTime.AddMinutes(n); break;
+                                case 'h': targetTime = targetTime.AddHours(n); break;
+                                case 'd': targetTime = targetTime.AddDays(n); break;
+                                case 'w': targetTime = targetTime.AddDays(n * 7); break;
+                                case 's': targetTime = targetTime.AddSeconds(n); break;
                                 default: validFormat = false; goto AfterLoop; 
                             }
                             validFormat = true;
