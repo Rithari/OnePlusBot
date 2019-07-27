@@ -18,7 +18,7 @@ namespace OnePlusBot.Modules
         [
             Command("mute", RunMode=RunMode.Async),
             Summary("Mutes a specified user for a set amount of time"),
-            RequireBotPermission(GuildPermission.KickMembers),
+            RequireBotPermission(GuildPermission.ManageRoles),
             RequireUserPermission(GuildPermission.PrioritySpeaker),
             RequireUserPermission(GuildPermission.ManageNicknames)
         ]
@@ -166,7 +166,7 @@ namespace OnePlusBot.Modules
         [
             Command("unmute", RunMode=RunMode.Async),
             Summary("Unmutes a specified user"),
-            RequireBotPermission(GuildPermission.KickMembers),
+            RequireBotPermission(GuildPermission.ManageRoles),
             RequireUserPermission(GuildPermission.PrioritySpeaker),
             RequireUserPermission(GuildPermission.ManageNicknames)
         ]
