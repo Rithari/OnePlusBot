@@ -14,7 +14,7 @@ namespace OnePlusBot.Base
 {
     public class MuteTimerManager 
     {
-        public static async Task<RuntimeResult> setupTimers(Boolean startup)
+        public static async Task<RuntimeResult> SetupTimers(Boolean startup)
         {
           var bot = Global.Bot;
           var guild = bot.GetGuild(Global.ServerID);

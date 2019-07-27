@@ -24,7 +24,7 @@ namespace OnePlusBot.Base
 
             bot.Ready += () => 
             {
-                return MuteTimerManager.setupTimers(true);
+                return MuteTimerManager.SetupTimers(true);
             };
 
             await bot.LoginAsync(TokenType.Bot, Global.Token);
