@@ -75,7 +75,8 @@ namespace OnePlusBot.Modules
                         }
                         else if (Context.Channel.Name == "oneplus3-3t")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("blu_spark for OnePlus 3 & 3T: <https://forum.xda-developers.com/oneplus-3/oneplus-3--3t-cross-device-development/kernel-t3404970>"));
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Official TWRP for OnePlus 3 & 3T: <https://forum.xda-developers.com/oneplus-3/oneplus-3--3t-cross-device-development/recovery-official-twrp-touch-recovery-t3742894>." + Environment.NewLine +
+                                             "Download link: <https://twrp.me/oneplus/oneplusthree.html>"));
                         }
                         else if (Context.Channel.Name == "legacy")
                         {
