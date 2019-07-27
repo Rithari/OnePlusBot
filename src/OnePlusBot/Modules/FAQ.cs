@@ -151,7 +151,12 @@ namespace OnePlusBot.Modules
                     case "gcam":
                     case "googlecam":
                     case "googlecamera":
-                        if (Context.Channel.Name == "oneplus6-6t")
+                        if (Context.Channel.Name == "oneplus7-series")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Google Camera for OnePlus 7 & 7 Pro: <https://forum.xda-developers.com/oneplus-7-pro/themes/google-camera-op7-pro-t3944422>" + Environment.NewLine +
+                                             "For all device APKs, please visit: <https://www.celsoazevedo.com/files/android/google-camera>"));
+                        }
+                        else if (Context.Channel.Name == "oneplus6-6t")
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Google Camera for OnePlus 6 & 6T: <https://forum.xda-developers.com/oneplus-6t/themes/app-oneplus-6-google-camera-port-t3862849>" + Environment.NewLine +
                                              "For all device APKs, please visit: <https://www.celsoazevedo.com/files/android/google-camera>"));
