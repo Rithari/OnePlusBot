@@ -54,7 +54,7 @@ namespace OnePlusBot.Base
           MuteTimer timer = (MuteTimer)sender;
           var bot = Global.Bot;
           var guild = bot.GetGuild(Global.ServerID);
-          await setupTimers(false);
+          await SetupTimers(false);
         }        
 
         public static async void UnmuteUserIn(ulong userId, TimeSpan time, ulong muteId)
