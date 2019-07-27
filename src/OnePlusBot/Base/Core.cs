@@ -22,7 +22,8 @@ namespace OnePlusBot.Base
             bot.ReactionAdded += OnReactionAdded;
             bot.ReactionRemoved += OnReactionRemoved;
 
-            bot.Ready += () => {
+            bot.Ready += () => 
+            {
                 return MuteTimerManager.setupTimers(true);
             };
 

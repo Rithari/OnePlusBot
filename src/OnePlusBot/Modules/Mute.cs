@@ -15,65 +15,95 @@ namespace OnePlusBot.Modules
 
         private char[] timeFormats = {'m', 'h', 'd', 'w', 's'};
 
-        [Command("mute", RunMode=RunMode.Async),
-        Summary("Mutes a specified user for a set amount of time"),
-        RequireBotPermission(GuildPermission.KickMembers),
-        RequireUserPermission(GuildPermission.PrioritySpeaker),
-        RequireUserPermission(GuildPermission.ManageNicknames)]
+        [
+            Command("mute", RunMode=RunMode.Async),
+            Summary("Mutes a specified user for a set amount of time"),
+            RequireBotPermission(GuildPermission.KickMembers),
+            RequireUserPermission(GuildPermission.PrioritySpeaker),
+            RequireUserPermission(GuildPermission.ManageNicknames)
+        ]
         public async Task<RuntimeResult> MuteUser(IGuildUser user,params String[] arguments)
         {
-             if (user.IsBot)
+            if (user.IsBot)
                 return CustomResult.FromError("You can't mute bots.");
 
             if (user.GuildPermissions.PrioritySpeaker)
                 return CustomResult.FromError("You can't mute staff.");
             
-            if(arguments.Length != 2)
-                return CustomResult.FromError("syntax ;mute <duration> <reason>.");
+            if(arguments.Length < 1)
+                return CustomResult.FromError("syntax ;mute <duration> [<reason>]");
             
             String durationStr = arguments[0];
-            String reason = arguments[1];
-            char usedFormat = 'n';
-            int duration = 0;
-            bool validDuration = false;
 
-            Regex rx = new Regex(@"(\d+[a-z]+)+",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            MatchCollection matches = rx.Matches(durationStr);
-
-            foreach (Match match in matches)
+            String reason;
+            if(arguments.Length > 1)
             {
-                  GroupCollection groups = match.Groups;
-                  Console.WriteLine(groups["word"].Value);
+                String[] reasons = new String[arguments.Length -1];
+                Array.Copy(arguments, 1, reasons, 0, arguments.Length - 1);
+                reason = String.Join(" ", reasons);
+
+            } else 
+            {
+                reason = "No reason provided";
             }
+            int duration = 0;
 
+            Regex rx = new Regex(@"(\d+[a-z]+)+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            MatchCollection matches = rx.Matches(durationStr);
+            CaptureCollection captures =  Regex.Match(durationStr, @"(\d+[a-z]+)+").Groups[1].Captures;
 
-            foreach(char format in timeFormats){
-                if(durationStr.Contains(format)){
-                    var durationSplit = durationStr.Split(format);
-                    var isNumeric = int.TryParse(durationSplit[0], out int n);
-                    if(durationSplit.Length == 2 && durationSplit[1] == "" && isNumeric && n > 0){
-                        duration = n;
-                        validDuration = true;
-                        usedFormat = format;
+            DateTime targetTime = DateTime.Now;
+            // this basically means *one* of the values has been wrong, maybe negative or something like that
+            Boolean validFormat = false;
+            // this means, that one *valid* unit has been found, not necessarily a valid valid, this is needed for the case, in which there is
+            // no valid value possible (e.g. 3y), this would cause the for loop to do nothing, but we are unaware of that
+            foreach(Capture capture in captures)
+            {
+                // this is needed, because at one iteration of the loop, we cannot know whether or not, any case applies
+                Boolean timeUnitApplied = false;
+                foreach(char format in timeFormats)
+                {
+                    var captureValue = capture.Value;
+                    // this check is needed in order that our durationSplit check makes sense
+                    // if the format is not present, the split would return a wrong value, and the check would be wrong
+                    if(captureValue.Contains(format))
+                    {
+                        timeUnitApplied = true;
+                        var durationSplit = captureValue.Split(format);
+                        var isNumeric = int.TryParse(durationSplit[0], out int n);
+                        if(durationSplit.Length == 2 && durationSplit[1] == "" && isNumeric && n > 0)
+                        {
+                            duration = n;
+                            switch(format)
+                            {
+                                case 'm': targetTime = targetTime.AddMinutes(duration); break;
+                                case 'h': targetTime = targetTime.AddHours(duration); break;
+                                case 'd': targetTime = targetTime.AddDays(duration); break;
+                                case 'w': targetTime = targetTime.AddDays(duration * 7); break;
+                                case 's': targetTime = targetTime.AddSeconds(duration); break;
+                                default: validFormat = false; goto AfterLoop; 
+                            }
+                            validFormat = true;
+                        }
+                        else 
+                        {
+                            validFormat = false;
+                            goto AfterLoop;
+                        }
                     }
+                }
+                if(!timeUnitApplied)
+                {
+                    validFormat = false;
                     break;
                 }
             }
-            if(!validDuration)
-                return CustomResult.FromError("Invalid time format and or number.");
-            
-            DateTime startTime = DateTime.Now;
-            DateTime targetTime;
-            switch(usedFormat){
-                default:
-                case 'm': targetTime = startTime.AddMinutes(duration); break;
-                case 'h': targetTime = startTime.AddHours(duration); break;
-                case 'd': targetTime = startTime.AddDays(duration); break;
-                case 'w': targetTime = startTime.AddDays(duration * 7); break;
-                case 's': targetTime = startTime.AddSeconds(duration); break;
+
+            AfterLoop:
+            if(!validFormat)
+            {
+                return CustomResult.FromError("Invalid format, it needs to be positive, and combinations of " + String.Join(", ", timeFormats));
             }
-            
 
             var author = Context.Message.Author;
 
@@ -81,20 +111,20 @@ namespace OnePlusBot.Modules
             var mutedRoleName = "muted";
             if(!Global.Roles.ContainsKey(mutedRoleName))
             {
-                return CustomResult.FromError("Mute role has not been configured");
+                return CustomResult.FromError("Mute role has not been configured.");
             }
 
             await Extensions.MuteUser(user);
 
             var muteData = new Mute
             {
-                MuteDate = startTime,
+                MuteDate = DateTime.Now,
                 UnmuteDate = targetTime,
                 MutedUser = user.Username + '#' + user.Discriminator,
                 MutedUserID = user.Id,
                 MutedByID = author.Id,
                 MutedBy = author.Username + '#' + author.Discriminator,
-                Reason = reason ?? "No reason provided",
+                Reason = reason,
                 MuteEnded = false
             };
 
@@ -114,18 +144,18 @@ namespace OnePlusBot.Modules
             
             const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
             builder.AddField("Muted User", Extensions.FormatUserName(user))
-                .AddField("Muted by", Extensions.FormatUserName(author))
-                .AddField(
-                    "Location of the mute",
-                    $"[#{Context.Message.Channel.Name}]({string.Format(discordUrl, Context.Guild.Id, Context.Channel.Id, Context.Message.Id)})")
-                .AddField("Reason", reason ?? "No reason was provided.")
-                .AddField("Muted until", $"{ targetTime:dd.MM.yyyy HH:mm}")
-                .AddField("Mute id", muteData.ID);
+                   .AddField("Muted by", Extensions.FormatUserName(author))
+                   .AddField("Location of the mute",
+                        $"[#{Context.Message.Channel.Name}]({string.Format(discordUrl, Context.Guild.Id, Context.Channel.Id, Context.Message.Id)})")
+                   .AddField("Reason", reason ?? "No reason was provided.")
+                   .AddField("Muted until", $"{ targetTime:dd.MM.yyyy HH:mm}")
+                   .AddField("Mute id", muteData.ID);
                
             var embed = builder.Build();
             await guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: builder.Build());
-            
-            if(targetTime <= DateTime.Now.AddMinutes(0)){
+            // in case the mute is shorter than the timer defined in Mutetimer.cs, we better just start the unmuting process directly
+            if(targetTime <= DateTime.Now.AddMinutes(60))
+            {
                 var difference = targetTime - DateTime.Now;
                 MuteTimerManager.UnmuteUserIn(user.Id, difference, muteData.ID);
             }
@@ -133,11 +163,13 @@ namespace OnePlusBot.Modules
             return CustomResult.FromSuccess();
         }
 
-         [Command("unmute", RunMode=RunMode.Async),
-        Summary("Unmutes a specified user"),
-        RequireBotPermission(GuildPermission.KickMembers),
-        RequireUserPermission(GuildPermission.PrioritySpeaker),
-        RequireUserPermission(GuildPermission.ManageNicknames)]
+        [
+            Command("unmute", RunMode=RunMode.Async),
+            Summary("Unmutes a specified user"),
+            RequireBotPermission(GuildPermission.KickMembers),
+            RequireUserPermission(GuildPermission.PrioritySpeaker),
+            RequireUserPermission(GuildPermission.ManageNicknames)
+        ]
         public async Task<RuntimeResult> UnMuteUser(IGuildUser user)
         {
             await MuteTimerManager.UnMuteUser(user.Id, ulong.MaxValue);
