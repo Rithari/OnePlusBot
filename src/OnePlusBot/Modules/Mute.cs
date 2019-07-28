@@ -53,11 +53,10 @@ namespace OnePlusBot.Modules
             DateTime targetTime = DateTime.Now;
             // this basically means *one* of the values has been wrong, maybe negative or something like that
             Boolean validFormat = false;
-            // this means, that one *valid* unit has been found, not necessarily a valid valid, this is needed for the case, in which there is
-            // no valid value possible (e.g. 3y), this would cause the for loop to do nothing, but we are unaware of that
             foreach(Capture capture in captures)
             {
-                // this is needed, because at one iteration of the loop, we cannot know whether or not, any case applies
+                // this means, that one *valid* unit has been found, not necessarily a valid valid, this is needed for the case, in which there is
+                // no valid value possible (e.g. 3y), this would cause the for loop to do nothing, but we are unaware of that
                 Boolean timeUnitApplied = false;
                 foreach(char format in timeFormats)
                 {
