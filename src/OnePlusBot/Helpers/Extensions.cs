@@ -26,14 +26,30 @@ namespace OnePlusBot.Helpers
         }
         public static async Task MuteUser(IGuildUser user)
         {
-            var muteRole = user.Guild.GetRole(Global.Roles["muted"]);
+            // will be replaced with a better handling in the future
+            if(!Global.Roles.ContainsKey("voicemuted") || !Global.Roles.ContainsKey("textmuted"))
+            {
+                return;
+            }
+            var muteRole = user.Guild.GetRole(Global.Roles["voicemuted"]);
+            await user.AddRoleAsync(muteRole);
+
+            muteRole = user.Guild.GetRole(Global.Roles["textmuted"]);
             await user.AddRoleAsync(muteRole);
         }
 
 
         public static async Task UnMuteUser(IGuildUser user)
         {
-            var muteRole = user.Guild.GetRole(Global.Roles["muted"]);
+            // will be replaced with a better handling in the future
+            if(!Global.Roles.ContainsKey("voicemuted") || !Global.Roles.ContainsKey("textmuted"))
+            {
+                return;
+            }
+            var muteRole = user.Guild.GetRole(Global.Roles["voicemuted"]);
+            await user.RemoveRoleAsync(muteRole);
+
+            muteRole = user.Guild.GetRole(Global.Roles["textmuted"]);
             await user.RemoveRoleAsync(muteRole);
         }
 

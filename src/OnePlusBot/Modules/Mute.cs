@@ -104,10 +104,16 @@ namespace OnePlusBot.Modules
             var author = Context.Message.Author;
 
             var guild = Context.Guild;
-            var mutedRoleName = "muted";
+            var mutedRoleName = "textmuted";
             if(!Global.Roles.ContainsKey(mutedRoleName))
             {
-                return CustomResult.FromError("Mute role has not been configured.");
+                return CustomResult.FromError("Text mute role has not been configured.");
+            }
+
+            mutedRoleName = "voicemuted";
+            if(!Global.Roles.ContainsKey(mutedRoleName))
+            {
+                return CustomResult.FromError("Voice mute role has not been configured.");
             }
 
             await Extensions.MuteUser(user);
