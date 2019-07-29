@@ -22,7 +22,7 @@ namespace OnePlusBot.Modules
             RequireUserPermission(GuildPermission.PrioritySpeaker),
             RequireUserPermission(GuildPermission.ManageNicknames)
         ]
-        public async Task<RuntimeResult> MuteUser(IGuildUser user,params String[] arguments)
+        public async Task<RuntimeResult> MuteUser(IGuildUser user,params string[] arguments)
         {
             if (user.IsBot)
                 return CustomResult.FromError("You can't mute bots.");
@@ -31,33 +31,33 @@ namespace OnePlusBot.Modules
                 return CustomResult.FromError("You can't mute staff.");
             
             if(arguments.Length < 1)
-                return CustomResult.FromError("syntax ;mute <duration> [<reason>]");
-            
-            String durationStr = arguments[0];
+                return CustomResult.FromError("The correct usage is `;mute <duration> <reason>`");
 
-            String reason;
+            string durationStr = arguments[0];
+
+            string reason;
             if(arguments.Length > 1)
             {
-                String[] reasons = new String[arguments.Length -1];
+                string[] reasons = new string[arguments.Length -1];
                 Array.Copy(arguments, 1, reasons, 0, arguments.Length - 1);
-                reason = String.Join(" ", reasons);
+                reason = string.Join(" ", reasons);
 
             } 
             else 
             {
-                reason = "No reason provided";
+                return CustomResult.FromError("You need to provide a reason.");
             }
 
             CaptureCollection captures =  Regex.Match(durationStr, @"(\d+[a-z]+)+").Groups[1].Captures;
 
             DateTime targetTime = DateTime.Now;
             // this basically means *one* of the values has been wrong, maybe negative or something like that
-            Boolean validFormat = false;
+            bool validFormat = false;
             foreach(Capture capture in captures)
             {
                 // this means, that one *valid* unit has been found, not necessarily a valid valid, this is needed for the case, in which there is
                 // no valid value possible (e.g. 3y), this would cause the for loop to do nothing, but we are unaware of that
-                Boolean timeUnitApplied = false;
+                bool timeUnitApplied = false;
                 foreach(char format in timeFormats)
                 {
                     var captureValue = capture.Value;
@@ -98,7 +98,7 @@ namespace OnePlusBot.Modules
             AfterLoop:
             if(!validFormat)
             {
-                return CustomResult.FromError("Invalid format, it needs to be positive, and combinations of " + String.Join(", ", timeFormats));
+                return CustomResult.FromError("Invalid format, it needs to be positive, and combinations of " + string.Join(", ", timeFormats));
             }
 
             var author = Context.Message.Author;
@@ -107,13 +107,13 @@ namespace OnePlusBot.Modules
             var mutedRoleName = "textmuted";
             if(!Global.Roles.ContainsKey(mutedRoleName))
             {
-                return CustomResult.FromError("Text mute role has not been configured.");
+                return CustomResult.FromError("Text mute role has not been configured. Check your DB entry!");
             }
 
             mutedRoleName = "voicemuted";
             if(!Global.Roles.ContainsKey(mutedRoleName))
             {
-                return CustomResult.FromError("Voice mute role has not been configured.");
+                return CustomResult.FromError("Voice mute role has not been configured. Check your DB entry!");
             }
 
             await Extensions.MuteUser(user);
@@ -153,8 +153,7 @@ namespace OnePlusBot.Modules
                    .AddField("Muted until", $"{ targetTime:dd.MM.yyyy HH:mm}")
                    .AddField("Mute id", muteData.ID);
                
-            var embed = builder.Build();
-            await guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: builder.Build());
+            await guild.GetTextChannel(Global.Channels["mutes"]).SendMessageAsync(embed: builder.Build());
             // in case the mute is shorter than the timer defined in Mutetimer.cs, we better just start the unmuting process directly
             if(targetTime <= DateTime.Now.AddMinutes(60))
             {
