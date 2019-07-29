@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Discord;
 using OnePlusBot.Data;
+using Discord.WebSocket;
 
 namespace OnePlusBot.Base
 {
@@ -90,5 +91,7 @@ namespace OnePlusBot.Base
             public static IEmote OP_YES =  Emote.Parse("<:OPYes:426070836269678614>");
             public static IEmote OP_NO = Emote.Parse("<:OPNo:426072515094380555>");
         }
+
+        public static DiscordSocketClient Bot { get; set;}
     }
 }
