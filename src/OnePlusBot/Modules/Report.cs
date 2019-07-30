@@ -60,8 +60,8 @@ namespace OnePlusBot.Modules
             });
 
             const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
-            builder.AddField("Reported User", user.Mention)
-                .AddField("Reported by", reporter.Mention)
+            builder.AddField("Reported User", user?.Mention ?? entry.ReportedUser + "(" + entry.ReportedUserId + ")")
+                .AddField("Reported by", reporter?.Mention ?? entry.ReportedBy + "(" + entry.ReportedById + ")")
                 .AddField(
                     "Location of the incident",
                     $"[#{Context.Message.Channel.Name}]({string.Format(discordUrl, Context.Guild.Id, Context.Channel.Id, Context.Message.Id)})")
