@@ -62,8 +62,8 @@ namespace OnePlusBot.Modules
             });
 
             const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
-            builder.AddField("Warned User", user.Mention)
-                .AddField("Warned by", monitor.Mention)
+            builder.AddField("Warned User", user?.Mention ?? entry.WarnedUser + "(" + entry.WarnedUserID + ")")
+                .AddField("Warned by", monitor?.Mention ?? entry.WarnedBy + "(" + entry.WarnedUserID + ")")
                 .AddField(
                     "Location of the incident",
                     $"[#{Context.Message.Channel.Name}]({string.Format(discordUrl, Context.Guild.Id, Context.Channel.Id, Context.Message.Id)})")
