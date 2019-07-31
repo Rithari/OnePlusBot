@@ -47,7 +47,7 @@ namespace OnePlusBot.Base
         private async Task OnUserLeft(SocketGuildUser socketGuildUser)
         {
             var modlog = socketGuildUser.Guild.GetTextChannel(Global.Channels["joinlog"]);
-            await modlog.SendMessageAsync(socketGuildUser?.Mention ?? socketGuildUser.Username + '#' + socketGuildUser.Discriminator + " left the guild");
+            await modlog.SendMessageAsync((socketGuildUser?.Mention ?? socketGuildUser.Username + '#' + socketGuildUser.Discriminator) + " left the guild");
         }
 
         private async Task OnuserUserJoined(SocketGuildUser socketGuildUser)
