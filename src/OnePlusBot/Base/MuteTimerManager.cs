@@ -61,12 +61,16 @@ namespace OnePlusBot.Base
           await UnMuteUser(userId, muteId);
         }
 
-        public static async Task UnMuteUser(ulong userId, ulong muteId)
+        public static async Task<CustomResult> UnMuteUser(ulong userId, ulong muteId)
         {
           var bot = Global.Bot;
           var guild = bot.GetGuild(Global.ServerID);
           var user = guild.GetUser(userId);
-          await OnePlusBot.Helpers.Extensions.UnMuteUser(user);
+          var result = await OnePlusBot.Helpers.Extensions.UnMuteUser(user);
+          if(!result.IsSuccess)
+          {
+            return result;
+          }
           using (var db = new Database())
           {
             if(muteId == UInt64.MaxValue)
@@ -84,7 +88,6 @@ namespace OnePlusBot.Base
               if(!muteObj.MuteEnded)
               {
                 muteObj.MuteEnded = true;
-                // TODO only send the notice, if the unmuting was caused by a timer? no?
                 var noticeEmbed = new EmbedBuilder();
                 noticeEmbed.Color = Color.LightOrange;
                 noticeEmbed.Title = "User has been unmuted!";
@@ -98,6 +101,7 @@ namespace OnePlusBot.Base
             }
             db.SaveChanges();
           }
+          return result;
         }
       }
 }

@@ -24,33 +24,35 @@ namespace OnePlusBot.Helpers
             
             return new Uri(usr.GetAvatarUrl(ImageFormat.Auto, size));
         }
-        public static async Task MuteUser(IGuildUser user)
+        public static async Task<CustomResult> MuteUser(IGuildUser user)
         {
             // will be replaced with a better handling in the future
             if(!Global.Roles.ContainsKey("voicemuted") || !Global.Roles.ContainsKey("textmuted"))
             {
-                return;
+                return CustomResult.FromError("Configure the voicemuted and textmuted roles correctly. Check your Db!");
             }
             var muteRole = user.Guild.GetRole(Global.Roles["voicemuted"]);
             await user.AddRoleAsync(muteRole);
 
             muteRole = user.Guild.GetRole(Global.Roles["textmuted"]);
             await user.AddRoleAsync(muteRole);
+            return CustomResult.FromSuccess();
         }
 
 
-        public static async Task UnMuteUser(IGuildUser user)
+        public static async Task<CustomResult> UnMuteUser(IGuildUser user)
         {
             // will be replaced with a better handling in the future
             if(!Global.Roles.ContainsKey("voicemuted") || !Global.Roles.ContainsKey("textmuted"))
             {
-                return;
+                return CustomResult.FromError("Configure the voicemuted and textmuted roles correctly. Check your Db!");
             }
             var muteRole = user.Guild.GetRole(Global.Roles["voicemuted"]);
             await user.RemoveRoleAsync(muteRole);
 
             muteRole = user.Guild.GetRole(Global.Roles["textmuted"]);
             await user.RemoveRoleAsync(muteRole);
+            return CustomResult.FromSuccess();
         }
 
         public static String FormatUserName(IUser user)
