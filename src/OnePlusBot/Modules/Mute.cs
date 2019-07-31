@@ -173,8 +173,7 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> UnMuteUser(IGuildUser user)
         {
-            await MuteTimerManager.UnMuteUser(user.Id, ulong.MaxValue);
-            return CustomResult.FromSuccess();
+            return await MuteTimerManager.UnMuteUser(user.Id, ulong.MaxValue);
         }
 
     }
