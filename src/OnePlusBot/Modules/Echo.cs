@@ -11,7 +11,7 @@ namespace OnePlusBot.Modules
         [RequireUserPermission(GuildPermission.ManageMessages)]
         public Task EchoAsync([Remainder] string text)
         {
-            return ReplyAsync(text + " aaa");
+            return ReplyAsync(text + " Azure Working Correctly");
         }
     }
 }
