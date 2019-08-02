@@ -19,9 +19,9 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    SourceFolder: '$(system.defaultworkingdirectory)'
+    SourceFolder: '$(system.DefaultWorkingDirectory)'
     Contents: '**'
-    TargetFolder: '$(build.artifacstagingdirectory)'
+    TargetFolder: '$(build.ArtifactStagingDirectory)'
   
 - task: PublishBuildArtifacts@1
   inputs:
