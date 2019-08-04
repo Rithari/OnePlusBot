@@ -11,6 +11,8 @@ namespace OnePlusBot.Data
         public DbSet<Channel> Channels { get; set; }
         public DbSet<AuthToken> AuthTokens { get; set; }
         public DbSet<PersistentData> PersistentData { get; set; }
+
+        public DbSet<BannedWord> BannedWords { get; set; }
         public DbSet<ReportEntry> Reports { get; set; }
         public DbSet<ReferralCode> ReferralCodes { get; set; }
         public DbSet<WarnEntry> Warnings { get; set; }
