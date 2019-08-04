@@ -126,6 +126,22 @@ namespace OnePlusBot.Base
             if(before.Author.IsBot)
                 return;
 
+            var bannedWords = Global.BannedWords;
+            var messageSplit = message.Content.Split(" ");
+            var loweredMsgParts = messageSplit.ToList().ConvertAll(d => d.ToLower());
+
+            for (int x = 0; x < loweredMsgParts.Count; x++)
+            {
+                for (int y = 0; y < bannedWords.Count; y++)
+                {
+                    if(loweredMsgParts[x].Contains(bannedWords[y]))
+                    {
+                       await message.DeleteAsync();
+                       return;
+                    }
+                }
+            }
+               
             var embed = new EmbedBuilder
             {
                 Color = Color.Blue,
@@ -446,6 +462,22 @@ namespace OnePlusBot.Base
                CacheAttachment(message);
             }
 
+            var bannedWords = Global.BannedWords;
+            var messageSplit = message.Content.Split(" ");
+            var loweredMsgParts = messageSplit.ToList().ConvertAll(d => d.ToLower());
+
+            for (int x = 0; x < loweredMsgParts.Count; x++)
+            {
+                for (int y = 0; y < bannedWords.Count; y++)
+                {
+                    if(loweredMsgParts[x].Contains(bannedWords[y]))
+                    {
+                       await message.DeleteAsync();
+                       return;
+                    }
+                }
+            }
+               
             var channelId = message.Channel.Id;
 
             if (channelId == Global.Channels["setups"])
