@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Discord;
@@ -60,6 +61,8 @@ namespace OnePlusBot.Base
             }
         }
 
+       public static List<string> BannedWords { get; }
+
         static Global()
         {
             Random = new Random();
@@ -82,6 +85,14 @@ namespace OnePlusBot.Base
                 MessageId = db.PersistentData
                     .First(x => x.Name == "rolemanager_message_id")
                     .Value;
+
+                BannedWords = new List<string>();
+                if(db.BannedWords.Any()){
+                    foreach(var word in db.BannedWords){
+                        BannedWords.Add(word.Word);
+                    }
+                }
+                
             }
         }
 
