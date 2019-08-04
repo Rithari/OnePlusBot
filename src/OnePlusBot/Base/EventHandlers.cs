@@ -128,12 +128,13 @@ namespace OnePlusBot.Base
 
             var bannedWords = Global.BannedWords;
             var messageSplit = message.Content.Split(" ");
+            var loweredMsgParts = messageSplit.ToList().ConvertAll(d => d.ToLower());
 
-            for (int x = 0; x < messageSplit.Length; x++)
+            for (int x = 0; x < loweredMsgParts.Count; x++)
             {
                 for (int y = 0; y < bannedWords.Count; y++)
                 {
-                    if(messageSplit[x].Contains(bannedWords[y]))
+                    if(loweredMsgParts[x].Contains(bannedWords[y]))
                     {
                        await message.DeleteAsync();
                        return;
@@ -463,12 +464,13 @@ namespace OnePlusBot.Base
 
             var bannedWords = Global.BannedWords;
             var messageSplit = message.Content.Split(" ");
+            var loweredMsgParts = messageSplit.ToList().ConvertAll(d => d.ToLower());
 
-            for (int x = 0; x < messageSplit.Length; x++)
+            for (int x = 0; x < loweredMsgParts.Count; x++)
             {
                 for (int y = 0; y < bannedWords.Count; y++)
                 {
-                    if(messageSplit[x].Contains(bannedWords[y]))
+                    if(loweredMsgParts[x].Contains(bannedWords[y]))
                     {
                        await message.DeleteAsync();
                        return;
