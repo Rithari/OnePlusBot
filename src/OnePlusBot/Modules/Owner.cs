@@ -1,20 +1,76 @@
-﻿using System;
-using System.Linq;
+using System;
 using System.Text;
-using Discord;
 using Discord.Commands;
+using Discord;
 using System.Threading.Tasks;
+using OnePlusBot.Helpers;
 using Discord.Addons.Interactive;
 using OnePlusBot.Base;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
-using OnePlusBot.Helpers;
+using System.Linq;
+using MySql.Data.MySqlClient;
 
 namespace OnePlusBot.Modules
 {
-    public class UpdateModule : InteractiveBase<SocketCommandContext>
+    public class Owner : InteractiveBase<SocketCommandContext>
     {
-        private async Task<string> Ask(string title, string adding, string suggested)
+
+        [
+            Command("x"),
+            Summary("Emergency shutdown of the bot."),
+            RequireOwner
+        ]
+        public async Task ShutdownAsync()
+        {
+            await Context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
+            Environment.Exit(0);
+        }
+
+        [
+            Command("sql"),
+            Summary("Executes the MySQL command."),
+            RequireOwner
+        ]
+        public async Task ExecuteQuery([Remainder] string query)
+        {
+            var server = Environment.GetEnvironmentVariable("Server");
+            var db = Environment.GetEnvironmentVariable("Database");
+            var uid = Environment.GetEnvironmentVariable("Uid");
+            var pwd = Environment.GetEnvironmentVariable("Pwd");
+            
+            if (server == null || db == null || uid == null || pwd == null)
+                throw new Exception("Cannot find MySQL connection string in EnvVar.");
+            
+            var connStr = new MySqlConnectionStringBuilder
+            {
+                Server = server,
+                Database = db,
+                UserID = uid,
+                Password = pwd
+            };
+
+            try
+            {
+                using (var connection = new MySqlConnection())
+                {
+                    connection.ConnectionString = connStr.ToString();
+                    connection.Open();
+
+                    using (var sql = new MySqlCommand(query, connection))
+                    {
+                        await sql.ExecuteNonQueryAsync();
+                    }
+                }
+                await Context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
+            }
+            catch
+            {
+                await Context.Message.AddReactionAsync(new Emoji("\u274C"));
+            }
+        }
+
+         private async Task<string> Ask(string title, string adding, string suggested)
         {
             var question = await Context.Channel.EmbedAsync(new EmbedBuilder()
                 .WithTitle(title)
@@ -43,9 +99,11 @@ namespace OnePlusBot.Modules
             return CleanupEntryName(reply.Content);
         }
         
-        [Command("update", RunMode = RunMode.Async)]
-        [Summary("Updates the database with the current state of the server.")]
-        [RequireOwner]
+        [
+            Command("update", RunMode = RunMode.Async),
+            Summary("Updates the database with the current state of the server."),
+            RequireOwner
+        ]
         public async Task UpdateAsync()
         {
             var guild = Context.Guild;
@@ -180,5 +238,7 @@ namespace OnePlusBot.Modules
             }
             return builder.ToString();
         }
+
+
     }
 }
