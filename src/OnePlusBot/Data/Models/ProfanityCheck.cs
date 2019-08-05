@@ -3,15 +3,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnePlusBot.Data.Models
 {
-    [Table("BannedWords")]
-    public class BannedWord
+    [Table("ProfanityChecks")]
+    public class ProfanityCheck
     {
         [Key]
         [Column("id")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public uint ID { get; set; }
         
-        [Column("word")]
+        [Column("regex")]
         public string Word { get; set; }
     }
 }

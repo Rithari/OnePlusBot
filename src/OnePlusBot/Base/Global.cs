@@ -1,10 +1,10 @@
-﻿using System.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Discord;
 using OnePlusBot.Data;
 using Discord.WebSocket;
+using System.Text.RegularExpressions;
 
 namespace OnePlusBot.Base
 {
@@ -61,7 +61,7 @@ namespace OnePlusBot.Base
             }
         }
 
-       public static List<string> BannedWords { get; }
+       public static List<Regex> ProfanityChecks { get; }
 
         static Global()
         {
@@ -86,10 +86,12 @@ namespace OnePlusBot.Base
                     .First(x => x.Name == "rolemanager_message_id")
                     .Value;
 
-                BannedWords = new List<string>();
-                if(db.BannedWords.Any()){
-                    foreach(var word in db.BannedWords){
-                        BannedWords.Add(word.Word);
+                ProfanityChecks = new List<Regex>();
+                if(db.ProfanityChecks.Any())
+                {
+                    foreach(var word in db.ProfanityChecks)
+                    {
+                        ProfanityChecks.Add(new Regex(word.Word, RegexOptions.Singleline | RegexOptions.Compiled));
                     }
                 }
                 

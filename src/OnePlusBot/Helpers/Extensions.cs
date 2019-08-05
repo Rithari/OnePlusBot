@@ -59,5 +59,10 @@ namespace OnePlusBot.Helpers
         {
             return user.Username + '#' + user.Discriminator;
         }
+
+        public static String FormatUserNameDetailed(IUser user)
+        {
+            return FormatUserName(user) + " (" + user.Id +  ") ";
+        }
     }
 }
