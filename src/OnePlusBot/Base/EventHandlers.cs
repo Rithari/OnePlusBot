@@ -39,6 +39,7 @@ namespace OnePlusBot.Base
             _bot.MessageUpdated += OnMessageUpdated;
             _bot.UserBanned += OnUserBanned;
             _bot.UserUnbanned += OnUserUnbanned;
+            _bot.UserVoiceStateUpdated += UserChangedVoiceState;
             _commands.CommandExecuted += OnCommandExecutedAsync;
 
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
@@ -543,6 +544,26 @@ namespace OnePlusBot.Base
                 context: context,
                 argPos: argPos,
                 services: _services);
+        }
+
+        private async Task UserChangedVoiceState(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
+        {
+            var voiceChannelToBind = "hangout";
+            var bot = Global.Bot;
+            var hangoutNotesChannel = bot.GetGuild(Global.ServerID).GetChannel(Global.Channels["hangoutnotes"]);
+            var permission = hangoutNotesChannel.GetPermissionOverwrite(user).Value;
+             
+            if(oldState.VoiceChannel == null && newState.VoiceChannel != null && newState.VoiceChannel.Name.Equals(voiceChannelToBind)){
+                permission = permission.Modify(viewChannel:PermValue.Allow, sendMessages:PermValue.Allow);
+                await hangoutNotesChannel.AddPermissionOverwriteAsync(user, permission);
+            }
+
+            if(oldState.VoiceChannel != null && newState.VoiceChannel == null && oldState.VoiceChannel.Name.Equals(voiceChannelToBind)){
+                permission = permission.Modify(viewChannel:PermValue.Deny, sendMessages:PermValue.Deny);
+                await hangoutNotesChannel.AddPermissionOverwriteAsync(user, permission);
+            }
+            
+
         }
     }
 }
