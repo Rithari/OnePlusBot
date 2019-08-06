@@ -68,7 +68,7 @@ namespace OnePlusBot.Helpers
         }
 
         public static Channel GetChannelById(ulong channelId){
-            return Global.FullChannels.Where(chan => chan.ChannelID == channelId).FirstOrDefault(null);
+            return Global.FullChannels.Where(chan => chan.ChannelID == channelId).DefaultIfEmpty(null).First();
         }
     }
 }
