@@ -370,8 +370,33 @@ namespace OnePlusBot.Modules
                     case "edl":
                     case "9008":
                     case "9008mode":
+                        if (Context.Channel.Name == "oneplus7-series")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("To enter in Qualcomm EDL mode, you can use `adb reboot edl` or use any version of blu_spark TWRP based on TWRP 3.3.0 or later by clicking on `Reboot to EDL`." + Environment.NewLine +
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("To enter in Qualcomm EDL mode, you can use `adb reboot edl` or use any version of blu_spark TWRP based on TWRP 3.3.0 or later by clicking on `Reboot to EDL`. You can also power off your device, wait 10 seconds and maintain volume up and down keys." + Environment.NewLine +
+                                             "If you want to exit EDL mode, maintain power button during at least 10 seconds " + Environment.NewLine +
+                                             "You can use a generic USB-C cable however, OnePlus official cable are preferable"));
+                        }
+                        else if (Context.Channel.Name == "oneplus6-6t")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("To enter in Qualcomm EDL mode, you can use `adb reboot edl` or use any version of blu_spark TWRP based on TWRP 3.3.0 or later by clicking on `Reboot to EDL`. You can also power off your device, wait 10 seconds and maintain volume up and down keys." + Environment.NewLine +
+                                             "If you want to exit EDL mode, maintain power button during at least 10 seconds " + Environment.NewLine +
+                                             "You can use a generic USB-C cable however, OnePlus official cable are preferable"));
+                        }
+                        else if (Context.Channel.Name == "oneplus5-5t")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("To enter in Qualcomm EDL mode, you can use `adb reboot edl` or use any version of blu_spark TWRP based on TWRP 3.3.0 or later by clicking on `Reboot to EDL`. You can also power off your device, wait 10 seconds and maintain volume up key." + Environment.NewLine +
+                                             "If you want to exit EDL mode, maintain power button during at least 10 seconds " + Environment.NewLine +
+                                             "You can use a generic USB-C cable however, OnePlus official cable are preferable"));
+                        }
+                        else if (Context.Channel.Name == "oneplus3-3t")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("To enter in Qualcomm EDL mode, you can use `adb reboot edl` or use any version of blu_spark TWRP based on TWRP 3.3.0 or later by clicking on `Reboot to EDL`. You can also power off your device, wait 10 seconds and maintain volume up key." + Environment.NewLine +
+                                             "If you want to exit EDL mode, maintain power button during at least 10 seconds " + Environment.NewLine +
+                                             "You can use a generic USB-C cable however, OnePlus official cable are preferable"));
+                        }
+                        else if (Context.Channel.Name == "legacy")
+                        {
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("To enter in Qualcomm EDL mode, you can use `adb reboot edl` or use any version of blu_spark TWRP based on TWRP 3.3.0 or later by clicking on `Reboot to EDL`. You can also power off your device, wait 10 seconds and maintain volume up key." + Environment.NewLine +
                                              "If you want to exit EDL mode, maintain power button during at least 10 seconds " + Environment.NewLine +
                                              "You can use a generic USB-C cable however, OnePlus official cable are preferable"));
                         }
