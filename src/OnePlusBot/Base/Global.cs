@@ -1,10 +1,11 @@
-﻿using System.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Discord;
 using OnePlusBot.Data;
+using OnePlusBot.Data.Models;
 using Discord.WebSocket;
+using System.Text.RegularExpressions;
 
 namespace OnePlusBot.Base
 {
@@ -17,6 +18,7 @@ namespace OnePlusBot.Base
         public static ulong ServerID { get; }
         public static Dictionary<string, ulong> Roles { get; }
         public static Dictionary<string, ulong> Channels { get; }
+        public static List<Channel> FullChannels {get;}
 
         public static ulong CommandExecutorId { get; set; }
         
@@ -61,7 +63,7 @@ namespace OnePlusBot.Base
             }
         }
 
-       public static List<string> BannedWords { get; }
+       public static List<Regex> ProfanityChecks { get; }
 
         static Global()
         {
@@ -69,9 +71,15 @@ namespace OnePlusBot.Base
             using (var db = new Database())
             {
                 Channels = new Dictionary<string, ulong>();
+                FullChannels = new List<Channel>();
                 if (db.Channels.Any())
                     foreach (var channel in db.Channels)
+                    {
                         Channels.Add(channel.Name, channel.ChannelID);
+                        FullChannels.Add(channel);
+                    }
+                       
+                        
                 
                 Roles = new Dictionary<string, ulong>();
                 if (db.Roles.Any())
@@ -86,10 +94,12 @@ namespace OnePlusBot.Base
                     .First(x => x.Name == "rolemanager_message_id")
                     .Value;
 
-                BannedWords = new List<string>();
-                if(db.BannedWords.Any()){
-                    foreach(var word in db.BannedWords){
-                        BannedWords.Add(word.Word);
+                ProfanityChecks = new List<Regex>();
+                if(db.ProfanityChecks.Any())
+                {
+                    foreach(var word in db.ProfanityChecks)
+                    {
+                        ProfanityChecks.Add(new Regex(word.Word, RegexOptions.Singleline | RegexOptions.Compiled));
                     }
                 }
                 
