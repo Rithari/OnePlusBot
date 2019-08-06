@@ -126,14 +126,17 @@ namespace OnePlusBot.Base
             if(before.Author.IsBot)
                 return;
 
-            var profanityChecks = Global.ProfanityChecks;
-            var lowerMessage = message.Content.ToLower();
-            foreach (var regexObj in profanityChecks)
-            {
-                if(regexObj.Match(lowerMessage).Success)
+            var fullChannel = Extensions.GetChannelById(message.Channel.Id);
+            if(!fullChannel.ProfanityCheckExempt){
+                var profanityChecks = Global.ProfanityChecks;
+                var lowerMessage = message.Content.ToLower();
+                foreach (var regexObj in profanityChecks)
                 {
-                    await ReportProfanity(message);
-                    break;
+                    if(regexObj.Match(lowerMessage).Success)
+                    {
+                        await ReportProfanity(message);
+                        break;
+                    }
                 }
             }
             
@@ -480,15 +483,17 @@ namespace OnePlusBot.Base
             {
                CacheAttachment(message);
             }
-
-            var profanityChecks = Global.ProfanityChecks;
-            var lowerMessage = message.Content.ToLower();
-            foreach (var regexObj in profanityChecks)
-            {
-                if(regexObj.Match(lowerMessage).Success)
+            var channel = Extensions.GetChannelById(message.Channel.Id);
+            if(!channel.ProfanityCheckExempt){
+                var profanityChecks = Global.ProfanityChecks;
+                var lowerMessage = message.Content.ToLower();
+                foreach (var regexObj in profanityChecks)
                 {
-                    await ReportProfanity(message);
-                    break;
+                    if(regexObj.Match(lowerMessage).Success)
+                    {
+                        await ReportProfanity(message);
+                        break;
+                    }
                 }
             }
                

@@ -131,7 +131,8 @@ namespace OnePlusBot.Modules
                     {
                         Name = newName,
                         ChannelID = channel.Id,
-                        ChannelType = ChannelType.Text
+                        ChannelType = ChannelType.Text,
+                        ProfanityCheckExempt = false
                     });
 
                     Console.WriteLine($"[DB] [Update] Added channel {channel.Name} with Name {newName} and ID {channel.Id}");
