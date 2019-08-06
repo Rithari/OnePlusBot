@@ -1,7 +1,9 @@
-﻿using System;
+﻿using System.Linq;
+using System;
 using System.Threading.Tasks;
 using Discord;
 using OnePlusBot.Base;
+using OnePlusBot.Data.Models;
 
 namespace OnePlusBot.Helpers
 {
@@ -58,6 +60,15 @@ namespace OnePlusBot.Helpers
         public static String FormatUserName(IUser user)
         {
             return user.Username + '#' + user.Discriminator;
+        }
+
+        public static String FormatUserNameDetailed(IUser user)
+        {
+            return FormatUserName(user) + " (" + user.Id +  ") ";
+        }
+
+        public static Channel GetChannelById(ulong channelId){
+            return Global.FullChannels.Where(chan => chan.ChannelID == channelId).First();
         }
     }
 }

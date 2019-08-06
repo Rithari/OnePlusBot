@@ -126,22 +126,20 @@ namespace OnePlusBot.Base
             if(before.Author.IsBot)
                 return;
 
-            var bannedWords = Global.BannedWords;
-            var messageSplit = message.Content.Split(" ");
-            var loweredMsgParts = messageSplit.ToList().ConvertAll(d => d.ToLower());
-
-            for (int x = 0; x < loweredMsgParts.Count; x++)
-            {
-                for (int y = 0; y < bannedWords.Count; y++)
+            var fullChannel = Extensions.GetChannelById(message.Channel.Id);
+            if(!fullChannel.ProfanityCheckExempt){
+                var profanityChecks = Global.ProfanityChecks;
+                var lowerMessage = message.Content.ToLower();
+                foreach (var regexObj in profanityChecks)
                 {
-                    if(loweredMsgParts[x].Contains(bannedWords[y]))
+                    if(regexObj.Match(lowerMessage).Success)
                     {
-                       await message.DeleteAsync();
-                       return;
+                        await ReportProfanity(message);
+                        break;
                     }
                 }
             }
-               
+            
             var embed = new EmbedBuilder
             {
                 Color = Color.Blue,
@@ -452,6 +450,30 @@ namespace OnePlusBot.Base
             
         }
 
+        private static async Task ReportProfanity(SocketMessage message){
+
+            var guild = Global.Bot.GetGuild(Global.ServerID);
+            var builder = new EmbedBuilder();
+            builder.Title = "Profanity has been used!";
+            builder.Color = Color.DarkBlue;
+            
+            builder.Timestamp = message.Timestamp;
+            
+            builder.ThumbnailUrl = message.Author.GetAvatarUrl();
+
+            const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
+            builder.AddField("User in question ", Extensions.FormatUserNameDetailed(message.Author))
+                .AddField(
+                    "Location of the profane message",
+                    $"[#{message.Channel.Name}]({string.Format(discordUrl, guild.Id, message.Channel.Id, message.Id)})");
+
+
+            var embed = builder.Build();
+            var modQueue = guild.GetTextChannel(Global.Channels["modqueuetest"]);;
+
+            await modQueue.SendMessageAsync(null,embed: embed).ConfigureAwait(false);
+        }
+
         private static async Task OnMessageReceived(SocketMessage message)
         {
             if (Regex.IsMatch(message.Content, @"discord(?:\.gg|app\.com\/invite)\/([\w\-]+)") && message.Channel.Id != Global.Channels["referralcodes"] && !message.Content.Contains("discord.gg/oneplus"))
@@ -461,19 +483,16 @@ namespace OnePlusBot.Base
             {
                CacheAttachment(message);
             }
-
-            var bannedWords = Global.BannedWords;
-            var messageSplit = message.Content.Split(" ");
-            var loweredMsgParts = messageSplit.ToList().ConvertAll(d => d.ToLower());
-
-            for (int x = 0; x < loweredMsgParts.Count; x++)
-            {
-                for (int y = 0; y < bannedWords.Count; y++)
+            var channel = Extensions.GetChannelById(message.Channel.Id);
+            if(!channel.ProfanityCheckExempt){
+                var profanityChecks = Global.ProfanityChecks;
+                var lowerMessage = message.Content.ToLower();
+                foreach (var regexObj in profanityChecks)
                 {
-                    if(loweredMsgParts[x].Contains(bannedWords[y]))
+                    if(regexObj.Match(lowerMessage).Success)
                     {
-                       await message.DeleteAsync();
-                       return;
+                        await ReportProfanity(message);
+                        break;
                     }
                 }
             }

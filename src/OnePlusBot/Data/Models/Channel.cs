@@ -22,5 +22,8 @@ namespace OnePlusBot.Data.Models
         
         [Column("channel_type")]
         public ChannelType ChannelType { get; set; }
+
+        [Column("profanity_check_exempt")]
+        public bool ProfanityCheckExempt{ get; set;}
     }
 }
