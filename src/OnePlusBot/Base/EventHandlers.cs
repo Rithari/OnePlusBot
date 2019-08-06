@@ -47,13 +47,13 @@ namespace OnePlusBot.Base
         private async Task OnUserLeft(SocketGuildUser socketGuildUser)
         {
             var modlog = socketGuildUser.Guild.GetTextChannel(Global.Channels["joinlog"]);
-            await modlog.SendMessageAsync((socketGuildUser?.Mention ?? socketGuildUser.Username + '#' + socketGuildUser.Discriminator) + " left the guild");
+            await modlog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + "left the guild");
         }
 
         private async Task OnuserUserJoined(SocketGuildUser socketGuildUser)
         {
             var modlog = socketGuildUser.Guild.GetTextChannel(Global.Channels["joinlog"]);
-            await modlog.SendMessageAsync(socketGuildUser.Mention + " joined the guild");
+            await modlog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + "joined the guild");
         }
 
         private async Task OnUserUnbanned(SocketUser socketUser, SocketGuild socketGuild)
@@ -400,7 +400,8 @@ namespace OnePlusBot.Base
             embed.Author = new EmbedAuthorBuilder()
                 .WithName(message.Author.Username)
                 .WithIconUrl(message.Author.GetAvatarUrl());
-            embed.Description = $"Sent by {message.Author.Mention}";
+            var safeUsername = Extensions.FormatMentionDetailed(message.Author);
+            embed.Description = $"Sent by {safeUsername}";
             
             foreach (Match match in matches)
             {
@@ -464,7 +465,7 @@ namespace OnePlusBot.Base
             builder.ThumbnailUrl = message.Author.GetAvatarUrl();
 
             const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
-            builder.AddField("User in question ", Extensions.FormatUserNameDetailed(message.Author))
+            builder.AddField("User in question ", Extensions.FormatMentionDetailed(message.Author))
                 .AddField(
                     "Location of the profane message",
                     $"[#{message.Channel.Name}]({string.Format(discordUrl, guild.Id, message.Channel.Id, message.Id)})");

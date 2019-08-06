@@ -67,6 +67,10 @@ namespace OnePlusBot.Helpers
             return FormatUserName(user) + " (" + user.Id +  ") ";
         }
 
+        public static String FormatMentionDetailed(IUser user){
+            return user?.Mention + " " + FormatUserNameDetailed(user);
+        }
+
         public static Channel GetChannelById(ulong channelId){
             return Global.FullChannels.Where(chan => chan.ChannelID == channelId).DefaultIfEmpty(null).First();
         }

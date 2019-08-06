@@ -323,8 +323,8 @@ namespace OnePlusBot.Modules
             });
 
             const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
-            builder.AddField("Warned User", user?.Mention ?? entry.WarnedUser + "(" + entry.WarnedUserID + ")")
-                .AddField("Warned by", monitor?.Mention ?? entry.WarnedBy + "(" + entry.WarnedUserID + ")")
+            builder.AddField("Warned User", Extensions.FormatMentionDetailed(user))
+                .AddField("Warned by", Extensions.FormatMentionDetailed(monitor))
                 .AddField(
                     "Location of the incident",
                     $"[#{Context.Message.Channel.Name}]({string.Format(discordUrl, Context.Guild.Id, Context.Channel.Id, Context.Message.Id)})")
@@ -419,21 +419,23 @@ namespace OnePlusBot.Modules
                 var warnedBy = Context.Guild.GetUser(warning.WarnedByID);
                 if (_user != null)
                 {
-
+                    var warnedByUserSafe = Extensions.FormatMentionDetailed(warnedBy);
                     embed.AddField(new EmbedFieldBuilder()
                         .WithName("Warning #" + counter + " (" + warning.ID + ")")
                         .WithValue($"**Reason**: {warning.Reason}\n" +
-                                   $"**Warned by**: {warnedBy?.Mention ?? warning.WarnedBy}\n" + 
+                                   $"**Warned by**: {warnedByUserSafe}\n" + 
                                    $"*{warning.Date.ToString("dd/M/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture)}*"));
                 }
                 else
                 {
                     var warned = Context.Guild.GetUser(warning.WarnedUserID);
+                    var warnedSafe = Extensions.FormatMentionDetailed(warned);
+                    var warnedBySafe = Extensions.FormatMentionDetailed(warnedBy);
                     embed.AddField(new EmbedFieldBuilder()
                         .WithName($"Warning #{counter} - {warning.Date.ToString("dd/M/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture)}")
-                        .WithValue($"**Warned user**: {warned?.Mention ?? warning.WarnedUser}\n" +
+                        .WithValue($"**Warned user**: {warnedSafe}\n" +
                                    $"**Reason**: {warning.Reason}\n" +
-                                   $"**Warned by**: {warnedBy?.Mention ?? warning.WarnedBy}"))
+                                   $"**Warned by**: {warnedBySafe}"))
                         .WithFooter("*For more detailed info, consult the individual lists.*");
                 }
             }
