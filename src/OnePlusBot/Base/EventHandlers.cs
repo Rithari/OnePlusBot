@@ -127,15 +127,17 @@ namespace OnePlusBot.Base
                 return;
 
             var fullChannel = Extensions.GetChannelById(message.Channel.Id);
-            if(!fullChannel.ProfanityCheckExempt){
-                var profanityChecks = Global.ProfanityChecks;
-                var lowerMessage = message.Content.ToLower();
-                foreach (var regexObj in profanityChecks)
-                {
-                    if(regexObj.Match(lowerMessage).Success)
+            if(fullChannel != null){
+                if(!fullChannel.ProfanityCheckExempt){
+                    var profanityChecks = Global.ProfanityChecks;
+                    var lowerMessage = message.Content.ToLower();
+                    foreach (var regexObj in profanityChecks)
                     {
-                        await ReportProfanity(message);
-                        break;
+                        if(regexObj.Match(lowerMessage).Success)
+                        {
+                            await ReportProfanity(message);
+                            break;
+                        }
                     }
                 }
             }
@@ -484,18 +486,21 @@ namespace OnePlusBot.Base
                CacheAttachment(message);
             }
             var channel = Extensions.GetChannelById(message.Channel.Id);
-            if(!channel.ProfanityCheckExempt){
-                var profanityChecks = Global.ProfanityChecks;
-                var lowerMessage = message.Content.ToLower();
-                foreach (var regexObj in profanityChecks)
-                {
-                    if(regexObj.Match(lowerMessage).Success)
+            if(channel != null){
+                if(!channel.ProfanityCheckExempt){
+                    var profanityChecks = Global.ProfanityChecks;
+                    var lowerMessage = message.Content.ToLower();
+                    foreach (var regexObj in profanityChecks)
                     {
-                        await ReportProfanity(message);
-                        break;
+                        if(regexObj.Match(lowerMessage).Success)
+                        {
+                            await ReportProfanity(message);
+                            break;
+                        }
                     }
                 }
             }
+           
                
             var channelId = message.Channel.Id;
 
