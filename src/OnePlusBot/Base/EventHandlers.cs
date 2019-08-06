@@ -548,22 +548,32 @@ namespace OnePlusBot.Base
 
         private async Task UserChangedVoiceState(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
         {
-            var voiceChannelToBind = "hangout";
             var bot = Global.Bot;
-            var hangoutNotesChannel = bot.GetGuild(Global.ServerID).GetChannel(Global.Channels["hangoutnotes"]);
-            var permission = hangoutNotesChannel.GetPermissionOverwrite(user).Value;
-             
-            if(oldState.VoiceChannel == null && newState.VoiceChannel != null && newState.VoiceChannel.Name.Equals(voiceChannelToBind)){
-                permission = permission.Modify(viewChannel:PermValue.Allow, sendMessages:PermValue.Allow);
-                await hangoutNotesChannel.AddPermissionOverwriteAsync(user, permission);
-            }
-
-            if(oldState.VoiceChannel != null && newState.VoiceChannel == null && oldState.VoiceChannel.Name.Equals(voiceChannelToBind)){
-                permission = permission.Modify(viewChannel:PermValue.Deny, sendMessages:PermValue.Deny);
-                await hangoutNotesChannel.AddPermissionOverwriteAsync(user, permission);
-            }
+            var guild = bot.GetGuild(Global.ServerID);
             
+            if(newState.VoiceChannel != null)
+            {
+                var targetNotesChannel = newState.VoiceChannel.Name + "notes";
+                if(Global.Channels.ContainsKey(targetNotesChannel))
+                {
+                    var notesChannel = guild.GetChannel(Global.Channels[targetNotesChannel]);
+                    var nullablePermissionObj = notesChannel.GetPermissionOverwrite(user);
+                    var permission = nullablePermissionObj.HasValue ? nullablePermissionObj.Value : new OverwritePermissions();
+                    permission = permission.Modify(viewChannel:PermValue.Allow, sendMessages:PermValue.Allow);     
+                    await notesChannel.AddPermissionOverwriteAsync(user, permission);
+                }
+            }
 
+            if(oldState.VoiceChannel != null)
+            {
+                var sourceNotesChannel = oldState.VoiceChannel.Name + "notes";
+                if(Global.Channels.ContainsKey(sourceNotesChannel))
+                {
+                    var notesChannel = guild.GetChannel(Global.Channels[sourceNotesChannel]);
+                    await notesChannel.RemovePermissionOverwriteAsync(user);
+                }
+                
+            }
         }
     }
 }
