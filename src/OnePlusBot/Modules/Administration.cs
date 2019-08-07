@@ -50,7 +50,7 @@ namespace OnePlusBot.Modules
             try
             {
                 const string banMessage = "You were banned on r/OnePlus for the following reason: {0}\n" +
-                                          "If you believe this to be a mistake, please send an appeal e-mail with all the details to admin@kyot.me";
+                                          "If you believe this to be a mistake, please send an appeal e-mail with all the details to oneplus.appeals@pm.me";
                 await user.SendMessageAsync(string.Format(banMessage, reason));
                 await Context.Guild.AddBanAsync(user, 0, reason);
                 return CustomResult.FromSuccess();
