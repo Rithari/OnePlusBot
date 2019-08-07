@@ -425,9 +425,9 @@ namespace OnePlusBot.Modules
                         }
                         else if (Context.Channel.Name == "oneplus7-series")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Android Q Dev Preview is now available to download for OnePlus 7 and 7 Pro (source <https://forums.oneplus.com/threads/android-q-developer-preview-3-for-oneplus-7-pro-and-7.1076548/> )" + Environment.NewLine +
-                                             "Direct download link for OnePlus 7: <https://oxygenos.oneplus.net/OnePlus7Oxygen_13.X.03_OTA_003_all_1907122243_d7884229b8c84a8a.zip>" + Environment.NewLine +
-                                             "Direct download link for OnePlus 7 Pro: <https://oxygenos.oneplus.net/OnePlus7ProOxygen_13.X.03_OTA_003_all_1907122236_87975de9b3b048f2.zip>" + Environment.NewLine +
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Android Q Dev Preview is now available to download for OnePlus 7 and 7 Pro (source <https://forums.oneplus.com/threads/android-q-developer-preview-4-for-oneplus-7-pro-and-7.1086050/> )" + Environment.NewLine +
+                                             "Direct download link for OnePlus 7: <https://oxygenos.oneplus.net/OnePlus7Oxygen_13.X.04_OTA_004_all_1908020007_38a5137d9f554eac.zip>" + Environment.NewLine +
+                                             "Direct download link for OnePlus 7 Pro: <https://oxygenos.oneplus.net/OnePlus7ProOxygen_13.X.04_OTA_004_all_1908020003_726196c3b79b4f85.zip>" + Environment.NewLine +
                                              "Place the relevant zip at the root of the system storage of your phone and use local update feature (Settings --> System --> System Updates --> click on the wheel) to update to Android Q dev preview." + Environment.NewLine +
                                              "If you want to rollback to stable release of Android Pie, use again local update feature with these zips <https://oxygenos.oneplus.net/fulldowngrade_wipe_MSM_18857_190505_1527_user.zip> (for OP7) / <https://oxygenos.oneplus.net/Fulldowngrade_wipe_18821_190425_0253_user_fix_revision_MP_release.zip> (for OP 7 Pro)" + Environment.NewLine +
                                               Environment.NewLine +
