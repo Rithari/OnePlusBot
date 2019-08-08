@@ -41,7 +41,7 @@ namespace OnePlusBot.Modules
             embed.AddField(x =>
             {
                 x.Name = "Username";
-                x.Value = user.Mention;
+                x.Value = Extensions.FormatMentionDetailed(user);
                 x.IsInline = true;
             });
             embed.AddField(x =>
@@ -201,10 +201,12 @@ namespace OnePlusBot.Modules
                     .WithName("Woah...")
                     .WithIconUrl("https://a.kyot.me/cno0.png");
             });
+            var reportedUserSafe = Extensions.FormatMentionDetailed(user);
+            var reporterUserSafe = Extensions.FormatMentionDetailed(reporter);
 
             const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
-            builder.AddField("Reported User", user?.Mention ?? entry.ReportedUser + "(" + entry.ReportedUserId + ")")
-                .AddField("Reported by", reporter?.Mention ?? entry.ReportedBy + "(" + entry.ReportedById + ")")
+            builder.AddField("Reported User", reportedUserSafe)
+                .AddField("Reported by", reporterUserSafe)
                 .AddField(
                     "Location of the incident",
                     $"[#{Context.Message.Channel.Name}]({string.Format(discordUrl, Context.Guild.Id, Context.Channel.Id, Context.Message.Id)})")
