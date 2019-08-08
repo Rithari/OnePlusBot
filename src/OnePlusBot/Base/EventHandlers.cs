@@ -39,6 +39,7 @@ namespace OnePlusBot.Base
             _bot.MessageUpdated += OnMessageUpdated;
             _bot.UserBanned += OnUserBanned;
             _bot.UserUnbanned += OnUserUnbanned;
+            _bot.UserVoiceStateUpdated += UserChangedVoiceState;
             _commands.CommandExecuted += OnCommandExecutedAsync;
 
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
@@ -543,6 +544,36 @@ namespace OnePlusBot.Base
                 context: context,
                 argPos: argPos,
                 services: _services);
+        }
+
+        private async Task UserChangedVoiceState(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
+        {
+            var bot = Global.Bot;
+            var guild = bot.GetGuild(Global.ServerID);
+            
+            if(newState.VoiceChannel != null)
+            {
+                var targetNotesChannel = newState.VoiceChannel.Name + "notes";
+                if(Global.Channels.ContainsKey(targetNotesChannel))
+                {
+                    var notesChannel = guild.GetChannel(Global.Channels[targetNotesChannel]);
+                    var nullablePermissionObj = notesChannel.GetPermissionOverwrite(user);
+                    var permission = nullablePermissionObj.HasValue ? nullablePermissionObj.Value : new OverwritePermissions();
+                    permission = permission.Modify(viewChannel:PermValue.Allow, sendMessages:PermValue.Allow);     
+                    await notesChannel.AddPermissionOverwriteAsync(user, permission);
+                }
+            }
+
+            if(oldState.VoiceChannel != null)
+            {
+                var sourceNotesChannel = oldState.VoiceChannel.Name + "notes";
+                if(Global.Channels.ContainsKey(sourceNotesChannel))
+                {
+                    var notesChannel = guild.GetChannel(Global.Channels[sourceNotesChannel]);
+                    await notesChannel.RemovePermissionOverwriteAsync(user);
+                }
+                
+            }
         }
     }
 }
