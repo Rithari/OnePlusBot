@@ -263,3 +263,4 @@ __pycache__/
 # Ignore .vscode folder
 .vscode/
 /src/OnePlusBot/Properties/launchSettings.json
+/src/OnePlusBot/out-linux
