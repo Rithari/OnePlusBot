@@ -59,7 +59,7 @@ namespace OnePlusBot.Helpers
 
         public static String FormatUserName(IUser user)
         {
-            return user?.Username + '#' + ?.Discriminator;
+            return user?.Username + '#' + user?.Discriminator;
         }
 
         public static String FormatUserNameDetailed(IUser user)
