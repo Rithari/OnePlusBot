@@ -220,7 +220,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("news"),
-            Summary("Posts a News article to the server.")
+            Summary("Posts a News article to the server."),
+            RequireRole("journalist")
         ]
         public async Task<RuntimeResult> NewsAsync([Remainder] string news)
         {
@@ -229,18 +230,15 @@ namespace OnePlusBot.Modules
             var user = (SocketGuildUser)Context.Message.Author;
             var newsChannel = guild.GetTextChannel(Global.Channels["news"]);
             var newsRole = guild.GetRole(Global.Roles["news"]);
-            var journalistRole = guild.GetRole(Global.Roles["journalist"]);
 
             if (news.Contains("@everyone") || news.Contains("@here") || news.Contains("@news")) 
                 return CustomResult.FromError("Your news article contained one or more illegal pings!");
 
-
-            if (!user.Roles.Contains(journalistRole))
-                return CustomResult.FromError("Only Journalists can post news.");
-
             await newsRole.ModifyAsync(x => x.Mentionable = true);
-            await newsChannel.SendMessageAsync(news + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author);
+            var posted = await newsChannel.SendMessageAsync(news + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author);
             await newsRole.ModifyAsync(x => x.Mentionable = false);
+
+            Global.NewsPosts[Context.Message.Id] = posted.Id;
 
             return CustomResult.FromSuccess();
         }

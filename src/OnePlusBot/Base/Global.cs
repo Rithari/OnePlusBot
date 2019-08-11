@@ -18,6 +18,8 @@ namespace OnePlusBot.Base
         public static ulong ServerID { get; }
         public static Dictionary<string, ulong> Roles { get; }
         public static Dictionary<string, ulong> Channels { get; }
+
+        public static Dictionary<ulong, ulong> NewsPosts { get; }
         public static List<Channel> FullChannels {get;}
 
         public static ulong CommandExecutorId { get; set; }
@@ -79,7 +81,7 @@ namespace OnePlusBot.Base
                         FullChannels.Add(channel);
                     }
                        
-                        
+                NewsPosts = new Dictionary<ulong, ulong>();
                 
                 Roles = new Dictionary<string, ulong>();
                 if (db.Roles.Any())
