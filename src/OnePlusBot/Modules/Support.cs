@@ -461,13 +461,13 @@ namespace OnePlusBot.Modules
                         break;
                     case "readback":
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("You can use readback function of MSM tool to dump your device partitions. They will be stored at the root of your system drive and have .img as file extension. For that, get in EDL mode, open MSM tool, press F8, tick partitions you want to dump, input `oneplus` as password, press `ok` and click on Reaback button" + Environment.NewLine +
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("You can use readback function of MSM tool to dump your device partitions. They will be stored at the root of your system drive and have .img as file extension. For that, get in EDL mode, open MSM tool, press F8, tick partitions you want to dump, input `oneplus` as password, press `ok` and click on Readback button" + Environment.NewLine +
                                              "Dumped partitions are flashable by fastboot."));
                         }
                         break;
                     //placeholder for any new FAQ entry that might be added in the future
                     default:
-                        await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Supported FAQ commands are: repairprices, bluspark, googlecamera, oxygenos, unbrick, edl, magisk, root, qualcommdiagnostics, smt, qpreview, updateschedule, adbfastbootpath, saharacommunicationfailed, oneplusswitch" + Environment.NewLine + 
+                        await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("Supported FAQ commands are: repairprices, bluspark, googlecamera, oxygenos, unbrick, edl, magisk, root, qualcommdiagnostics, smt, qpreview, updateschedule, adbfastbootpath, saharacommunicationfailed, oneplusswitch, readback" + Environment.NewLine + 
                                          "Mind that some commands can only be used in specific (device)channels"));
                         break;
                 }
