@@ -357,7 +357,7 @@ namespace OnePlusBot.Modules
                     case "9008mode":
                         if (Context.Channel.Name == "oneplus7-series" || Context.Channel.Name == "oneplus6-6t")
                         {
-                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("To enter in Qualcomm EDL mode, you can use `adb reboot edl` or use any version of blu_spark TWRP based on TWRP 3.3.0 or later by clicking on `Reboot to EDL`. You can also power off your device, wait 10 seconds and maintain volume up and down keys." + Environment.NewLine +
+                            await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("To enter in Qualcomm EDL mode, you can use `adb reboot edl` or use any version of blu_spark TWRP based on TWRP 3.3.0 or later by clicking on `Reboot to EDL`. An alternative way is using `reboot edl` command in a rooted terminal emulator on your device. You can also power off your device, wait 10 seconds and maintain volume up and down keys." + Environment.NewLine +
                                              "If you want to exit EDL mode, maintain power button during at least 10 seconds " + Environment.NewLine +
                                              "You can use a generic USB-C cable however, OnePlus official cable are preferable"));
                         }
