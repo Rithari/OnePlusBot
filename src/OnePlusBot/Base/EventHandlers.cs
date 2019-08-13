@@ -48,13 +48,13 @@ namespace OnePlusBot.Base
         private async Task OnUserLeft(SocketGuildUser socketGuildUser)
         {
             var modlog = socketGuildUser.Guild.GetTextChannel(Global.Channels["joinlog"]);
-            await modlog.SendMessageAsync((socketGuildUser?.Mention ?? socketGuildUser.Username + '#' + socketGuildUser.Discriminator) + " left the guild");
+            await modlog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + "left the guild");
         }
 
         private async Task OnuserUserJoined(SocketGuildUser socketGuildUser)
         {
             var modlog = socketGuildUser.Guild.GetTextChannel(Global.Channels["joinlog"]);
-            await modlog.SendMessageAsync(socketGuildUser.Mention + " joined the guild");
+            await modlog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + "joined the guild");
         }
 
         private async Task OnUserUnbanned(SocketUser socketUser, SocketGuild socketGuild)
@@ -126,6 +126,21 @@ namespace OnePlusBot.Base
 
             if(before.Author.IsBot)
                 return;
+            
+            if(Global.NewsPosts.ContainsKey(message.Id))
+            {
+                var split = message.Content.Split(";news");
+                if(split.Length > 0)
+                {
+                    var guild = Global.Bot.GetGuild(Global.ServerID);
+                    var newsChannel = guild.GetTextChannel(Global.Channels["news"]);
+                    var newsRole = guild.GetRole(Global.Roles["news"]);
+                    var existingMessage = await newsChannel.GetMessageAsync(Global.NewsPosts[message.Id]) as SocketUserMessage;
+                    await newsRole.ModifyAsync(x => x.Mentionable = true);
+                    await existingMessage.ModifyAsync(x => x.Content = split[1] + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + author);
+                    await newsRole.ModifyAsync(x => x.Mentionable = false);
+                }
+            }
 
             var fullChannel = Extensions.GetChannelById(message.Channel.Id);
             if(fullChannel != null){
@@ -305,6 +320,17 @@ namespace OnePlusBot.Base
         {
             switch(result)
             {
+                case PreconditionResult conditionResult:
+                    if (conditionResult.IsSuccess)
+                    {
+                        await context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
+                    }
+                    else
+                    {
+                        await context.Message.AddReactionAsync(Global.OnePlusEmote.FAIL);
+                        await context.Channel.SendMessageAsync(conditionResult.ErrorReason);
+                    }
+                    break;
                 case CustomResult customResult:
                     if (customResult.IsSuccess)
                     {
@@ -402,7 +428,8 @@ namespace OnePlusBot.Base
             embed.Author = new EmbedAuthorBuilder()
                 .WithName(message.Author.Username)
                 .WithIconUrl(message.Author.GetAvatarUrl());
-            embed.Description = $"Sent by {message.Author.Mention}";
+            var safeUsername = Extensions.FormatMentionDetailed(message.Author);
+            embed.Description = $"Sent by {safeUsername}";
             
             foreach (Match match in matches)
             {
@@ -466,7 +493,7 @@ namespace OnePlusBot.Base
             builder.ThumbnailUrl = message.Author.GetAvatarUrl();
 
             const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
-            builder.AddField("User in question ", Extensions.FormatUserNameDetailed(message.Author))
+            builder.AddField("User in question ", Extensions.FormatMentionDetailed(message.Author))
                 .AddField(
                     "Location of the profane message",
                     $"[#{message.Channel.Name}]({string.Format(discordUrl, guild.Id, message.Channel.Id, message.Id)})");
