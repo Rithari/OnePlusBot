@@ -323,7 +323,8 @@ namespace OnePlusBot.Base
                     if (result.ErrorReason == "Unknown command.")
                     return;
 
-                    await context.Channel.SendMessageAsync(result.ErrorReason);
+                        await context.Message.AddReactionAsync(Global.OnePlusEmote.FAIL);
+                        await context.Channel.SendMessageAsync(result.ErrorReason);
                     return;
                  }
                 break;
