@@ -41,7 +41,7 @@ namespace OnePlusBot.Modules
             embed.AddField(x =>
             {
                 x.Name = "Username";
-                x.Value = user.Mention;
+                x.Value = Extensions.FormatMentionDetailed(user);
                 x.IsInline = true;
             });
             embed.AddField(x =>
@@ -201,10 +201,12 @@ namespace OnePlusBot.Modules
                     .WithName("Woah...")
                     .WithIconUrl("https://a.kyot.me/cno0.png");
             });
+            var reportedUserSafe = Extensions.FormatMentionDetailed(user);
+            var reporterUserSafe = Extensions.FormatMentionDetailed(reporter);
 
             const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
-            builder.AddField("Reported User", user?.Mention ?? entry.ReportedUser + "(" + entry.ReportedUserId + ")")
-                .AddField("Reported by", reporter?.Mention ?? entry.ReportedBy + "(" + entry.ReportedById + ")")
+            builder.AddField("Reported User", reportedUserSafe)
+                .AddField("Reported by", reporterUserSafe)
                 .AddField(
                     "Location of the incident",
                     $"[#{Context.Message.Channel.Name}]({string.Format(discordUrl, Context.Guild.Id, Context.Channel.Id, Context.Message.Id)})")
@@ -218,7 +220,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("news"),
-            Summary("Posts a News article to the server.")
+            Summary("Posts a News article to the server."),
+            RequireRole("journalist")
         ]
         public async Task<RuntimeResult> NewsAsync([Remainder] string news)
         {
@@ -227,18 +230,15 @@ namespace OnePlusBot.Modules
             var user = (SocketGuildUser)Context.Message.Author;
             var newsChannel = guild.GetTextChannel(Global.Channels["news"]);
             var newsRole = guild.GetRole(Global.Roles["news"]);
-            var journalistRole = guild.GetRole(Global.Roles["journalist"]);
 
             if (news.Contains("@everyone") || news.Contains("@here") || news.Contains("@news")) 
                 return CustomResult.FromError("Your news article contained one or more illegal pings!");
 
-
-            if (!user.Roles.Contains(journalistRole))
-                return CustomResult.FromError("Only Journalists can post news.");
-
             await newsRole.ModifyAsync(x => x.Mentionable = true);
-            await newsChannel.SendMessageAsync(news + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author);
+            var posted = await newsChannel.SendMessageAsync(news + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author);
             await newsRole.ModifyAsync(x => x.Mentionable = false);
+
+            Global.NewsPosts[Context.Message.Id] = posted.Id;
 
             return CustomResult.FromSuccess();
         }
