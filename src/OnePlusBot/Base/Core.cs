@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace OnePlusBot.Base
 {
@@ -21,6 +22,7 @@ namespace OnePlusBot.Base
             bot.Log += Log;
             bot.ReactionAdded += OnReactionAdded;
             bot.ReactionRemoved += OnReactionRemoved;
+            bot.Ready += OnBotReady;
 
             bot.Ready += () => 
             {
@@ -30,13 +32,30 @@ namespace OnePlusBot.Base
             await bot.LoginAsync(TokenType.Bot, Global.Token);
             await bot.StartAsync();
 
-            await bot.SetGameAsync(name: "Made with the Fans™ ", streamUrl: "https://www.twitch.tv/monstercat", ActivityType.Streaming);
+
 
             await services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
             Global.Bot = bot;
 
+            Timer t = new Timer(TimeSpan.FromMinutes(10).TotalMilliseconds); // Set the time (5 mins in this case)
+            t.AutoReset = true;
+            t.Elapsed += new ElapsedEventHandler(OnTimerElapsed);
+            t.Start();
+
             await Task.Delay(-1);
         }
+
+        private static void OnTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            string[] status = { "Use ;help", "Has anyone seen Jisifus? lol", "Made with the Fans™" };
+            Random ran = new Random();
+            int index = ran.Next(status.Length);
+
+           Global.Bot.SetGameAsync(name: status[index], streamUrl: "https://www.twitch.tv/whatever", ActivityType.Streaming);
+        }
+
+        // For future reference: this will be used for tasks to be completed only after downloading guild data.
+        private static Task OnBotReady() {return Task.CompletedTask;}
 
         private static async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
         {
