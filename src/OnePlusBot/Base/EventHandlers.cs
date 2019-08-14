@@ -59,7 +59,7 @@ namespace OnePlusBot.Base
 
         private async Task OnUserUnbanned(SocketUser socketUser, SocketGuild socketGuild)
         {
-            var modlog = socketGuild.GetTextChannel(Global.Channels["modlog"]);
+            var modlog = socketGuild.GetTextChannel(Global.Channels["banlog"]);
 
             var restAuditLogs = await socketGuild.GetAuditLogsAsync(10).FlattenAsync();
 
@@ -85,7 +85,7 @@ namespace OnePlusBot.Base
 
         private async Task OnUserBanned(SocketUser socketUser, SocketGuild socketGuild)
         {
-            var modlog = socketGuild.GetTextChannel(Global.Channels["modlog"]);
+            var modlog = socketGuild.GetTextChannel(Global.Channels["banlog"]);
 
             var restAuditLogs = await socketGuild.GetAuditLogsAsync(10).FlattenAsync(); //As above, might be unnecessary as requests come in packs of 100.
 
@@ -496,7 +496,8 @@ namespace OnePlusBot.Base
             builder.AddField("User in question ", Extensions.FormatMentionDetailed(message.Author))
                 .AddField(
                     "Location of the profane message",
-                    $"[#{message.Channel.Name}]({string.Format(discordUrl, guild.Id, message.Channel.Id, message.Id)})");
+                    $"[#{message.Channel.Name}]({string.Format(discordUrl, guild.Id, message.Channel.Id, message.Id)})")
+                .AddField("Message content", message.Content);
 
 
             var embed = builder.Build();
