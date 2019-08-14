@@ -32,7 +32,7 @@ namespace OnePlusBot.Base
             await bot.LoginAsync(TokenType.Bot, Global.Token);
             await bot.StartAsync();
 
-
+            await bot.SetGameAsync(name: "Made with the Fans™", streamUrl: "https://www.twitch.tv/whatever", ActivityType.Streaming);
 
             await services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
             Global.Bot = bot;
