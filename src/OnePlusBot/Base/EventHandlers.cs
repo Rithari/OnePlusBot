@@ -496,7 +496,8 @@ namespace OnePlusBot.Base
             builder.AddField("User in question ", Extensions.FormatMentionDetailed(message.Author))
                 .AddField(
                     "Location of the profane message",
-                    $"[#{message.Channel.Name}]({string.Format(discordUrl, guild.Id, message.Channel.Id, message.Id)})");
+                    $"[#{message.Channel.Name}]({string.Format(discordUrl, guild.Id, message.Channel.Id, message.Id)})")
+                .AddField("Message content", message.Content);
 
 
             var embed = builder.Build();
