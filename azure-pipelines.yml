@@ -22,9 +22,11 @@ steps:
     SourceFolder: '$(system.DefaultWorkingDirectory)'
     Contents: '**'
     TargetFolder: '$(build.ArtifactStagingDirectory)'
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
   
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
     publishLocation: 'Container'
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master')) 
