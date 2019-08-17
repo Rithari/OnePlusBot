@@ -87,7 +87,7 @@ namespace OnePlusBot.Base
         {
             var modlog = socketGuild.GetTextChannel(Global.Channels["banlog"]);
 
-            var restAuditLogs = await socketGuild.GetAuditLogsAsync(10).FlattenAsync(); //As above, might be unnecessary as requests come in packs of 100.
+            var restAuditLogs = await socketGuild.GetAuditLogsAsync(10).FlattenAsync();
 
             var banLog = restAuditLogs.FirstOrDefault(x => x.Action == ActionType.Ban);
 
