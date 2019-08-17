@@ -59,58 +59,68 @@ namespace OnePlusBot.Base
 
         private async Task OnUserUnbanned(SocketUser socketUser, SocketGuild socketGuild)
         {
-            var modlog = socketGuild.GetTextChannel(Global.Channels["banlog"]);
+            try {
+                var modlog = socketGuild.GetTextChannel(Global.Channels["banlog"]);
 
-            var restAuditLogs = await socketGuild.GetAuditLogsAsync(10).FlattenAsync();
+                var restAuditLogs = await socketGuild.GetAuditLogsAsync(10).FlattenAsync();
 
-            var unbanLog = restAuditLogs.FirstOrDefault(x => x.Action == ActionType.Unban);
+                var unbanLog = restAuditLogs.FirstOrDefault(x => x.Action == ActionType.Unban);
 
 
-            await modlog.EmbedAsync(new EmbedBuilder()
-                .WithColor(9896005)
-                .WithTitle("♻️ Unbanned User")
-                .AddField(efb => efb
-                    .WithName("Username")
-                    .WithValue(socketUser.ToString())
-                    .WithIsInline(true))
-                .AddField(efb => efb
-                    .WithName("ID")
-                    .WithValue(socketUser.Id.ToString())
-                    .WithIsInline(true))
-                .AddField(efb => efb
-                    .WithName("By")
-                    .WithValue(unbanLog.User)
-                    .WithIsInline(true)));
+                await modlog.EmbedAsync(new EmbedBuilder()
+                    .WithColor(9896005)
+                    .WithTitle("♻️ Unbanned User")
+                    .AddField(efb => efb
+                        .WithName("Username")
+                        .WithValue(socketUser.ToString())
+                        .WithIsInline(true))
+                    .AddField(efb => efb
+                        .WithName("ID")
+                        .WithValue(socketUser.Id.ToString())
+                        .WithIsInline(true))
+                    .AddField(efb => efb
+                        .WithName("By")
+                        .WithValue(unbanLog.User)
+                        .WithIsInline(true)));
+
+            } catch(Exception ex){
+                var logChannel = socketGuild.GetTextChannel(Global.Channels["bottestchannel"]);
+                await logChannel.SendMessageAsync(ex.ToString());
+            }
         }
 
         private async Task OnUserBanned(SocketUser socketUser, SocketGuild socketGuild)
         {
-            var modlog = socketGuild.GetTextChannel(Global.Channels["banlog"]);
+            try {
+                var modlog = socketGuild.GetTextChannel(Global.Channels["banlog"]);
 
-            var restAuditLogs = await socketGuild.GetAuditLogsAsync(10).FlattenAsync(); //As above, might be unnecessary as requests come in packs of 100.
+                var restAuditLogs = await socketGuild.GetAuditLogsAsync(10).FlattenAsync(); //As above, might be unnecessary as requests come in packs of 100.
 
-            var banLog = restAuditLogs.FirstOrDefault(x => x.Action == ActionType.Ban);
+                var banLog = restAuditLogs.FirstOrDefault(x => x.Action == ActionType.Ban);
 
-
-            await modlog.EmbedAsync(new EmbedBuilder()
-                .WithColor(9896005)
-                .WithTitle("⛔️ Banned User")
-                .AddField(efb => efb
-                    .WithName("Username")
-                    .WithValue(socketUser.ToString())
-                    .WithIsInline(true))
-                .AddField(efb => efb
-                    .WithName("ID")
-                    .WithValue(socketUser.Id.ToString())
-                    .WithIsInline(true))
-                .AddField(efb => efb
-                    .WithName("Reason")
-                    .WithValue(banLog.Reason)
-                    .WithIsInline(true))
-                .AddField(efb => efb
-                    .WithName("By")
-                    .WithValue(banLog.User)
-                    .WithIsInline(true)));
+                await modlog.EmbedAsync(new EmbedBuilder()
+                    .WithColor(9896005)
+                    .WithTitle("⛔️ Banned User")
+                    .AddField(efb => efb
+                        .WithName("Username")
+                        .WithValue(socketUser.ToString())
+                        .WithIsInline(true))
+                    .AddField(efb => efb
+                        .WithName("ID")
+                        .WithValue(socketUser.Id.ToString())
+                        .WithIsInline(true))
+                    .AddField(efb => efb
+                        .WithName("Reason")
+                        .WithValue(banLog.Reason)
+                        .WithIsInline(true))
+                    .AddField(efb => efb
+                        .WithName("By")
+                        .WithValue(banLog.User)
+                        .WithIsInline(true)));
+            } catch(Exception ex){
+                var logChannel = socketGuild.GetTextChannel(Global.Channels["bottestchannel"]);
+                await logChannel.SendMessageAsync(ex.ToString());
+            }
         }
 
         private async Task OnMessageUpdated(Cacheable<IMessage, ulong> cacheable, SocketMessage message, ISocketMessageChannel socketChannel)
