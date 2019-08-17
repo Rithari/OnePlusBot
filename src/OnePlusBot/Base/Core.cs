@@ -22,7 +22,6 @@ namespace OnePlusBot.Base
             bot.Log += Log;
             bot.ReactionAdded += OnReactionAdded;
             bot.ReactionRemoved += OnReactionRemoved;
-            bot.Ready += OnBotReady;
 
             bot.Ready += () => 
             {
@@ -53,9 +52,6 @@ namespace OnePlusBot.Base
 
            Global.Bot.SetGameAsync(name: status[index], streamUrl: "https://www.twitch.tv/whatever", ActivityType.Streaming);
         }
-
-        // For future reference: this will be used for tasks to be completed only after downloading guild data.
-        private static Task OnBotReady() {return Task.CompletedTask;}
 
         private static async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
         {
