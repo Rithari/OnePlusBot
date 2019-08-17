@@ -297,7 +297,7 @@ namespace OnePlusBot.Modules
         [
             Command("echo"),
             Summary("Echoes back the remainder argument of the command."),
-            RequireUserPermission(GuildPermission.ManageMessages)
+            RequireRole("staff")
         ]
         public Task EchoAsync([Remainder] string text)
         {
