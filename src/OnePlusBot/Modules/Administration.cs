@@ -34,7 +34,8 @@ namespace OnePlusBot.Modules
         [
             Command("ban", RunMode = RunMode.Async),
             Summary("Bans specified user."),
-            RequireRole("staff")
+            RequireRole("staff"),
+            RequireBotPermission(GuildPermission.BanMembers)
         ]
         public async Task<RuntimeResult> BanAsync(IGuildUser user, [Remainder] string reason = null)
         {
@@ -63,7 +64,8 @@ namespace OnePlusBot.Modules
         [
             Command("kick", RunMode = RunMode.Async),
             Summary("Kicks specified user."),
-            RequireRole("staff")
+            RequireRole("staff"),
+            RequireBotPermission(GuildPermission.KickMembers)
         ]
         public async Task<RuntimeResult> KickAsync(IGuildUser user, [Remainder] string reason = null)
         {
@@ -83,7 +85,8 @@ namespace OnePlusBot.Modules
         [
             Command("mute", RunMode=RunMode.Async),
             Summary("Mutes a specified user for a set amount of time"),
-            RequireRole("staff")
+            RequireRole("staff"),
+            RequireBotPermission(GuildPermission.ManageRoles)
         ]
         public async Task<RuntimeResult> MuteUser(IGuildUser user,params string[] arguments)
         {
@@ -230,7 +233,8 @@ namespace OnePlusBot.Modules
         [
             Command("unmute", RunMode=RunMode.Async),
             Summary("Unmutes a specified user"),
-            RequireRole("staff")
+            RequireRole("staff"),
+            RequireBotPermission(GuildPermission.ManageRoles)
         ]
         public async Task<RuntimeResult> UnMuteUser(IGuildUser user)
         {
@@ -240,7 +244,8 @@ namespace OnePlusBot.Modules
         [
             Command("purge", RunMode = RunMode.Async),
             Summary("Deletes specified amount of messages."),
-            RequireRole("staff")
+            RequireRole("staff"),
+            RequireBotPermission(GuildPermission.ManageMessages)
         ]
         public async Task<RuntimeResult> PurgeAsync([Remainder] double delmsg)
         {
@@ -263,7 +268,8 @@ namespace OnePlusBot.Modules
         [
             Command("warn"),
             Summary("Warn someone."),
-            RequireRole("staff")
+            RequireRole("staff"),
+            RequireBotPermission(GuildPermission.Administrator)
         ]
         public async Task<RuntimeResult> WarnAsync(IGuildUser user, [Optional] [Remainder] string reason)
         {
@@ -326,7 +332,8 @@ namespace OnePlusBot.Modules
         [
             Command("clearwarn"),
             Summary("Clear warnings."),
-            RequireRole("staff")
+            RequireRole("staff"),
+            RequireBotPermission(GuildPermission.Administrator)
         ]
         public async Task<RuntimeResult> ClearwarnAsync(uint index)
         {
