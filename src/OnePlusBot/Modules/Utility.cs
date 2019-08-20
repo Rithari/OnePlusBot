@@ -228,7 +228,8 @@ namespace OnePlusBot.Modules
             var guild = Context.Guild;
 
             var user = (SocketGuildUser)Context.Message.Author;
-            var newsChannel = guild.GetTextChannel(Global.Channels["news"]);
+        //    var newsChannel2 = 
+            var newsChannel = guild.GetTextChannel(Global.Channels["news"]) as SocketNewsChannel;
             var newsRole = guild.GetRole(Global.Roles["news"]);
 
             if (news.Contains("@everyone") || news.Contains("@here") || news.Contains("@news")) 
