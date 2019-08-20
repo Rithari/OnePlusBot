@@ -501,7 +501,7 @@ namespace OnePlusBot.Base
 
 
             var embed = builder.Build();
-            var modQueue = guild.GetTextChannel(Global.Channels["modqueuetest"]);;
+            var modQueue = guild.GetTextChannel(Global.Channels["modqueue"]);;
 
             await modQueue.SendMessageAsync(null,embed: embed).ConfigureAwait(false);
         }
