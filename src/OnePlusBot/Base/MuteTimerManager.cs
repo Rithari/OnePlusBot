@@ -109,7 +109,8 @@ namespace OnePlusBot.Base
       return result;
     }
 
-    public static void UnMuteUserCompletely(ulong userId, Database db){
+    public static void UnMuteUserCompletely(ulong userId, Database db)
+    {
       var mutedObjs = db.Mutes.Where(x => x.MutedUserID == userId).ToList();
       foreach(var mutedEl in mutedObjs)
       {
@@ -117,7 +118,8 @@ namespace OnePlusBot.Base
       }
     }
 
-    public static void UnMuteUserCompletely(ulong userId){
+    public static void UnMuteUserCompletely(ulong userId)
+    {
       using (var db = new Database())
       {
         UnMuteUserCompletely(userId, db);
