@@ -462,7 +462,8 @@ namespace OnePlusBot.Modules
                     case "readback":
                         {
                             await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("You can use readback function of MSM tool to dump your device partitions. They will be stored at the root of your system drive and have .img as file extension. For that, get in EDL mode, open MSM tool, press F8, tick partitions you want to dump, input `oneplus` as password, press `ok` and click on Readback button" + Environment.NewLine +
-                                             "Dumped partitions are flashable by fastboot."));
+                                             "Dumped partitions are flashable by fastboot." + Environment.NewLine +
+                                             "Do **NOT** share the following partitions: `dynamic_nvbk.bin`, `static_nvbk.bin`, `misc.bin`, `keystore.bin`, `config.bin`, `devinfo.bin` and `devcfg.mbn` as they contain informations such as your IMEI and your MAC adress (source <https://forum.xda-developers.com/showpost.php?p=78229476&postcount=96> )."));
                         }
                         break;
                     //placeholder for any new FAQ entry that might be added in the future
