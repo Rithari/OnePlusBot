@@ -1,9 +1,13 @@
-﻿using System;
+﻿using System.Runtime.CompilerServices;
+using System.ComponentModel.Design;
+using System.Net.Mime;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Discord;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using Discord.WebSocket;
 using System.Text.RegularExpressions;
 
@@ -11,16 +15,19 @@ namespace OnePlusBot.Base
 {
     internal static class Global
     {
-        private static readonly ulong MessageId;
+        private static ulong MessageId;
 
         public static Random Random { get; }
 
-        public static ulong ServerID { get; }
+        public static ulong ServerID { get; set; }
         public static Dictionary<string, ulong> Roles { get; }
         public static Dictionary<string, ulong> Channels { get; }
 
         public static Dictionary<ulong, ulong> NewsPosts { get; }
-        public static List<Channel> FullChannels {get;}
+        public static List<Channel> FullChannels { get; }
+
+        public static List<FAQCommandChannel> FAQCommandChannels { get; set;}
+        public static List<FAQCommand> FAQCommands { get; set; }
 
         public static ulong CommandExecutorId { get; set; }
         
@@ -69,11 +76,23 @@ namespace OnePlusBot.Base
 
         static Global()
         {
+            Channels = new Dictionary<string, ulong>();
+            FullChannels = new List<Channel>();
             Random = new Random();
+            NewsPosts = new Dictionary<ulong, ulong>();    
+            Roles = new Dictionary<string, ulong>();
+            ProfanityChecks = new List<Regex>();
+            FAQCommands = new List<FAQCommand>();
+            FAQCommandChannels = new List<FAQCommandChannel>();
+            LoadGlobal();
+        }
+
+        public static void LoadGlobal(){
             using (var db = new Database())
             {
-                Channels = new Dictionary<string, ulong>();
-                FullChannels = new List<Channel>();
+               
+                Channels.Clear();
+                FullChannels.Clear();
                 if (db.Channels.Any())
                     foreach (var channel in db.Channels)
                     {
@@ -81,9 +100,7 @@ namespace OnePlusBot.Base
                         FullChannels.Add(channel);
                     }
                        
-                NewsPosts = new Dictionary<ulong, ulong>();
-                
-                Roles = new Dictionary<string, ulong>();
+                Roles.Clear();
                 if (db.Roles.Any())
                     foreach (var role in db.Roles)
                         Roles.Add(role.Name, role.RoleID);
@@ -96,7 +113,7 @@ namespace OnePlusBot.Base
                     .First(x => x.Name == "rolemanager_message_id")
                     .Value;
 
-                ProfanityChecks = new List<Regex>();
+                ProfanityChecks.Clear();
                 if(db.ProfanityChecks.Any())
                 {
                     foreach(var word in db.ProfanityChecks)
@@ -104,7 +121,20 @@ namespace OnePlusBot.Base
                         ProfanityChecks.Add(new Regex(word.Word, RegexOptions.Singleline | RegexOptions.Compiled));
                     }
                 }
-                
+
+
+                var ReadChannels = db.FAQCommandChannels
+                        .Include(faqComand => faqComand.Command)
+                        .Include(faqComand => faqComand.Channel)
+                        .Include(faqComand => faqComand.CommandChannelEntries)
+                        .OrderBy(command => command.Command.ID)
+                        .ToList();
+
+                FAQCommands.Clear();
+                FAQCommandChannels.Clear();
+
+                FAQCommandChannels = ReadChannels;
+                FAQCommands = db.FAQCommands.ToList();
             }
         }
 

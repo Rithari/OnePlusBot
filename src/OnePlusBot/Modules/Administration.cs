@@ -487,5 +487,17 @@ namespace OnePlusBot.Modules
                 });
             }
         }
+
+        [
+            Command("reloaddb"),
+            Summary("Reloades the cached info from db"),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> ReloadDB()
+        {
+            await Task.Delay(500);
+            Global.LoadGlobal();
+            return CustomResult.FromSuccess();
+        }
     }
 }
