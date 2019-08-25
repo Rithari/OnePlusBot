@@ -357,6 +357,7 @@ namespace OnePlusBot.Modules
         private IGuildUser _user;
         private int _total;
         private int _index;
+        private int _indTotal;
         
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> user, ISocketMessageChannel channel, SocketReaction reaction)
         {
@@ -424,7 +425,7 @@ namespace OnePlusBot.Modules
                     var warnedSafe = Extensions.FormatMentionDetailed(warned);
                     var warnedBySafe = Extensions.FormatMentionDetailed(warnedBy);
                     embed.AddField(new EmbedFieldBuilder()
-                        .WithName($"Warning #{counter} - {warning.Date.ToString("dd/M/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture)}")
+                        .WithName($"Case #{warning.ID} - {warning.Date.ToString("dd/M/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture)}")
                         .WithValue($"**Warned user**: {warnedSafe}\n" +
                                    $"**Reason**: {warning.Reason}\n" +
                                    $"**Warned by**: {warnedBySafe}"))
@@ -446,21 +447,33 @@ namespace OnePlusBot.Modules
         [
             Command("warnings"),
             Summary("Gets all warnings of given user"),
-            RequireRole("staff")
         ]
         public async Task GetWarnings([Optional] IGuildUser user)
         {
+            var requestee = Context.User as SocketGuildUser;
             _user = user;
             Global.CommandExecutorId = Context.User.Id;
             
             using (var db = new Database())
             {
                 IQueryable<WarnEntry> warnings = db.Warnings;
+                IQueryable<WarnEntry> individualWarnings = db.Warnings;
                 
                 if (user != null)
                     warnings = warnings.Where(x => x.WarnedUserID == user.Id);
 
                 _total = warnings.Count();
+
+                individualWarnings = warnings.Where(x => x.WarnedUserID == requestee.Id);
+                _indTotal = individualWarnings.Count();
+
+                if (!requestee.Roles.Any(x => x.Name == "Staff"))
+                {
+
+                    await ReplyAsync($"You have {_indTotal} active warnings.");
+
+                    return;
+                }
 
                 if (_total == 0)
                 {
