@@ -357,7 +357,6 @@ namespace OnePlusBot.Modules
         private IGuildUser _user;
         private int _total;
         private int _index;
-        private int _indTotal;
         
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> user, ISocketMessageChannel channel, SocketReaction reaction)
         {
@@ -457,20 +456,19 @@ namespace OnePlusBot.Modules
             using (var db = new Database())
             {
                 IQueryable<WarnEntry> warnings = db.Warnings;
-                IQueryable<WarnEntry> individualWarnings = db.Warnings;
+                IQueryable<WarnEntry> individualWarnings;
                 
                 if (user != null)
                     warnings = warnings.Where(x => x.WarnedUserID == user.Id);
 
                 _total = warnings.Count();
 
-                individualWarnings = warnings.Where(x => x.WarnedUserID == requestee.Id);
-                _indTotal = individualWarnings.Count();
-
                 if (!requestee.Roles.Any(x => x.Name == "Staff"))
                 {
+                    individualWarnings = warnings.Where(x => x.WarnedUserID == requestee.Id);
+                    int indTotal = individualWarnings.Count();
 
-                    await ReplyAsync($"You have {_indTotal} active warnings.");
+                    await ReplyAsync($"You have {indTotal} active warnings.");
 
                     return;
                 }
