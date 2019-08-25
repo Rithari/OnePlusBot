@@ -27,6 +27,8 @@ namespace OnePlusBot.Modules
             var modlog = Context.Guild.GetTextChannel(Global.Channels["modlog"]);
             await Context.Guild.AddBanAsync(name, 0, reason);
 
+            MuteTimerManager.UnMuteUserCompletely(name);
+
             return CustomResult.FromSuccess();
         }
     
@@ -50,6 +52,9 @@ namespace OnePlusBot.Modules
                                           "If you believe this to be a mistake, please send an appeal e-mail with all the details to oneplus.appeals@pm.me";
                 await user.SendMessageAsync(string.Format(banMessage, reason));
                 await Context.Guild.AddBanAsync(user, 0, reason);
+
+                MuteTimerManager.UnMuteUserCompletely(user.Id);
+
                 return CustomResult.FromSuccess();
 
             }
@@ -77,6 +82,7 @@ namespace OnePlusBot.Modules
                 return CustomResult.FromError("You can't kick staff.");
 
             await user.KickAsync(reason);
+            MuteTimerManager.UnMuteUserCompletely(user.Id);
             return CustomResult.FromSuccess();
         }
 
@@ -493,6 +499,18 @@ namespace OnePlusBot.Modules
                     await _message.DeleteAsync();
                 });
             }
+        }
+
+        [
+            Command("reloaddb"),
+            Summary("Reloades the cached info from db"),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> ReloadDB()
+        {
+            await Task.Delay(500);
+            Global.LoadGlobal();
+            return CustomResult.FromSuccess();
         }
     }
 }

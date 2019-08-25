@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Discord;
+using System.Collections.Generic;
 
 namespace OnePlusBot.Data.Models
 {
@@ -25,5 +26,8 @@ namespace OnePlusBot.Data.Models
 
         [Column("profanity_check_exempt")]
         public bool ProfanityCheckExempt{ get; set;}
+
+        public virtual ICollection<FAQCommandChannel> CommandChannels { get; set; }
+
     }
 }
