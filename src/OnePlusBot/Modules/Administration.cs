@@ -430,7 +430,7 @@ namespace OnePlusBot.Modules
                     var warnedSafe = Extensions.FormatMentionDetailed(warned);
                     var warnedBySafe = Extensions.FormatMentionDetailed(warnedBy);
                     embed.AddField(new EmbedFieldBuilder()
-                        .WithName($"Warning #{counter} - {warning.Date.ToString("dd/M/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture)}")
+                        .WithName($"Case #{warning.ID} - {warning.Date.ToString("dd/M/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture)}")
                         .WithValue($"**Warned user**: {warnedSafe}\n" +
                                    $"**Reason**: {warning.Reason}\n" +
                                    $"**Warned by**: {warnedBySafe}"))
@@ -452,21 +452,32 @@ namespace OnePlusBot.Modules
         [
             Command("warnings"),
             Summary("Gets all warnings of given user"),
-            RequireRole("staff")
         ]
         public async Task GetWarnings([Optional] IGuildUser user)
         {
+            var requestee = Context.User as SocketGuildUser;
             _user = user;
             Global.CommandExecutorId = Context.User.Id;
             
             using (var db = new Database())
             {
                 IQueryable<WarnEntry> warnings = db.Warnings;
+                IQueryable<WarnEntry> individualWarnings;
                 
                 if (user != null)
                     warnings = warnings.Where(x => x.WarnedUserID == user.Id);
 
                 _total = warnings.Count();
+
+                if (!requestee.Roles.Any(x => x.Name == "Staff"))
+                {
+                    individualWarnings = warnings.Where(x => x.WarnedUserID == requestee.Id);
+                    int indTotal = individualWarnings.Count();
+
+                    await ReplyAsync($"You have {indTotal} active warnings.");
+
+                    return;
+                }
 
                 if (_total == 0)
                 {
