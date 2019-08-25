@@ -74,5 +74,17 @@ namespace OnePlusBot.Helpers
         public static Channel GetChannelById(ulong channelId){
             return Global.FullChannels.Where(chan => chan.ChannelID == channelId).DefaultIfEmpty(null).First();
         }
+
+        public static EmbedBuilder FaqCommandEntryToBuilder(FAQCommandChannelEntry entry) {
+            var faqEmbedEntry = new EmbedBuilder();
+            faqEmbedEntry.WithColor(new Color(entry.HexColor));
+            faqEmbedEntry.WithDescription(entry.Text);
+            if(entry.ImageURL != null){
+                faqEmbedEntry.WithImageUrl(entry.ImageURL);
+            }
+            faqEmbedEntry.WithAuthor(entry.Author, entry.AuthorAvatarUrl);
+
+            return faqEmbedEntry;
+        }
     }
 }
