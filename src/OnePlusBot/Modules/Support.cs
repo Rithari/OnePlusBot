@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OnePlusBot.Helpers;
+using Discord.WebSocket;
+using System.Runtime.InteropServices;
 
 namespace OnePlusBot.Modules
 {
@@ -138,8 +140,14 @@ namespace OnePlusBot.Modules
 
         [Command("faq")]
         [Summary("Answers frequently asked questions with a predetermined response.")]
-        public async Task FAQAsync([Remainder] string parameter)
+        public async Task FAQAsync([Optional] [Remainder] string parameter)
         {
+            var contextChannel = Context.Channel;
+            if(parameter == null || parameter == string.Empty)
+            {
+                await PrintAvailableCommands(contextChannel);
+                return;
+            }
             var commands = Global.FAQCommands;
             parameter = parameter.Trim();
             var appropriateCommand = commands.Where(m => 
@@ -150,7 +158,6 @@ namespace OnePlusBot.Modules
             if(appropriateCommand.Any())
             {
                 var matchingCommand = appropriateCommand.First();
-                var contextChannel = Context.Channel;
                 if(matchingCommand.CommandChannels != null) 
                 {
                     var commandChannels = matchingCommand.CommandChannels.Where(cha => cha.Channel.ChannelID == contextChannel.Id);
@@ -179,7 +186,7 @@ namespace OnePlusBot.Modules
                     }
                     else
                     {
-                         await Context.Channel.SendMessageAsync($"Channel has no response configured for command {appropriateCommand.First().Name}.");
+                        await PrintAvailableCommands(contextChannel);
                     }
                 }
                 else 
@@ -190,8 +197,29 @@ namespace OnePlusBot.Modules
             }
             else 
             {
-                await Context.Channel.SendMessageAsync(" command not found");
+                 await PrintAvailableCommands(contextChannel);
             }
         }
+         public async Task PrintAvailableCommands(ISocketMessageChannel contextChannel){
+            var commandsAvailable = Global.FAQCommandChannels.Where(ch => ch.Channel.ChannelID == contextChannel.Id).ToList();
+            if(commandsAvailable.Count() == 0){
+                await Context.Channel.SendMessageAsync("No commands available.");
+            } else {
+                var stringBuilder = new StringBuilder();
+                stringBuilder.Append("Available commands in this channel " + Environment.NewLine);
+                for(var index = 0; index < commandsAvailable.Count; index++)
+                {
+                    var command = commandsAvailable[index];
+                    stringBuilder.Append($"{command.Command.Name}");
+                    if(index < commandsAvailable.Count -1 ){
+                        stringBuilder.Append(", ");
+                    }
+                }
+                await Context.Channel.SendMessageAsync(stringBuilder.ToString());
+            }
+           
+        }
     }
+
+   
 }

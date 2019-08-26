@@ -8,7 +8,6 @@ namespace OnePlusBot.Data.Models
     [Table("FAQCommandChannelEntry")]
     public class FAQCommandChannelEntry
     {
-       
 
         [Key]
         [Column("entry_id", Order=0)]
@@ -29,7 +28,7 @@ namespace OnePlusBot.Data.Models
         [Column("position")]
         public uint Position { get; set; }
 
-        [Column("command_channel_id")]
+        [Column("command_channel_id_reference")]
         public uint CommandChannelId { get; set; }
 
         [Column("author")]
@@ -55,7 +54,17 @@ namespace OnePlusBot.Data.Models
             clone.Text = Text;
             return clone;
         }
-
+        
+        public bool Equals(FAQCommandChannelEntry other){
+            if(this == other) return true;
+            if(this.HexColor != other.HexColor) return false;
+            if(this.Text != other.Text) return false;
+            if(this.IsEmbed != other.IsEmbed) return false;
+            if(this.Author != other.Author)  return false;
+            if(this.AuthorAvatarUrl != other.AuthorAvatarUrl) return false;
+            if(this.ImageURL != other.ImageURL) return false;
+            return true;
+        }
 
     }
 }
