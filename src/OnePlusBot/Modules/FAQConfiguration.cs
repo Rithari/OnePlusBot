@@ -1,3 +1,5 @@
+using System.Text;
+using System.Reflection.Metadata;
 using System;
 using Discord.Commands;
 using Discord;
@@ -41,7 +43,8 @@ namespace OnePlusBot.Modules
             var authorStep = new ConfigurationStep("Do you want to be marked as author? (✅ yes, ❌ no)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
             var deletionStep = new ConfigurationStep("React to the command in the channel you want to remove (❌ to abort, ◀ seek backward, ▶ seek forward)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
             var commandDeletionStep = new ConfigurationStep("React to the command you want to completely remove (❌ to abort, ◀ seek backward, ▶ seek forward)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
-            
+            var chooseExistingEntryStep = new ConfigurationStep("Which post do you want to use?", Interactive, Context, ConfigurationStep.StepType.Text, addStep);
+
             var existingCommands = Global.FAQCommands.ToList();
             var existingCommandChannels = new List<FAQCommandChannel>();
             foreach(var comandElement in existingCommands)
@@ -98,20 +101,39 @@ namespace OnePlusBot.Modules
 
             aliasesStep.TextCallback = (string text) => 
             {
+                var editingAlias = command.Aliases != null;
                 if(text != "none")
                 {
-                    command.Aliases = text;
+                    if(editingAlias)
+                    {
+                        command.Aliases = command.Aliases + ',' + text; 
+                    }
+                    else 
+                    {
+                        command.Aliases = text;
+                    }
                 }
                 else
                 {
-                    command.Aliases = "";
+                    if(!editingAlias)
+                    {
+                        command.Aliases = "";
+                    }                
                 }
                 return true;
             };
     
             commandStep.TextCallback = (string text) => 
             {
-                command.Name = text;
+                var weGotOne = existingCommands.Where(cmd => cmd.Name == text);
+                if(weGotOne.Any())
+                {
+                    command = weGotOne.First();
+                }
+                else
+                {
+                     command.Name = text;
+                }
                 return true;
             };
 
@@ -163,6 +185,18 @@ namespace OnePlusBot.Modules
                     }
                 }
                 return true;
+            };
+
+            chooseExistingEntryStep.TextCallback = (string text) => 
+            {
+                var channelCommands = existingCommands.Where(c => c.Name == command.Name).First();
+                int index = int.Parse(text);
+                // it is 1 based, therefore -1
+                var entriesChosen = channelCommands.CommandChannels.ToList()[index - 1];
+                foreach(var neededEntry  in entriesChosen.CommandChannelEntries){
+                    entries.Add(neededEntry.clone());
+                }
+                return false;
             };
 
             var addAction = new ReactionAction(new Emoji("➕"));
@@ -362,6 +396,39 @@ namespace OnePlusBot.Modules
             var commandFinished = new ReactionAction(new Emoji("✅"));
             commandFinished.Action = (ConfigurationStep a ) => 
             {
+               
+                if(entries.Count == 0)
+                {
+                    if(command.ID != 0)
+                    {
+                        var channelCommands = existingCommands.Where(c => c.Name == command.Name).First();
+                        if(!AreAllEntriesTheSame(channelCommands.CommandChannels.ToList()))
+                        {
+                            chooseExistingEntryStep.beforeTextPosted = (ConfigurationStep step) => 
+                            {
+                                var stringBuilder = new StringBuilder();
+                                var index = 1;
+                                foreach(var commandInChannel in channelCommands.CommandChannels)
+                                {
+                                    stringBuilder.Append($"{index}: {commandInChannel.Command.Name} in {commandInChannel.Channel.Name}" + Environment.NewLine);
+                                    index++;
+                                }
+                                step.additionalPosts.Add(stringBuilder.ToString());
+                                return false;
+                            };
+                            a.Result = chooseExistingEntryStep;
+                            return false;
+                        }
+                        else 
+                        {
+                           var entriesToUse = channelCommands.CommandChannels.First().CommandChannelEntries;
+                           foreach(var entry in entriesToUse)
+                           {
+                               entries.Add(entry.clone());
+                           }
+                        }
+                    }
+                }
 
                 // run this in parallel, so it doesnt block, should be fast enough in order for any additional configuration to not happen yet from the user
                 Task.Run(() => {
@@ -371,10 +438,30 @@ namespace OnePlusBot.Modules
                         }
                     }
                     command.CommandChannels = commandChannels;
-                    using (var db = new Database()){
-                        db.FAQCommands.Add(command);
+                    using (var db = new Database())
+                    {
+                        if(command.ID == 0)
+                        {
+                            db.FAQCommands.Add(command);
+                        } 
+                        else 
+                        {   
+                            db.Entry(command).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                            foreach(var channel in command.CommandChannels)
+                            {
+                                channel.FAQCommandId = command.ID;
+                                if(channel.CommandChannelId == 0)
+                                {
+                                    db.Entry(channel).State = Microsoft.EntityFrameworkCore.EntityState.Added;
+                                }
+                                foreach(var entry in channel.CommandChannelEntries){
+                                     db.Entry(entry).State = Microsoft.EntityFrameworkCore.EntityState.Added;
+                                }
+                            }
+                        }
+                        
                         db.SaveChanges();
-                     }
+                    }
                     command = new FAQCommand();
                     commandChannels = new List<FAQCommandChannel>();
                     entries = new List<FAQCommandChannelEntry>();
@@ -391,13 +478,37 @@ namespace OnePlusBot.Modules
             await configurationStep.SetupMessage();
         }
 
+         public bool AreAllEntriesTheSame(List<FAQCommandChannel> channels)
+         {
+            List<FAQCommandChannelEntry> entriesToCompareWith = channels.First().CommandChannelEntries.ToList();
+            foreach(var channel in channels)
+            {
+                var channelEntries = channel.CommandChannelEntries.ToList();
+                if(channelEntries.Count != entriesToCompareWith.Count)
+                {
+                    return false;
+                }
+                for(var entryIndex = 0; entryIndex < channelEntries.Count; entryIndex++) 
+                {
+                    var referenceEntry = entriesToCompareWith[entryIndex];
+                    var entry = channelEntries[entryIndex];
+                    if(!referenceEntry.Equals(entry))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
     }
 
-    public class CommandChannelPagination {
+    public class CommandChannelPagination 
+    {
         public ConfigurationStep step { get; set; }
         public ConfigurationStep parent { get; set; }
 
-        public System.Collections.Generic.List<IPaginatable> elements { get; set;}
+        public System.Collections.Generic.List<IPaginatable> elements { get; set; }
         private int currentPage = 0;
         private int elementOnPage = 5;
 
