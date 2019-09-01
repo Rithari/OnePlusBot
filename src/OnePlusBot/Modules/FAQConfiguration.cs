@@ -32,7 +32,7 @@ namespace OnePlusBot.Modules
             var addStep = new ConfigurationStep("What kind of post do you want to add? (💌 embed, 📖 textpost, ✅ nothing further)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
 
             var aliasesStep = new ConfigurationStep("Please write the aliases you want for this command (comma separated), type 'none' for none", Interactive, Context, ConfigurationStep.StepType.Text, addStep);
-            var channelStep = new ConfigurationStep("Which channels should the command be active in? Please mention the channels with #", Interactive, Context, ConfigurationStep.StepType.Text, aliasesStep);
+            var channelStep = new ConfigurationStep("Which channels should the command be active in? Please mention the channels with # or type 'all' for all.", Interactive, Context, ConfigurationStep.StepType.Text, aliasesStep);
 
             var commandStep = new ConfigurationStep("What should the name of the command be?", Interactive, Context, ConfigurationStep.StepType.Text, channelStep);
             var textStep = new ConfigurationStep("Please post what the text of the text post should be", Interactive, Context, ConfigurationStep.StepType.Text, addStep);
