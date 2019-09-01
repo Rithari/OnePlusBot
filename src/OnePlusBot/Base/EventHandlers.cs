@@ -32,6 +32,7 @@ namespace OnePlusBot.Base
         public async Task InstallCommandsAsync()
         {
             _bot.UserJoined += OnuserUserJoined;
+            _bot.UserJoined += OnUserJoinedMuteCheck;
             _bot.UserLeft += OnUserLeft;
             _bot.MessageReceived += OnCommandReceived;
             _bot.MessageReceived += OnMessageReceived;
@@ -55,6 +56,17 @@ namespace OnePlusBot.Base
         {
             var modlog = socketGuildUser.Guild.GetTextChannel(Global.Channels["joinlog"]);
             await modlog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + "joined the guild");
+        }
+
+        private async Task OnUserJoinedMuteCheck(SocketGuildUser user)
+        {
+            using (var db = new Database())
+            {
+                if(db.Mutes.Where(us => us.MutedUserID == user.Id && !us.MuteEnded).Any())
+                {
+                    await Extensions.MuteUser(user);
+                }
+            }
         }
 
         private async Task OnUserUnbanned(SocketUser socketUser, SocketGuild socketGuild)
