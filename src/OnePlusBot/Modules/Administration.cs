@@ -189,8 +189,8 @@ namespace OnePlusBot.Modules
             }
 
             await Extensions.MuteUser(user);
-            const string muteMessage = "You were muted on r/OnePlus for the following reason: {0} until {1}.";
-            await user.SendMessageAsync(string.Format(muteMessage, reason, targetTime));
+            const string muteMessage = "You were muted on r/OnePlus for the following reason: {0} until {1} {2}.";
+            await user.SendMessageAsync(string.Format(muteMessage, reason, targetTime, TimeZoneInfo.Local));
                 
 
             var muteData = new Mute
