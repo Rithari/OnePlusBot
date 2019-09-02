@@ -27,11 +27,12 @@ namespace OnePlusBot.Modules
         public async Task ConfigureFAQ()
         {
             var guild = Global.Bot.GetGuild(Global.ServerID);
-            var configurationStep = new ConfigurationStep("What do you want to do? (➕ add command, ➖ remove command in channel, ☠ delete command, ❌ abort)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
+            var configurationStep = new ConfigurationStep("What do you want to do? (➕ add command, ➖ remove command in channel, ☠ delete command)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
+            configurationStep.additionalPosts.Add("To exit react with 🆘 or type exit, depending on the type of step you are in");
             var addStep = new ConfigurationStep("What kind of post do you want to add? (💌 embed, 📖 textpost, ✅ nothing further)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
 
             var aliasesStep = new ConfigurationStep("Please write the aliases you want for this command (comma separated), type 'none' for none", Interactive, Context, ConfigurationStep.StepType.Text, addStep);
-            var channelStep = new ConfigurationStep("Which channels should the command be active in? Please mention the channels with #", Interactive, Context, ConfigurationStep.StepType.Text, aliasesStep);
+            var channelStep = new ConfigurationStep("Which channels should the command be active in? Please mention the channels with # or type 'all' for all.", Interactive, Context, ConfigurationStep.StepType.Text, aliasesStep);
 
             var commandStep = new ConfigurationStep("What should the name of the command be?", Interactive, Context, ConfigurationStep.StepType.Text, channelStep);
             var textStep = new ConfigurationStep("Please post what the text of the text post should be", Interactive, Context, ConfigurationStep.StepType.Text, addStep);
@@ -41,8 +42,8 @@ namespace OnePlusBot.Modules
             var embedTextStep = new ConfigurationStep("Please enter the text you want to give your embed", Interactive, Context, ConfigurationStep.StepType.Text, embedStep);
             var embedColorStep = new ConfigurationStep("Please choose a color you want to use for the embed", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
             var authorStep = new ConfigurationStep("Do you want to be marked as author? (✅ yes, ❌ no)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
-            var deletionStep = new ConfigurationStep("React to the command in the channel you want to remove (❌ to abort, ◀ seek backward, ▶ seek forward)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
-            var commandDeletionStep = new ConfigurationStep("React to the command you want to completely remove (❌ to abort, ◀ seek backward, ▶ seek forward)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
+            var deletionStep = new ConfigurationStep("React to the command in the channel you want to remove (❌ go back, ◀ seek backward, ▶ seek forward)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
+            var commandDeletionStep = new ConfigurationStep("React to the command you want to completely remove (❌ go back, ◀ seek backward, ▶ seek forward)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
             var chooseExistingEntryStep = new ConfigurationStep("Which post do you want to use?", Interactive, Context, ConfigurationStep.StepType.Text, addStep);
 
             var existingCommands = Global.FAQCommands.ToList();
@@ -67,7 +68,7 @@ namespace OnePlusBot.Modules
             List<IPaginatable> commandChannelPaginatable = existingCommandChannels.ConvertAll(x => (IPaginatable)x);
             List<IPaginatable> commandPaginatable = existingCommands.ConvertAll(x => (IPaginatable)x);
 
-            var deletePagination = new CommandChannelPagination(deletionStep, configurationStep, commandChannelPaginatable);
+            var deletePagination = new PaginationWithAction(deletionStep, configurationStep, commandChannelPaginatable, true, Context, Interactive);
             deletePagination.setup();
             deletePagination.actionOnIndex = (object obj) => 
             {
@@ -82,12 +83,13 @@ namespace OnePlusBot.Modules
                 return deletionStep;
             };
 
-            var deleteCommandPagination = new CommandChannelPagination(commandDeletionStep, configurationStep, commandPaginatable);
+            var deleteCommandPagination = new PaginationWithAction(commandDeletionStep, configurationStep, commandPaginatable, true, Context, Interactive);
             deleteCommandPagination.setup();
             deleteCommandPagination.actionOnIndex = (object obj) => 
             {
                 var commandToDelete = obj as FAQCommand;
                 if(obj == null) return commandDeletionStep;
+                commandChannelPaginatable.RemoveAll(ch => (ch as FAQCommandChannel).Command.ID == commandToDelete.ID);
                 using(var db = new Database())
                 {
                     db.FAQCommands.Remove(commandToDelete); 
@@ -96,10 +98,11 @@ namespace OnePlusBot.Modules
 
                 existingCommands.Remove(commandToDelete);
                 commandPaginatable.Remove(commandToDelete as IPaginatable);
+                // if we do not remove them from the channel commands, then a the command is a null pointer
                 return commandDeletionStep;
             };
 
-            aliasesStep.TextCallback = (string text) => 
+            aliasesStep.TextCallback = (string text, ConfigurationStep a) => 
             {
                 var editingAlias = command.Aliases != null;
                 if(text != "none")
@@ -123,7 +126,7 @@ namespace OnePlusBot.Modules
                 return true;
             };
     
-            commandStep.TextCallback = (string text) => 
+            commandStep.TextCallback = (string text, ConfigurationStep a) => 
             {
                 var weGotOne = existingCommands.Where(cmd => cmd.Name == text);
                 if(weGotOne.Any())
@@ -137,19 +140,19 @@ namespace OnePlusBot.Modules
                 return true;
             };
 
-            imageUrlStep.TextCallback = (string text) => 
+            imageUrlStep.TextCallback = (string text, ConfigurationStep a) => 
             {
                 builder = builder.withImageUrl(text);
                 return true;
             };
 
-            embedTextStep.TextCallback = (string text) => 
+            embedTextStep.TextCallback = (string text, ConfigurationStep a) => 
             {
                 builder = builder.withText(text);
                 return true;
             };
 
-            textStep.TextCallback = (string text) => 
+            textStep.TextCallback = (string text, ConfigurationStep a) => 
             {
                 builder = builder.withText(text);
                 var entry = builder.Build();
@@ -160,13 +163,15 @@ namespace OnePlusBot.Modules
                 return true;
             };
 
-            channelStep.TextCallback = (string text) => 
+            channelStep.TextCallback = (string text, ConfigurationStep a) => 
             {
                 var channelIds = Regex.Matches(text, @"(?:\<#(?<channelId>\d{18})\>)*", 
                 RegexOptions.Multiline | 
                 RegexOptions.ExplicitCapture)
                   .OfType<Match>()
                   .Select (mt => mt.Groups["channelId"].Value);
+
+                bool channelFound = false;
 
                 foreach(var channelId in channelIds)
                 {
@@ -176,6 +181,7 @@ namespace OnePlusBot.Modules
                         var channelObj = Global.FullChannels.Where(ch => ch.ChannelID == channelIdLong).DefaultIfEmpty(null).First();
                         if(channelObj != null)
                         {
+                            channelFound = true;
                             var commandChannel = new FAQCommandChannel();
                             commandChannel.ChannelId = channelObj.ID;
                             commandChannel.CommandChannelEntries = new List<FAQCommandChannelEntry>();
@@ -184,106 +190,138 @@ namespace OnePlusBot.Modules
 
                     }
                 }
+
+                if(channelFound)
+                {
+                    a.Result = aliasesStep;
+                }
+                else
+                {
+                    if(text.ToUpper().Contains("ALL"))
+                    {
+                        var channelCommands = existingCommands.Where(c => c.Name == command.Name).First();
+                        foreach(var channel in Global.FullChannels)
+                        {
+                            var existingChannels = channelCommands.CommandChannels.Where(cch => cch.Channel?.ChannelID == channel.ChannelID);
+                            var channelAlreadyExists = existingChannels.Any();
+                            if(channelAlreadyExists)
+                            {
+                                continue;
+                            }
+                            var commandChannel = new FAQCommandChannel();
+                            commandChannel.ChannelId = channel.ID;
+                            commandChannel.CommandChannelEntries = new List<FAQCommandChannelEntry>();
+                            commandChannels.Add(commandChannel);
+                        }
+                        a.Result = aliasesStep;
+                    } 
+                    else
+                    {
+                        a.Result = channelStep;
+                    }
+                }
                 return true;
             };
 
-            chooseExistingEntryStep.TextCallback = (string text) => 
+            chooseExistingEntryStep.TextCallback = (string text, ConfigurationStep a) => 
             {
                 var channelCommands = existingCommands.Where(c => c.Name == command.Name).First();
-                int index = int.Parse(text);
-                // it is 1 based, therefore -1
-                var entriesChosen = channelCommands.CommandChannels.ToList()[index - 1];
-                foreach(var neededEntry  in entriesChosen.CommandChannelEntries){
-                    entries.Add(neededEntry.clone());
+
+                int index = 0;
+                if(int.TryParse(text, out index))
+                {
+                    // it is 1 based, therefore -1
+                    var entriesChosen = channelCommands.CommandChannels.ToList()[index - 1];
+                    foreach(var neededEntry  in entriesChosen.CommandChannelEntries)
+                    {
+                        entries.Add(neededEntry.clone());
+                    }
                 }
+                else
+                {
+                    a.Result = chooseExistingEntryStep;
+                }
+                   
                 return false;
+               
             };
 
             var addAction = new ReactionAction(new Emoji("➕"));
-            addAction.Action = (ConfigurationStep a) => 
+            addAction.Action = async (ConfigurationStep a) => 
             {
                 a.Result = commandStep;
-                return false;
+                 await Task.CompletedTask;
             };
 
             var deleteCommandChannelAction = new ReactionAction(new Emoji("➖"));
-            deleteCommandChannelAction.Action = (ConfigurationStep a) => 
+            deleteCommandChannelAction.Action = async (ConfigurationStep a) => 
             {
                 a.Result = deletionStep;
-                return false;
+                await Task.CompletedTask;
             };
 
             var deleteCommandAction = new ReactionAction(new Emoji("☠"));
-            deleteCommandAction.Action = (ConfigurationStep a) => 
+            deleteCommandAction.Action = async (ConfigurationStep a) => 
             {
                 a.Result = commandDeletionStep;
-                return false;
-            };
-
-            var exitAction = new ReactionAction(new Emoji("❌"));
-            exitAction.Action = (ConfigurationStep a) => 
-            {
-                a.Result = null;
-                return false;
+                await Task.CompletedTask;
             };
 
             configurationStep.Actions.Add(addAction);
             configurationStep.Actions.Add(deleteCommandChannelAction);
             configurationStep.Actions.Add(deleteCommandAction);
-            configurationStep.Actions.Add(exitAction);
-
             // blue
             var blueChoice = new ReactionAction(new Emoji("📘"));
-            blueChoice.Action = (ConfigurationStep a) => 
+            blueChoice.Action = async (ConfigurationStep a) => 
             {
                 builder.withHexColor(5614830);
                 a.Result = embedStep;
-                return false;
+                await Task.CompletedTask;
             };
 
             // red
              var redChoice = new ReactionAction(new Emoji("📕"));
-            redChoice.Action = (ConfigurationStep a) => 
+            redChoice.Action = async (ConfigurationStep a) => 
             {
                 builder.withHexColor(14495300);
                 a.Result = embedStep;
-                return false;
+                 await Task.CompletedTask;
             };
 
             // green
              var greenChoice = new ReactionAction(new Emoji("📗"));
-            greenChoice.Action = (ConfigurationStep a) => 
+            greenChoice.Action = async (ConfigurationStep a) => 
             {
                 builder.withHexColor(7844437);
                 a.Result = embedStep;
-                return false;
+                await Task.CompletedTask;
             };
 
             // yellow
              var yellowChoice = new ReactionAction(new Emoji("📙"));
-            yellowChoice.Action = (ConfigurationStep a) => 
+            yellowChoice.Action = async (ConfigurationStep a) => 
             {
                 builder.withHexColor(16755763);
                 a.Result = embedStep;
-                return false;
+                await Task.CompletedTask;
             };
 
             // white
              var whiteChoice = new ReactionAction(new Emoji("🔖"));
-            whiteChoice.Action = (ConfigurationStep a) => 
+            whiteChoice.Action = async (ConfigurationStep a) => 
             {
                 builder.withHexColor(14805229);
                 a.Result = embedStep;
-                return false;
+                await Task.CompletedTask;
             };
 
             // black
              var blackChoice = new ReactionAction(new Emoji("⬛"));
-            blackChoice.Action = (ConfigurationStep a) => 
+            blackChoice.Action = async (ConfigurationStep a) => 
             {
                 builder.withHexColor(2699059);
                 a.Result = embedStep;
-                return false;
+                await Task.CompletedTask;
             };
 
             colorStep.Actions.Add(blueChoice);
@@ -294,44 +332,44 @@ namespace OnePlusBot.Modules
             colorStep.Actions.Add(blackChoice);
 
             var imageUrlAction = new ReactionAction(new Emoji("🖼"));
-            imageUrlAction.Action = (ConfigurationStep a) => 
+            imageUrlAction.Action = async (ConfigurationStep a) => 
             {
                 a.Result = imageUrlStep;
-                return false;
+                 await Task.CompletedTask;
             };
 
             var embedTextAction = new ReactionAction(new Emoji("📖"));
-            embedTextAction.Action = (ConfigurationStep a) => 
+            embedTextAction.Action = async (ConfigurationStep a) => 
             {
                 a.Result = embedTextStep;
-                return false;
+                await Task.CompletedTask;
             };
 
             var chooseColorAction = new ReactionAction(new Emoji("🎨"));
-            chooseColorAction.Action = (ConfigurationStep a) => 
+            chooseColorAction.Action = async (ConfigurationStep a) => 
             {
                 a.Result = colorStep;
-                return false;
+               await Task.CompletedTask;
             };
 
             var testEmbedAction = new ReactionAction(new Emoji("🤖"));
-            testEmbedAction.Action =  (ConfigurationStep a ) => 
+            testEmbedAction.Action = async (ConfigurationStep a) => 
             {
-                // TODO delete the embed afterwards, we cant right now, because we would need to await it
-                Context.Channel.SendMessageAsync(embed: OnePlusBot.Helpers.Extensions.FaqCommandEntryToBuilder(builder.Build()).Build());
+                var message = await Context.Channel.SendMessageAsync(embed: OnePlusBot.Helpers.Extensions.FaqCommandEntryToBuilder(builder.Build()).Build());
+                a.MessagesToRemoveOnNextProgression.Add(message);
                 a.Result = embedStep;
-                return false;
+                await Task.CompletedTask;
             };
 
             var authorSettingAction = new ReactionAction(new Emoji("💁"));
-            authorSettingAction.Action = (ConfigurationStep a) => 
+            authorSettingAction.Action = async (ConfigurationStep a) => 
             {
                 a.Result = authorStep;
-                return false;
+                await Task.CompletedTask;
             };
 
             var finishEmbedAction = new ReactionAction(new Emoji("✅"));
-            finishEmbedAction.Action = (ConfigurationStep a) => 
+            finishEmbedAction.Action = async (ConfigurationStep a) => 
             {
                 a.Result = addStep;
                 var entry = builder.Build();
@@ -339,14 +377,14 @@ namespace OnePlusBot.Modules
                 entry.IsEmbed = true;
                 entries.Add(entry);                
                 builder = new FaqCommandChannelEntryBuilder();
-                return false;
+                await Task.CompletedTask;
             };
 
             var abortEmbedAction = new ReactionAction(new Emoji("❌"));
-            abortEmbedAction.Action = (ConfigurationStep a) => 
+            abortEmbedAction.Action = async (ConfigurationStep a) => 
             {
                 a.Result = addStep;
-                return false;
+                await Task.CompletedTask;
             };
 
             embedStep.Actions.Add(testEmbedAction);
@@ -357,46 +395,45 @@ namespace OnePlusBot.Modules
             embedStep.Actions.Add(finishEmbedAction);
 
             var authorAgreeAction = new ReactionAction(new Emoji("✅"));
-            authorAgreeAction.Action = (ConfigurationStep a) => 
+            authorAgreeAction.Action = async (ConfigurationStep a) => 
             {
                 builder = builder.withAuthor(Context.Message.Author.Username);
                 builder = builder.withAuthorAvatarUrl(Context.Message.Author.GetAvatarUrl());
                 a.Result = embedStep;
-                return false;
+                await Task.CompletedTask;
             };
 
             var authorDenyAction = new ReactionAction(new Emoji("❌"));
-            authorDenyAction.Action = (ConfigurationStep a) => 
+            authorDenyAction.Action = async (ConfigurationStep a) => 
             {
                 a.Result = embedStep;
                 // TODO do not hardcode
                 builder = builder.withAuthor("r/Oneplus");
                 builder = builder.withAuthorAvatarUrl("https://cdn.discordapp.com/avatars/426015562595041280/cab7dde68e8da9bcfd61842bd98e950b.png");
-                return false;
+                await Task.CompletedTask;
             };
 
             authorStep.Actions.Add(authorAgreeAction);
             authorStep.Actions.Add(authorDenyAction);
 
             var embedAction = new ReactionAction(new Emoji("💌"));
-            embedAction.Action = (ConfigurationStep a) => 
+            embedAction.Action = async (ConfigurationStep a) => 
             {
                 builder.defaultValues();
                 a.Result = embedStep;
-                return false;
+                await Task.CompletedTask;
             };
 
             var textAction = new ReactionAction(new Emoji("📖"));
-            textAction.Action = (ConfigurationStep a) => 
+            textAction.Action = async (ConfigurationStep a) => 
             {
                 a.Result = textStep;
-                return false;
+                await Task.CompletedTask;
             };
 
             var commandFinished = new ReactionAction(new Emoji("✅"));
-            commandFinished.Action = (ConfigurationStep a ) => 
+            commandFinished.Action = async (ConfigurationStep a ) => 
             {
-               
                 if(entries.Count == 0)
                 {
                     if(command.ID != 0)
@@ -413,11 +450,12 @@ namespace OnePlusBot.Modules
                                     stringBuilder.Append($"{index}: {commandInChannel.Command.Name} in {commandInChannel.Channel.Name}" + Environment.NewLine);
                                     index++;
                                 }
+                                step.additionalPosts.Clear();
                                 step.additionalPosts.Add(stringBuilder.ToString());
                                 return false;
                             };
                             a.Result = chooseExistingEntryStep;
-                            return false;
+                            return;
                         }
                         else 
                         {
@@ -431,9 +469,11 @@ namespace OnePlusBot.Modules
                 }
 
                 // run this in parallel, so it doesnt block, should be fast enough in order for any additional configuration to not happen yet from the user
-                Task.Run(() => {
+                await Task.Run(() => 
+                {
                     foreach(var entry in entries){
-                        foreach(var commandChannel in commandChannels){
+                        foreach(var commandChannel in commandChannels)
+                        {
                             commandChannel.CommandChannelEntries.Add(entry.clone());
                         }
                     }
@@ -468,7 +508,7 @@ namespace OnePlusBot.Modules
                 });
               
                 a.Result = configurationStep;
-                return false;
+                await Task.CompletedTask;
             };
 
             addStep.Actions.Add(embedAction);
@@ -499,126 +539,6 @@ namespace OnePlusBot.Modules
                 }
             }
             return true;
-        }
-
-    }
-
-    public class CommandChannelPagination 
-    {
-        public ConfigurationStep step { get; set; }
-        public ConfigurationStep parent { get; set; }
-
-        public System.Collections.Generic.List<IPaginatable> elements { get; set; }
-        private int currentPage = 0;
-        private int elementOnPage = 5;
-
-        public Func<object, ConfigurationStep> actionOnIndex { get; set; } 
-
-
-        public CommandChannelPagination(ConfigurationStep step, ConfigurationStep parent, System.Collections.Generic.List<IPaginatable> elements)
-        {
-            this.step = step;
-            this.parent = parent;
-            this.elements = elements;
-        }
-
-        public void setup()
-        {
-            var prevAction = new ReactionAction(new Emoji("◀"));
-            prevAction.Action = (ConfigurationStep a )=> 
-            {
-                if(currentPage > 0)
-                {
-                    currentPage--;
-                }
-                a.Result = step;
-                return false;
-            };
-            var forwardAction = new ReactionAction(new Emoji("▶"));
-
-            forwardAction.Action = (ConfigurationStep a ) => 
-            {
-                if(currentPage < (elements.Count - 1) / elementOnPage)
-                {
-                    currentPage++;
-                }
-                a.Result = step;
-                return false;
-            };
-
-            Func<int, ConfigurationStep> processAtIndex = (int index) => 
-            {
-                index = currentPage * elementOnPage + index;
-                if(index < elements.Count)
-                {
-                    var channel = elements[index];
-                    return actionOnIndex(channel);
-                }
-                return null;
-            };
-            var firstAction = new ReactionAction(new Emoji("\u0031\u20e3"));
-            firstAction.Action = (ConfigurationStep a) => 
-            {
-                var otherStep = processAtIndex(0);
-                a.Result = otherStep ?? step;
-                return false;
-            };
-            var secondAction = new ReactionAction(new Emoji("\u0032\u20e3"));
-            secondAction.Action = (ConfigurationStep a) => 
-            {
-                var otherStep = processAtIndex(1);
-                a.Result = otherStep ?? step;
-                a.Result = step;
-                return false;
-            };
-            var thirdAction = new ReactionAction(new Emoji("\u0033\u20e3"));
-            thirdAction.Action = (ConfigurationStep a) => 
-            {
-                 var otherStep = processAtIndex(2);
-                a.Result = otherStep ?? step;
-                return false;
-            };
-            var fourthAction = new ReactionAction(new Emoji("\u0034\u20e3"));
-            fourthAction.Action = (ConfigurationStep a) => 
-            {
-                 var otherStep = processAtIndex(3);
-                a.Result = otherStep ?? step;
-                return false;
-            };
-            var fifthAction = new ReactionAction(new Emoji("\u0035\u20e3"));
-            fifthAction.Action = (ConfigurationStep a) => 
-            {
-                 var otherStep = processAtIndex(4);
-                a.Result = otherStep ?? step;
-                return false;
-            };
-
-            var abortDeletionAction = new ReactionAction(new Emoji("❌"));
-            abortDeletionAction.Action = (ConfigurationStep a) => 
-            {
-                a.Result = parent;
-                return false;
-            };
-          
-            step.Actions.Add(prevAction);
-            step.Actions.Add(firstAction);
-            step.Actions.Add(secondAction);
-            step.Actions.Add(thirdAction);
-            step.Actions.Add(fourthAction);
-            step.Actions.Add(fifthAction);
-            step.Actions.Add(forwardAction);
-            step.Actions.Add(abortDeletionAction);
-
-            step.beforeTextPosted = (ConfigurationStep a) => 
-            {
-                a.additionalPosts.Clear();
-                for(int i = currentPage * elementOnPage; i < currentPage * elementOnPage + elementOnPage && i < elements.Count; i++)
-                {
-                    var cmd = elements[i];
-                    a.additionalPosts.Add(cmd.display());
-                }
-                return false;
-            };
         }
     }
 }

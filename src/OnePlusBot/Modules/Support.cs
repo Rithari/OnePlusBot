@@ -191,7 +191,7 @@ namespace OnePlusBot.Modules
                 }
                 else 
                 {
-                    await Context.Channel.SendMessageAsync($"Channel has no response configured for command {appropriateCommand.First().Name}.");
+                    await Context.Channel.SendMessageAsync($"Channel has no entry configured for command {appropriateCommand.First().Name}.");
                 }
                 
             }
@@ -203,10 +203,10 @@ namespace OnePlusBot.Modules
          public async Task PrintAvailableCommands(ISocketMessageChannel contextChannel){
             var commandsAvailable = Global.FAQCommandChannels.Where(ch => ch.Channel.ChannelID == contextChannel.Id).ToList();
             if(commandsAvailable.Count() == 0){
-                await Context.Channel.SendMessageAsync("No commands available.");
+                await Context.Channel.SendMessageAsync("No entry available.");
             } else {
                 var stringBuilder = new StringBuilder();
-                stringBuilder.Append("Available commands in this channel " + Environment.NewLine);
+                stringBuilder.Append("Available entries in this channel " + Environment.NewLine);
                 for(var index = 0; index < commandsAvailable.Count; index++)
                 {
                     var command = commandsAvailable[index];
