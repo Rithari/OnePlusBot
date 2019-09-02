@@ -73,7 +73,7 @@ namespace OnePlusBot.Base
       if(user == null)
       {
         UnMuteUserCompletely(userId);
-        return CustomResult.FromError("User is not in the server anymore");
+        return CustomResult.FromError("User is not in the server anymore. User was unmuted in the database.");
       }
       var result = await OnePlusBot.Helpers.Extensions.UnMuteUser(user);
       if(!result.IsSuccess)
