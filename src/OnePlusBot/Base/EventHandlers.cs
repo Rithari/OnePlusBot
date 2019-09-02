@@ -593,6 +593,23 @@ namespace OnePlusBot.Base
 
         private async Task UserChangedVoiceState(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
         {
+
+            if(oldState.VoiceChannel != null && newState.VoiceChannel != null)
+            {
+                if(oldState.VoiceChannel.Id == newState.VoiceChannel.Id)
+                {
+                    return;
+                }
+            }
+
+            if(newState.VoiceChannel == null)
+            {
+                if(newState.IsDeafened)
+                {
+                    return;
+                }
+            }
+
             var bot = Global.Bot;
             var guild = bot.GetGuild(Global.ServerID);
             
