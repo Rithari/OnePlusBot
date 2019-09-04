@@ -82,6 +82,7 @@ namespace OnePlusBot.Helpers
             if(entry.ImageURL != null){
                 faqEmbedEntry.WithImageUrl(entry.ImageURL);
             }
+            faqEmbedEntry.WithTimestamp(entry.ChangedDate);
             faqEmbedEntry.WithAuthor(entry.Author, entry.AuthorAvatarUrl);
 
             return faqEmbedEntry;

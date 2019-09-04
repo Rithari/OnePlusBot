@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
+using System;
 
 namespace OnePlusBot.Data.Models
 {
@@ -38,6 +39,10 @@ namespace OnePlusBot.Data.Models
         public string AuthorAvatarUrl { get; set; }
 
 
+        [Column("changed_date")]
+        public DateTime ChangedDate { get; set; }
+
+
         [ForeignKey("CommandChannelId")]
         public virtual FAQCommandChannel FAQCommandChannel { get; set; }
 
@@ -52,6 +57,9 @@ namespace OnePlusBot.Data.Models
             clone.ImageURL = ImageURL;
             clone.IsEmbed = IsEmbed;
             clone.Text = Text;
+            // I think setting the changed date to now is fine, because we use the cloning, when we use an entry from an already existing channel
+            // that means in the process of a creating an entry, and with that we basically say 'this is right'
+            clone.ChangedDate = DateTime.Now;
             return clone;
         }
         
