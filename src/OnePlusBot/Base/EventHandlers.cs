@@ -207,7 +207,7 @@ namespace OnePlusBot.Base
             }
             catch(NullReferenceException ex)
             {
-                await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(ex.ToString());
+                return;
             }
             // it was sometimes null
             if(deletedMessage == null)

@@ -10,6 +10,8 @@ using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
 using System;
 using Discord.WebSocket;
+using System.Net;
+using System.IO;
 
 namespace OnePlusBot.Modules
 {
@@ -228,7 +230,9 @@ namespace OnePlusBot.Modules
             var guild = Context.Guild;
 
             var user = (SocketGuildUser)Context.Message.Author;
-        //    var newsChannel2 = 
+            
+            var needsAttachments = Context.Message.Attachments.Count() > 0;
+            
             var newsChannel = guild.GetTextChannel(Global.Channels["news"]) as SocketNewsChannel;
             var newsRole = guild.GetRole(Global.Roles["news"]);
 
@@ -236,8 +240,28 @@ namespace OnePlusBot.Modules
                 return CustomResult.FromError("Your news article contained one or more illegal pings!");
 
             await newsRole.ModifyAsync(x => x.Mentionable = true);
-            var posted = await newsChannel.SendMessageAsync(news + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author);
-            await newsRole.ModifyAsync(x => x.Mentionable = false);
+            IMessage posted;
+            var messageToPost = news + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author;
+            try {
+                if(needsAttachments)
+                {
+                    var attachment = Context.Message.Attachments.First();
+                    WebClient client = new WebClient();
+                    client.DownloadFile(attachment.Url, attachment.Filename);
+                    posted = await newsChannel.SendFileAsync(attachment.Filename, messageToPost);
+                    File.Delete(attachment.Filename);  
+                }
+                else
+                {
+                    posted = await newsChannel.SendMessageAsync(messageToPost);
+                }
+            }
+            finally 
+            {
+                await newsRole.ModifyAsync(x => x.Mentionable = false);
+            }
+            
+           
 
             Global.NewsPosts[Context.Message.Id] = posted.Id;
 
