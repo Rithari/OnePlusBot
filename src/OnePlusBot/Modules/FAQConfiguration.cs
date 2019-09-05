@@ -199,15 +199,19 @@ namespace OnePlusBot.Modules
                 {
                     if(text.ToUpper().Contains("ALL"))
                     {
-                        var channelCommands = existingCommands.Where(c => c.Name == command.Name).First();
+                        var channelCommands = existingCommands.Where(c => c.Name == command.Name).DefaultIfEmpty(null).First();
                         foreach(var channel in Global.FullChannels)
                         {
-                            var existingChannels = channelCommands.CommandChannels.Where(cch => cch.Channel?.ChannelID == channel.ChannelID);
-                            var channelAlreadyExists = existingChannels.Any();
-                            if(channelAlreadyExists)
+                            if(channelCommands != null)
                             {
-                                continue;
+                                var existingChannels = channelCommands.CommandChannels.Where(cch => cch.Channel?.ChannelID == channel.ChannelID);
+                                var channelAlreadyExists = existingChannels.Any();
+                                if(channelAlreadyExists)
+                                {
+                                    continue;
+                                }
                             }
+                           
                             var commandChannel = new FAQCommandChannel();
                             commandChannel.ChannelId = channel.ID;
                             commandChannel.CommandChannelEntries = new List<FAQCommandChannelEntry>();
