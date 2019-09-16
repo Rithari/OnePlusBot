@@ -205,7 +205,7 @@ namespace OnePlusBot.Base
             {
                 deletedMessage = await cacheable.GetOrDownloadAsync();
             }
-            catch(NullReferenceException ex)
+            catch(NullReferenceException)
             {
                 return;
             }

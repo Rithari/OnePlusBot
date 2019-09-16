@@ -1,3 +1,6 @@
+using System.Text;
+using System.Threading;
+using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
 using Discord.Commands;
@@ -9,6 +12,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Net.Http;
 using System.IO;
+using OnePlusBot.Data;
 
 
 namespace OnePlusBot.Modules
@@ -159,8 +163,103 @@ namespace OnePlusBot.Modules
             return CustomResult.FromSuccess();
         }
 
-       
+        [
+            Command("starstats"),
+            Summary("Shows the statistics for the star board posts")
+        ]
+        public async Task<RuntimeResult> PrintStarStats()
+        {
+            var mostStars = new Dictionary<ulong, ulong>();
+            using(var db = new Database())
+            {
+                var mostStarredMessages = db.StarboardMessages.OrderByDescending(p => p.Starcount).Take(3).ToArray();
+                var starMessagesCount = db.StarboardMessages.Count();
+                var totalStarsCount = db.StarboardPostRelations.Count();
+                var mostStarerUser = db.StarboardPostRelations
+                .GroupBy(p=> p.UserId)
+                .Select(g => new { id = g.Key, count = g.Count() })
+                .OrderByDescending(p => p.count)
+                .Select(p => new KeyValuePair<ulong, int>(p.id, p.count))
+                .ToArray();
 
+                var mostStarRecieverUser = db.StarboardMessages
+                .GroupBy(p => p.AuthorId)
+                .Select(g => new { id = g.Key, count = g.Sum(p => p.Starcount)})
+                .OrderByDescending(p => p.count)
+                .Select(p => new KeyValuePair<ulong, int>(p.id, (int) p.count))
+                .ToArray();
+
+                var embed = new EmbedBuilder();
+                embed.WithTitle("Server Starboard stats");
+                embed.WithDescription($"{starMessagesCount} starred messages with {totalStarsCount} stars in total");
+                var badges = new List<String>();
+                badges.Add("🥇");
+                badges.Add("🥈");
+                badges.Add("🥉");
+                var firstPostField = new EmbedFieldBuilder()
+                .WithName("Top starred posts")
+                .WithValue(BuildStringForMessage(mostStarredMessages, badges));
+
+                var secondPostField = new EmbedFieldBuilder()
+                .WithName("Top star reciever")
+                .WithValue(BuildStringForPoster(mostStarRecieverUser, badges));
+
+                var thirdPostField = new EmbedFieldBuilder()
+                .WithName("Top star givers")
+                .WithValue(BuildStringForPoster(mostStarerUser, badges));
+                embed.WithFields(firstPostField);
+                embed.WithFields(secondPostField);
+                embed.WithFields(thirdPostField);
+                await Context.Channel.SendMessageAsync(embed: embed.Build());
+            }
+            return CustomResult.FromSuccess();
+        }
+
+        private String BuildStringForPoster(KeyValuePair<ulong, int>[] values, List<String> badges)
+        {
+
+            var stringBuilder = new StringBuilder();
+            for(var index = 0; index < badges.Count(); index++)
+            {
+                if(index >= values.Count())
+                {
+                    continue;
+                }
+                var element = values.ElementAt(index);
+                stringBuilder.Append(badges[index]); 
+                stringBuilder.Append(" - ");
+                stringBuilder.Append(element.Value);
+                stringBuilder.Append(" ");
+                stringBuilder.Append(Global.OnePlusEmote.STAR);
+                stringBuilder.Append(" ");
+                stringBuilder.Append(Extensions.GetUserById(element.Key).Mention);
+                stringBuilder.Append(Environment.NewLine);
+            }
+            return stringBuilder.ToString();
+        }
+
+        private String BuildStringForMessage(Data.Models.StarboardMessage[] values, List<String> badges)
+        {
+            var starBoardChannelId = Global.Channels["starboard"];
+            var stringBuilder = new StringBuilder();
+            for(var index = 0; index < badges.Count(); index++)
+            {
+                if(index >= values.Count())
+                {
+                    continue;
+                }
+                var element = values.ElementAt(index);
+                stringBuilder.Append(badges[index]);
+                stringBuilder.Append(" - ");
+                stringBuilder.Append(element.Starcount);
+                stringBuilder.Append(" ");
+                stringBuilder.Append(Global.OnePlusEmote.STAR);
+                stringBuilder.Append(" ");
+                stringBuilder.Append(Extensions.GetMessageUrl(Global.ServerID, starBoardChannelId, element.StarboardMessageId, "Jump!"));
+                stringBuilder.Append(Environment.NewLine);
+            }
+            return stringBuilder.ToString();
+        }
        
        
     }

@@ -27,6 +27,10 @@ namespace OnePlusBot.Data
 
         public DbSet<Mute> Mutes {get; set; }
 
+        public DbSet<StarboardMessage> StarboardMessages { get; set; }
+
+        public DbSet<StarboardPostRelation> StarboardPostRelations { get; set; }
+
         // TODO needs to be replaced with proper dependency injection
         public static readonly LoggerFactory LoggerFactory
         = new LoggerFactory(new[] {new ConsoleLoggerProvider((_, __) => true, true)});
@@ -57,6 +61,8 @@ namespace OnePlusBot.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+              modelBuilder.Entity<StarboardPostRelation>().HasKey(c => new { c.MessageId, c.UserId });
         }
+
     }
 }
