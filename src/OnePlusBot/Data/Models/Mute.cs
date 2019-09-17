@@ -5,7 +5,7 @@ using Discord;
 
 namespace OnePlusBot.Data.Models
 {
-      [Table("Mutes")]
+    [Table("Mutes")]
     public class Mute
     {
         [Key]

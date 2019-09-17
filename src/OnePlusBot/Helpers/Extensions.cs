@@ -87,5 +87,22 @@ namespace OnePlusBot.Helpers
 
             return faqEmbedEntry;
         }
+
+        public static string GetChannelUrl(ulong serverId, ulong channelId, string displayName)
+        {
+            const string discordUrl = "https://discordapp.com/channels/{0}/{1}/";
+            return $"[{ displayName }]({string.Format(discordUrl, serverId, channelId)})";
+        }
+
+        public static string GetMessageUrl(ulong serverId, ulong channelId, ulong messageId, string displayName)
+        {
+            const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
+            return $"[{ displayName }]({string.Format(discordUrl, serverId, channelId, messageId)})";
+        }
+
+        public static IUser GetUserById(ulong userId)
+        {
+            return Global.Bot.GetGuild(Global.ServerID).GetUser(userId); 
+        }
     }
 }

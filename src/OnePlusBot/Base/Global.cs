@@ -30,6 +30,10 @@ namespace OnePlusBot.Base
         public static List<FAQCommand> FAQCommands { get; set; }
 
         public static ulong CommandExecutorId { get; set; }
+
+        public static ulong StarboardStars { get; set; }
+
+        public static List<StarboardMessage> StarboardPosts { get; set; }
         
         public static string Token
         {
@@ -79,7 +83,8 @@ namespace OnePlusBot.Base
             Channels = new Dictionary<string, ulong>();
             FullChannels = new List<Channel>();
             Random = new Random();
-            NewsPosts = new Dictionary<ulong, ulong>();    
+            NewsPosts = new Dictionary<ulong, ulong>();  
+            StarboardPosts = new List<StarboardMessage>();  
             Roles = new Dictionary<string, ulong>();
             ProfanityChecks = new List<Regex>();
             FAQCommands = new List<FAQCommand>();
@@ -113,6 +118,19 @@ namespace OnePlusBot.Base
                     .First(x => x.Name == "rolemanager_message_id")
                     .Value;
 
+                StarboardStars = db.PersistentData
+                    .First(entry => entry.Name == "starboard_stars")
+                    .Value;
+
+                StarboardPosts.Clear();
+                if(db.StarboardMessages.Any())
+                {
+                    foreach(var post in db.StarboardMessages)
+                    {
+                        StarboardPosts.Add(post);
+                    }
+                }
+
                 ProfanityChecks.Clear();
                 if(db.ProfanityChecks.Any())
                 {
@@ -143,6 +161,8 @@ namespace OnePlusBot.Base
             public static IEmote FAIL = new Emoji("⚠");
             public static IEmote OP_YES =  Emote.Parse("<:OPYes:426070836269678614>");
             public static IEmote OP_NO = Emote.Parse("<:OPNo:426072515094380555>");
+
+            public static IEmote STAR = new Emoji("⭐");
         }
 
         public static DiscordSocketClient Bot { get; set;}

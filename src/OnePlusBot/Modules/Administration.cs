@@ -515,5 +515,30 @@ namespace OnePlusBot.Modules
             Global.LoadGlobal();
             return CustomResult.FromSuccess();
         }
+
+        [
+            Command("setstars"),
+            Summary("sets the amount required to appear on the starboard"),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> SetStars(string input)
+        {
+            ulong amount = 0;
+            await Task.Delay(25);
+            if(ulong.TryParse(input, out amount) && amount > 0){
+                using (var db = new Database()){
+                    var point = db.PersistentData.First(entry => entry.Name == "starboard_stars");
+                    point.Value = amount;
+                    db.SaveChanges();
+                }
+                Global.StarboardStars = amount;
+                return CustomResult.FromSuccess();
+            } 
+            else
+            {
+                return CustomResult.FromError("whole numbers > 0 only");
+            }
+           
+        }
     }
 }
