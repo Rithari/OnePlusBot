@@ -110,7 +110,7 @@ namespace OnePlusBot.Base
                 .WithDescription(message.Content)
                 .AddField(fb => fb
                     .WithName("Original")
-                    .WithValue(OnePlusBot.Helpers.Extensions.GetMessageUrl(Global.ServerID, message.Channel.Id, message.Id, "jump"))
+                    .WithValue(OnePlusBot.Helpers.Extensions.GetMessageUrl(Global.ServerID, message.Channel.Id, message.Id, "Jump!"))
                     )
                 .WithTimestamp(message.CreatedAt);
             if(message.Attachments.Count > 0)
