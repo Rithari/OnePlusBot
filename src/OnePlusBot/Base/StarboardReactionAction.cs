@@ -203,12 +203,13 @@ namespace OnePlusBot.Base
             await base.Execute(message, channel, reaction);
             using (var db = new Database())
             {
-                var existing = db.StarboardPostRelations.Where(rel => rel.MessageId == message.Id && rel.UserId == message.Author.Id)
+                var existing = db.StarboardPostRelations.Where(rel => rel.MessageId == message.Id && rel.UserId == reaction.UserId)
                 .DefaultIfEmpty(null).First();
                 if(existing != null)
                 {
                     db.StarboardPostRelations.Remove(existing);
                 }
+                db.SaveChanges();
             }
          }
     }
