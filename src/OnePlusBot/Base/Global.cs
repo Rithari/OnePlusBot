@@ -1,7 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.ComponentModel.Design;
-using System.Net.Mime;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Discord;
@@ -32,6 +29,9 @@ namespace OnePlusBot.Base
         public static ulong CommandExecutorId { get; set; }
 
         public static ulong StarboardStars { get; set; }
+
+        public static ulong Level2Stars { get; set; }
+        public static ulong Level3Stars { get; set; }
 
         public static List<StarboardMessage> StarboardPosts { get; set; }
         
@@ -122,6 +122,14 @@ namespace OnePlusBot.Base
                     .First(entry => entry.Name == "starboard_stars")
                     .Value;
 
+                Level2Stars = db.PersistentData
+                    .First(entry => entry.Name == "level_2_stars")
+                    .Value;
+
+                Level3Stars = db.PersistentData
+                    .First(entry => entry.Name == "level_3_stars")
+                    .Value;
+
                 StarboardPosts.Clear();
                 if(db.StarboardMessages.Any())
                 {
@@ -163,6 +171,9 @@ namespace OnePlusBot.Base
             public static IEmote OP_NO = Emote.Parse("<:OPNo:426072515094380555>");
 
             public static IEmote STAR = new Emoji("⭐");
+            public static IEmote LVL_2_STAR = new Emoji("🌟");
+
+            public static IEmote LVL_3_STAR = new Emoji("💫");
         }
 
         public static DiscordSocketClient Bot { get; set;}

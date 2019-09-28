@@ -136,6 +136,22 @@ namespace OnePlusBot.Base
             if (before.Content == message.Content)
                 return;
 
+            var fullChannel = Extensions.GetChannelById(message.Channel.Id);
+            if(fullChannel != null){
+                if(!fullChannel.ProfanityCheckExempt){
+                    var profanityChecks = Global.ProfanityChecks;
+                    var lowerMessage = message.Content.ToLower();
+                    foreach (var regexObj in profanityChecks)
+                    {
+                        if(regexObj.Match(lowerMessage).Success)
+                        {
+                            await ReportProfanity(message);
+                            break;
+                        }
+                    }
+                }
+            }
+
             if(before.Author.IsBot)
                 return;
             
@@ -151,22 +167,6 @@ namespace OnePlusBot.Base
                     await newsRole.ModifyAsync(x => x.Mentionable = true);
                     await existingMessage.ModifyAsync(x => x.Content = split[1] + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + author);
                     await newsRole.ModifyAsync(x => x.Mentionable = false);
-                }
-            }
-
-            var fullChannel = Extensions.GetChannelById(message.Channel.Id);
-            if(fullChannel != null){
-                if(!fullChannel.ProfanityCheckExempt){
-                    var profanityChecks = Global.ProfanityChecks;
-                    var lowerMessage = message.Content.ToLower();
-                    foreach (var regexObj in profanityChecks)
-                    {
-                        if(regexObj.Match(lowerMessage).Success)
-                        {
-                            await ReportProfanity(message);
-                            break;
-                        }
-                    }
                 }
             }
             
@@ -213,6 +213,20 @@ namespace OnePlusBot.Base
             if(deletedMessage == null)
             {
                 return;
+            }
+
+            if(channel.Id == Global.Channels["starboard"])
+            {
+                var starPost = Global.StarboardPosts.Where(po => po.StarboardMessageId == deletedMessage.Id).DefaultIfEmpty(null).First();
+                if(starPost != null)
+                {
+                    using(var db = new Database())
+                    {
+                        var existingPost = db.StarboardMessages.Where(po => po.StarboardMessageId == starPost.StarboardMessageId).First();
+                        existingPost.Ignored = true;
+                        db.SaveChanges();
+                    }
+                }
             }
 
             List<EmbedFieldBuilder> fields = new List<EmbedFieldBuilder>();

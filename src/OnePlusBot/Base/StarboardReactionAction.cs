@@ -38,7 +38,6 @@ namespace OnePlusBot.Base
             var starCount = await this.GetTrueStarCount(message, currentStarReaction);
             if(existingPostList.Any())
             {
-                this.RelationAdded = true;
                 var existingPost = existingPostList.First();
                 var starboardChannelPostId = existingPost.StarboardMessageId;
                 this.StarboardPostId = starboardChannelPostId;
@@ -46,17 +45,25 @@ namespace OnePlusBot.Base
                 using(var db = new Database())
                 {
                     var post = db.StarboardMessages.Where(p => p.MessageId == message.Id).First();
+                    if(post.Ignored)
+                    {
+                        return;
+                    }
                     post.Starcount = (uint) starCount;
                     db.SaveChanges();
                 }
+                this.RelationAdded = true;
                 var starboardChannelPost = await starboardChannel.GetMessageAsync(starboardChannelPostId) as IUserMessage;
-                if(starCount >= (int) Global.StarboardStars && starboardChannelPost != null )
+                if(starCount >= (int) Global.StarboardStars && starboardChannelPost != null)
                 {
                     await starboardChannelPost.ModifyAsync(msg => msg.Content = GetStarboardMessage(message, currentStarReaction, reaction, starCount));
                 } 
-                else if(starboardChannelPost != null)
+                else 
                 {
-                    await starboardChannelPost.DeleteAsync();
+                    if(starboardChannelPost != null) {
+                        await starboardChannelPost.DeleteAsync();
+                    }
+                    
                     Global.StarboardPosts.Remove(existingPost);
                     using(var db = new Database())
                     {
@@ -123,7 +130,16 @@ namespace OnePlusBot.Base
 
         private string GetStarboardMessage(IUserMessage message, KeyValuePair<IEmote, ReactionMetadata> reactionInfo, IReaction reaction, int starCount)
         {
-            return $"{reaction.Emote.Name} {starCount} <#{message.Channel.Id}> ID: {message.Id}"; 
+            var emote = Global.OnePlusEmote.STAR.Name;
+            if(starCount >= (int) Global.Level2Stars)
+            {
+                emote = Global.OnePlusEmote.LVL_2_STAR.Name;
+            }
+            if(starCount >= (int) Global.Level3Stars)
+            {
+                emote = Global.OnePlusEmote.LVL_3_STAR.Name;
+            }
+            return $"{emote} {starCount} <#{message.Channel.Id}> ID: {message.Id}"; 
         }
 
         private async Task<int> GetTrueStarCount(IUserMessage message, KeyValuePair<IEmote, ReactionMetadata> starReaction)
@@ -187,12 +203,13 @@ namespace OnePlusBot.Base
             await base.Execute(message, channel, reaction);
             using (var db = new Database())
             {
-                var existing = db.StarboardPostRelations.Where(rel => rel.MessageId == message.Id && rel.UserId == message.Author.Id)
+                var existing = db.StarboardPostRelations.Where(rel => rel.MessageId == message.Id && rel.UserId == reaction.UserId)
                 .DefaultIfEmpty(null).First();
                 if(existing != null)
                 {
                     db.StarboardPostRelations.Remove(existing);
                 }
+                db.SaveChanges();
             }
          }
     }

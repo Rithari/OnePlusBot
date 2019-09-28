@@ -12,5 +12,8 @@ namespace OnePlusBot.Data.Models
 
         [Column("message_id")]
         public ulong MessageId { get; set; }
+
+        [ForeignKey("MessageId")]
+        public virtual StarboardMessage Message { get; set; }
     }
 }
