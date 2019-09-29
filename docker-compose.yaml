@@ -1,0 +1,26 @@
+version: "3.7"
+services:
+  mysql:
+    image: mysql
+    container_name: mysqlcontainer
+    environment:
+      MYSQL_USER: oneplus
+      MYSQL_DATABASE: oneplus
+      MYSQL_PASSWORD: oneplus
+      MYSQL_ROOT_PASSWORD: pass
+    volumes:
+      - ./sql_scripts/ddl.sql:/docker-entrypoint-initdb.d/1-schema.sql
+      - ./sql_scripts/seed_data.sql:/docker-entrypoint-initdb.d/2-data.sql
+  bot:
+    build: .
+    image: oneplusbot
+    depends_on:
+      - mysql
+    restart: on-failure
+    environment:
+      Server: mysqlcontainer
+      Database: oneplus
+      Uid: oneplus
+      Pwd: oneplus
+      WAIT_HOSTS: mysqlcontainer:3306
+      WAIT_BEFORE_HOSTS: 5
