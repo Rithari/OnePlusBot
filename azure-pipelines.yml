@@ -23,7 +23,7 @@ steps:
   inputs:
     command: build
     projects: '**/*.csproj'
-    arguments: '--configuration Release'
+    arguments: '--configuration Release -o out-linux -r linux-x64'
 
 - task: CopyFiles@2
   inputs:
