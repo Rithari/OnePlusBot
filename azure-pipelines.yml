@@ -15,7 +15,7 @@ variables:
 steps:
 - task: DotNetCoreInstaller@0
   inputs:
-    version: '3.x'
+    version: '3.0.100'
 - script: dotnet restore
 #- script: dotnet publish -c $(buildConfiguration) -o out-linux -r linux-x64
 #  displayName: 'dotnet build $(buildConfiguration)'
