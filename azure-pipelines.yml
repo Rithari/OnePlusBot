@@ -18,12 +18,12 @@ steps:
     version: '3.0.100'
 - script: dotnet publish -c $(buildConfiguration) -o out-linux -r linux-x64
   displayName: 'dotnet build $(buildConfiguration)'
-#- task: DotNetCoreCLI@0
-#  displayName: build
-#  inputs:
-#    command: build
-#    projects: '**/*.csproj'
-#    arguments: '-o out-linux -r linux-x64'
+- task: DotNetCoreCLI@0
+  displayName: build
+  inputs:
+    command: build
+    projects: '**/*.csproj'
+    arguments: '-c $(buildConfiguration) -o out-linux -r linux-x64'
 
 - task: CopyFiles@2
   inputs:
