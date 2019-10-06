@@ -541,7 +541,7 @@ namespace OnePlusBot.Base
 
         private static async Task OnMessageReceived(SocketMessage message)
         {
-            if (Regex.IsMatch(message.Content, @"discord(?:\.gg|app\.com\/invite)\/([\w\-]+)") && message.Channel.Id != Global.Channels["referralcodes"] && !message.Content.Contains("discord.gg/oneplus"))
+            if (Regex.IsMatch(message.Content, @"discord(?:\.gg|app\.com\/invite)\/([\w\-]+)") && message.Channel.Id != Global.Channels["referralcodes"] && !message.Content.Contains("discord.gg/oneplus") && !message.Content.Contains("discord.gg/events") && !message.Content.Contains("discord.gg/discord-testers") && !message.Content.Contains("discord.gg/discord-api") && !message.Content.Contains("discord.gg/discord-feedback"))
                 await message.DeleteAsync();
             
             if(message.Attachments.Count > 0 && !message.Author.IsBot)
