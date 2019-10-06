@@ -61,10 +61,10 @@ namespace OnePlusBot.Base
       await SetupTimers(false);
     }        
 
-    public static async void RemindUserIn(ulong userId, TimeSpan time, ulong muteId)
+    public static async void RemindUserIn(ulong userId, TimeSpan time, ulong reminderId)
     {
       await Task.Delay((int)time.TotalMilliseconds);
-      await RemindUser(userId, muteId);
+      await RemindUser(userId, reminderId);
     }
 
     public static async Task RemindUser(ulong userId, ulong reminderId)
@@ -99,10 +99,10 @@ namespace OnePlusBot.Base
 
     public static void SetRemindersToReminded(ulong userId, Database db)
     {
-      var mutedObjs = db.Reminders.Where(x => x.RemindedUserId == userId).ToList();
-      foreach(var mutedEl in mutedObjs)
+      var reminderObjs = db.Reminders.Where(x => x.RemindedUserId == userId).ToList();
+      foreach(var reminderEl in reminderObjs)
       {
-        mutedEl.Reminded = true;
+        reminderEl.Reminded = true;
       }
     }
 
