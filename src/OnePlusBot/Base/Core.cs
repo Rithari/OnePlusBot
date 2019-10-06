@@ -29,9 +29,10 @@ namespace OnePlusBot.Base
             bot.ReactionAdded += OnReactionAdded;
             bot.ReactionRemoved += OnReactionRemoved;
 
-            bot.Ready += () => 
+            bot.Ready += async () => 
             {
-                return MuteTimerManager.SetupTimers(true);
+                await MuteTimerManager.SetupTimers(true);
+                await ReminderTimerManger.SetupTimers(true);
             };
 
             await bot.LoginAsync(TokenType.Bot, Global.Token);

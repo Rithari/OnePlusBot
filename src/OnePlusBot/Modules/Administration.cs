@@ -6,7 +6,6 @@ using OnePlusBot.Base;
 using OnePlusBot.Data;
 using OnePlusBot.Helpers;
 using OnePlusBot.Data.Models;
-using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using System.Linq;
 using Discord.WebSocket;
@@ -86,7 +85,6 @@ namespace OnePlusBot.Modules
             return CustomResult.FromSuccess();
         }
 
-        private char[] timeFormats = {'m', 'h', 'd', 'w', 's'};
 
         [
             Command("mute", RunMode=RunMode.Async),
@@ -106,6 +104,8 @@ namespace OnePlusBot.Modules
                 return CustomResult.FromError("The correct usage is `;mute <duration> <reason>`");
 
             string durationStr = arguments[0];
+            TimeSpan span = Extensions.GetTimeSpanFromString(durationStr);
+            DateTime targetTime = DateTime.Now.Add(span);
 
             string reason;
             if(arguments.Length > 1)
@@ -113,64 +113,10 @@ namespace OnePlusBot.Modules
                 string[] reasons = new string[arguments.Length -1];
                 Array.Copy(arguments, 1, reasons, 0, arguments.Length - 1);
                 reason = string.Join(" ", reasons);
-
             } 
             else 
             {
                 return CustomResult.FromError("You need to provide a reason.");
-            }
-
-            CaptureCollection captures =  Regex.Match(durationStr, @"(\d+[a-z]+)+").Groups[1].Captures;
-
-            DateTime targetTime = DateTime.Now;
-            // this basically means *one* of the values has been wrong, maybe negative or something like that
-            bool validFormat = false;
-            foreach(Capture capture in captures)
-            {
-                // this means, that one *valid* unit has been found, not necessarily a valid valid, this is needed for the case, in which there is
-                // no valid value possible (e.g. 3y), this would cause the for loop to do nothing, but we are unaware of that
-                bool timeUnitApplied = false;
-                foreach(char format in timeFormats)
-                {
-                    var captureValue = capture.Value;
-                    // this check is needed in order that our durationSplit check makes sense
-                    // if the format is not present, the split would return a wrong value, and the check would be wrong
-                    if(captureValue.Contains(format))
-                    {
-                        timeUnitApplied = true;
-                        var durationSplit = captureValue.Split(format);
-                        var isNumeric = int.TryParse(durationSplit[0], out int n);
-                        if(durationSplit.Length == 2 && durationSplit[1] == "" && isNumeric && n > 0)
-                        {
-                            switch(format)
-                            {
-                                case 'm': targetTime = targetTime.AddMinutes(n); break;
-                                case 'h': targetTime = targetTime.AddHours(n); break;
-                                case 'd': targetTime = targetTime.AddDays(n); break;
-                                case 'w': targetTime = targetTime.AddDays(n * 7); break;
-                                case 's': targetTime = targetTime.AddSeconds(n); break;
-                                default: validFormat = false; goto AfterLoop; 
-                            }
-                            validFormat = true;
-                        }
-                        else 
-                        {
-                            validFormat = false;
-                            goto AfterLoop;
-                        }
-                    }
-                }
-                if(!timeUnitApplied)
-                {
-                    validFormat = false;
-                    break;
-                }
-            }
-
-            AfterLoop:
-            if(!validFormat)
-            {
-                return CustomResult.FromError("Invalid format, it needs to be positive, and combinations of " + string.Join(", ", timeFormats));
             }
 
             var author = Context.Message.Author;
