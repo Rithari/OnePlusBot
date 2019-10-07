@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Net;
+using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.Data.Common;
 using Discord;
@@ -34,8 +35,20 @@ namespace OnePlusBot.Base
                 await MuteTimerManager.SetupTimers(true);
                 await ReminderTimerManger.SetupTimers(true);
             };
-
-            await bot.LoginAsync(TokenType.Bot, Global.Token);
+            if(Global.Token == string.Empty)
+            {
+                Console.WriteLine("Configure the token for the version you are trying to run in order to execute the bot");
+                Environment.Exit(0);
+            }
+            try 
+            {
+                await bot.LoginAsync(TokenType.Bot, Global.Token);
+            }
+            catch(Discord.Net.HttpException ex)
+            {
+                Console.WriteLine("Token seems to be invalid. Double check it.");
+                Environment.Exit(0);
+            }
             await bot.StartAsync();
 
             await bot.SetGameAsync(name: "Made with the Fans™", streamUrl: "https://www.twitch.tv/whatever", ActivityType.Streaming);
