@@ -204,4 +204,22 @@ CREATE TABLE `Warnings` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+--
+-- Table structure for table `Reminders`
+--
+
+DROP TABLE IF EXISTS `Reminders`;
+CREATE TABLE `Reminders` (
+ `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+ `reminded_user_id` bigint(20) unsigned NOT NULL,
+ `remind_text` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+ `reminder_date` datetime NOT NULL,
+ `reminded` tinyint(1) NOT NULL DEFAULT '1',
+ `channel_id` bigint(20) unsigned NOT NULL,
+ `target_date` datetime NOT NULL,
+ `message_id` bigint(20) unsigned NOT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS=1;
