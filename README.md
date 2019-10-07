@@ -10,3 +10,6 @@ Put your token from the discord bot site and put it in seed_data.sql in the two 
 Execute `docker-compose up --build`. With this you should have a running instance of the bot.
 
 With that you should have a running instance, there are some errors right now (which need an improvement), but the instance should be running and functional.
+In order for the posts to individual channels to work and the edit log, you need to fill out the channel ids in `seed_data.sql`.
+
+To change the DB, after the initial setup you need to stop the containers and do `docker container rm mysqlcontainer` and if the `oneplusbot_bot_1` is also present, you can remove it as well, although it should be done when doing `docker-compose up --build` as well.
