@@ -19,6 +19,9 @@ namespace OnePlusBot.Data.Models
         [Column("author_id")]
         public ulong AuthorId { get; set; }
 
+        [Column("ignored")]
+        public bool Ignored { get; set; }
+
     }
 
 }

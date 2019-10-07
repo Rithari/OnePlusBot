@@ -30,9 +30,10 @@ namespace OnePlusBot.Base
             bot.ReactionAdded += OnReactionAdded;
             bot.ReactionRemoved += OnReactionRemoved;
 
-            bot.Ready += () => 
+            bot.Ready += async () => 
             {
-                return MuteTimerManager.SetupTimers(true);
+                await MuteTimerManager.SetupTimers(true);
+                await ReminderTimerManger.SetupTimers(true);
             };
             if(Global.Token == string.Empty)
             {
@@ -55,14 +56,29 @@ namespace OnePlusBot.Base
             await services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
             Global.Bot = bot;
 
-            Timer t = new Timer(TimeSpan.FromMinutes(10).TotalMilliseconds); // Set the time (5 mins in this case)
+            Timer t = new Timer(TimeSpan.FromMinutes(10).TotalMilliseconds);
+            Timer t2 = new Timer(TimeSpan.FromHours(new Random().Next(1,12)).TotalMilliseconds);
+
             t.AutoReset = true;
+            t2.AutoReset = true;
+
             t.Elapsed += new ElapsedEventHandler(OnTimerElapsed);
+            t2.Elapsed += new ElapsedEventHandler(T2_Elapsed);
+
             t.Start();
+            t2.Start();
 
             FillReactionActions();
 
             await Task.Delay(-1);
+        }
+
+        private static void T2_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            var guild = Global.Bot.GetGuild(Global.ServerID);
+            var offtopic = guild.GetTextChannel(Global.Channels["offtopic"]);
+            var Faded = guild.GetUser(167897643131863040);
+            offtopic.SendMessageAsync(Faded.Mention + " boo 👻");
         }
 
         private static void FillReactionActions()

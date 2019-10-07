@@ -101,7 +101,7 @@ namespace OnePlusBot.Base
             noticeEmbed.AddField("Unmuted User", OnePlusBot.Helpers.Extensions.FormatUserName(user))
                         .AddField("Mute Id", muteId)
                         .AddField("Muted since", $"{ muteObj.MuteDate:dd.MM.yyyy HH:mm}");
-            await guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: noticeEmbed.Build());
+            await guild.GetTextChannel(Global.Channels["mutes"]).SendMessageAsync(embed: noticeEmbed.Build());
           }
         }
         db.SaveChanges();

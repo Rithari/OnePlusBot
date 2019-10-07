@@ -29,6 +29,8 @@ namespace OnePlusBot.Base
                 { "6T", "OnePlus 6T" },
                 { "7_", "OnePlus 7" },
                 { "7P", "OnePlus 7 Pro" },
+                { "7T", "OnePlus 7T" },
+                { "7TP", "OnePlus 7T Pro" },
                 { "\x2753", "Helper" },
                 { "\xD83D\xDCF0", "News" }
             };
@@ -68,6 +70,8 @@ namespace OnePlusBot.Base
                 { "6T", "OnePlus 6T" },
                 { "7_", "OnePlus 7" },
                 { "7P", "OnePlus 7 Pro" },
+                { "7T", "OnePlus 7T" },
+                { "7TP", "OnePlus 7T Pro" },
                 { "\x2753", "Helper" },
                 { "\xD83D\xDCF0", "News" }
             };

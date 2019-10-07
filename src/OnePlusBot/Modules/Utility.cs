@@ -342,6 +342,61 @@ namespace OnePlusBot.Modules
                 .WithDescription(string.Format(reply, Context.Client.Latency)));
         }
 
+         [
+            Command("remind"),
+            Summary("Reminds you of a text after a defined time period.")
+        ]
+        public async Task<RuntimeResult> HandleRemindInput(params string[] arguments)
+        {
+            if(arguments.Length < 1)
+                return CustomResult.FromError("The correct usage is `;remind <duration> <text>`");
+
+            string durationStr = arguments[0];
+
+
+            TimeSpan span = Extensions.GetTimeSpanFromString(durationStr);
+            DateTime targetTime = DateTime.Now.Add(span);
+
+            string reminderText;
+            if(arguments.Length > 1)
+            {
+                string[] reminderParts = new string[arguments.Length -1];
+                Array.Copy(arguments, 1, reminderParts, 0, arguments.Length - 1);
+                reminderText = string.Join(" ", reminderParts);
+            } 
+            else 
+            {
+                return CustomResult.FromError("You need to provide a text.");
+            }
+
+            var author = Context.Message.Author;
+
+            var guild = Context.Guild;
+
+            var reminder = new Reminder();
+            reminder.RemindText = Extensions.RemoveIllegalPings(reminderText);
+            reminder.RemindedUserId = author.Id;
+            reminder.TargetDate = targetTime;
+            reminder.ReminderDate = DateTime.Now;
+            reminder.ChannelId = Context.Channel.Id;
+            reminder.MessageId = Context.Message.Id;
+            
+            using(var db = new Database())
+            {
+                db.Reminders.Add(reminder);
+                db.SaveChanges();
+            }
+
+            if(targetTime <= DateTime.Now.AddMinutes(60))
+            {
+                var difference = targetTime - DateTime.Now;
+                ReminderTimerManger.RemindUserIn(author.Id, difference, reminder.ID);
+            }
+
+            return CustomResult.FromSuccess();
+
+        }
+
        /* [Command("timeleft")]
         [Summary("How long until the 7 Launch event.")]
         public async Task TimeleftAsync()

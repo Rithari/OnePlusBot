@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Net.Http;
 using System.IO;
 using OnePlusBot.Data;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace OnePlusBot.Modules
@@ -172,17 +173,22 @@ namespace OnePlusBot.Modules
             var mostStars = new Dictionary<ulong, ulong>();
             using(var db = new Database())
             {
-                var mostStarredMessages = db.StarboardMessages.OrderByDescending(p => p.Starcount).Take(3).ToArray();
-                var starMessagesCount = db.StarboardMessages.Count();
-                var totalStarsCount = db.StarboardPostRelations.Count();
+                var mostStarredMessages = db.StarboardMessages.Where(p => !p.Ignored).OrderByDescending(p => p.Starcount).Take(3).ToArray();
+                var starMessagesCount = db.StarboardMessages.Where(p => !p.Ignored).Count();
+                // we could either store the ignored flag in the relation as well and duplicate the flag, or we could join here...
+                var totalStarsCount = db.StarboardPostRelations.Include(message => message.Message).Where(message => !message.Message.Ignored).Count();
+                
                 var mostStarerUser = db.StarboardPostRelations
-                .GroupBy(p=> p.UserId)
+                .Include(message => message.Message)
+                .Where(message => !message.Message.Ignored)
+                .GroupBy(p => p.UserId)
                 .Select(g => new { id = g.Key, count = g.Count() })
                 .OrderByDescending(p => p.count)
                 .Select(p => new KeyValuePair<ulong, int>(p.id, p.count))
                 .ToArray();
 
                 var mostStarRecieverUser = db.StarboardMessages
+                .Where(p => !p.Ignored)
                 .GroupBy(p => p.AuthorId)
                 .Select(g => new { id = g.Key, count = g.Sum(p => p.Starcount)})
                 .OrderByDescending(p => p.count)

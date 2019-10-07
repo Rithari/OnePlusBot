@@ -136,6 +136,22 @@ namespace OnePlusBot.Base
             if (before.Content == message.Content)
                 return;
 
+            var fullChannel = Extensions.GetChannelById(message.Channel.Id);
+            if(fullChannel != null){
+                if(!fullChannel.ProfanityCheckExempt){
+                    var profanityChecks = Global.ProfanityChecks;
+                    var lowerMessage = message.Content.ToLower();
+                    foreach (var regexObj in profanityChecks)
+                    {
+                        if(regexObj.Match(lowerMessage).Success)
+                        {
+                            await ReportProfanity(message);
+                            break;
+                        }
+                    }
+                }
+            }
+
             if(before.Author.IsBot)
                 return;
             
@@ -151,22 +167,6 @@ namespace OnePlusBot.Base
                     await newsRole.ModifyAsync(x => x.Mentionable = true);
                     await existingMessage.ModifyAsync(x => x.Content = split[1] + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + author);
                     await newsRole.ModifyAsync(x => x.Mentionable = false);
-                }
-            }
-
-            var fullChannel = Extensions.GetChannelById(message.Channel.Id);
-            if(fullChannel != null){
-                if(!fullChannel.ProfanityCheckExempt){
-                    var profanityChecks = Global.ProfanityChecks;
-                    var lowerMessage = message.Content.ToLower();
-                    foreach (var regexObj in profanityChecks)
-                    {
-                        if(regexObj.Match(lowerMessage).Success)
-                        {
-                            await ReportProfanity(message);
-                            break;
-                        }
-                    }
                 }
             }
             
@@ -213,6 +213,20 @@ namespace OnePlusBot.Base
             if(deletedMessage == null)
             {
                 return;
+            }
+
+            if(channel.Id == Global.Channels["starboard"])
+            {
+                var starPost = Global.StarboardPosts.Where(po => po.StarboardMessageId == deletedMessage.Id).DefaultIfEmpty(null).First();
+                if(starPost != null)
+                {
+                    using(var db = new Database())
+                    {
+                        var existingPost = db.StarboardMessages.Where(po => po.StarboardMessageId == starPost.StarboardMessageId).First();
+                        existingPost.Ignored = true;
+                        db.SaveChanges();
+                    }
+                }
             }
 
             List<EmbedFieldBuilder> fields = new List<EmbedFieldBuilder>();
@@ -376,20 +390,23 @@ namespace OnePlusBot.Base
         private static async Task RoleReact(IUserMessage message)
         {
             Global.RoleManagerMessageId = message.Id;
-            
+
             await message.AddReactionsAsync(new IEmote[]
             {
-                Emote.Parse("<:1_:574655515586592769>"),
-                Emote.Parse("<:2_:574655515548844073>"),
-                Emote.Parse("<:X_:574655515481866251>"),
-                Emote.Parse("<:3_:574655515452506132>"),
-                Emote.Parse("<:3T:574655515846508554>"),
-                Emote.Parse("<:5_:574655515745976340>"),
-                Emote.Parse("<:5T:574655515494318109>"),
-                Emote.Parse("<:6_:574655515615952896>"),
-                Emote.Parse("<:6T:574655515846508573>"),
-                Emote.Parse("<:7_:574655515603501077>"),
-                Emote.Parse("<:7P:574655515230076940>"),
+
+                Emote.Parse("<a:1_:623172008540110859>"),
+                Emote.Parse("<a:2_:623171995684831252>"),
+                Emote.Parse("<a:X_:623171985542742027>"),
+                Emote.Parse("<a:3_:623171978198777856>"),
+                Emote.Parse("<a:3T:623171970326069268>"),
+                Emote.Parse("<a:5_:623171961400590366>"),
+                Emote.Parse("<a:5T:623171951510159371>"),
+                Emote.Parse("<a:6_:623171940647043092>"),
+                Emote.Parse("<a:6T:623171933407674369>"),
+                Emote.Parse("<a:7_:623171923706380329>"),
+                Emote.Parse("<a:7P:623171916236324874>"),
+                Emote.Parse("<a:7T:623171903447760906>"),
+                Emote.Parse("<a:7TP:625640956133113869>"),
                 new Emoji("\u2753"), 
                 new Emoji("\uD83D\uDCF0")
             });
@@ -524,7 +541,7 @@ namespace OnePlusBot.Base
 
         private static async Task OnMessageReceived(SocketMessage message)
         {
-            if (Regex.IsMatch(message.Content, @"discord(?:\.gg|app\.com\/invite)\/([\w\-]+)") && message.Channel.Id != Global.Channels["referralcodes"] && !message.Content.Contains("discord.gg/oneplus"))
+            if (Regex.IsMatch(message.Content, @"discord(?:\.gg|app\.com\/invite)\/([\w\-]+)") && message.Channel.Id != Global.Channels["referralcodes"] && !message.Content.Contains("discord.gg/oneplus") && !message.Content.Contains("discord.gg/events") && !message.Content.Contains("discord.gg/discord-testers") && !message.Content.Contains("discord.gg/discord-api") && !message.Content.Contains("discord.gg/discord-feedback"))
                 await message.DeleteAsync();
             
             if(message.Attachments.Count > 0 && !message.Author.IsBot)
