@@ -26,6 +26,7 @@ namespace OnePlusBot.Data
         public DbSet<WarnEntry> Warnings { get; set; }
 
         public DbSet<Mute> Mutes {get; set; }
+        public DbSet<Reminder> Reminders { get; set; }
 
         public DbSet<StarboardMessage> StarboardMessages { get; set; }
 

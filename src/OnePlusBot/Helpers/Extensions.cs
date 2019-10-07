@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Discord;
 using OnePlusBot.Base;
 using OnePlusBot.Data.Models;
+using System.Text.RegularExpressions;
 
 namespace OnePlusBot.Helpers
 {
@@ -88,21 +89,94 @@ namespace OnePlusBot.Helpers
             return faqEmbedEntry;
         }
 
+        private static string DiscordChannelUrl = "https://discordapp.com/channels/{0}/{1}";
+
+        private static string DiscordMessageUrl = DiscordChannelUrl + "/{2}";
         public static string GetChannelUrl(ulong serverId, ulong channelId, string displayName)
         {
-            const string discordUrl = "https://discordapp.com/channels/{0}/{1}/";
-            return $"[{ displayName }]({string.Format(discordUrl, serverId, channelId)})";
+            return $"[{ displayName }]({string.Format(DiscordChannelUrl, serverId, channelId)})";
         }
 
         public static string GetMessageUrl(ulong serverId, ulong channelId, ulong messageId, string displayName)
         {
-            const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
-            return $"[{ displayName }]({string.Format(discordUrl, serverId, channelId, messageId)})";
+            return $"[{ displayName }]({GetSimpleMessageUrl(serverId, channelId, messageId)})";
+        }
+
+        public static string GetSimpleMessageUrl(ulong serverId, ulong channelId, ulong messageId){
+            return $"{string.Format(DiscordMessageUrl, serverId, channelId, messageId)}";
+        }
+
+        public static string MakeLinkNotEmbedded(string link){
+            return "<" + link + ">";
         }
 
         public static IUser GetUserById(ulong userId)
         {
             return Global.Bot.GetGuild(Global.ServerID).GetUser(userId); 
+        }
+        
+
+        private static char[] timeFormats = {'m', 'h', 'd', 'w', 's'};
+        public static TimeSpan GetTimeSpanFromString(string duration){
+            CaptureCollection captures =  Regex.Match(duration, @"(\d+[a-z]+)+").Groups[1].Captures;
+
+            DateTime targetTime = DateTime.Now;
+            // this basically means *one* of the values has been wrong, maybe negative or something like that
+            bool validFormat = false;
+            foreach(Capture capture in captures)
+            {
+                // this means, that one *valid* unit has been found, not necessarily a valid valid, this is needed for the case, in which there is
+                // no valid value possible (e.g. 3y), this would cause the for loop to do nothing, but we are unaware of that
+                bool timeUnitApplied = false;
+                foreach(char format in timeFormats)
+                {
+                    var captureValue = capture.Value;
+                    // this check is needed in order that our durationSplit check makes sense
+                    // if the format is not present, the split would return a wrong value, and the check would be wrong
+                    if(captureValue.Contains(format))
+                    {
+                        timeUnitApplied = true;
+                        var durationSplit = captureValue.Split(format);
+                        var isNumeric = int.TryParse(durationSplit[0], out int n);
+                        if(durationSplit.Length == 2 && durationSplit[1] == "" && isNumeric && n > 0)
+                        {
+                            switch(format)
+                            {
+                                case 'm': targetTime = targetTime.AddMinutes(n); break;
+                                case 'h': targetTime = targetTime.AddHours(n); break;
+                                case 'd': targetTime = targetTime.AddDays(n); break;
+                                case 'w': targetTime = targetTime.AddDays(n * 7); break;
+                                case 's': targetTime = targetTime.AddSeconds(n); break;
+                                default: validFormat = false; goto AfterLoop; 
+                            }
+                            validFormat = true;
+                        }
+                        else 
+                        {
+                            validFormat = false;
+                            goto AfterLoop;
+                        }
+                    }
+                }
+                if(!timeUnitApplied)
+                {
+                    validFormat = false;
+                    break;
+                }
+            }
+
+            AfterLoop:
+            if(!validFormat)
+            {
+                throw new FormatException("Invalid format, it needs to be positive, and combinations of " + string.Join(", ", timeFormats));
+            }
+            return targetTime - DateTime.Now;
+        }
+
+        public static string RemoveIllegalPings(string text){
+            text = text.Replace("@everyone", "");
+            text = text.Replace("@here", "");
+            return text;
         }
     }
 }
