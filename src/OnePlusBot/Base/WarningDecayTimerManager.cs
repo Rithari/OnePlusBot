@@ -21,6 +21,7 @@ namespace OnePlusBot.Base
       TimeSpan thisMidnight = DateTime.Today.AddDays(1) - DateTime.Now;
       int secondsToDelay = (int) thisMidnight.TotalSeconds;
       await Task.Delay(secondsToDelay * 1000);
+      await DecayWarnings();
       System.Timers.Timer timer = new System.Timers.Timer(1000 * 60 * 60 * 24);
       timer.Elapsed += new System.Timers.ElapsedEventHandler(TriggerDecay);
       timer.Enabled = true;
