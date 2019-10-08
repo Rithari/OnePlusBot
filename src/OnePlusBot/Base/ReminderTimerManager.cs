@@ -66,7 +66,6 @@ namespace OnePlusBot.Base
       await Task.Delay((int)time.TotalMilliseconds);
       await RemindUser(userId, reminderId);
     }
-
     public static async Task RemindUser(ulong userId, ulong reminderId)
     {
       var bot = Global.Bot;
@@ -81,16 +80,20 @@ namespace OnePlusBot.Base
         var reminderObj = db.Reminders.Where(x => x.ID == reminderId).ToList().First();
         if(!reminderObj.Reminded)
         {
-          var link = Extensions.GetSimpleMessageUrl(guild.Id, reminderObj.ChannelId, reminderObj.MessageId);
-          link = Extensions.MakeLinkNotEmbedded(link);
-          var textBuilder = new StringBuilder();
-          textBuilder.Append("⏰ ");
-          textBuilder.Append(user.Mention);
-          textBuilder.Append(" Reminder: ");
-          textBuilder.Append(reminderObj.RemindText);
-          textBuilder.Append("\n");
-          textBuilder.Append(link);
-          await guild.GetTextChannel(reminderObj.ChannelId).SendMessageAsync(textBuilder.ToString());
+            var link = Extensions.GetSimpleMessageUrl(guild.Id, reminderObj.ChannelId, reminderObj.MessageId);
+            link = Extensions.MakeLinkNotEmbedded(link);
+            var builder = new EmbedBuilder();
+            builder.Color = new Color(0x3E518);
+            builder.WithAuthor(author =>
+            {
+                author.WithName("⏰ Reminder");
+            });
+            const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
+            builder.AddField("Duration",reminderObj.ReminderDuration)
+                    .AddField("Note", reminderObj.RemindText)
+                    .AddField("Link", $"[Jump!]({string.Format(discordUrl, guild.Id, reminderObj.ChannelId, reminderObj.MessageId)})");
+            var embed = builder.Build();
+            await guild.GetTextChannel(reminderObj.ChannelId).SendMessageAsync(user.Mention, embed: embed).ConfigureAwait(false);
         }
         reminderObj.Reminded = true;
         db.SaveChanges();

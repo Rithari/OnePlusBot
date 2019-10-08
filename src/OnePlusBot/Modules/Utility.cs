@@ -377,6 +377,7 @@ namespace OnePlusBot.Modules
             reminder.RemindText = Extensions.RemoveIllegalPings(reminderText);
             reminder.RemindedUserId = author.Id;
             reminder.TargetDate = targetTime;
+            reminder.ReminderDuration = durationStr;
             reminder.ReminderDate = DateTime.Now;
             reminder.ChannelId = Context.Channel.Id;
             reminder.MessageId = Context.Message.Id;
