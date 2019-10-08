@@ -34,6 +34,7 @@ namespace OnePlusBot.Base
             {
                 await MuteTimerManager.SetupTimers(true);
                 await ReminderTimerManger.SetupTimers(true);
+                await WarningDecaytimerManager.SetupTimers();
             };
             if(Global.Token == string.Empty)
             {

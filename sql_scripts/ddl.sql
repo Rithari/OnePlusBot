@@ -201,6 +201,8 @@ CREATE TABLE `Warnings` (
   `warned_by_id` bigint(20) unsigned NOT NULL,
   `reason` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `date` datetime NOT NULL,
+  `decayed` tinyint(4) NOT NULL,
+  `decayed_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
