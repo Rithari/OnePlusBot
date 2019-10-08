@@ -22,9 +22,6 @@ namespace OnePlusBot.Data.Models
         [Column("reminder_date")]
         public DateTime ReminderDate { get; set; }
 
-        [Column("reminder_duration")]
-        public String ReminderDuration { get; set; }
-
         [Column("target_date")]
         public DateTime TargetDate { get; set; }
 
