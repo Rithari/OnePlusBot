@@ -366,16 +366,18 @@ namespace OnePlusBot.Modules
             {
                 ++counter;
                 var warnedBy = Context.Guild.GetUser(warning.WarnedByID);
+
+                var decayed = warning.Decayed ? "" : "**Active**";
                 if (_user != null)
                 {
-                    var decayed = warning.Decayed ? "yes" : "no";
                     var warnedByUserSafe = Extensions.FormatMentionDetailed(warnedBy);
                     embed.AddField(new EmbedFieldBuilder()
                         .WithName("Warning #" + counter + " (" + warning.ID + ")")
                         .WithValue($"**Reason**: {warning.Reason}\n" +
                                    $"**Warned by**: {warnedByUserSafe}\n" + 
-                                   $"*Decayed*: {decayed} \n" +
-                                   $"*{warning.Date.ToString("dd/M/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture)}*"));
+                                   $"*{warning.Date.ToString("dd/M/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture)}* \n" +
+                                   $"{decayed} \n"
+                                   ));
                 }
                 else
                 {
@@ -385,8 +387,10 @@ namespace OnePlusBot.Modules
                     embed.AddField(new EmbedFieldBuilder()
                         .WithName($"Case #{warning.ID} - {warning.Date.ToString("dd/M/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture)}")
                         .WithValue($"**Warned user**: {warnedSafe}\n" +
-                                   $"**Reason**: {warning.Reason}\n" +
-                                   $"**Warned by**: {warnedBySafe}"))
+                                   $"**Reason**: {warning.Reason} \n" +
+                                   $"**Warned by**: {warnedBySafe} \n" +
+                                   $"{decayed}"
+                                   ))
                         .WithFooter("*For more detailed info, consult the individual lists.*");
                 }
             }
@@ -424,10 +428,10 @@ namespace OnePlusBot.Modules
 
                 if (!requestee.Roles.Any(x => x.Name == "Staff"))
                 {
-                    individualWarnings = warnings.Where(x => x.WarnedUserID == requestee.Id && !x.Decayed);
-                    var decayedWarnings = warnings.Where(x => x.WarnedUserID == requestee.Id && x.Decayed);
+                    individualWarnings = db.Warnings.Where(x => x.WarnedUserID == requestee.Id && !x.Decayed);
+                    var totalWarnings = db.Warnings.Where(x => x.WarnedUserID == requestee.Id);
 
-                    await ReplyAsync($"You have {individualWarnings.Count()} active and {decayedWarnings.Count()} decayed warnings.");
+                    await ReplyAsync($"You have {individualWarnings.Count()} active and {totalWarnings.Count()} total warnings.");
 
                     return;
                 }
