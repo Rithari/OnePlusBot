@@ -90,7 +90,7 @@ namespace OnePlusBot.Base
             });
             builder.AddField("Duration", Extensions.FormatTimeSpan(reminderObj.TargetDate - reminderObj.ReminderDate))
                     .AddField("Note", reminderObj.RemindText)
-                    .AddField("Link", Extensions.GetMessageUrl(guild.Id, reminderObj.ChannelId, reminderObj.MessageId, "jump!"));
+                    .AddField("Link", Extensions.GetMessageUrl(guild.Id, reminderObj.ChannelId, reminderObj.MessageId, "Jump!"));
             var embed = builder.Build();
             await guild.GetTextChannel(reminderObj.ChannelId).SendMessageAsync(user.Mention, embed: embed).ConfigureAwait(false);
         }
