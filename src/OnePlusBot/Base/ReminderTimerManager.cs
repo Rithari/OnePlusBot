@@ -88,10 +88,9 @@ namespace OnePlusBot.Base
             {
                 author.WithName("⏰ Reminder");
             });
-            const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
-            builder.AddField("Duration",reminderObj.ReminderDuration)
+            builder.AddField("Duration", Extensions.FormatTimeSpan(reminderObj.TargetDate - reminderObj.ReminderDate))
                     .AddField("Note", reminderObj.RemindText)
-                    .AddField("Link", $"[Jump!]({string.Format(discordUrl, guild.Id, reminderObj.ChannelId, reminderObj.MessageId)})");
+                    .AddField("Link", Extensions.GetMessageUrl(guild.Id, reminderObj.ChannelId, reminderObj.MessageId, "jump!"));
             var embed = builder.Build();
             await guild.GetTextChannel(reminderObj.ChannelId).SendMessageAsync(user.Mention, embed: embed).ConfigureAwait(false);
         }

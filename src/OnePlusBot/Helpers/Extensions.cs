@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Text;
+using System.Linq;
 using System;
 using System.Threading.Tasks;
 using Discord;
@@ -177,6 +178,32 @@ namespace OnePlusBot.Helpers
             text = text.Replace("@everyone", "");
             text = text.Replace("@here", "");
             return text;
+        }
+
+        public static string FormatTimeSpan(TimeSpan span)
+        {
+            StringBuilder builder = new StringBuilder("");
+            if(span.Days >= 1)
+            {
+                builder.Append($@"{span:%d} days ");
+            }
+            if (span.Hours >= 1) 
+            {
+                builder.Append($@"{span:%h} hours ");
+            }
+            if (span.Minutes >= 1) 
+            {
+                builder.Append($@"{span:%m} minutes ");
+            }
+            if (span.Seconds >= 1)
+            {
+                builder.Append($@"{span:%s} seconds ");
+            }
+            if(builder.ToString() == string.Empty)
+            {
+               builder.Append("Reversed timespan");
+            }
+            return builder.ToString();
         }
     }
 }
