@@ -29,5 +29,11 @@ namespace OnePlusBot.Data.Models
         
         [Column("date")]
         public DateTime Date { get; set; }
+
+        [Column("decayed")]
+        public bool Decayed { get; set; }
+
+        [Column("decayed_date")]
+        public DateTime DecayedTime { get; set; }
     }
 }

@@ -33,6 +33,8 @@ namespace OnePlusBot.Base
         public static ulong Level2Stars { get; set; }
         public static ulong Level3Stars { get; set; }
 
+        public static ulong DecayDays { get; set; }
+
         public static List<StarboardMessage> StarboardPosts { get; set; }
         
         public static string Token
@@ -128,6 +130,10 @@ namespace OnePlusBot.Base
 
                 Level3Stars = db.PersistentData
                     .First(entry => entry.Name == "level_3_stars")
+                    .Value;
+                
+                DecayDays = db.PersistentData
+                    .First(entry => entry.Name == "decay_days")
                     .Value;
 
                 StarboardPosts.Clear();
