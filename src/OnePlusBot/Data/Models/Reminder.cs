@@ -16,13 +16,12 @@ namespace OnePlusBot.Data.Models
         [Column("reminded_user_id")]
         public ulong RemindedUserId { get; set; }
 
-
         [Column("remind_text")]
         public string RemindText { get; set; }
 
         [Column("reminder_date")]
         public DateTime ReminderDate { get; set; }
-        
+
         [Column("target_date")]
         public DateTime TargetDate { get; set; }
 
