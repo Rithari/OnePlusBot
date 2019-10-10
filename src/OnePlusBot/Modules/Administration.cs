@@ -9,6 +9,7 @@ using OnePlusBot.Data.Models;
 using System.Runtime.InteropServices;
 using System.Linq;
 using Discord.WebSocket;
+using Discord.Net;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -47,9 +48,15 @@ namespace OnePlusBot.Modules
                 return CustomResult.FromError("You can't ban staff.");
             try
             {
-                const string banMessage = "You were banned on r/OnePlus for the following reason: {0}\n" +
+                try 
+                {
+                    const string banMessage = "You were banned on r/OnePlus for the following reason: {0}\n" +
                                           "If you believe this to be a mistake, please send an appeal e-mail with all the details to oneplus.appeals@pm.me";
-                await user.SendMessageAsync(string.Format(banMessage, reason));
+                    await user.SendMessageAsync(string.Format(banMessage, reason));
+                } catch (HttpException ex){
+                    Console.WriteLine("User disabled DMs, unable to send message about ban.");
+                }
+               
                 await Context.Guild.AddBanAsync(user, 0, reason);
 
                 MuteTimerManager.UnMuteUserCompletely(user.Id);
@@ -137,9 +144,15 @@ namespace OnePlusBot.Modules
             await Extensions.MuteUser(user);
             await user.ModifyAsync(x => x.Channel = null);
 
-            const string muteMessage = "You were muted on r/OnePlus for the following reason: {0} until {1} {2}.";
-            await user.SendMessageAsync(string.Format(muteMessage, reason, targetTime, TimeZoneInfo.Local));
-                
+            try
+            {
+                const string muteMessage = "You were muted on r/OnePlus for the following reason: {0} until {1} {2}.";
+                await user.SendMessageAsync(string.Format(muteMessage, reason, targetTime, TimeZoneInfo.Local));
+            } 
+            catch(HttpException ex)
+            {
+                Console.WriteLine("Seems like user disabled the DMs, cannot send message about the mute.");
+            }    
 
             var muteData = new Mute
             {
