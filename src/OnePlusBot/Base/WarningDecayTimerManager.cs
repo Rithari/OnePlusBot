@@ -63,27 +63,44 @@ namespace OnePlusBot.Base
     {
       StringBuilder builder = new StringBuilder("");
       var guild = Global.Bot.GetGuild(Global.ServerID);
+      var texts = new Collection<string>();
       foreach(var warning in warnings)
       {
         var user = guild.GetUser(warning.WarnedUserID);
-        var staff = guild.GetUser(warning.WarnedByID); 
-        builder.Append($"Warning towards {Extensions.FormatUserName(user)} on {warning.Date} with the reason '{warning.Reason}' by staff member {Extensions.FormatUserName(staff)}. \n \n");
+        var staff = guild.GetUser(warning.WarnedByID);
+        var beforeAppending = builder.ToString();
+        var warnText = $"Warning towards {Extensions.FormatUserName(user)} on {warning.Date} with the reason '{warning.Reason}' by staff member {Extensions.FormatUserName(staff)}. \n \n";
+        builder.Append(warnText);
+        if(builder.ToString().Length > EmbedBuilder.MaxDescriptionLength)
+        {
+          texts.Add(beforeAppending);
+          builder = new StringBuilder();
+          builder.Append(warnText);
+        }
       }
       if(builder.ToString() == string.Empty)
       {
         builder.Append("No warnings to decay");
       }
-                
-                
-      var embed = new EmbedBuilder
-      {
-          Color = Color.Blue,
-          Title = $"Warnings have been decayed",
-          Description = builder.ToString(),
-          Timestamp = DateTime.Now
-      };
 
-      await guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: embed.Build());
+      texts.Add(builder.ToString());
+      var counter = 1;
+      foreach(var text in texts){
+        var titleAddition = counter > 1 ? "#" + counter : "";
+        var title = $"Warnings have been decayed {titleAddition}";
+        var embed = new EmbedBuilder
+        {
+          Color = Color.Gold,
+          Title = title,
+          Description = text,
+          Timestamp = DateTime.Now
+        };
+
+        await guild.GetTextChannel(Global.Channels["decaylog"]).SendMessageAsync(embed: embed.Build());
+        await Task.Delay(1000);
+        counter++;
+      }
+     
     }
 
   
