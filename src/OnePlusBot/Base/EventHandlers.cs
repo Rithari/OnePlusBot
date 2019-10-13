@@ -372,13 +372,14 @@ namespace OnePlusBot.Base
                 default:
                  if (!string.IsNullOrEmpty(result?.ErrorReason))
                  {
-                    await context.Message.AddReactionAsync(Global.OnePlusEmote.FAIL);
 
                     if (result.ErrorReason == "Unknown command.")
                     return;
 
+                    await context.Message.AddReactionAsync(Global.OnePlusEmote.FAIL);
+
                     if (result.ErrorReason == "The input text has too few parameters.")
-                        return;
+                    return;
 
                         await context.Channel.SendMessageAsync(result.ErrorReason);
                     return;
