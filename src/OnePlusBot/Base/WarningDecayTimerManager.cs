@@ -68,13 +68,15 @@ namespace OnePlusBot.Base
       {
         var user = guild.GetUser(warning.WarnedUserID);
         var staff = guild.GetUser(warning.WarnedByID);
-        var beforeAppending = builder.ToString();
-        var warnText = $"Warning towards {Extensions.FormatUserName(user)} on {warning.Date} with the reason '{warning.Reason}' by staff member {Extensions.FormatUserName(staff)}. \n \n";
-        builder.Append(warnText);
-        if(builder.ToString().Length > EmbedBuilder.MaxDescriptionLength)
+        var warnText = $"Warning towards {Extensions.FormatUserNameDetailed(user)} on {warning.Date} with the reason '{warning.Reason}' by staff member {Extensions.FormatUserName(staff)}. \n \n";
+        if((builder.ToString() + warnText).Length > EmbedBuilder.MaxDescriptionLength)
         {
-          texts.Add(beforeAppending);
+          texts.Add(builder.ToString());
           builder = new StringBuilder();
+          builder.Append(warnText);
+        }
+        else
+        {
           builder.Append(warnText);
         }
       }

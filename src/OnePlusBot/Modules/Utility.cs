@@ -1,3 +1,4 @@
+using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -12,6 +13,7 @@ using System;
 using Discord.WebSocket;
 using System.Net;
 using System.IO;
+using System.Collections.ObjectModel;
 
 namespace OnePlusBot.Modules
 {
@@ -310,11 +312,36 @@ namespace OnePlusBot.Modules
                 embed.WithThumbnailUrl(guild.IconUrl);
             if (guild.Emotes.Any())
             {
-                embed.AddField(fb =>
-                    fb.WithName("Custom emojis" + $"({guild.Emotes.Count})")
-                    .WithValue(string.Join(" ", guild.Emotes
-                        .Take(20)
-                        .Select(e => $"{e.ToString()}"))));
+                 
+                var strings = new Collection<StringBuilder>();
+                var currentStringBuilder = new StringBuilder();
+                strings.Add(currentStringBuilder);
+                foreach(var emote in guild.Emotes)
+                {
+                    var emoteText = emote.ToString();
+                    // doesnt seem to have a constant for that, exception message indicated the max length is 1024
+                    if((currentStringBuilder.ToString() + emoteText).Length > 1024)
+                    {
+                        currentStringBuilder = new StringBuilder();
+                        currentStringBuilder.Append(emoteText);
+                        strings.Add(currentStringBuilder);
+                    }
+                    else 
+                    {
+                        currentStringBuilder.Append(emoteText);
+                    }
+                }
+                var counter = 1;
+                foreach(var emoteText  in strings)
+                {
+                    var headerText = counter > 1 ? "#" + counter: "";
+                    var headerPostText = counter == 1 ? $"(Total: {guild.Emotes.Count})" : "";
+                    counter++;
+                    embed.AddField(fb =>
+                    fb.WithName($"Custom emojis {headerText} {headerPostText}")
+                    .WithValue(emoteText.ToString()));
+                }
+              
             }
             await Context.Channel.EmbedAsync(embed).ConfigureAwait(false);
         }
