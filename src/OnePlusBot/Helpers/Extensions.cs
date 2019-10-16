@@ -122,6 +122,7 @@ namespace OnePlusBot.Helpers
             CaptureCollection captures =  Regex.Match(duration, @"(\d+[a-z]+)+").Groups[1].Captures;
 
             DateTime targetTime = DateTime.Now;
+            DateTime timeAtStart = targetTime;
             // this basically means *one* of the values has been wrong, maybe negative or something like that
             bool validFormat = false;
             foreach(Capture capture in captures)
@@ -171,7 +172,7 @@ namespace OnePlusBot.Helpers
             {
                 throw new FormatException("Invalid format, it needs to be positive, and combinations of " + string.Join(", ", timeFormats));
             }
-            return targetTime - DateTime.Now;
+            return targetTime - timeAtStart;
         }
 
         public static string RemoveIllegalPings(string text){

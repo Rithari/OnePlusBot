@@ -112,7 +112,8 @@ namespace OnePlusBot.Modules
 
             string durationStr = arguments[0];
             TimeSpan span = Extensions.GetTimeSpanFromString(durationStr);
-            DateTime targetTime = DateTime.Now.Add(span);
+            var now = DateTime.Now;
+            DateTime targetTime = now.Add(span);
 
             string reason;
             if(arguments.Length > 1)
@@ -156,7 +157,7 @@ namespace OnePlusBot.Modules
 
             var muteData = new Mute
             {
-                MuteDate = DateTime.Now,
+                MuteDate = now,
                 UnmuteDate = targetTime,
                 MutedUser = user.Username + '#' + user.Discriminator,
                 MutedUserID = user.Id,
