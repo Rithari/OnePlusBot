@@ -12,8 +12,23 @@ namespace OnePlusBot.Base
 {
   public class MuteTimerManager 
   {
-    public static async Task<RuntimeResult> SetupTimers(Boolean startup)
+    public async Task<RuntimeResult> SetupTimers()
     {
+      await Extensions.DelayUntilNextFullHour();
+      await ExecuteMuteLogic();
+      System.Timers.Timer timer1 = new System.Timers.Timer(1000 * 60 * 60);
+      timer1.Elapsed += new System.Timers.ElapsedEventHandler(TriggerTimer);
+      timer1.Enabled = true;
+      return CustomResult.FromSuccess();
+    }
+
+    public async void TriggerTimer(object sender, System.Timers.ElapsedEventArgs e)
+    {
+      System.Timers.Timer timer = (System.Timers.Timer)sender;
+      await ExecuteMuteLogic();
+    }        
+
+    public async Task ExecuteMuteLogic(){
       var bot = Global.Bot;
       var guild = bot.GetGuild(Global.ServerID);
       var iGuildObj = (IGuild) guild;
@@ -44,20 +59,7 @@ namespace OnePlusBot.Base
         }    
         db.SaveChanges();
       }
-      if(startup)
-      {
-        System.Timers.Timer timer1 = new System.Timers.Timer(1000 * 60 * 60);
-        timer1.Elapsed += new System.Timers.ElapsedEventHandler(TriggerTimer);
-        timer1.Enabled = true;
-      }
-      return CustomResult.FromSuccess();
     }
-
-    public static async void TriggerTimer(object sender, System.Timers.ElapsedEventArgs e)
-    {
-      System.Timers.Timer timer = (System.Timers.Timer)sender;
-      await SetupTimers(false);
-    }        
 
     public static async void UnmuteUserIn(ulong userId, TimeSpan time, ulong muteId)
     {

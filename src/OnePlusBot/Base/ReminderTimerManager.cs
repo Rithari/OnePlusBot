@@ -14,9 +14,25 @@ namespace OnePlusBot.Base
   public class ReminderTimerManger 
   {
       // TODO refactor this and MuteTimerManager to have a common abstract class or at least an interface
-    public static async Task<RuntimeResult> SetupTimers(Boolean startup)
+    public async Task<RuntimeResult> SetupTimers()
     {
-      var bot = Global.Bot;
+      await Extensions.DelayUntilNextFullHour();
+      await ExecuteReminderLogic();
+      System.Timers.Timer timer1 = new System.Timers.Timer(1000 * 60 * 60);
+      timer1.Elapsed += new System.Timers.ElapsedEventHandler(TriggerTimer);
+      timer1.Enabled = true;
+      return CustomResult.FromSuccess();
+    }
+
+    public async void TriggerTimer(object sender, System.Timers.ElapsedEventArgs e)
+    {
+      System.Timers.Timer timer = (System.Timers.Timer)sender;
+      await ExecuteReminderLogic();
+    }
+
+    public async Task ExecuteReminderLogic()
+    {
+       var bot = Global.Bot;
       var guild = bot.GetGuild(Global.ServerID);
       var iGuildObj = (IGuild) guild;
       using (var db = new Database())
@@ -46,20 +62,7 @@ namespace OnePlusBot.Base
         }    
         db.SaveChanges();
       }
-      if(startup)
-      {
-        System.Timers.Timer timer1 = new System.Timers.Timer(1000 * 60 * 60);
-        timer1.Elapsed += new System.Timers.ElapsedEventHandler(TriggerTimer);
-        timer1.Enabled = true;
-      }
-      return CustomResult.FromSuccess();
     }
-
-    public static async void TriggerTimer(object sender, System.Timers.ElapsedEventArgs e)
-    {
-      System.Timers.Timer timer = (System.Timers.Timer)sender;
-      await SetupTimers(false);
-    }        
 
     public static async void RemindUserIn(ulong userId, TimeSpan time, ulong reminderId)
     {
