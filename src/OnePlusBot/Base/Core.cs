@@ -29,13 +29,34 @@ namespace OnePlusBot.Base
             bot.Log += Log;
             bot.ReactionAdded += OnReactionAdded;
             bot.ReactionRemoved += OnReactionRemoved;
-
-            bot.Ready += async () => 
+            Func<Task> muteTimer = null;
+            muteTimer = () => 
             {
-                await MuteTimerManager.SetupTimers(true);
-                await ReminderTimerManger.SetupTimers(true);
-                await WarningDecaytimerManager.SetupTimers();
+                new MuteTimerManager().SetupTimers().ContinueWith(t => Console.WriteLine(t.Exception), TaskContinuationOptions.OnlyOnFaulted);
+                bot.Ready -= muteTimer;
+                return Task.CompletedTask;
             };
+            Func<Task> remindTimer = null;
+            remindTimer =  () => 
+            {
+                new ReminderTimerManger().SetupTimers().ContinueWith(t => Console.WriteLine(t.Exception), TaskContinuationOptions.OnlyOnFaulted);
+                bot.Ready -= remindTimer;
+                return Task.CompletedTask;
+            };
+
+            Func<Task> warnDecayTimer = null;
+            warnDecayTimer =  () => 
+            {
+                new WarningDecaytimerManager().SetupTimers().ContinueWith(t => Console.WriteLine(t.Exception), TaskContinuationOptions.OnlyOnFaulted);
+                bot.Ready -= warnDecayTimer;
+                return Task.CompletedTask;
+            };
+
+            bot.Ready += remindTimer;
+            bot.Ready += muteTimer;
+            bot.Ready += warnDecayTimer;
+           
+
             if(Global.Token == string.Empty)
             {
                 Console.WriteLine("Configure the token for the version you are trying to run in order to execute the bot");
