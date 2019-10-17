@@ -16,7 +16,7 @@ namespace OnePlusBot.Base
   public class WarningDecaytimerManager 
   {
       // TODO refactor this and MuteTimerManager to have a common abstract class or at least an interface
-    public static async Task<RuntimeResult> SetupTimers()
+    public async Task<RuntimeResult> SetupTimers()
     {
       TimeSpan thisMidnight = DateTime.Today.AddDays(1) - DateTime.Now;
       int secondsToDelay = (int) thisMidnight.TotalSeconds;
@@ -28,13 +28,13 @@ namespace OnePlusBot.Base
       return CustomResult.FromSuccess();
     }
 
-    public static async void TriggerDecay(object sender, System.Timers.ElapsedEventArgs e)
+    public async void TriggerDecay(object sender, System.Timers.ElapsedEventArgs e)
     {
       System.Timers.Timer timer = (System.Timers.Timer)sender;
       await DecayWarnings();
     }        
 
-    public static async Task DecayWarnings()
+    public async Task DecayWarnings()
     {
       var bot = Global.Bot;
       var guild = bot.GetGuild(Global.ServerID);
@@ -59,7 +59,7 @@ namespace OnePlusBot.Base
       await ReportDecay(decayedWarnings);
     }
 
-    private static async Task ReportDecay(Collection<WarnEntry> warnings)
+    private async Task ReportDecay(Collection<WarnEntry> warnings)
     {
       StringBuilder builder = new StringBuilder("");
       var guild = Global.Bot.GetGuild(Global.ServerID);
@@ -69,7 +69,7 @@ namespace OnePlusBot.Base
         var user = guild.GetUser(warning.WarnedUserID);
         var staff = guild.GetUser(warning.WarnedByID);
         var beforeAppending = builder.ToString();
-        var warnText = $"Warning towards {Extensions.FormatUserName(user)} on {warning.Date} with the reason '{warning.Reason}' by staff member {Extensions.FormatUserName(staff)}. \n \n";
+        var warnText = $"Warning towards {Extensions.FormatUserNameDetailed(user)} on {warning.Date} with the reason '{warning.Reason}' by staff member {Extensions.FormatUserNameDetailed(staff)}. \n \n";
         builder.Append(warnText);
         if(builder.ToString().Length > EmbedBuilder.MaxDescriptionLength)
         {
