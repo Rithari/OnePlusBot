@@ -205,5 +205,14 @@ namespace OnePlusBot.Helpers
             }
             return builder.ToString();
         }
+
+        public static async Task DelayUntilNextFullHour()
+        {
+            TimeSpan sinceMidnight = DateTime.Now.TimeOfDay;
+            TimeSpan nextHour = TimeSpan.FromHours(Math.Ceiling(sinceMidnight.TotalHours));
+            TimeSpan timeSpanToDelay = (nextHour - sinceMidnight);
+            int secondsToDelay = (int) timeSpanToDelay.TotalSeconds;
+            await Task.Delay(secondsToDelay * 1000);
+        }
     }
 }
