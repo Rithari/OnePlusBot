@@ -136,6 +136,12 @@ namespace OnePlusBot.Base
             if (before.Content == message.Content)
                 return;
 
+            if (ViolatesRule(message))
+            {
+                await message.DeleteAsync();
+            }
+            
+
             var fullChannel = Extensions.GetChannelById(message.Channel.Id);
             if(fullChannel != null){
                 if(!fullChannel.ProfanityCheckExempt){
@@ -540,10 +546,36 @@ namespace OnePlusBot.Base
             await modQueue.SendMessageAsync(null,embed: embed).ConfigureAwait(false);
         }
 
+        private static bool ContainsIllegalInvite(string message)
+        {
+            MatchCollection groups =  Regex.Matches(message, @"discord(\.gg|app\.com/invite)/[\w\-]+");
+            foreach(Group gr in groups){
+			    CaptureCollection captures =  gr.Captures;
+                
+			    foreach(Capture capture in captures)
+			    {
+                    var linkExists = Global.InviteLinks.Exists(link => capture.Value.Contains(link.Link));
+                    if(!linkExists)
+                    {
+                        return true;
+                    }
+			    }
+		    }
+            return false;
+        }
+
+        private static bool ViolatesRule(SocketMessage message)
+        {
+            string messageText = message.Content;
+            return ContainsIllegalInvite(messageText) && message.Channel.Id != Global.Channels["referralcodes"];
+        }
+
         private static async Task OnMessageReceived(SocketMessage message)
         {
-            if (Regex.IsMatch(message.Content, @"discord(?:\.gg|app\.com\/invite)\/([\w\-]+)") && message.Channel.Id != Global.Channels["referralcodes"] && !message.Content.Contains("discord.gg/oneplus") && !message.Content.Contains("discord.gg/events") && !message.Content.Contains("discord.gg/discord-testers") && !message.Content.Contains("discord.gg/discord-api") && !message.Content.Contains("discord.gg/discord-feedback"))
+            if (ViolatesRule(message))
+            {
                 await message.DeleteAsync();
+            }   
             
             if(message.Attachments.Count > 0 && !message.Author.IsBot)
             {

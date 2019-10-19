@@ -32,6 +32,8 @@ namespace OnePlusBot.Data
 
         public DbSet<StarboardPostRelation> StarboardPostRelations { get; set; }
 
+        public DbSet<InviteLink> InviteLinks { get; set; }
+
         // TODO needs to be replaced with proper dependency injection
         public static readonly LoggerFactory LoggerFactory
         = new LoggerFactory(new[] {new ConsoleLoggerProvider((_, __) => true, true)});
