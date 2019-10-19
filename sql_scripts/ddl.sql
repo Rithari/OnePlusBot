@@ -224,4 +224,14 @@ CREATE TABLE `Reminders` (
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+DROP TABLE IF EXISTS `InviteLinks`;
+CREATE TABLE `InviteLinks` (
+ `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+ `link` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+ `label` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+ `added_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS=1;

@@ -26,6 +26,8 @@ namespace OnePlusBot.Base
         public static List<FAQCommandChannel> FAQCommandChannels { get; set;}
         public static List<FAQCommand> FAQCommands { get; set; }
 
+        public static List<InviteLink> InviteLinks { get; set; }
+
         public static ulong CommandExecutorId { get; set; }
 
         public static ulong StarboardStars { get; set; }
@@ -91,6 +93,7 @@ namespace OnePlusBot.Base
             ProfanityChecks = new List<Regex>();
             FAQCommands = new List<FAQCommand>();
             FAQCommandChannels = new List<FAQCommandChannel>();
+            InviteLinks = new List<InviteLink>();
             LoadGlobal();
         }
 
@@ -135,6 +138,12 @@ namespace OnePlusBot.Base
                 DecayDays = db.PersistentData
                     .First(entry => entry.Name == "decay_days")
                     .Value;
+
+                InviteLinks.Clear();
+                foreach(var link in db.InviteLinks)
+                {
+                    InviteLinks.Add(link);
+                }
 
                 StarboardPosts.Clear();
                 if(db.StarboardMessages.Any())
