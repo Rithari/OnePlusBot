@@ -3,9 +3,10 @@ using System.Linq;
 using Discord.Commands;
 using OnePlusBot.Base;
 using System.Threading.Tasks;
-using Discord;
+using OnePlusBot.Helpers;
 using OnePlusBot.Data.Models;
 using OnePlusBot.Data;
+using Discord;
 
 namespace OnePlusBot.Modules
 {
@@ -61,6 +62,7 @@ namespace OnePlusBot.Modules
                 db.ThreadSubscribers.Add(subscription);
                 db.SaveChanges();
             }
+            await Task.CompletedTask;
             return CustomResult.FromSuccess();
         }
 
@@ -87,6 +89,7 @@ namespace OnePlusBot.Modules
                 db.ThreadSubscribers.Remove(existing);
                 db.SaveChanges();
             }
+            await Task.CompletedTask;
             return CustomResult.FromSuccess();
         }
 
@@ -113,6 +116,44 @@ namespace OnePlusBot.Modules
             await new  ModMailManager().EditLastMessage(newText, Context.Channel, Context.User);
             await Context.Message.DeleteAsync();
             return CustomResult.FromIgnored();
+        }
+
+        [
+            Command("disableModmail"),
+            Summary("disables and closes the modmail thread for a certain time period. The user will be notified and he will be able to contact modmail after the period again."),
+            RequireRole("staff"),
+            RequireModMailContext
+        ]
+        public async Task<RuntimeResult> DisableModMailForUser(params string[] arguments)
+        {
+            var durationStr = arguments[0];
+            string note;
+            if(arguments.Length > 1)
+            {
+                string[] noteParts = new string[arguments.Length -1];
+                Array.Copy(arguments, 1, noteParts, 0, arguments.Length - 1);
+                note = string.Join(" ", noteParts);
+            } 
+            else 
+            {
+                return CustomResult.FromError("You need to provide a note.");
+            }
+            TimeSpan mutedTime = Extensions.GetTimeSpanFromString(durationStr);
+       
+            await new  ModMailManager().DisableModMailForUser(Context.Message, Context.Channel, Context.User, mutedTime, note);
+            return CustomResult.FromIgnored();
+        }
+
+        [
+            Command("enableModmail"),
+            Summary("Enables the modmail for a certain user immediatelly. No-op on users who have access."),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> EnableModmailForUser(IGuildUser user)
+        {
+            new  ModMailManager().EnableModmailForUser(user);
+            await Task.CompletedTask;
+            return CustomResult.FromSuccess();
         }
     
     }

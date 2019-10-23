@@ -34,6 +34,8 @@ namespace OnePlusBot.Data
 
         public DbSet<ThreadSubscriber> ThreadSubscribers { get; set; }
 
+        public DbSet<User> Users { get; set; }
+
         public DbSet<ThreadMessage> ThreadMessages { get; set; }
         public DbSet<StarboardPostRelation> StarboardPostRelations { get; set; }
 

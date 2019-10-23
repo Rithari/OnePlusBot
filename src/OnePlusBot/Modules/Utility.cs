@@ -235,7 +235,7 @@ namespace OnePlusBot.Modules
             
             var needsAttachments = Context.Message.Attachments.Count() > 0;
             
-            var newsChannel = guild.GetTextChannel(Global.Channels["news"]) as SocketTextChannel;
+            var newsChannel = guild.GetTextChannel(Global.Channels["news"]) as SocketNewsChannel;
             var newsRole = guild.GetRole(Global.Roles["news"]);
 
             if (news.Contains("@everyone") || news.Contains("@here") || news.Contains("@news")) 

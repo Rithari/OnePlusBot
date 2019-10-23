@@ -10,6 +10,7 @@ using OnePlusBot.Data;
 using Microsoft.EntityFrameworkCore;
 using OnePlusBot.Helpers;
 using Discord.Rest;
+using System.Globalization;
 
 namespace OnePlusBot.Base
 {
@@ -17,6 +18,26 @@ namespace OnePlusBot.Base
   {
     public async Task CreateModmailThread(SocketMessage message)
     {
+        using(var db = new Database())
+        {
+            var user = db.Users.Where(us => us.UserId == message.Author.Id).FirstOrDefault();
+            if(user != null)
+            {
+                if(user.ModMailMuted)
+                {
+                    await message.Channel.SendMessageAsync($"You are unable to contact modmail until {user.ModMailMutedUntil:dd.MM.yyyy HH:mm} {TimeZoneInfo.Local}.");
+                    return;
+                }
+            }
+            else
+            {
+                var newUser = new User();
+                newUser.UserId = message.Author.Id;
+                newUser.ModMailMuted = false;
+                db.Users.Add(newUser);
+                db.SaveChanges();
+            }
+        }
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
         var modmailCategory = guild.GetCategoryChannel(Global.ModmailCategoryId);
@@ -54,7 +75,7 @@ namespace OnePlusBot.Base
         {
             modMailThread = db.ModMailThreads
                     .Include(sub => sub.Subscriber)
-                    .Where(th => th.UserId == message.Author.Id)
+                    .Where(th => th.UserId == message.Author.Id && th.State != "CLOSED")
                     .FirstOrDefault();
         }
         
@@ -97,11 +118,7 @@ namespace OnePlusBot.Base
         await DeleteMessageAndMirrorEmbeds(threadUser, channel, replyEmbed, message, anonymous);
     }
 
-    public async Task CloseThread(SocketMessage message, ISocketMessageChannel channel, SocketUser moderatorUser, string note)
-    {
-        var bot = Global.Bot;
-        var guild = bot.GetGuild(Global.ServerID);
-        SocketGuildUser userObj;
+    private ModMailThread CloseThreadInDb(ISocketMessageChannel channel){
         ModMailThread threadObj;
         using(var db = new Database())
         {
@@ -111,26 +128,54 @@ namespace OnePlusBot.Base
                 threadObj.ClosedDate = DateTime.Now;
                 threadObj.State = "CLOSED";
             }
-            userObj = guild.GetUser(threadObj.UserId);
             db.SaveChanges();
+            Global.ModMailThreads.Where(th => th.ChannelId == channel.Id).First().State  = "CLOSED";
         }
-        
-        List<ThreadMessage> messagesToLog;
-        using(var db = new Database())
-        {
-            messagesToLog = db.ThreadMessages.Where(ch => ch.ChannelId == channel.Id).ToList();
-        }
-        var modMailLogChannel = guild.GetTextChannel(Global.Channels["modmaillog"]);
-        await modMailLogChannel.SendMessageAsync(embed: ModMailEmbedHandler.GetClosingSummaryEmbed(threadObj, messagesToLog.Count(), bot.GetUser(threadObj.UserId), note));
+        return threadObj;
+    }
+
+    private async Task LogModMailThreadMessagesToModmailLog(ModMailThread modMailThread, string note, List<ThreadMessage> messagesToLog, SocketTextChannel targetChannel)
+    {
+        var bot = Global.Bot;
+        var guild = bot.GetGuild(Global.ServerID);
+        var channel = guild.GetTextChannel(modMailThread.ChannelId);
         foreach(var msg in messagesToLog)
         {
             var msgToLog = await channel.GetMessageAsync(msg.ChannelMessageId);
             var messageUser = bot.GetUser(msg.UserId);
             var msgText = msg.Anonymous ? Extensions.FormatUserNameDetailed(messageUser) : "";
-            await modMailLogChannel.SendMessageAsync(msgText, embed: msgToLog.Embeds.First().ToEmbedBuilder().Build());
+            await targetChannel.SendMessageAsync(msgText, embed: msgToLog.Embeds.First().ToEmbedBuilder().Build());
             await Task.Delay(100);
         }
+    }
 
+    private async Task LogClosingHeader(ModMailThread modMailThread, int messageCount, string note, SocketTextChannel modMailLogChannel, SocketUser modmailUser){
+       
+        var closingEmbed = ModMailEmbedHandler.GetClosingSummaryEmbed(modMailThread, messageCount, modmailUser, note);       
+        await modMailLogChannel.SendMessageAsync(embed: closingEmbed);
+    }
+
+    private async Task LogDisablingHeader(ModMailThread modMailThread, int messageCount, string note, SocketTextChannel modMailLogChannel, SocketUser modmailUser, DateTime until){
+       
+        var closingEmbed = ModMailEmbedHandler.GetMutingSummaryEmbed(modMailThread, messageCount, modmailUser, note, until);       
+        await modMailLogChannel.SendMessageAsync(embed: closingEmbed);
+    }
+
+    public async Task CloseThread(SocketMessage message, ISocketMessageChannel channel, SocketUser moderatorUser, string note)
+    { 
+        var closedthread = CloseThreadInDb(channel);   
+        var bot = Global.Bot;
+        var guild = bot.GetGuild(Global.ServerID);
+        SocketGuildUser userObj = guild.GetUser(closedthread.UserId);
+        List<ThreadMessage> messagesToLog;
+        using(var db = new Database())
+        {
+            messagesToLog = db.ThreadMessages.Where(ch => ch.ChannelId == closedthread.ChannelId).ToList();
+        }
+        var modMailLogChannel = guild.GetTextChannel(Global.Channels["modmaillog"]);
+        await LogClosingHeader(closedthread, messagesToLog.Count(), note, modMailLogChannel, bot.GetUser(closedthread.UserId));
+
+        await LogModMailThreadMessagesToModmailLog(closedthread, note, messagesToLog, modMailLogChannel);
         await (channel as SocketTextChannel).DeleteAsync();
 
         await userObj.SendMessageAsync(embed: ModMailEmbedHandler.GetClosingEmbed(note));
@@ -199,6 +244,44 @@ namespace OnePlusBot.Base
         using(var db = new Database())
         {
             db.ThreadMessages.Add(msg);
+            db.SaveChanges();
+        }
+    }
+
+    public async Task DisableModMailForUser(SocketMessage message, ISocketMessageChannel channel, SocketUser moderatorUser, TimeSpan duration, string note){
+        var until = DateTime.Now + duration;
+        var bot = Global.Bot;
+        var guild = bot.GetGuild(Global.ServerID);
+        using(var db = new Database()){
+            var thread = db.ModMailThreads.Where(ch => ch.ChannelId == channel.Id).First();
+            var user = db.Users.Where(us => us.UserId == thread.UserId).First();
+            user.ModMailMuted = true;
+            user.ModMailMutedUntil = until;
+            db.SaveChanges();
+        }
+        var closedthread = CloseThreadInDb(channel);
+
+        SocketGuildUser userObj = guild.GetUser(closedthread.UserId);
+         
+        List<ThreadMessage> messagesToLog;
+        using(var db = new Database())
+        {
+            messagesToLog = db.ThreadMessages.Where(ch => ch.ChannelId == closedthread.ChannelId).ToList();
+        }
+        var modMailLogChannel = guild.GetTextChannel(Global.Channels["modmaillog"]);
+        await LogDisablingHeader(closedthread, messagesToLog.Count(), note, modMailLogChannel, bot.GetUser(closedthread.UserId), until);
+
+        await LogModMailThreadMessagesToModmailLog(closedthread, note, messagesToLog, modMailLogChannel);
+        await (channel as SocketTextChannel).DeleteAsync();
+
+        await userObj.SendMessageAsync(embed: ModMailEmbedHandler.GetDisablingEmbed(note, until));
+    }
+
+    public void EnableModmailForUser(IGuildUser user)
+    {
+        using(var db = new Database()){
+            var userInDb = db.Users.Where(us => us.UserId == user.Id).First();
+            userInDb.ModMailMuted = false;
             db.SaveChanges();
         }
     }
