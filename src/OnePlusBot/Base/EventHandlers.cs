@@ -2,6 +2,7 @@
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Discord.Rest;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
 using OnePlusBot.Helpers;
@@ -127,7 +128,6 @@ namespace OnePlusBot.Base
 
         private async Task OnMessageUpdated(Cacheable<IMessage, ulong> cacheable, SocketMessage message, ISocketMessageChannel socketChannel)
         {
-            var channel = (SocketTextChannel)socketChannel;
             var before = await cacheable.GetOrDownloadAsync();
             var author = before.Author;
 
@@ -140,7 +140,7 @@ namespace OnePlusBot.Base
             {
                 await message.DeleteAsync();
             }
-            
+
 
             var fullChannel = Extensions.GetChannelById(message.Channel.Id);
             if(fullChannel != null){
@@ -161,44 +161,50 @@ namespace OnePlusBot.Base
             if(before.Author.IsBot)
                 return;
             
-            if(Global.NewsPosts.ContainsKey(message.Id))
-            {
-                var split = message.Content.Split(";news");
-                if(split.Length > 0)
-                {
-                    var guild = Global.Bot.GetGuild(Global.ServerID);
-                    var newsChannel = guild.GetTextChannel(Global.Channels["news"]);
-                    var newsRole = guild.GetRole(Global.Roles["news"]);
-                    var existingMessage = await newsChannel.GetMessageAsync(Global.NewsPosts[message.Id]) as SocketUserMessage;
-                    await newsRole.ModifyAsync(x => x.Mentionable = true);
-                    await existingMessage.ModifyAsync(x => x.Content = split[1] + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + author);
-                    await newsRole.ModifyAsync(x => x.Mentionable = false);
-                }
-            }
-            
-            var embed = new EmbedBuilder
-            {
-                Color = Color.Blue,
-                Description = $":bulb: Message from '{author.Username}' edited in {channel.Mention}",
-                Fields = {
-                    new EmbedFieldBuilder()
-                    {
-                        IsInline = false,
-                        Name = $"Original message: ",
-                        Value = before.Content
-                    },
-                    new EmbedFieldBuilder()
-                    {
-                        IsInline = false,
-                        Name = $"New message: ",
-                        Value = message.Content
-                    }
-                },
-                ThumbnailUrl = author.GetAvatarUrl(),
-                Timestamp = DateTime.Now
-            };
 
-            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: embed.Build());
+            if(socketChannel is SocketTextChannel){
+                if(Global.NewsPosts.ContainsKey(message.Id))
+                {
+                    var split = message.Content.Split(";news");
+                    if(split.Length > 0)
+                    {
+                        var guild = Global.Bot.GetGuild(Global.ServerID);
+                        var newsChannel = guild.GetTextChannel(Global.Channels["news"]);
+                        var newsRole = guild.GetRole(Global.Roles["news"]);
+                        var rawMessage = await newsChannel.GetMessageAsync(Global.NewsPosts[message.Id]);
+                        var existingMessage = rawMessage as SocketUserMessage;
+                        await newsRole.ModifyAsync(x => x.Mentionable = true);
+                        await existingMessage.ModifyAsync(x => x.Content = split[1] + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + author);
+                        await newsRole.ModifyAsync(x => x.Mentionable = false);
+                    }
+                }
+
+                var channel = (SocketTextChannel)socketChannel;
+
+                var embed = new EmbedBuilder
+                {
+                    Color = Color.Blue,
+                    Description = $":bulb: Message from '{author.Username}' edited in {channel.Mention}",
+                    Fields = {
+                        new EmbedFieldBuilder()
+                        {
+                            IsInline = false,
+                            Name = $"Original message: ",
+                            Value = before.Content
+                        },
+                        new EmbedFieldBuilder()
+                        {
+                            IsInline = false,
+                            Name = $"New message: ",
+                            Value = message.Content
+                        }
+                    },
+                    ThumbnailUrl = author.GetAvatarUrl(),
+                    Timestamp = DateTime.Now
+                };
+
+                await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: embed.Build());
+            }
         }
 
         private async Task OnMessageRemoved(Cacheable<IMessage, ulong> cacheable, ISocketMessageChannel socketChannel)
@@ -364,6 +370,10 @@ namespace OnePlusBot.Base
                     }
                     break;
                 case CustomResult customResult:
+                    if(customResult.Ignore)
+                    {
+                        return;
+                    }
                     if (customResult.IsSuccess)
                     {
                         await context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
@@ -500,27 +510,6 @@ namespace OnePlusBot.Base
             await message.DeleteAsync();
         }
 
-        private static void CacheAttachment(SocketMessage message)
-        {
-            // this causes the pic to not disappear resulting in an 403, in case the image is deleted instantly
-            WebClient client = new WebClient();
-            var attachments = message.Attachments;
-            for(int index = 0; index < attachments.Count; index++)
-            {
-                var targetFileName = attachments.ElementAt(index).Filename;
-                var url = attachments.ElementAt(index).Url;
-                try 
-                {
-                    client.DownloadFile(url, targetFileName); 
-                } 
-                finally 
-                {
-                    File.Delete(targetFileName);   
-                }
-            }
-            
-        }
-
         private static async Task ReportProfanity(SocketMessage message){
 
             var guild = Global.Bot.GetGuild(Global.ServerID);
@@ -546,21 +535,25 @@ namespace OnePlusBot.Base
             await modQueue.SendMessageAsync(null,embed: embed).ConfigureAwait(false);
         }
 
+        private static bool ModMailThreadForUserExists(IUser user){
+                    return Global.ModMailThreads.Exists(ch => ch.UserId == user.Id && ch.State != "CLOSED");
+        }
+
         private static bool ContainsIllegalInvite(string message)
         {
             MatchCollection groups =  Regex.Matches(message, @"discord(\.gg|app\.com/invite)/[\w\-]+");
             foreach(Group gr in groups){
-			    CaptureCollection captures =  gr.Captures;
-                
-			    foreach(Capture capture in captures)
-			    {
+                CaptureCollection captures =  gr.Captures;
+
+                foreach(Capture capture in captures)
+                {
                     var linkExists = Global.InviteLinks.Exists(link => capture.Value.Contains(link.Link));
                     if(!linkExists)
                     {
                         return true;
                     }
-			    }
-		    }
+                }
+            }
             return false;
         }
 
@@ -575,12 +568,8 @@ namespace OnePlusBot.Base
             if (ViolatesRule(message))
             {
                 await message.DeleteAsync();
-            }   
-            
-            if(message.Attachments.Count > 0 && !message.Author.IsBot)
-            {
-               CacheAttachment(message);
             }
+
             var channel = Extensions.GetChannelById(message.Channel.Id);
             if(channel != null){
                 if(!channel.ProfanityCheckExempt){
@@ -596,7 +585,24 @@ namespace OnePlusBot.Base
                     }
                 }
             }
-           
+
+            if(message.Author.IsBot)
+            {
+                return;
+            }
+            var modmailThread = ModMailThreadForUserExists(message.Author);
+
+            if(modmailThread && message.Channel is IDMChannel)
+            {
+                await new ModMailManager().HandleModMailUserReply(message);
+            }
+            else if(message.Channel is IDMChannel)
+            {
+                await new ModMailManager().CreateModmailThread(message);
+            }
+
+
+
                
             var channelId = message.Channel.Id;
 

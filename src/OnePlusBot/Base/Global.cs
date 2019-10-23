@@ -26,6 +26,8 @@ namespace OnePlusBot.Base
         public static List<FAQCommandChannel> FAQCommandChannels { get; set;}
         public static List<FAQCommand> FAQCommands { get; set; }
 
+        public static List<ModMailThread> ModMailThreads { get; set; }
+
         public static List<InviteLink> InviteLinks { get; set; }
 
         public static ulong CommandExecutorId { get; set; }
@@ -34,6 +36,8 @@ namespace OnePlusBot.Base
 
         public static ulong Level2Stars { get; set; }
         public static ulong Level3Stars { get; set; }
+
+        public static ulong ModmailCategoryId { get; set; }
 
         public static ulong DecayDays { get; set; }
 
@@ -94,6 +98,7 @@ namespace OnePlusBot.Base
             FAQCommands = new List<FAQCommand>();
             FAQCommandChannels = new List<FAQCommandChannel>();
             InviteLinks = new List<InviteLink>();
+            ModMailThreads = new List<ModMailThread>();
             LoadGlobal();
         }
 
@@ -144,6 +149,15 @@ namespace OnePlusBot.Base
                 {
                     InviteLinks.Add(link);
                 }
+
+                ModmailCategoryId = db.PersistentData
+                    .First(entry => entry.Name == "modmail_category_id")
+                    .Value;
+
+                ModMailThreads.Clear();
+                ModMailThreads = db.ModMailThreads
+                    .Include(sub => sub.Subscriber)
+                    .ToList();
 
                 StarboardPosts.Clear();
                 if(db.StarboardMessages.Any())

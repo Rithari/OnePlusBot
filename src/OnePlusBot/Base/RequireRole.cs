@@ -1,11 +1,8 @@
-using System.Runtime.CompilerServices;
 using System.Linq;
-using System.Net;
 using System;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
-using OnePlusBot.Base;
 using Discord;
 
 
