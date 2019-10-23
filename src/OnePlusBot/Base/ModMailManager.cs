@@ -38,12 +38,7 @@ namespace OnePlusBot.Base
                 db.SaveChanges();
             }
         }
-        var bot = Global.Bot;
-        var guild = bot.GetGuild(Global.ServerID);
-        var modmailCategory = guild.GetCategoryChannel(Global.ModmailCategoryId);
-        var channel = await guild.CreateTextChannelAsync(message.Author.Username + message.Author.Discriminator, (TextChannelProperties prop) => {
-            prop.CategoryId = modmailCategory.Id;
-        });
+        var channel = await CreateModMailThread(message.Author);
         int pastThreads = 0;
         using(var db = new Database())
         {
@@ -53,10 +48,20 @@ namespace OnePlusBot.Base
         var channelMessage = await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetReplyEmbed(message, "Initial message from user"));
         AddModMailMessage(channel.Id, channelMessage, null, message.Author.Id);
         await message.Author.SendMessageAsync(embed: ModMailEmbedHandler.GetInitialUserReply(message));
+       
+    }
+
+    private async Task<RestTextChannel> CreateModMailThread(IUser targetUser){
+        var bot = Global.Bot;
+        var guild = bot.GetGuild(Global.ServerID);
+        var modmailCategory = guild.GetCategoryChannel(Global.ModmailCategoryId);
+        var channel = await guild.CreateTextChannelAsync(targetUser.Username + targetUser.Discriminator, (TextChannelProperties prop) => {
+            prop.CategoryId = modmailCategory.Id;
+        });
         var thread = new ModMailThread();
         thread.CreateDate = DateTime.Now;
         thread.ChannelId = channel.Id;
-        thread.UserId = message.Author.Id;
+        thread.UserId = targetUser.Id;
         thread.State = "INITIAL";
         Global.ModMailThreads.Add(thread);
         using(var db = new Database())
@@ -64,6 +69,7 @@ namespace OnePlusBot.Base
             db.ModMailThreads.Add(thread);
             db.SaveChanges();
         }
+        return channel;
     }
 
     public async Task HandleModMailUserReply(SocketMessage message)
@@ -284,6 +290,11 @@ namespace OnePlusBot.Base
             userInDb.ModMailMuted = false;
             db.SaveChanges();
         }
+    }
+
+
+    public async Task ContactUser(IGuildUser user){
+        await CreateModMailThread(user);
     }
    
 

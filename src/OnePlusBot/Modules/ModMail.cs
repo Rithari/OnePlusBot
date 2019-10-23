@@ -155,6 +155,17 @@ namespace OnePlusBot.Modules
             await Task.CompletedTask;
             return CustomResult.FromSuccess();
         }
+
+        [
+            Command("contactUser"),
+            Summary("Opens a thread with the specified user"),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> ContactUser(IGuildUser user)
+        {
+            await new  ModMailManager().ContactUser(user);
+            return CustomResult.FromSuccess();
+        }
     
     }
 }
