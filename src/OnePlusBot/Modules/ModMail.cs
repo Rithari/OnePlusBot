@@ -107,13 +107,23 @@ namespace OnePlusBot.Modules
 
         [
             Command("edit"),
-            Summary("edits your *LAST* message in the modmail thread"),
+            Summary("edits your message in the modmail thread"),
             RequireRole("staff"),
             RequireModMailContext
         ]
-        public async Task<RuntimeResult> EditMessage([Remainder] string newText)
+        public async Task<RuntimeResult> EditMessage(params string[] parameters)
         {
-            await new  ModMailManager().EditLastMessage(newText, Context.Channel, Context.User);
+            if(parameters.Length < 2){
+                return CustomResult.FromError("Required parameters: <messageId> <new text>");
+            }
+            ulong messageId = (ulong) Convert.ToUInt64(parameters[0]);
+            string newText = "";
+           
+            string[] reasons = new string[parameters.Length -1];
+            Array.Copy(parameters, 1, reasons, 0, parameters.Length - 1);
+            newText = string.Join(" ", reasons);
+           
+            await new  ModMailManager().EditMessage(newText, messageId , Context.Channel, Context.User);
             await Context.Message.DeleteAsync();
             return CustomResult.FromIgnored();
         }
@@ -169,13 +179,17 @@ namespace OnePlusBot.Modules
 
          [
             Command("delete"),
-            Summary("Deletes your last message within a modmail thread"),
+            Summary("Deletes your message within a modmail thread"),
             RequireRole("staff"),
             RequireModMailContext
         ]
-        public async Task<RuntimeResult> DeleteLastMessage()
+        public async Task<RuntimeResult> DeleteMessage(params string[] parameters)
         {
-            await new  ModMailManager().DeleteLastMessageInThread(Context.Channel, Context.User);
+            if(parameters.Length < 1){
+                return CustomResult.FromError("Required parameter: <messageId>");
+            }
+            ulong messageId = (ulong) Convert.ToUInt64(parameters[0]);
+            await new  ModMailManager().DeleteMessage(messageId, Context.Channel, Context.User);
             return CustomResult.FromSuccess();
         }
     

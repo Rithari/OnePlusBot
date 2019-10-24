@@ -197,13 +197,13 @@ namespace OnePlusBot.Base
         AddModMailMessage(channel.Id, channelMsg, userMsg, message.Author.Id, anonymous);
     }
 
-    public async Task EditLastMessage(string newText, ISocketMessageChannel channel, SocketUser personEditing)
+    public async Task EditMessage(string newText, ulong messageId, ISocketMessageChannel channel, SocketUser personEditing)
     {
         ThreadMessage messageToEdit;
         ModMailThread thread;
         using(var db = new Database())
         {
-            messageToEdit =  db.ThreadMessages.Where(msg => msg.ChannelId == channel.Id && msg.UserId == personEditing.Id).OrderByDescending(msg => msg.UserMessageId).FirstOrDefault();
+            messageToEdit =  db.ThreadMessages.Where(msg => msg.ChannelId == channel.Id && msg.UserId == personEditing.Id && msg.ChannelMessageId == messageId).FirstOrDefault();
             thread = db.ModMailThreads.Where(th => th.ChannelId == channel.Id).First();
         }
         if(messageToEdit == null)
@@ -314,12 +314,12 @@ namespace OnePlusBot.Base
         await CreateModMailThread(user);
     }
 
-    public async Task DeleteLastMessageInThread(ISocketMessageChannel channel, SocketUser personDeleting){
+    public async Task DeleteMessage(ulong messageId, ISocketMessageChannel channel, SocketUser personDeleting){
         ThreadMessage messageToRemove;
         ModMailThread thread;
         using(var db = new Database())
         {
-            messageToRemove =  db.ThreadMessages.Where(msg => msg.ChannelId == channel.Id && msg.UserId == personDeleting.Id).OrderByDescending(msg => msg.UserMessageId).FirstOrDefault();
+            messageToRemove =  db.ThreadMessages.Where(msg => msg.ChannelId == channel.Id && msg.UserId == personDeleting.Id && msg.ChannelMessageId == messageId).FirstOrDefault();
             thread = db.ModMailThreads.Where(th => th.ChannelId == channel.Id).First();
         }
         if(messageToRemove == null)
