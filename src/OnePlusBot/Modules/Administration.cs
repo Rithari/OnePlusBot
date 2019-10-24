@@ -1,3 +1,4 @@
+using System.Collections;
 using System;
 using System.Threading.Tasks;
 using Discord.Commands;
@@ -218,7 +219,6 @@ namespace OnePlusBot.Modules
             RequireRole("staff"),
             // this is a workaround, because purge can break the logging functionality of modmail (it removes the messages whose ids are stored)
             // so the command is disabled in modmail, because it should not be used
-            RequireModMailContext(true),
             RequireBotPermission(GuildPermission.ManageMessages)
         ]
         public async Task<RuntimeResult> PurgeAsync([Remainder] double delmsg)
@@ -229,14 +229,31 @@ namespace OnePlusBot.Modules
             int delmsgInt = (int)delmsg;
             ulong oldmessage = Context.Message.Id;
 
+            var isInModmailContext = Global.ModMailThreads.Exists(ch => ch.ChannelId == Context.Channel.Id);
+
             // Download all messages that the user asks for to delete
             var messages = await Context.Channel.GetMessagesAsync(oldmessage, Direction.Before, delmsgInt).FlattenAsync();
-            await ((ITextChannel) Context.Channel).DeleteMessagesAsync(messages);
 
-            // await Context.Message.DeleteAsync();
+            var saveMessagesToDelete = new List<IMessage>();
+            if(isInModmailContext){
+                var manager = new ModMailManager();
+                foreach(var message in messages){
+                   var messageCanBeDeleted = await manager.DeleteMessageInThread(Context.Channel.Id, message.Id, false);
+                   if(messageCanBeDeleted){
+                       saveMessagesToDelete.Add(message);
+                   }
+                }
+            }
+            else
+            {
+                saveMessagesToDelete.AddRange(messages);
+            }
+            await ((ITextChannel) Context.Channel).DeleteMessagesAsync(saveMessagesToDelete);
+
+            await Context.Message.DeleteAsync();
 
 
-            return CustomResult.FromSuccess(); //This will generate an error, because we delete the message, TODO: Implement a workaround.
+            return CustomResult.FromIgnored(); 
         }
 
         [

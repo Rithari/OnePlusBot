@@ -59,17 +59,17 @@ namespace OnePlusBot
             return builder.Build();
         }
 
-        public static Embed GetClosingEmbed(string note){
+        public static Embed GetClosingEmbed(){
             var embed = GetBaseEmbed();
             embed.WithAuthor(GetOneplusAuthor());
-            embed.WithDescription($"Your inquiry has been closed with the note '{note}'. If you have any further questions please message this bot again.");
+            embed.WithDescription($"Your inquiry has been closed. If you have any further questions please message this bot again.");
             return embed.Build();
         }
 
-         public static Embed GetDisablingEmbed(string additionalInfo, DateTime date){
+         public static Embed GetDisablingEmbed(DateTime date){
             var embed = GetBaseEmbed();
             embed.WithAuthor(GetOneplusAuthor());
-            embed.WithDescription($"Your inquiry has been closed because: {additionalInfo}. You will be able to contact modmail again at {date:dd.MM.yyyy HH:mm} {TimeZoneInfo.Local}.");
+            embed.WithDescription($"Your inquiry has been closed. You will be able to contact modmail again at {date:dd.MM.yyyy HH:mm} {TimeZoneInfo.Local}.");
             return embed.Build();
         }
 

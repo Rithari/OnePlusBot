@@ -121,7 +121,7 @@ namespace OnePlusBot.Base
         UpdateModThreadUpdatedField(channel.Id, "MOD_REPLIED");
         var threadUser = guild.GetUser(userObj.UserId);
         var replyEmbed = ModMailEmbedHandler.GetModeratorReplyEmbed(clearMessage, "Moderator replied", message, anonymous ? null : moderatorUser);
-        await DeleteMessageAndMirrorEmbeds(threadUser, channel, replyEmbed, message, anonymous);
+        await AnswerUserAndLogEmbed(threadUser, channel, replyEmbed, message, anonymous);
     }
 
     private ModMailThread CloseThreadInDb(ISocketMessageChannel channel){
@@ -184,12 +184,12 @@ namespace OnePlusBot.Base
         await LogModMailThreadMessagesToModmailLog(closedthread, note, messagesToLog, modMailLogChannel);
         await (channel as SocketTextChannel).DeleteAsync();
 
-        await userObj.SendMessageAsync(embed: ModMailEmbedHandler.GetClosingEmbed(note));
+        await userObj.SendMessageAsync(embed: ModMailEmbedHandler.GetClosingEmbed());
     }
 
     
 
-    private async Task DeleteMessageAndMirrorEmbeds(SocketUser messageTarget, ISocketMessageChannel channel, Embed embed, SocketMessage message, bool anonymous=false)
+    private async Task AnswerUserAndLogEmbed(SocketUser messageTarget, ISocketMessageChannel channel, Embed embed, SocketMessage message, bool anonymous=false)
     {
         var userMsg = await messageTarget.SendMessageAsync(embed: embed);
         await message.DeleteAsync();
@@ -284,7 +284,7 @@ namespace OnePlusBot.Base
         await LogModMailThreadMessagesToModmailLog(closedthread, note, messagesToLog, modMailLogChannel);
         await (channel as SocketTextChannel).DeleteAsync();
 
-        await userObj.SendMessageAsync(embed: ModMailEmbedHandler.GetDisablingEmbed(note, until));
+        await userObj.SendMessageAsync(embed: ModMailEmbedHandler.GetDisablingEmbed(until));
     }
 
     public void EnableModmailForUser(IGuildUser user)
@@ -313,6 +313,65 @@ namespace OnePlusBot.Base
         }
         await CreateModMailThread(user);
     }
+
+    public async Task DeleteLastMessageInThread(ISocketMessageChannel channel, SocketUser personDeleting){
+        ThreadMessage messageToRemove;
+        ModMailThread thread;
+        using(var db = new Database())
+        {
+            messageToRemove =  db.ThreadMessages.Where(msg => msg.ChannelId == channel.Id && msg.UserId == personDeleting.Id).OrderByDescending(msg => msg.UserMessageId).FirstOrDefault();
+            thread = db.ModMailThreads.Where(th => th.ChannelId == channel.Id).First();
+        }
+        if(messageToRemove == null)
+        {
+            throw new Exception("No message found to delete"); 
+        }
+        await DeleteMessageInThread(thread, messageToRemove);
+       
+    }
+
+    private async Task DeleteMessageInThread(ModMailThread thread, ThreadMessage message, bool deleteMessage=true){
+        var bot = Global.Bot;
+        var guild = bot.GetGuild(Global.ServerID);
+        var user = guild.GetUser(thread.UserId);
+        var channelObj = guild.GetTextChannel(thread.ChannelId);
+        IDMChannel userDmChannel = await user.GetOrCreateDMChannelAsync();
+        IMessage rawChannelMessage =  await channelObj.GetMessageAsync(message.ChannelMessageId);
+        if(deleteMessage)
+        {
+            await rawChannelMessage.DeleteAsync();
+        }
+
+        IMessage rawDmMessage = await userDmChannel.GetMessageAsync(message.UserMessageId);
+
+        await rawDmMessage.DeleteAsync();
+
+        using(var db = new Database()){
+            db.ThreadMessages.Remove(message);
+            db.SaveChanges();
+        }
+    }
+
+    public async Task<bool> DeleteMessageInThread(ulong channelId, ulong messageId, bool deleteMessage=true){
+        ThreadMessage messageToRemove;
+        ModMailThread thread;
+        using(var db = new Database())
+        {
+            messageToRemove =  db.ThreadMessages.Where(msg => msg.ChannelId == channelId && msg.ChannelMessageId == messageId).OrderByDescending(msg => msg.UserMessageId).FirstOrDefault();
+            thread = db.ModMailThreads.Where(th => th.ChannelId == channelId).First();
+        }
+        if(messageToRemove != null && messageToRemove.UserMessageId != 0)
+        {
+            await DeleteMessageInThread(thread, messageToRemove, deleteMessage);
+            return true;
+        }
+        if(messageToRemove == null)
+        {
+            return true;
+        }
+        return false;
+    }
+
    
 
     

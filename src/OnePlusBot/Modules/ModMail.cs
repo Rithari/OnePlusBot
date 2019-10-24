@@ -157,13 +157,25 @@ namespace OnePlusBot.Modules
         }
 
         [
-            Command("contactUser"),
+            Command("contact"),
             Summary("Opens a thread with the specified user"),
             RequireRole("staff")
         ]
         public async Task<RuntimeResult> ContactUser(IGuildUser user)
         {
             await new  ModMailManager().ContactUser(user);
+            return CustomResult.FromSuccess();
+        }
+
+         [
+            Command("delete"),
+            Summary("Deletes your last message within a modmail thread"),
+            RequireRole("staff"),
+            RequireModMailContext
+        ]
+        public async Task<RuntimeResult> DeleteLastMessage()
+        {
+            await new  ModMailManager().DeleteLastMessageInThread(Context.Channel, Context.User);
             return CustomResult.FromSuccess();
         }
     
