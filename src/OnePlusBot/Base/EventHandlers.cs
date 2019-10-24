@@ -633,6 +633,9 @@ namespace OnePlusBot.Base
                 return;
             if (message.Author.IsBot)
                 return;
+
+            if(message.Channel is IDMChannel)
+                return;
             
             int argPos = 0;
             if (!message.HasCharPrefix(';', ref argPos) && 

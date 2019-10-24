@@ -20,7 +20,7 @@ namespace OnePlusBot
         public static Embed GetUserInformation(int pastThreadCount, SocketUser user)
         {
             var descriptionText = new StringBuilder();
-            descriptionText.Append($"The were {pastThreadCount} threads with {Extensions.FormatUserNameDetailed(user)} in the past.");
+            descriptionText.Append($"There were {pastThreadCount} threads with {Extensions.FormatUserNameDetailed(user)} in the past.");
             var embed = GetBaseEmbed();
             embed.WithAuthor(GetOneplusAuthor());
             embed.WithDescription(descriptionText.ToString());
@@ -34,6 +34,10 @@ namespace OnePlusBot
             builder.WithDescription(message.Content);
             builder.WithAuthor(new EmbedAuthorBuilder().WithIconUrl(message.Author.GetAvatarUrl()).WithName(message.Author.Username));
             builder.WithTitle(title);
+            if(message.Attachments.Count > 0)
+            {
+                builder = builder.WithImageUrl(message.Attachments.First().ProxyUrl);
+            }
 
             return builder.Build();
         }
@@ -73,7 +77,7 @@ namespace OnePlusBot
             var descriptionBuilder = new StringBuilder();
             descriptionBuilder.Append($"A modmail thread has been closed with the note '{note}' \n ");
             descriptionBuilder.Append($"There were {messageCount} interactions with the user {Extensions.FormatUserNameDetailed(user)}. \n");
-            descriptionBuilder.Append($"It has been opened on {thread.CreateDate:dd.MM.yyyy HH:mm}");
+            descriptionBuilder.Append($"It has been opened on {thread.CreateDate:dd.MM.yyyy HH:mm} {TimeZoneInfo.Local}");
             descriptionBuilder.Append($" and lasted {Extensions.FormatTimeSpan(DateTime.Now - thread.CreateDate)}.");
             return descriptionBuilder;
         }
@@ -88,18 +92,22 @@ namespace OnePlusBot
 
         public static Embed GetMutingSummaryEmbed(ModMailThread thread, int messageCount, SocketUser user, string note, DateTime until){
             StringBuilder description = GetClosingHeader(thread, messageCount, user, note);
-            description.Append($"\n It has been disabled and will be available again at {until:dd.MM.yyyy HH:mm}.");
+            description.Append($"\n It has been disabled and will be available again at {until:dd.MM.yyyy HH:mm} {TimeZoneInfo.Local}.");
             var embed = GetBaseEmbed();
             embed.WithTitle("Modmail thread has been disabled for user");
             embed.WithDescription(description.ToString());
             return embed.Build();
         }
 
-        public static Embed GetModeratorReplyEmbed(string message, string title, SocketUser user=null)
+        public static Embed GetModeratorReplyEmbed(string message, string title, SocketMessage messageObj,  SocketUser user=null)
         {
             var author = user == null ? GetOneplusAuthor() : GetUserAuthor(user);
             var builder = GetBaseEmbed();
             builder.WithAuthor(author);
+            if(messageObj.Attachments.Count > 0)
+            {
+                builder = builder.WithImageUrl(messageObj.Attachments.First().ProxyUrl);
+            }
             builder.WithDescription(message);
             builder.WithTitle(title);
             return builder.Build();

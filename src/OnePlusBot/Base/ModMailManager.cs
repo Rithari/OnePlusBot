@@ -120,7 +120,7 @@ namespace OnePlusBot.Base
         var userObj = Global.ModMailThreads.Where(th => th.ChannelId == channel.Id).DefaultIfEmpty(null).First();
         UpdateModThreadUpdatedField(channel.Id, "MOD_REPLIED");
         var threadUser = guild.GetUser(userObj.UserId);
-        var replyEmbed = ModMailEmbedHandler.GetModeratorReplyEmbed(clearMessage, "Moderator replied", anonymous ? null : moderatorUser);
+        var replyEmbed = ModMailEmbedHandler.GetModeratorReplyEmbed(clearMessage, "Moderator replied", message, anonymous ? null : moderatorUser);
         await DeleteMessageAndMirrorEmbeds(threadUser, channel, replyEmbed, message, anonymous);
     }
 
@@ -203,8 +203,12 @@ namespace OnePlusBot.Base
         ModMailThread thread;
         using(var db = new Database())
         {
-            messageToEdit =  db.ThreadMessages.Where(msg => msg.ChannelId == channel.Id && msg.UserId == personEditing.Id).OrderByDescending(msg => msg.UserMessageId).First();
+            messageToEdit =  db.ThreadMessages.Where(msg => msg.ChannelId == channel.Id && msg.UserId == personEditing.Id).OrderByDescending(msg => msg.UserMessageId).FirstOrDefault();
             thread = db.ModMailThreads.Where(th => th.ChannelId == channel.Id).First();
+        }
+        if(messageToEdit == null)
+        {
+            throw new Exception("No message found to edit"); 
         }
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
@@ -212,7 +216,7 @@ namespace OnePlusBot.Base
         var channelObj = guild.GetTextChannel(channel.Id);
         IDMChannel userDmChannel = await user.GetOrCreateDMChannelAsync();
         IMessage rawChannelMessage =  await channelObj.GetMessageAsync(messageToEdit.ChannelMessageId);
-        Embed newEmbed = ModMailEmbedHandler.GetModeratorReplyEmbed(newText, "Moderator replied", messageToEdit.Anonymous ? null : personEditing);
+        Embed newEmbed = rawChannelMessage.Embeds.First().ToEmbedBuilder().WithDescription(newText).Build();
         // these ifs are needed, because when the message is cached it remains a socket message, when its older (or the bot was restarted) its a restmessage
         if(rawChannelMessage is RestUserMessage)
         {
@@ -294,6 +298,19 @@ namespace OnePlusBot.Base
 
 
     public async Task ContactUser(IGuildUser user){
+        using(var db = new Database()){
+            var exists = db.ModMailThreads.Where(th => th.UserId == user.Id && th.State != "CLOSED");
+            if(exists.Count() > 0){
+                throw new Exception("Thread already exists!");
+            }
+
+            var newUser = new User();
+            newUser.UserId = user.Id;
+            newUser.ModMailMuted = false;
+            db.Users.Add(newUser);
+            db.SaveChanges();
+        
+        }
         await CreateModMailThread(user);
     }
    
