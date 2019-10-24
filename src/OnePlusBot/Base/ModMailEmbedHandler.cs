@@ -6,6 +6,7 @@ using Discord.WebSocket;
 using OnePlusBot.Data.Models;
 using System;
 using OnePlusBot.Helpers;
+using OnePlusBot.Base;
 
 namespace OnePlusBot 
 {
@@ -119,6 +120,16 @@ namespace OnePlusBot
             builder.WithAuthor(GetUserAuthor(user));
             builder.WithTitle("A new modmail thread has been opened");
             builder.WithDescription($"The thread concerns {Extensions.FormatUserNameDetailed(user)}.");
+            return builder.Build();
+        }
+
+        public static Embed GetThreadAlreadyExistsEmbed(ModMailThread thread){
+            var builder = GetBaseEmbed();
+            var bot = Global.Bot;
+            var guild = bot.GetGuild(Global.ServerID);
+            var user = guild.GetUser(thread.UserId);
+            builder.WithDescription("Thread already exists.");
+            builder.AddField("Link", Extensions.GetChannelUrl(guild.Id, thread.ChannelId, user.Username + user.Discriminator));
             return builder.Build();
         }
     }

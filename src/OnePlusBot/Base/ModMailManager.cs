@@ -23,7 +23,7 @@ namespace OnePlusBot.Base
             var user = db.Users.Where(us => us.UserId == message.Author.Id).FirstOrDefault();
             if(user != null)
             {
-                if(user.ModMailMuted)
+                if(user.ModMailMuted && user.ModMailMutedUntil > DateTime.Now)
                 {
                     await message.Channel.SendMessageAsync($"You are unable to contact modmail until {user.ModMailMutedUntil:dd.MM.yyyy HH:mm} {TimeZoneInfo.Local}.");
                     return;
@@ -51,7 +51,6 @@ namespace OnePlusBot.Base
         var guild = Global.Bot.GetGuild(Global.ServerID);
         var modQueue = guild.GetTextChannel(Global.Channels["modqueue"]);
         await modQueue.SendMessageAsync(embed: ModMailEmbedHandler.GetModqueueNotificationEmbed(message.Author));
-       
     }
 
     private async Task<RestTextChannel> CreateModMailThread(IUser targetUser){
@@ -98,8 +97,18 @@ namespace OnePlusBot.Base
             }
             var msg = await guild.GetTextChannel(modMailThread.ChannelId).SendMessageAsync(mentions.ToString(), embed: ModMailEmbedHandler.GetReplyEmbed(message));
             AddModMailMessage(modMailThread.ChannelId, msg, null, message.Author.Id);
+            var userMsg = await message.Channel.GetMessageAsync(message.Id);
+            if(userMsg is RestUserMessage)
+            {
+                var currentMessageInUserDmChannel = userMsg as RestUserMessage;
+                await currentMessageInUserDmChannel.AddReactionAsync(new Emoji("✅"));
+            }
+            else if(userMsg is SocketUserMessage)
+            {
+                var currentMessageInUserDmChannel = userMsg as SocketUserMessage;
+                await currentMessageInUserDmChannel.AddReactionAsync(new Emoji("✅"));
+            }
         }
-        await Task.CompletedTask;
     }
 
     public void UpdateModThreadUpdatedField(ulong channelId, string newState)
@@ -325,17 +334,28 @@ namespace OnePlusBot.Base
     }
 
 
-    public async Task ContactUser(IGuildUser user){
+    public async Task ContactUser(IGuildUser user, ISocketMessageChannel channel){
         using(var db = new Database()){
             var exists = db.ModMailThreads.Where(th => th.UserId == user.Id && th.State != "CLOSED");
             if(exists.Count() > 0){
-                throw new Exception("Thread already exists!");
+                await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetThreadAlreadyExistsEmbed(exists.First()));
+                return;
             }
 
-            var newUser = new User();
-            newUser.UserId = user.Id;
-            newUser.ModMailMuted = false;
-            db.Users.Add(newUser);
+            var existingUser = db.Users.Where(us => us.UserId == user.Id).FirstOrDefault();
+            if(existingUser == null)
+            {
+                var newUser = new User();
+                newUser.UserId = user.Id;
+                newUser.ModMailMuted = false;
+                db.Users.Add(newUser);
+            }
+            else 
+            {
+                existingUser.ModMailMuted = false;
+            }
+
+           
             db.SaveChanges();
         
         }

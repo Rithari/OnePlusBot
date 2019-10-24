@@ -94,7 +94,7 @@ namespace OnePlusBot.Modules
         }
 
         [
-            Command("close"),
+            Command("close", RunMode = RunMode.Async),
             Summary("Closes the modmail thread"),
             RequireRole("staff"),
             RequireModMailContext
@@ -106,7 +106,7 @@ namespace OnePlusBot.Modules
         }
 
         [
-            Command("edit"),
+            Command("edit", RunMode = RunMode.Async),
             Summary("edits your message in the modmail thread"),
             RequireRole("staff"),
             RequireModMailContext
@@ -129,7 +129,7 @@ namespace OnePlusBot.Modules
         }
 
         [
-            Command("disableThread"),
+            Command("disableThread", RunMode = RunMode.Async),
             Summary("disables and closes the modmail thread for a certain time period. The user will be notified and he will be able to contact modmail after the period again."),
             RequireRole("staff"),
             RequireModMailContext
@@ -195,7 +195,7 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> ContactUser(IGuildUser user)
         {
-            await new  ModMailManager().ContactUser(user);
+            await new  ModMailManager().ContactUser(user, Context.Channel);
             return CustomResult.FromSuccess();
         }
 
