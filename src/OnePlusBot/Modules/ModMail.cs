@@ -129,12 +129,12 @@ namespace OnePlusBot.Modules
         }
 
         [
-            Command("disableModmail"),
+            Command("disableThread"),
             Summary("disables and closes the modmail thread for a certain time period. The user will be notified and he will be able to contact modmail after the period again."),
             RequireRole("staff"),
             RequireModMailContext
         ]
-        public async Task<RuntimeResult> DisableModMailForUser(params string[] arguments)
+        public async Task<RuntimeResult> DisableCurrentThread(params string[] arguments)
         {
             var durationStr = arguments[0];
             string note;
@@ -149,9 +149,31 @@ namespace OnePlusBot.Modules
                 return CustomResult.FromError("You need to provide a note.");
             }
             TimeSpan mutedTime = Extensions.GetTimeSpanFromString(durationStr);
-       
-            await new  ModMailManager().DisableModMailForUser(Context.Message, Context.Channel, Context.User, mutedTime, note);
+            var until = DateTime.Now + mutedTime;
+            var manager = new ModMailManager();
+            await manager.LogForDisablingAction(Context.Channel, note, until);
+            manager.DisableModMailForUserWithExistingThread(Context.Channel, until);
+           
             return CustomResult.FromIgnored();
+        }
+
+        [
+            Command("disableModmail"),
+            Summary("Disables modmail for a certain time period. The target user will be able to contact modmail after the time has been reached."),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> DisableModMailForUser(IGuildUser user,  params string[] arguments)
+        {
+            if(arguments.Length < 1)
+            {
+                return CustomResult.FromError("You need to provide a duration");
+            }
+            var durationStr = arguments[0];
+            TimeSpan mutedTime = Extensions.GetTimeSpanFromString(durationStr);
+            var until = DateTime.Now + mutedTime;
+            new ModMailManager().DisableModmailForUser(user, until);
+            await Task.CompletedTask;
+            return CustomResult.FromSuccess();
         }
 
         [

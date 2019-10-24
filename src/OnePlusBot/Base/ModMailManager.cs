@@ -48,6 +48,9 @@ namespace OnePlusBot.Base
         var channelMessage = await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetReplyEmbed(message, "Initial message from user"));
         AddModMailMessage(channel.Id, channelMessage, null, message.Author.Id);
         await message.Author.SendMessageAsync(embed: ModMailEmbedHandler.GetInitialUserReply(message));
+        var guild = Global.Bot.GetGuild(Global.ServerID);
+        var modQueue = guild.GetTextChannel(Global.Channels["modqueue"]);
+        await modQueue.SendMessageAsync(embed: ModMailEmbedHandler.GetModqueueNotificationEmbed(message.Author));
        
     }
 
@@ -106,7 +109,7 @@ namespace OnePlusBot.Base
             var threadObj = db.ModMailThreads.Where(ch => ch.ChannelId == channelId).FirstOrDefault();
             if(threadObj != null)
             {
-                threadObj.ClosedDate = DateTime.Now;
+                threadObj.UpdateDate = DateTime.Now;
                 threadObj.State = newState;
             }
             db.SaveChanges();
@@ -258,8 +261,7 @@ namespace OnePlusBot.Base
         }
     }
 
-    public async Task DisableModMailForUser(SocketMessage message, ISocketMessageChannel channel, SocketUser moderatorUser, TimeSpan duration, string note){
-        var until = DateTime.Now + duration;
+    public void DisableModMailForUserWithExistingThread(ISocketMessageChannel channel, DateTime until){
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
         using(var db = new Database()){
@@ -269,6 +271,32 @@ namespace OnePlusBot.Base
             user.ModMailMutedUntil = until;
             db.SaveChanges();
         }
+    }
+
+    public void DisableModmailForUser(IUser user, DateTime until){
+        var bot = Global.Bot;
+        var guild = bot.GetGuild(Global.ServerID);
+        using(var db = new Database()){
+            var userInDb = db.Users.Where(us => us.UserId == user.Id).FirstOrDefault();
+            if(userInDb == null){
+                var newUser = new User();
+                newUser.UserId = user.Id;
+                newUser.ModMailMuted = true;
+                newUser.ModMailMutedUntil = until;
+                db.Users.Add(newUser);
+            } else {
+                userInDb.ModMailMuted = true;
+                userInDb.ModMailMutedUntil = until;
+            }
+            db.SaveChanges();
+        }
+    }
+
+    public async Task LogForDisablingAction(ISocketMessageChannel channel, string note, DateTime until)
+    {
+        var bot = Global.Bot;
+        var guild = bot.GetGuild(Global.ServerID);
+       
         var closedthread = CloseThreadInDb(channel);
 
         SocketGuildUser userObj = guild.GetUser(closedthread.UserId);

@@ -66,7 +66,7 @@ namespace OnePlusBot.Helpers
 
         public static String FormatUserNameDetailed(IUser user)
         {
-            return FormatUserName(user) + " (" + user?.Id +  ") ";
+            return FormatUserName(user) + " (" + user?.Id +  ")";
         }
 
         public static String FormatMentionDetailed(IUser user){

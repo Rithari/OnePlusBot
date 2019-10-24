@@ -217,8 +217,6 @@ namespace OnePlusBot.Modules
             Command("purge", RunMode = RunMode.Async),
             Summary("Deletes specified amount of messages."),
             RequireRole("staff"),
-            // this is a workaround, because purge can break the logging functionality of modmail (it removes the messages whose ids are stored)
-            // so the command is disabled in modmail, because it should not be used
             RequireBotPermission(GuildPermission.ManageMessages)
         ]
         public async Task<RuntimeResult> PurgeAsync([Remainder] double delmsg)

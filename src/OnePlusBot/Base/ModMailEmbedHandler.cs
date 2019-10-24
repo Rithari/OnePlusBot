@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using Discord;
@@ -110,6 +111,14 @@ namespace OnePlusBot
             }
             builder.WithDescription(message);
             builder.WithTitle(title);
+            return builder.Build();
+        }
+
+        public static Embed GetModqueueNotificationEmbed(SocketUser user){
+            var builder = GetBaseEmbed();
+            builder.WithAuthor(GetUserAuthor(user));
+            builder.WithTitle("A new modmail thread has been opened");
+            builder.WithDescription($"The thread concerns {Extensions.FormatUserNameDetailed(user)}.");
             return builder.Build();
         }
     }
