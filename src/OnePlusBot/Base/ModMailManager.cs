@@ -38,20 +38,39 @@ namespace OnePlusBot.Base
                 db.SaveChanges();
             }
         }
-        var channel = await CreateModMailThread(message.Author);
         int pastThreads = 0;
         using(var db = new Database())
         {
             pastThreads =  db.ModMailThreads.Where(ch => ch.UserId == message.Author.Id).Count();
         }
+        // when I tried to load the channel via getTextChannel, I got null in return, my only guess is that the channel
+        // did not get peristent completely, so it did not find it
+        // if we return the directly returned channel it worked
+        var channel = await CreateModMailThread(message.Author);
+        var guild = Global.Bot.GetGuild(Global.ServerID);
         await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetUserInformation(pastThreads, message.Author));
         var channelMessage = await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetReplyEmbed(message, "Initial message from user"));
         AddModMailMessage(channel.Id, channelMessage, null, message.Author.Id);
         await message.Author.SendMessageAsync(embed: ModMailEmbedHandler.GetInitialUserReply(message));
-        var guild = Global.Bot.GetGuild(Global.ServerID);
+
+        ModMailThread modmailThread;
+        using(var db = new Database())
+        {
+            modmailThread = db.ModMailThreads.Where(th => th.ChannelId == channel.Id).First(); 
+        }
+
         var modQueue = guild.GetTextChannel(Global.Channels["modqueue"]);
         var staffRole = guild.GetRole(Global.Roles["staff"]);
-        await modQueue.SendMessageAsync(staffRole.Mention, embed: ModMailEmbedHandler.GetModqueueNotificationEmbed(message.Author));
+        await staffRole.ModifyAsync(x => x.Mentionable = true);
+        try 
+        {
+            await modQueue.SendMessageAsync(staffRole.Mention, embed: ModMailEmbedHandler.GetModqueueNotificationEmbed(message.Author, modmailThread));
+        }
+        finally 
+        {
+            await staffRole.ModifyAsync(x => x.Mentionable = false);
+        }
+      
     }
 
     private async Task<RestTextChannel> CreateModMailThread(IUser targetUser){
@@ -164,7 +183,7 @@ namespace OnePlusBot.Base
             var messageUser = bot.GetUser(msg.UserId);
             var msgText = msg.Anonymous ? Extensions.FormatUserNameDetailed(messageUser) : "";
             await targetChannel.SendMessageAsync(msgText, embed: msgToLog.Embeds.First().ToEmbedBuilder().Build());
-            await Task.Delay(100);
+            await Task.Delay(500);
         }
     }
 
