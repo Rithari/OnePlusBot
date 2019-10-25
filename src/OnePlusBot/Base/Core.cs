@@ -115,7 +115,7 @@ namespace OnePlusBot.Base
 
         private static void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            string[] status = { "Use ;help", "Made with the Fans™", "DM for Support" };
+            string[] status = { "Use ;help", "Made with the Fans™", "DM to contact mods" };
             Random ran = new Random();
             int index = ran.Next(status.Length);
 
