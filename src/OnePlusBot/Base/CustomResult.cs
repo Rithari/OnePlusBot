@@ -7,8 +7,11 @@ namespace OnePlusBot.Base
 {
     public class CustomResult : RuntimeResult
     {
-        public CustomResult(CommandError? error, string reason) : base(error, reason)
+
+        public bool Ignore { get; }
+        public CustomResult(CommandError? error, string reason, bool ignore=false) : base(error, reason)
         {
+            this.Ignore = ignore;
         }
 
         public static CustomResult FromError(string reason) 
@@ -16,5 +19,8 @@ namespace OnePlusBot.Base
 
         public static CustomResult FromSuccess(string reason = null)
             => new CustomResult(null, reason);
+
+        public static CustomResult FromIgnored() => new CustomResult(null, null, true);
+        
     }
 }

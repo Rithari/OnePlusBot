@@ -16,7 +16,6 @@ namespace OnePlusBot.Data
         public DbSet<PersistentData> PersistentData { get; set; }
 
         public DbSet<ProfanityCheck> ProfanityChecks { get; set; }
-        public DbSet<ReportEntry> Reports { get; set; }
         public DbSet<ReferralCode> ReferralCodes { get; set; }
 
         public DbSet<FAQCommand> FAQCommands { get; set;}
@@ -30,6 +29,13 @@ namespace OnePlusBot.Data
 
         public DbSet<StarboardMessage> StarboardMessages { get; set; }
 
+        public DbSet<ModMailThread> ModMailThreads { get; set; }
+
+        public DbSet<ThreadSubscriber> ThreadSubscribers { get; set; }
+
+        public DbSet<User> Users { get; set; }
+
+        public DbSet<ThreadMessage> ThreadMessages { get; set; }
         public DbSet<StarboardPostRelation> StarboardPostRelations { get; set; }
 
         public DbSet<InviteLink> InviteLinks { get; set; }
@@ -64,7 +70,9 @@ namespace OnePlusBot.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-              modelBuilder.Entity<StarboardPostRelation>().HasKey(c => new { c.MessageId, c.UserId });
+            modelBuilder.Entity<StarboardPostRelation>().HasKey(c => new { c.MessageId, c.UserId });
+            modelBuilder.Entity<ThreadSubscriber>().HasKey(c => new { c.UserId, c.ModMailThreadId });
+            modelBuilder.Entity<ThreadMessage>().HasKey(c => new { c.ChannelId, c.ChannelMessageId });
         }
 
     }

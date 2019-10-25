@@ -131,23 +131,6 @@ CREATE TABLE `ReferralCodes` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
---
--- Table structure for table `Reports`
---
-
-DROP TABLE IF EXISTS `Reports`;
-CREATE TABLE `Reports` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `reported_user_id` bigint(20) unsigned NOT NULL,
-  `reported_user` text NOT NULL,
-  `reported_by_id` bigint(20) unsigned NOT NULL,
-  `reported_by` text NOT NULL,
-  `channel_id` bigint(20) unsigned NOT NULL,
-  `message_id` bigint(20) unsigned NOT NULL,
-  `reason` text NOT NULL,
-  `date` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Table structure for table `Roles`
@@ -224,6 +207,9 @@ CREATE TABLE `Reminders` (
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `InviteLinks`
+--
 
 DROP TABLE IF EXISTS `InviteLinks`;
 CREATE TABLE `InviteLinks` (
@@ -233,5 +219,48 @@ CREATE TABLE `InviteLinks` (
  `added_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `ModMailThread`
+--
+
+DROP TABLE IF EXISTS `ModMailThread`;
+CREATE TABLE `ModMailThread` (
+ `user_id` bigint(20) unsigned NOT NULL,
+ `channel_id` bigint(20) unsigned NOT NULL,
+ `created_date` datetime NOT NULL,
+ `update_date` datetime NOT NULL,
+ `closed_date` datetime NOT NULL,
+ `state` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'INITIAL',
+ PRIMARY KEY (`channel_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `ThreadSubscribers`
+--
+
+DROP TABLE IF EXISTS `ThreadSubscribers`;
+CREATE TABLE `ThreadSubscribers` (
+ `channel_id` bigint(20) unsigned NOT NULL,
+ `user_id` bigint(20) unsigned NOT NULL,
+ PRIMARY KEY (`channel_id`,`user_id`),
+ CONSTRAINT `fk_thread_ref` FOREIGN KEY (`channel_id`) REFERENCES `ModMailThread` (`channel_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+--
+-- Table structure for table `ThreadMessage`
+--
+
+
+DROP TABLE IF EXISTS `ThreadMessage`;
+CREATE TABLE `ThreadMessage` (
+ `channel_id` bigint(20) unsigned NOT NULL,
+ `channel_message_id` bigint(20) unsigned NOT NULL,
+ `user_message_id` bigint(20) unsigned NOT NULL,
+ `user_id` bigint(20) unsigned NOT NULL,
+ `anonymous` tinyint(4) NOT NULL,
+ PRIMARY KEY (`channel_id`,`channel_message_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS=1;
