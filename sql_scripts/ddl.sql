@@ -131,23 +131,6 @@ CREATE TABLE `ReferralCodes` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
---
--- Table structure for table `Reports`
---
-
-DROP TABLE IF EXISTS `Reports`;
-CREATE TABLE `Reports` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `reported_user_id` bigint(20) unsigned NOT NULL,
-  `reported_user` text NOT NULL,
-  `reported_by_id` bigint(20) unsigned NOT NULL,
-  `reported_by` text NOT NULL,
-  `channel_id` bigint(20) unsigned NOT NULL,
-  `message_id` bigint(20) unsigned NOT NULL,
-  `reason` text NOT NULL,
-  `date` datetime NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Table structure for table `Roles`

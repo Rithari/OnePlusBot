@@ -16,7 +16,6 @@ namespace OnePlusBot.Data
         public DbSet<PersistentData> PersistentData { get; set; }
 
         public DbSet<ProfanityCheck> ProfanityChecks { get; set; }
-        public DbSet<ReportEntry> Reports { get; set; }
         public DbSet<ReferralCode> ReferralCodes { get; set; }
 
         public DbSet<FAQCommand> FAQCommands { get; set;}

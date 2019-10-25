@@ -20,7 +20,6 @@ INSERT INTO `Channels` (`id`, `name`, `channel_id`, `channel_type`, `profanity_c
 (20, 'referralcodes', 0, 0, 0),
 (23, 'joinlog', 0, 0, 1),
 (28, 'info', 0, 0, 1),
-(35, 'reports', 0, 0, 1),
 (39, 'warnings', 0, 0, 1),
 (43, 'starboard', 0, 0, 1),
 (47, 'mutes', 0, 0, 1),
