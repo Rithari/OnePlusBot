@@ -113,7 +113,10 @@ namespace OnePlusBot.Base
             var mentions = new StringBuilder("");
             foreach(var subscriber in modMailThread.Subscriber)
             {
-                mentions.Append(guild.GetUser(subscriber.UserId).Mention);
+                var subscriberUser = guild.GetUser(subscriber.UserId);
+                if(subscriberUser != null){
+                    mentions.Append(subscriberUser.Mention);
+                }
             }
             var msg = await guild.GetTextChannel(modMailThread.ChannelId).SendMessageAsync(mentions.ToString(), embed: ModMailEmbedHandler.GetReplyEmbed(message));
             AddModMailMessage(modMailThread.ChannelId, msg, null, message.Author.Id);
@@ -152,8 +155,16 @@ namespace OnePlusBot.Base
         var userObj = Global.ModMailThreads.Where(th => th.ChannelId == channel.Id).DefaultIfEmpty(null).First();
         UpdateModThreadUpdatedField(channel.Id, "MOD_REPLIED");
         var threadUser = guild.GetUser(userObj.UserId);
-        var replyEmbed = ModMailEmbedHandler.GetModeratorReplyEmbed(clearMessage, "Moderator replied", message, anonymous ? null : moderatorUser);
-        await AnswerUserAndLogEmbed(threadUser, channel, replyEmbed, message, anonymous);
+        if(threadUser != null)
+        {
+            var replyEmbed = ModMailEmbedHandler.GetModeratorReplyEmbed(clearMessage, "Moderator replied", message, anonymous ? null : moderatorUser);
+            await AnswerUserAndLogEmbed(threadUser, channel, replyEmbed, message, anonymous);
+        }
+        else
+        {
+            await channel.SendMessageAsync("User left the server. The bot message will not reach.");
+        }
+      
     }
 
     private ModMailThread CloseThreadInDb(ISocketMessageChannel channel){
@@ -181,7 +192,7 @@ namespace OnePlusBot.Base
         {
             var msgToLog = await channel.GetMessageAsync(msg.ChannelMessageId);
             var messageUser = bot.GetUser(msg.UserId);
-            var msgText = msg.Anonymous ? Extensions.FormatUserNameDetailed(messageUser) : "";
+            var msgText = msg.Anonymous && messageUser != null ? Extensions.FormatUserNameDetailed(messageUser) : "";
             await targetChannel.SendMessageAsync(msgText, embed: msgToLog.Embeds.First().ToEmbedBuilder().Build());
             await Task.Delay(500);
         }
@@ -211,12 +222,15 @@ namespace OnePlusBot.Base
             messagesToLog = db.ThreadMessages.Where(ch => ch.ChannelId == closedthread.ChannelId).ToList();
         }
         var modMailLogChannel = guild.GetTextChannel(Global.Channels["modmaillog"]);
-        await LogClosingHeader(closedthread, messagesToLog.Count(), note, modMailLogChannel, bot.GetUser(closedthread.UserId));
+        await LogClosingHeader(closedthread, messagesToLog.Count(), note, modMailLogChannel, userObj);
 
         await LogModMailThreadMessagesToModmailLog(closedthread, note, messagesToLog, modMailLogChannel);
         await (channel as SocketTextChannel).DeleteAsync();
-
-        await userObj.SendMessageAsync(embed: ModMailEmbedHandler.GetClosingEmbed());
+        // only send the user a dm, in case the user initiated, if we use contact it should not happen
+        if(userObj != null && messagesToLog.Count() > 0)
+        {
+            await userObj.SendMessageAsync(embed: ModMailEmbedHandler.GetClosingEmbed());
+        }
     }
 
     
@@ -246,6 +260,10 @@ namespace OnePlusBot.Base
         var guild = bot.GetGuild(Global.ServerID);
         var user = guild.GetUser(thread.UserId);
         var channelObj = guild.GetTextChannel(channel.Id);
+        if(user == null)
+        {
+            throw new Exception("User was not found. Probably left the guild.");
+        }
         IDMChannel userDmChannel = await user.GetOrCreateDMChannelAsync();
         IMessage rawChannelMessage =  await channelObj.GetMessageAsync(messageToEdit.ChannelMessageId);
         Embed newEmbed = rawChannelMessage.Embeds.First().ToEmbedBuilder().WithDescription(newText).Build();
@@ -341,7 +359,10 @@ namespace OnePlusBot.Base
         await LogModMailThreadMessagesToModmailLog(closedthread, note, messagesToLog, modMailLogChannel);
         await (channel as SocketTextChannel).DeleteAsync();
 
-        await userObj.SendMessageAsync(embed: ModMailEmbedHandler.GetDisablingEmbed(until));
+        if(userObj != null)
+        {
+            await userObj.SendMessageAsync(embed: ModMailEmbedHandler.GetDisablingEmbed(until));
+        }
     }
 
     public void EnableModmailForUser(IGuildUser user)
@@ -379,7 +400,13 @@ namespace OnePlusBot.Base
             db.SaveChanges();
         
         }
-        await CreateModMailThread(user);
+        var createdChannel = await CreateModMailThread(user);
+        ModMailThread createdModMailThread;
+        using(var db = new Database()){
+            createdModMailThread = db.ModMailThreads.Where(th => th.ChannelId == createdChannel.Id).First();
+        }
+        var embedContainingLink = ModMailEmbedHandler.GetThreadHasBeendCreatedEmbed(createdModMailThread);
+        await channel.SendMessageAsync(embed: embedContainingLink);
     }
 
     public async Task DeleteMessage(ulong messageId, ISocketMessageChannel channel, SocketUser personDeleting){
@@ -402,6 +429,10 @@ namespace OnePlusBot.Base
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
         var user = guild.GetUser(thread.UserId);
+        if(user == null)
+        {
+            throw new Exception("User was not found. Probably left the guild.");
+        }
         var channelObj = guild.GetTextChannel(thread.ChannelId);
         IDMChannel userDmChannel = await user.GetOrCreateDMChannelAsync();
         IMessage rawChannelMessage =  await channelObj.GetMessageAsync(message.ChannelMessageId);

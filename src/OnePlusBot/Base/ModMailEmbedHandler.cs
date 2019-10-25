@@ -133,5 +133,15 @@ namespace OnePlusBot
             builder.AddField("Link", Extensions.GetChannelUrl(guild.Id, thread.ChannelId, user.Username + user.Discriminator));
             return builder.Build();
         }
+
+        public static Embed GetThreadHasBeendCreatedEmbed(ModMailThread thread){
+            var builder = GetBaseEmbed();
+            var bot = Global.Bot;
+            var guild = bot.GetGuild(Global.ServerID);
+            var user = guild.GetUser(thread.UserId);
+            builder.WithDescription("Thread has been created.");
+            builder.AddField("Link", Extensions.GetChannelUrl(guild.Id, thread.ChannelId, user.Username + user.Discriminator));
+            return builder.Build();
+        }
     }
 }

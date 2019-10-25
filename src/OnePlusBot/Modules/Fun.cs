@@ -232,13 +232,17 @@ namespace OnePlusBot.Modules
                     continue;
                 }
                 var element = values.ElementAt(index);
+
+                var user = Extensions.GetUserById(element.Key);
+                var userReference = user != null ? user.Mention : "User left the server. " + element.Key;
+
                 stringBuilder.Append(badges[index]); 
                 stringBuilder.Append(" - ");
                 stringBuilder.Append(element.Value);
                 stringBuilder.Append(" ");
                 stringBuilder.Append(Global.OnePlusEmote.STAR);
                 stringBuilder.Append(" ");
-                stringBuilder.Append(Extensions.GetUserById(element.Key).Mention);
+                stringBuilder.Append(userReference);
                 stringBuilder.Append(Environment.NewLine);
             }
             return stringBuilder.ToString();
