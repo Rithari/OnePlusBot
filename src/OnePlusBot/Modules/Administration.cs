@@ -463,7 +463,7 @@ namespace OnePlusBot.Modules
                     individualWarnings = db.Warnings.Where(x => x.WarnedUserID == requestee.Id && !x.Decayed);
                     var totalWarnings = db.Warnings.Where(x => x.WarnedUserID == requestee.Id);
 
-                    await ReplyAsync($"You have {individualWarnings.Count()} active and {totalWarnings.Count()} total warnings.");
+                    await ReplyAsync($"You have {individualWarnings.Count()} active out of {totalWarnings.Count()} total warnings.");
 
                     return;
                 }
