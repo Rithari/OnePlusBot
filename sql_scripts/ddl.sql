@@ -274,6 +274,6 @@ CREATE TABLE `User` (
  `modmail_muted` tinyint(4) NOT NULL,
  `modmail_muted_until` datetime NOT NULL,
  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS=1;
