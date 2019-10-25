@@ -50,7 +50,8 @@ namespace OnePlusBot.Base
         await message.Author.SendMessageAsync(embed: ModMailEmbedHandler.GetInitialUserReply(message));
         var guild = Global.Bot.GetGuild(Global.ServerID);
         var modQueue = guild.GetTextChannel(Global.Channels["modqueue"]);
-        await modQueue.SendMessageAsync(embed: ModMailEmbedHandler.GetModqueueNotificationEmbed(message.Author));
+        var staffRole = guild.GetRole(Global.Roles["staff"]);
+        await modQueue.SendMessageAsync(staffRole.Mention, embed: ModMailEmbedHandler.GetModqueueNotificationEmbed(message.Author));
     }
 
     private async Task<RestTextChannel> CreateModMailThread(IUser targetUser){
