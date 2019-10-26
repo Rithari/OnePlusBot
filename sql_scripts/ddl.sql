@@ -232,7 +232,9 @@ CREATE TABLE `ModMailThread` (
  `update_date` datetime NOT NULL,
  `closed_date` datetime NOT NULL,
  `state` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'INITIAL',
- PRIMARY KEY (`channel_id`)
+ PRIMARY KEY (`channel_id`),
+ KEY `fk_user_id_ref` (`user_id`),
+ CONSTRAINT `fk_user_id_ref` FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -260,7 +262,8 @@ CREATE TABLE `ThreadMessage` (
  `user_message_id` bigint(20) unsigned NOT NULL,
  `user_id` bigint(20) unsigned NOT NULL,
  `anonymous` tinyint(4) NOT NULL,
- PRIMARY KEY (`channel_id`,`channel_message_id`)
+ PRIMARY KEY (`channel_id`,`channel_message_id`),
+ CONSTRAINT `fk_msg_id` FOREIGN KEY (`channel_id`) REFERENCES `ModMailThread` (`channel_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
