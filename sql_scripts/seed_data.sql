@@ -5,7 +5,8 @@ INSERT INTO `PersistentData` VALUES
 (4,'starboard_stars',1),
 (5,'level_2_stars',2),
 (6,'level_3_stars',3),
-(7,'decay_days', 90);
+(7,'decay_days', 90),
+(8, 'modmail_category_id', 0);
 
 INSERT INTO `AuthTokens` VALUES 
 (1,'stable','REPLACE WITH TOKEN'),
