@@ -191,7 +191,7 @@ namespace OnePlusBot.Base
         foreach(var msg in messagesToLog)
         {
             var msgToLog = await channel.GetMessageAsync(msg.ChannelMessageId);
-            var messageUser = bot.GetUser(msg.UserId);
+            var messageUser = bot.GetGuild(Global.ServerID).GetUser(msg.UserId);
             var msgText = msg.Anonymous && messageUser != null ? Extensions.FormatUserNameDetailed(messageUser) : "";
             await targetChannel.SendMessageAsync(msgText, embed: msgToLog.Embeds.First().ToEmbedBuilder().Build());
             await Task.Delay(500);
@@ -354,7 +354,7 @@ namespace OnePlusBot.Base
             messagesToLog = db.ThreadMessages.Where(ch => ch.ChannelId == closedthread.ChannelId).ToList();
         }
         var modMailLogChannel = guild.GetTextChannel(Global.Channels["modmaillog"]);
-        await LogDisablingHeader(closedthread, messagesToLog.Count(), note, modMailLogChannel, bot.GetUser(closedthread.UserId), until);
+        await LogDisablingHeader(closedthread, messagesToLog.Count(), note, modMailLogChannel, userObj, until);
 
         await LogModMailThreadMessagesToModmailLog(closedthread, note, messagesToLog, modMailLogChannel);
         await (channel as SocketTextChannel).DeleteAsync();
