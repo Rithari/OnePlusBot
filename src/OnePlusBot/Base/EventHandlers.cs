@@ -536,7 +536,7 @@ namespace OnePlusBot.Base
         }
 
         private static bool ModMailThreadForUserExists(IUser user){
-                    return Global.ModMailThreads.Exists(ch => ch.UserId == user.Id && ch.State != "CLOSED");
+            return Global.ModMailThreads.Exists(ch => ch.UserId == user.Id && ch.State != "CLOSED");
         }
 
         private static bool ContainsIllegalInvite(string message)

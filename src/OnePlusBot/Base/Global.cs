@@ -102,6 +102,17 @@ namespace OnePlusBot.Base
             LoadGlobal();
         }
 
+        public static void ReloadModmailThreads(){
+            using (var db = new Database())
+            {
+                ModMailThreads.Clear();
+                ModMailThreads = db.ModMailThreads
+                    .Include(sub => sub.Subscriber)
+                    .Include(us => us.ThreadUser)
+                    .ToList();
+            }
+        }
+
         public static void LoadGlobal(){
             using (var db = new Database())
             {
@@ -154,10 +165,6 @@ namespace OnePlusBot.Base
                     .First(entry => entry.Name == "modmail_category_id")
                     .Value;
 
-                ModMailThreads.Clear();
-                ModMailThreads = db.ModMailThreads
-                    .Include(sub => sub.Subscriber)
-                    .ToList();
 
                 StarboardPosts.Clear();
                 if(db.StarboardMessages.Any())
@@ -191,6 +198,8 @@ namespace OnePlusBot.Base
                 FAQCommandChannels = ReadChannels;
                 FAQCommands = db.FAQCommands.ToList();
             }
+
+            ReloadModmailThreads();
         }
 
         public static class OnePlusEmote {

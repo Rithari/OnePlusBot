@@ -347,13 +347,18 @@ namespace OnePlusBot.Modules
             {
                 db.Reminders.Add(reminder);
                 db.SaveChanges();
+                if(targetTime <= DateTime.Now.AddMinutes(60))
+                {
+                    var difference = targetTime - DateTime.Now;
+                    ReminderTimerManger.RemindUserIn(author.Id, difference, reminder.ID);
+                    reminder.ReminderScheduled = true;
+                }
+               
+                db.SaveChanges();
             }
 
-            if(targetTime <= DateTime.Now.AddMinutes(60))
-            {
-                var difference = targetTime - DateTime.Now;
-                ReminderTimerManger.RemindUserIn(author.Id, difference, reminder.ID);
-            }
+
+            
 
             return CustomResult.FromSuccess();
 

@@ -18,18 +18,26 @@ namespace OnePlusBot.Base
   {
     public async Task CreateModmailThread(SocketMessage message)
     {
+        var userFromCache = Global.ModMailThreads.Where(th => th.UserId == message.Author.Id).FirstOrDefault();
+        if(userFromCache != null &&  userFromCache.ThreadUser.ModMailMuted && userFromCache.ThreadUser.ModMailMutedUntil > DateTime.Now)
+        {
+            if(!userFromCache.ThreadUser.ModMailMutedReminded) {
+                await message.Channel.SendMessageAsync($"You are unable to contact modmail until {userFromCache.ThreadUser.ModMailMutedUntil:dd.MM.yyyy HH:mm} {TimeZoneInfo.Local}.");
+                using(var db = new Database())
+                {
+                    db.Users.Where(us => us.UserId == message.Author.Id).First().ModMailMutedReminded = true;
+                    db.SaveChanges();
+                }
+
+                Global.ReloadModmailThreads();
+            }
+            return;
+        }
+
         using(var db = new Database())
         {
             var user = db.Users.Where(us => us.UserId == message.Author.Id).FirstOrDefault();
-            if(user != null)
-            {
-                if(user.ModMailMuted && user.ModMailMutedUntil > DateTime.Now)
-                {
-                    await message.Channel.SendMessageAsync($"You are unable to contact modmail until {user.ModMailMutedUntil:dd.MM.yyyy HH:mm} {TimeZoneInfo.Local}.");
-                    return;
-                }
-            }
-            else
+            if(user == null)
             {
                 var newUser = new User();
                 newUser.UserId = message.Author.Id;
@@ -85,12 +93,12 @@ namespace OnePlusBot.Base
         thread.ChannelId = channel.Id;
         thread.UserId = targetUser.Id;
         thread.State = "INITIAL";
-        Global.ModMailThreads.Add(thread);
         using(var db = new Database())
         {
             db.ModMailThreads.Add(thread);
             db.SaveChanges();
         }
+        Global.ReloadModmailThreads();
         return channel;
     }
 
@@ -178,7 +186,7 @@ namespace OnePlusBot.Base
                 threadObj.State = "CLOSED";
             }
             db.SaveChanges();
-            Global.ModMailThreads.Where(th => th.ChannelId == channel.Id).First().State  = "CLOSED";
+            Global.ReloadModmailThreads();
         }
         return threadObj;
     }
@@ -315,9 +323,12 @@ namespace OnePlusBot.Base
             var thread = db.ModMailThreads.Where(ch => ch.ChannelId == channel.Id).First();
             var user = db.Users.Where(us => us.UserId == thread.UserId).First();
             user.ModMailMuted = true;
+            user.ModMailMutedReminded = false;
             user.ModMailMutedUntil = until;
             db.SaveChanges();
         }
+        Global.ReloadModmailThreads();
+
     }
 
     public void DisableModmailForUser(IUser user, DateTime until){
@@ -329,14 +340,17 @@ namespace OnePlusBot.Base
                 var newUser = new User();
                 newUser.UserId = user.Id;
                 newUser.ModMailMuted = true;
+                newUser.ModMailMutedReminded = false;
                 newUser.ModMailMutedUntil = until;
                 db.Users.Add(newUser);
             } else {
                 userInDb.ModMailMuted = true;
+                userInDb.ModMailMutedReminded = false;
                 userInDb.ModMailMutedUntil = until;
             }
             db.SaveChanges();
         }
+        Global.ReloadModmailThreads();
     }
 
     public async Task LogForDisablingAction(ISocketMessageChannel channel, string note, DateTime until)
@@ -372,6 +386,7 @@ namespace OnePlusBot.Base
             userInDb.ModMailMuted = false;
             db.SaveChanges();
         }
+        Global.ReloadModmailThreads();
     }
 
 

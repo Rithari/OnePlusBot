@@ -27,6 +27,9 @@ namespace OnePlusBot.Data.Models
         [Column("state")]
         public string State { get; set; }
 
+        [ForeignKey("UserId")]
+        public virtual User ThreadUser { get; set; }
+
 
         public virtual ICollection<ThreadSubscriber> Subscriber { get; set; }
     }

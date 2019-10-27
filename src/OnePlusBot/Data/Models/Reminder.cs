@@ -26,7 +26,10 @@ namespace OnePlusBot.Data.Models
         public DateTime TargetDate { get; set; }
 
         [Column("reminded")]
-        public Boolean Reminded {get; set; }
+        public Boolean Reminded { get; set; }
+
+        [Column("reminder_scheduled")]
+        public Boolean ReminderScheduled { get; set; }
 
         [Column("channel_id")]
         public ulong ChannelId { get; set; }
