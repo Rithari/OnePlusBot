@@ -7,7 +7,7 @@ using Discord;
 using OnePlusBot.Data;
 using OnePlusBot.Helpers;
 using Discord.Commands;
-using Discord.WebSocket;
+using OnePlusBot.Data.Models;
 
 namespace OnePlusBot.Base
 {
@@ -16,8 +16,9 @@ namespace OnePlusBot.Base
       // TODO refactor this and MuteTimerManager to have a common abstract class or at least an interface
     public async Task<RuntimeResult> SetupTimers()
     {
+      await ExecuteReminderLogic(true);
       await Extensions.DelayUntilNextFullHour();
-      await ExecuteReminderLogic();
+      await ExecuteReminderLogic(false);
       System.Timers.Timer timer1 = new System.Timers.Timer(1000 * 60 * 60);
       timer1.Elapsed += new System.Timers.ElapsedEventHandler(TriggerTimer);
       timer1.Enabled = true;
@@ -27,10 +28,10 @@ namespace OnePlusBot.Base
     public async void TriggerTimer(object sender, System.Timers.ElapsedEventArgs e)
     {
       System.Timers.Timer timer = (System.Timers.Timer)sender;
-      await ExecuteReminderLogic();
+      await ExecuteReminderLogic(false);
     }
 
-    public async Task ExecuteReminderLogic()
+    public async Task ExecuteReminderLogic(bool initialStartup)
     {
        var bot = Global.Bot;
       var guild = bot.GetGuild(Global.ServerID);
@@ -39,7 +40,15 @@ namespace OnePlusBot.Base
       {
         var maxDate = DateTime.Now.AddHours(1);
         var allusers = await iGuildObj.GetUsersAsync();
-        var remindersInFuture = db.Reminders.Where(x => x.TargetDate < maxDate && !x.Reminded).ToList();
+        List<Reminder> remindersInFuture;
+        if(initialStartup)
+        {
+          remindersInFuture =  db.Reminders.Where(x => x.TargetDate < maxDate && !x.Reminded).ToList(); 
+        } 
+        else 
+        {
+          remindersInFuture=  db.Reminders.Where(x => x.TargetDate < maxDate && !x.Reminded && !x.ReminderScheduled).ToList(); 
+        }
         if(remindersInFuture.Any())
         {
           foreach (var futureReminder in remindersInFuture)

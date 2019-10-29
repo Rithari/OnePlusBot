@@ -91,6 +91,7 @@ CREATE TABLE `Mutes` (
   `reason` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `mute_date` datetime NOT NULL,
   `unmute_date` datetime NOT NULL,
+  `unmute_scheduled` tinyint(1) NOT NULL DEFAULT '0',
   `mute_ended` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -200,6 +201,7 @@ CREATE TABLE `Reminders` (
  `reminded_user_id` bigint(20) unsigned NOT NULL,
  `remind_text` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
  `reminder_date` datetime NOT NULL,
+ `reminder_scheduled` tinyint(1) NOT NULL DEFAULT '0',
  `reminded` tinyint(1) NOT NULL DEFAULT '1',
  `channel_id` bigint(20) unsigned NOT NULL,
  `target_date` datetime NOT NULL,
@@ -276,6 +278,7 @@ CREATE TABLE `User` (
  `user_id` bigint(20) unsigned NOT NULL,
  `modmail_muted` tinyint(4) NOT NULL,
  `modmail_muted_until` datetime NOT NULL,
+ `modmail_muted_reminded` tinyint(4) NOT NULL,
  PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

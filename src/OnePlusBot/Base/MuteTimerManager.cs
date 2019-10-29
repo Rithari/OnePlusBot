@@ -1,3 +1,4 @@
+using OnePlusBot.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,8 +15,9 @@ namespace OnePlusBot.Base
   {
     public async Task<RuntimeResult> SetupTimers()
     {
+      await ExecuteMuteLogic(true);
       await Extensions.DelayUntilNextFullHour();
-      await ExecuteMuteLogic();
+      await ExecuteMuteLogic(false);
       System.Timers.Timer timer1 = new System.Timers.Timer(1000 * 60 * 60);
       timer1.Elapsed += new System.Timers.ElapsedEventHandler(TriggerTimer);
       timer1.Enabled = true;
@@ -25,10 +27,10 @@ namespace OnePlusBot.Base
     public async void TriggerTimer(object sender, System.Timers.ElapsedEventArgs e)
     {
       System.Timers.Timer timer = (System.Timers.Timer)sender;
-      await ExecuteMuteLogic();
+      await ExecuteMuteLogic(false);
     }        
 
-    public async Task ExecuteMuteLogic(){
+    public async Task ExecuteMuteLogic(Boolean initialStartup){
       var bot = Global.Bot;
       var guild = bot.GetGuild(Global.ServerID);
       var iGuildObj = (IGuild) guild;
@@ -36,7 +38,15 @@ namespace OnePlusBot.Base
       {
         var maxDate = DateTime.Now.AddHours(1);
         var allusers = await iGuildObj.GetUsersAsync();
-        var mutesInFuture = db.Mutes.Where(x => x.UnmuteDate < maxDate && !x.MuteEnded).ToList();
+        List<Mute> mutesInFuture;
+        if(initialStartup)
+        {
+          mutesInFuture = db.Mutes.Where(x => x.UnmuteDate < maxDate && !x.MuteEnded).ToList();
+        } 
+        else
+        {
+          mutesInFuture = db.Mutes.Where(x => x.UnmuteDate < maxDate && !x.MuteEnded && !x.UnmuteScheduled).ToList();
+        }
         if(mutesInFuture.Any())
         {
           foreach (var futureUnmute in mutesInFuture)

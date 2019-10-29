@@ -197,6 +197,11 @@ namespace OnePlusBot.Modules
             {
                 var difference = targetTime - DateTime.Now;
                 MuteTimerManager.UnmuteUserIn(user.Id, difference, muteData.ID);
+                using (var db = new Database())
+                {
+                    db.Mutes.Where(m => m.ID == muteData.ID).First().UnmuteScheduled = true;
+                    db.SaveChanges();
+                }    
             }
            
             return CustomResult.FromSuccess();

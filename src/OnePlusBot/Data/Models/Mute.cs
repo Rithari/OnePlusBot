@@ -35,6 +35,9 @@ namespace OnePlusBot.Data.Models
         public DateTime UnmuteDate { get; set; }
 
         [Column("mute_ended")]
-        public Boolean MuteEnded {get; set;}
+        public Boolean MuteEnded { get; set; }
+
+        [Column("unmute_scheduled")]
+        public Boolean UnmuteScheduled { get; set; }
     }
 }

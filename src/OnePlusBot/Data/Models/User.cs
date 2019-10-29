@@ -17,5 +17,8 @@ namespace OnePlusBot.Data.Models
 
         [Column("modmail_muted_until")]
         public DateTime ModMailMutedUntil { get; set; }
+
+        [Column("modmail_muted_reminded")]
+        public Boolean ModMailMutedReminded { get; set; }
     }
 }
