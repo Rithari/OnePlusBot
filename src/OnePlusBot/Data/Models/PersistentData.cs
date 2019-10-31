@@ -16,5 +16,8 @@ namespace OnePlusBot.Data.Models
         
         [Column("val")]
         public ulong Value { get; set; }
+
+        [Column("string")]
+        public string StringValue { get; set; }
     }
 }

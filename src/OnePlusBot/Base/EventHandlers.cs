@@ -56,6 +56,20 @@ namespace OnePlusBot.Base
         private async Task OnuserUserJoined(SocketGuildUser socketGuildUser)
         {
             var modlog = socketGuildUser.Guild.GetTextChannel(Global.Channels["joinlog"]);
+            string name = socketGuildUser.Username;
+            if(Global.IllegalUserNameBeginnings.Contains(name[0]))
+            {
+                var modQueue = socketGuildUser.Guild.GetTextChannel(Global.Channels["modqueue"]);
+                var builder = new EmbedBuilder();
+                builder.Title = "User with illegal character joined!";
+                builder.Description = Extensions.FormatUserNameDetailed(socketGuildUser);
+                builder.Color = Color.DarkBlue;
+                
+                builder.Timestamp = DateTime.Now;
+                
+                builder.ThumbnailUrl = socketGuildUser.GetAvatarUrl();
+                await modQueue.SendMessageAsync(embed: builder.Build());
+            }
             await modlog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + "joined the guild");
         }
 
@@ -530,7 +544,7 @@ namespace OnePlusBot.Base
 
 
             var embed = builder.Build();
-            var modQueue = guild.GetTextChannel(Global.Channels["modqueue"]);;
+            var modQueue = guild.GetTextChannel(Global.Channels["modqueue"]);
 
             await modQueue.SendMessageAsync(null,embed: embed).ConfigureAwait(false);
         }
