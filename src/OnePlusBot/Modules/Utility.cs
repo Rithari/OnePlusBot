@@ -304,7 +304,7 @@ namespace OnePlusBot.Modules
                 .WithDescription(string.Format(reply, Context.Client.Latency)));
         }
 
-         [
+        [
             Command("remind"),
             Summary("Reminds you of a text after a defined time period.")
         ]
@@ -357,11 +357,32 @@ namespace OnePlusBot.Modules
                 db.SaveChanges();
             }
 
-
-            
+            await Context.Channel.SendMessageAsync($"{Context.User.Mention} Scheduled reminder id {reminder.ID}.");
 
             return CustomResult.FromSuccess();
+        }
 
+        [
+            Command("unremind"),
+            Summary("Cancells the reminder by id.")
+        ]
+        public async Task<RuntimeResult> HandleUnRemindInput(ulong reminderId)
+        {
+            await Task.CompletedTask;
+            using(var db = new Database())
+            {
+                var reminder = db.Reminders.Where(re => re.ID == reminderId && re.RemindedUserId == Context.User.Id).FirstOrDefault();
+                if(reminder != null)
+                {
+                    reminder.Reminded = true;
+                    db.SaveChanges();
+                    return CustomResult.FromSuccess();
+                }
+                else
+                {
+                    return CustomResult.FromError("Reminder not known or not started by you.");
+                }
+            }
         }
 
        /* [Command("timeleft")]
