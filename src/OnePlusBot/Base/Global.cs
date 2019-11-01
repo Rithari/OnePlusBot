@@ -209,8 +209,8 @@ namespace OnePlusBot.Base
         public static class OnePlusEmote {
             public static IEmote SUCCESS = Emote.Parse("<:success:499567039451758603>");
             public static IEmote FAIL = new Emoji("⚠");
-            public static IEmote OP_YES =  Emote.Parse("<:OpYes:639787617604468736>");
-            public static IEmote OP_NO = Emote.Parse("<:OpNo:639787617860190208>");
+            public static IEmote OP_YES =  Emote.Parse("<:OPYes:426070836269678614>");
+            public static IEmote OP_NO = Emote.Parse("<:OPNo:426072515094380555>");
 
             public static IEmote STAR = new Emoji("⭐");
             public static IEmote LVL_2_STAR = new Emoji("🌟");
