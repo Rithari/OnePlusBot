@@ -39,7 +39,6 @@ namespace OnePlusBot.Base
             _bot.MessageReceived += OnMessageReceived;
             _bot.MessageDeleted += OnMessageRemoved;
             _bot.MessageUpdated += OnMessageUpdated;
-            _bot.UserBanned += OnUserBanned;
             _bot.UserUnbanned += OnUserUnbanned;
             _bot.UserVoiceStateUpdated += UserChangedVoiceState;
             _commands.CommandExecuted += OnCommandExecutedAsync;
@@ -93,36 +92,6 @@ namespace OnePlusBot.Base
                 .AddField(efb => efb
                     .WithName("By")
                     .WithValue(unbanLog.User)
-                    .WithIsInline(true)));
-        }
-
-        private async Task OnUserBanned(SocketUser socketUser, SocketGuild socketGuild)
-        {
-            var modlog = socketGuild.GetTextChannel(Global.Channels["banlog"]);
-
-            var restAuditLogs = await socketGuild.GetAuditLogsAsync(10).FlattenAsync();
-
-            var banLog = restAuditLogs.FirstOrDefault(x => x.Action == ActionType.Ban);
-
-
-            await modlog.EmbedAsync(new EmbedBuilder()
-                .WithColor(9896005)
-                .WithTitle("⛔️ Banned User")
-                .AddField(efb => efb
-                    .WithName("Username")
-                    .WithValue(socketUser.ToString())
-                    .WithIsInline(true))
-                .AddField(efb => efb
-                    .WithName("ID")
-                    .WithValue(socketUser.Id.ToString())
-                    .WithIsInline(true))
-                .AddField(efb => efb
-                    .WithName("Reason")
-                    .WithValue(banLog.Reason)
-                    .WithIsInline(true))
-                .AddField(efb => efb
-                    .WithName("By")
-                    .WithValue(banLog.User)
                     .WithIsInline(true)));
         }
 
