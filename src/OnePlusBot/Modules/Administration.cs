@@ -43,10 +43,21 @@ namespace OnePlusBot.Modules
         public async Task<RuntimeResult> BanAsync(IGuildUser user, [Remainder] string reason = null)
         {
             if (user.IsBot)
+            {
                 return CustomResult.FromError("You can't ban bots.");
+            }
+
 
             if (user.GuildPermissions.PrioritySpeaker)
+            {
                 return CustomResult.FromError("You can't ban staff.");
+            }
+                
+            
+            if(reason == null)
+            {
+                reason = "No reason provided.";
+            }
             try
             {
                 try 
@@ -61,6 +72,27 @@ namespace OnePlusBot.Modules
                 await Context.Guild.AddBanAsync(user, 0, reason);
 
                 MuteTimerManager.UnMuteUserCompletely(user.Id);
+
+                var modlog = Context.Guild.GetTextChannel(Global.Channels["modlog"]);
+                var banlog = new EmbedBuilder()
+                .WithColor(9896005)
+                .WithTitle("⛔️ Banned User")
+                .AddField(efb => efb
+                    .WithName("User")
+                    .WithValue(Extensions.FormatUserNameDetailed(user))
+                    .WithIsInline(true))
+                .AddField(efb => efb
+                    .WithName("By")
+                    .WithValue(Extensions.FormatUserName(Context.User))
+                    .WithIsInline(true))
+                .AddField(efb => efb
+                    .WithName("Reason")
+                    .WithValue(reason))
+                .AddField(efb => efb
+                    .WithName("Link")
+                    .WithValue(Extensions.GetMessageUrl(Global.ServerID, Context.Channel.Id, Context.Message.Id, "Jump!")));
+
+                await modlog.SendMessageAsync(embed: banlog.Build());
 
                 return CustomResult.FromSuccess();
 
@@ -528,6 +560,36 @@ namespace OnePlusBot.Modules
                 return CustomResult.FromError("whole numbers > 0 only");
             }
            
+        }
+
+        [
+            Command("profanities"),
+            Summary("Shows the actual and false profanities of a user"),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> ShowProfanities(IGuildUser user)
+        {
+            using(var db = new Database()){
+                var allProfanities = db.Profanities.Where(pro => pro.UserId == user.Id);
+                var actualProfanities = allProfanities.Where(pro => pro.Valid == true).Count();
+                var falseProfanities = allProfanities.Where(pro =>pro.Valid == false).Count();
+                var builder = new EmbedBuilder();
+                builder.AddField(f => {
+                    f.Name = "Actual";
+                    f.Value = actualProfanities;
+                    f.IsInline = true;
+                });
+
+                 builder.AddField(f => {
+                    f.Name = "False positives";
+                    f.Value = falseProfanities;
+                    f.IsInline = true;
+                });
+
+                builder.WithAuthor(new EmbedAuthorBuilder().WithIconUrl(user.GetAvatarUrl()).WithName(Extensions.FormatUserName(user)));
+                await Context.Channel.SendMessageAsync(embed: builder.Build());
+                return CustomResult.FromSuccess();
+            }
         }
     }
 }

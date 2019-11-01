@@ -42,6 +42,8 @@ namespace OnePlusBot.Base
         public static ulong DecayDays { get; set; }
 
         public static List<StarboardMessage> StarboardPosts { get; set; }
+
+        public static List<Char> IllegalUserNameBeginnings { get; set; }
         
         public static string Token
         {
@@ -84,7 +86,9 @@ namespace OnePlusBot.Base
             }
         }
 
-       public static List<Regex> ProfanityChecks { get; }
+       public static List<ProfanityCheck> ProfanityChecks { get; }
+
+       public static List<UsedProfanity> ReportedProfanities { get; }
 
         static Global()
         {
@@ -94,11 +98,12 @@ namespace OnePlusBot.Base
             NewsPosts = new Dictionary<ulong, ulong>();  
             StarboardPosts = new List<StarboardMessage>();  
             Roles = new Dictionary<string, ulong>();
-            ProfanityChecks = new List<Regex>();
+            ProfanityChecks = new List<ProfanityCheck>();
             FAQCommands = new List<FAQCommand>();
             FAQCommandChannels = new List<FAQCommandChannel>();
             InviteLinks = new List<InviteLink>();
             ModMailThreads = new List<ModMailThread>();
+            ReportedProfanities = new List<UsedProfanity>();
             LoadGlobal();
         }
 
@@ -155,6 +160,10 @@ namespace OnePlusBot.Base
                     .First(entry => entry.Name == "decay_days")
                     .Value;
 
+                IllegalUserNameBeginnings = db.PersistentData
+                    .First(entry => entry.Name == "user_name_illegal_characters")
+                    .StringValue.ToCharArray().ToList();
+
                 InviteLinks.Clear();
                 foreach(var link in db.InviteLinks)
                 {
@@ -180,7 +189,8 @@ namespace OnePlusBot.Base
                 {
                     foreach(var word in db.ProfanityChecks)
                     {
-                        ProfanityChecks.Add(new Regex(word.Word, RegexOptions.Singleline | RegexOptions.Compiled));
+                        word.RegexObj = new Regex(word.Word, RegexOptions.Singleline | RegexOptions.Compiled);
+                        ProfanityChecks.Add(word);
                     }
                 }
 
