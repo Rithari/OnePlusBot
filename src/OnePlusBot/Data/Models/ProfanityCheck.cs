@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 
 namespace OnePlusBot.Data.Models
 {
@@ -13,5 +14,11 @@ namespace OnePlusBot.Data.Models
         
         [Column("regex")]
         public string Word { get; set; }
+
+        [Column("label")]
+        public string Label { get; set; }
+
+        [NotMapped]
+        public Regex RegexObj { get; set; }
     }
 }

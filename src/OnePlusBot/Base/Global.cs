@@ -84,7 +84,9 @@ namespace OnePlusBot.Base
             }
         }
 
-       public static List<Regex> ProfanityChecks { get; }
+       public static List<ProfanityCheck> ProfanityChecks { get; }
+
+       public static List<UsedProfanity> ReportedProfanities { get; }
 
         static Global()
         {
@@ -94,11 +96,12 @@ namespace OnePlusBot.Base
             NewsPosts = new Dictionary<ulong, ulong>();  
             StarboardPosts = new List<StarboardMessage>();  
             Roles = new Dictionary<string, ulong>();
-            ProfanityChecks = new List<Regex>();
+            ProfanityChecks = new List<ProfanityCheck>();
             FAQCommands = new List<FAQCommand>();
             FAQCommandChannels = new List<FAQCommandChannel>();
             InviteLinks = new List<InviteLink>();
             ModMailThreads = new List<ModMailThread>();
+            ReportedProfanities = new List<UsedProfanity>();
             LoadGlobal();
         }
 
@@ -180,7 +183,8 @@ namespace OnePlusBot.Base
                 {
                     foreach(var word in db.ProfanityChecks)
                     {
-                        ProfanityChecks.Add(new Regex(word.Word, RegexOptions.Singleline | RegexOptions.Compiled));
+                        word.RegexObj = new Regex(word.Word, RegexOptions.Singleline | RegexOptions.Compiled);
+                        ProfanityChecks.Add(word);
                     }
                 }
 
@@ -205,8 +209,8 @@ namespace OnePlusBot.Base
         public static class OnePlusEmote {
             public static IEmote SUCCESS = Emote.Parse("<:success:499567039451758603>");
             public static IEmote FAIL = new Emoji("⚠");
-            public static IEmote OP_YES =  Emote.Parse("<:OPYes:426070836269678614>");
-            public static IEmote OP_NO = Emote.Parse("<:OPNo:426072515094380555>");
+            public static IEmote OP_YES =  Emote.Parse("<:OpYes:639787617604468736>");
+            public static IEmote OP_NO = Emote.Parse("<:OpNo:639787617860190208>");
 
             public static IEmote STAR = new Emoji("⭐");
             public static IEmote LVL_2_STAR = new Emoji("🌟");
