@@ -108,16 +108,48 @@ CREATE TABLE `PersistentData` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
+
+--
+-- Table structure for table `User`
+--
+
+DROP TABLE IF EXISTS `User`;
+CREATE TABLE `User` (
+ `user_id` bigint(20) unsigned NOT NULL,
+ `modmail_muted` tinyint(4) NOT NULL,
+ `modmail_muted_until` datetime NOT NULL,
+ `modmail_muted_reminded` tinyint(4) NOT NULL,
+ PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 --
 -- Table structure for table `ProfanityChecks`
 --
 
 DROP TABLE IF EXISTS `ProfanityChecks`;
 CREATE TABLE `ProfanityChecks` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `regex` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`)
+ `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+ `regex` text COLLATE utf8mb4_unicode_ci NOT NULL,
+ `label` text COLLATE utf8mb4_unicode_ci NOT NULL,
+ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+--
+-- Table structure for table `UsedProfanity`
+--
+
+DROP TABLE IF EXISTS `UsedProfanity`;
+CREATE TABLE `UsedProfanity` (
+ `user_id` bigint(20) unsigned NOT NULL,
+ `message_id` bigint(20) unsigned NOT NULL,
+ `profanity_id` int(10) unsigned NOT NULL,
+ `valid` tinyint(4) NOT NULL,
+ KEY `fk_user_id` (`user_id`),
+ KEY `fk_profanity_id` (`profanity_id`),
+ CONSTRAINT `fk_profanity_id` FOREIGN KEY (`profanity_id`) REFERENCES `ProfanityChecks` (`id`),
+ CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Table structure for table `ReferralCodes`
@@ -268,18 +300,5 @@ CREATE TABLE `ThreadMessage` (
  CONSTRAINT `fk_msg_id` FOREIGN KEY (`channel_id`) REFERENCES `ModMailThread` (`channel_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-
---
--- Table structure for table `User`
---
-
-DROP TABLE IF EXISTS `User`;
-CREATE TABLE `User` (
- `user_id` bigint(20) unsigned NOT NULL,
- `modmail_muted` tinyint(4) NOT NULL,
- `modmail_muted_until` datetime NOT NULL,
- `modmail_muted_reminded` tinyint(4) NOT NULL,
- PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS=1;

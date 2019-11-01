@@ -561,5 +561,35 @@ namespace OnePlusBot.Modules
             }
            
         }
+
+        [
+            Command("profanities"),
+            Summary("Shows the actual and false profanities of a user"),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> ShowProfanities(IGuildUser user)
+        {
+            using(var db = new Database()){
+                var allProfanities = db.Profanities.Where(pro => pro.UserId == user.Id);
+                var actualProfanities = allProfanities.Where(pro => pro.Valid == true).Count();
+                var falseProfanities = allProfanities.Where(pro =>pro.Valid == false).Count();
+                var builder = new EmbedBuilder();
+                builder.AddField(f => {
+                    f.Name = "Actual";
+                    f.Value = actualProfanities;
+                    f.IsInline = true;
+                });
+
+                 builder.AddField(f => {
+                    f.Name = "False positives";
+                    f.Value = falseProfanities;
+                    f.IsInline = true;
+                });
+
+                builder.WithAuthor(new EmbedAuthorBuilder().WithIconUrl(user.GetAvatarUrl()).WithName(Extensions.FormatUserName(user)));
+                await Context.Channel.SendMessageAsync(embed: builder.Build());
+                return CustomResult.FromSuccess();
+            }
+        }
     }
 }
