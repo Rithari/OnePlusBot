@@ -35,6 +35,8 @@ namespace OnePlusBot.Data
 
         public DbSet<User> Users { get; set; }
 
+        public DbSet<UsedProfanity> Profanities { get; set; }
+
         public DbSet<ThreadMessage> ThreadMessages { get; set; }
         public DbSet<StarboardPostRelation> StarboardPostRelations { get; set; }
 

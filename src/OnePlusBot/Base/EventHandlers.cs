@@ -147,11 +147,11 @@ namespace OnePlusBot.Base
                 if(!fullChannel.ProfanityCheckExempt){
                     var profanityChecks = Global.ProfanityChecks;
                     var lowerMessage = message.Content.ToLower();
-                    foreach (var regexObj in profanityChecks)
+                    foreach (var profanityCheck in profanityChecks)
                     {
-                        if(regexObj.Match(lowerMessage).Success)
+                        if(profanityCheck.RegexObj.Match(lowerMessage).Success)
                         {
-                            await ReportProfanity(message);
+                            await ReportProfanity(message, profanityCheck);
                             break;
                         }
                     }
@@ -510,7 +510,7 @@ namespace OnePlusBot.Base
             await message.DeleteAsync();
         }
 
-        private static async Task ReportProfanity(SocketMessage message){
+        private static async Task ReportProfanity(SocketMessage message, ProfanityCheck usedProfanity){
 
             var guild = Global.Bot.GetGuild(Global.ServerID);
             var builder = new EmbedBuilder();
@@ -521,18 +521,52 @@ namespace OnePlusBot.Base
             
             builder.ThumbnailUrl = message.Author.GetAvatarUrl();
 
-            const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
             builder.AddField("User in question ", Extensions.FormatMentionDetailed(message.Author))
-                .AddField(
-                    "Location of the profane message",
-                    $"[#{message.Channel.Name}]({string.Format(discordUrl, guild.Id, message.Channel.Id, message.Id)})")
+                .AddField(f => {
+                    f.Name = "Location of the profane message";
+                    f.Value = Extensions.GetMessageUrl(Global.ServerID, message.Channel.Id, message.Id, message.Channel.Name);
+                    f.IsInline = true;
+                    })
+                .AddField(f => {
+                    f.Name ="Profanity type";
+                    f.Value = usedProfanity.Label;
+                    f.IsInline = true;
+                    })
                 .AddField("Message content", message.Content);
 
 
             var embed = builder.Build();
             var modQueue = guild.GetTextChannel(Global.Channels["modqueue"]);;
 
-            await modQueue.SendMessageAsync(null,embed: embed).ConfigureAwait(false);
+            var report = await modQueue.SendMessageAsync(null,embed: embed);
+
+            await report.AddReactionsAsync(new IEmote[]
+            {
+                Global.OnePlusEmote.OP_YES, 
+                Global.OnePlusEmote.OP_NO
+            });
+
+            var profanity = new UsedProfanity();
+            profanity.MessageId = report.Id;
+            profanity.UserId = message.Author.Id;
+            profanity.Valid = false;
+            profanity.ProfanityId = usedProfanity.ID;
+            using(var db = new Database()){
+                var user = db.Users.Where(us => us.UserId == message.Author.Id).FirstOrDefault();
+                if(user == null)
+                {
+                    var newUser = new User();
+                    newUser.UserId = message.Author.Id;
+                    newUser.ModMailMuted = false;
+                    db.Users.Add(newUser);
+                }
+               
+                db.Profanities.Add(profanity);
+                db.SaveChanges();
+            }
+
+            Global.ReportedProfanities.Add(profanity);
+           
         }
 
         private static bool ModMailThreadForUserExists(IUser user){
@@ -575,11 +609,11 @@ namespace OnePlusBot.Base
                 if(!channel.ProfanityCheckExempt){
                     var profanityChecks = Global.ProfanityChecks;
                     var lowerMessage = message.Content.ToLower();
-                    foreach (var regexObj in profanityChecks)
+                    foreach (var profanityCheck in profanityChecks)
                     {
-                        if(regexObj.Match(lowerMessage).Success)
+                        if(profanityCheck.RegexObj.Match(lowerMessage).Success)
                         {
-                            await ReportProfanity(message);
+                            await ReportProfanity(message, profanityCheck);
                             break;
                         }
                     }
