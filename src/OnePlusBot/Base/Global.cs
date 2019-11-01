@@ -42,6 +42,8 @@ namespace OnePlusBot.Base
         public static ulong DecayDays { get; set; }
 
         public static List<StarboardMessage> StarboardPosts { get; set; }
+
+        public static List<Char> IllegalUserNameBeginnings { get; set; }
         
         public static string Token
         {
@@ -157,6 +159,10 @@ namespace OnePlusBot.Base
                 DecayDays = db.PersistentData
                     .First(entry => entry.Name == "decay_days")
                     .Value;
+
+                IllegalUserNameBeginnings = db.PersistentData
+                    .First(entry => entry.Name == "user_name_illegal_characters")
+                    .StringValue.ToCharArray().ToList();
 
                 InviteLinks.Clear();
                 foreach(var link in db.InviteLinks)
