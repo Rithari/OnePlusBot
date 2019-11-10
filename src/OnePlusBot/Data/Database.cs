@@ -71,7 +71,7 @@ namespace OnePlusBot.Data
             
 
             optionsBuilder.UseMySql(connStr.ToString());
-         //   optionsBuilder.UseLoggerFactory(LoggerFactory);
+            optionsBuilder.UseLoggerFactory(LoggerFactory);
             optionsBuilder.EnableDetailedErrors();
         }
 
