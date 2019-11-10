@@ -43,8 +43,13 @@ namespace OnePlusBot.Data
         public DbSet<InviteLink> InviteLinks { get; set; }
 
         // TODO needs to be replaced with proper dependency injection
+        [Obsolete]
         public static readonly LoggerFactory LoggerFactory
-        = new LoggerFactory(new[] {new ConsoleLoggerProvider((_, __) => true, true)});
+            = new LoggerFactory(new[] {
+                  new ConsoleLoggerProvider((category, level) =>
+                    category == DbLoggerCategory.Database.Command.Name &&
+                    level == LogLevel.Information, true)
+                });
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -66,7 +71,7 @@ namespace OnePlusBot.Data
             
 
             optionsBuilder.UseMySql(connStr.ToString());
-            optionsBuilder.UseLoggerFactory(LoggerFactory);
+         //   optionsBuilder.UseLoggerFactory(LoggerFactory);
             optionsBuilder.EnableDetailedErrors();
         }
 
