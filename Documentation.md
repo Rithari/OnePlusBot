@@ -19,25 +19,27 @@ Allow owner to edit content of SQL databases directly via a Discord message.
 
 ### Update
 
-Updates the database with the current state of the server.
+`;update`
+Updates the database with current roles and channels of the server.
 
 ## Administration
 
 ### Modmail
 
-There exists a category (configurable in database) with the purpose of modmail. When a user dms the bot, a channel in this category the modmail channels will be created. There also exists another separate channel for modmaillog, in which the messages will get stored when the thread has been closed.\
+There exists a category (configurable in database) with the purpose of modmail. When a user dms the bot, a channel in this category the modmail channels will be created and staff role will be pinged. There also exists another separate channel for modmaillog, in which the messages will get stored when the thread has been closed.\
 The user will get a response, that the inquiry is being handled and moderators get a notification in modqueue.\
 The following commands can only be used within an existing modmail thread and will execute actions in that modmail-thread.\
 Staff members can then answer the thread by executing the `;reply` command. This command will then pass on the message to the user and log the message in the current thread as well. This message will be in the form of an embed, with the author being marked.   There also exists the functionality of `;anonreply` for which the author will be replaced with a OP logo.\
 The user can then answer in his DM and this message will be passed along to this particular modmail thread and the user will get a reaction, that his message has been processed.\
 This conversation can then go on. In case a staff member wants to get pinged in case the user answers, `;subscribe` can be used. If this should be disabled again `;unsubscribe` serves that purpose.\
-If a staff member wants to delete/edit a message `;edit <messageId> <new Text>` and `;delete <messageId>` serve that purpose. This will edit/delete the message in the thread and also update it in the DM with the user.\
+If a staff member wants to delete/edit a message in the DM `;edit <messageId> <new Text>` and `;delete <messageId>` serve that purpose. This will edit/delete the message in the thread and also update it in the DM with the user.\
 When the conversation is over a staff member can then use the `;close <note>` command, which will close the thread and log all  the messages between staff members and the users into the modmaillog channel. The actual thread channel will be deleted.\
-There also exists the possibility to use `;disableThread <duration> <note>`. This will also close the thread and make the user unable to contact modmail for the duration set.\
+There also exists the possibility to use `;disablethread <duration> <note>` (eg `;disablethread 1d2h1m test purpose`). This will also close the thread and make the user unable to contact modmail for the duration set.\
 In case the user tries to contact modmail, he will get an answer at which point in time, the user will be able to contact modmail again.
 
 The following commands are available globally.\
-Modmail for a specific user can be enabled again with `;enableModmail <user>`. After modmail get enabled for a user, he will l only get the notification about when he can contact again once.  Modmail can also be disabled for a specific user via `;disableModmail <user>`. If a staff member wants to contact a user directly, without waiting for the user to write `;contact <user>` serves this purpose. In case there is already a thread going on, an embed will be posted containing a link.
+Modmail can be disabled for a specific user via `;disableModmail <user>`. After modmail get disabled for a user, he will only get the notification about when he can contact again once. If a staff member wants to contact a user directly, without waiting for the user to write `;contact <user>` serves this purpose. In case there is already a thread going on, an embed will be posted containing a link.
+Modmail for a specific user can be enabled again with `;enableModmail <user>`. 
 
 Current implementation only supports one image attachment per message.
     
@@ -45,31 +47,31 @@ Current implementation only supports one image attachment per message.
 
 `;ban @Username#1234 reason`
 
-Ban user from server, reason parameter is optional.\
+Ban user from server, reason parameter is optional. Only users with **Staff** role can use that command.\
 Command can also be used with [user IDs](https://dis.gd/userid) to ban users not present in server with `;banid` command.\
-It is made so that other bots can't be banned with it.
+It is made so that other bots can't be banned with it.\
+Bans are logged into #modlog channel.
 
 ### Kick
 
 `;kick @Username#1234 reason`
 
-Kick user from server, reason parameter is optional.\
+Kick user from server. Only users with **Staff** role can use that command.\
 Command can also be used with [user IDs](https://dis.gd/userid)
 It is made so that other bots can't be kicked with it.
 
 ### Mute
 
-Mute users in both text and voice chats. It will give them the roles "Voice muted" and "Text muted" (requires prior setup in database).\
+Mute users in both text and voice chats. It will give them the roles "Voice muted" and "Text muted" (requires prior setup in database). Only users with **Staff** role can use that command.
 Syntax is `;mute @Username#1234 duration reason`
 Possible durations are days (d), hours (h), minutes (m) and seconds (s).\
-Reason field is optional.\
 Eg `;mute @Username#1234 5d2h1m3s Get muted` to mute user Username#1234 for 5 days, 2 hours, 1 minute and 3 seconds.\
 Command can also be used with [user IDs](https://dis.gd/userid)
 It is made so that other bots can't be muted with it.
 
 ### Bulk delete
 
-Self explanatory, use `;purge` followed by number of messages you want to prune.\
+Self explanatory, use `;purge` followed by number of messages you want to prune. Only users with **Staff** role can use that command.\
 Currently limited to 100 messages.
 
 ### Warnings
@@ -80,7 +82,7 @@ When someone is warned their warning is named as "active": three active warnings
 Every 90 days (delay configurable in database) warnings are decayed so that we can actually keep track of persons infractions.\
 The check for that action happens everyday at 00:00 UTC.
 
-Warnings list can be queried by moderators by issuing `;warnings` command. If list takes more than one embed it is possible to navigate using the arrows reaction. Warning of a specific user can be queried by using command `;warnings @Username#1234` which also works with [user IDs](https://dis.gd/userid). Clicking on wastebasket reaction will delete the embed, otherwise the embed will delete by itself after two minutes without interaction with embed by user that requested list of warnings.
+Warnings list can be queried by moderators by issuing `;warnings` command. If list takes more than one embed it is possible to navigate using the arrows reaction. Warning of a specific user can be queried by using command `;warnings @Username#1234` which also works with [user IDs](https://dis.gd/userid). Active warnings and decayed warnings will be showed. Clicking on wastebasket reaction will delete the embed, otherwise the embed will delete by itself after two minutes without interaction with embed by user that requested list of warnings. 
 
 A warning can be manually cleared by a moderator by using command `;clearwarn case_id` (case ID is given with list of warnings.\
 Note that however clearing warnings isn't logged in #mod-log channel unlike the automatic decay check and unlike when warns are given.
@@ -96,11 +98,11 @@ Also works with [user IDs](https://dis.gd/userid) `;userinfo user_id`
 ### Profanity checker
 
 Checks profane words based on regex present in a database and post a message in a #modqueue channel when use has been detected.\
-This message contains the username, discrim and user ID of user that triggered the filter as well as message content and a jump link to it.
+This message contains the username, discrim and user ID of user that triggered the filter as well as message content and a jump link to it. It will also tell which type of profanity was detected (they're defined by a label in database).
 
 Positive and negative triggers are tracked: when an item goes in #modqueue channel, the first person that click on "yes" or "no" reaction will tell that trigger was correct or a false positive. 
 
-It is possible to know the number of false positive and correct profanities by using command `;profanities @Username#1234` (also works with [user IDs](https://dis.gd/userid)
+It is possible to know the number of false positive and correct profanities by using command `;profanities @Username#1234` (also works with [user IDs](https://dis.gd/userid) (restricted to users with **Staff** role).
 
 ### Illegal character checker
 
@@ -118,7 +120,7 @@ Suggestion will be posted to a #suggestions channel and bot will automatically r
 ### Role ping to send news
 
 Ping News role after execution of command `;news your_text`. Supports one attachment.\
-Destination channel can be a regular text channels but also an [announcement channel](https://support.discordapp.com/hc/articles/360032008192).\
+Destination channel can only be an [announcement channel](https://support.discordapp.com/hc/articles/360032008192).\
 Can only be used by users with **Journalist** role.\
 Last news item can be edited by person that sent it if she edits her command message and if bot didn't restart since news item has been posted.
 
@@ -144,7 +146,7 @@ Known issue: it outputs a negative time when event is over.
 ### Starboard
 
 Basically a starboard, users can put a post in a special channel by reacting with :star: emote to it.\
-Minimum amount of stars required to put a post in #starboard channel can be set by users with * by issuing command `;setstars integrer` (eg: `;setstars 5`). Note that higher levels (only configurable in database) are displayed with a different star emote in #starboard channel.
+Minimum amount of stars required to put a post in #starboard channel can be set by users with * by issuing command `;setstars integer` (eg: `;setstars 5`). Note that higher levels (only configurable in database) are displayed with a different star emote in #starboard channel.
 
 `;starstats` command is usable by everyone and display statistics of starboard posts.\
 Note that system messages (eg: *Username pinned a message*) are ignored by bot and therefore can't go to #starboard channel.
@@ -202,6 +204,5 @@ It can be used by everyone.
 Allows you to ask bot to remind you something.\
 Syntax is `;remind lenght your_text` with lenght being days, hours, minutes and seconds.\
 Eg `;remind 2d1h3m write documentation`\
-Bot will send a message in channel in which one you executed command when time will be over with a mention and a jump link to command message.\
-It will also tell you ID of reminder.\
+After executing the remind command, the bot will ping you and inform you of the id this reminder has.\
 You can cancel the reminder by using `;unremind remind_ID`
