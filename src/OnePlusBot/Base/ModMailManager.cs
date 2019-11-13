@@ -126,8 +126,12 @@ namespace OnePlusBot.Base
                     mentions.Append(subscriberUser.Mention);
                 }
             }
-            var msg = await guild.GetTextChannel(modMailThread.ChannelId).SendMessageAsync(mentions.ToString(), embed: ModMailEmbedHandler.GetReplyEmbed(message));
-            AddModMailMessage(modMailThread.ChannelId, msg, null, message.Author.Id);
+            var channel = guild.GetTextChannel(modMailThread.ChannelId);
+            if(channel != null)
+            {
+                var msg = await channel.SendMessageAsync(mentions.ToString(), embed: ModMailEmbedHandler.GetReplyEmbed(message));
+                AddModMailMessage(modMailThread.ChannelId, msg, null, message.Author.Id);
+            }
             var userMsg = await message.Channel.GetMessageAsync(message.Id);
             if(userMsg is RestUserMessage)
             {
@@ -196,14 +200,18 @@ namespace OnePlusBot.Base
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
         var channel = guild.GetTextChannel(modMailThread.ChannelId);
-        foreach(var msg in messagesToLog)
+        if(channel != null)
         {
-            var msgToLog = await channel.GetMessageAsync(msg.ChannelMessageId);
-            var messageUser = bot.GetGuild(Global.ServerID).GetUser(msg.UserId);
-            var msgText = msg.Anonymous && messageUser != null ? Extensions.FormatUserNameDetailed(messageUser) : "";
-            await targetChannel.SendMessageAsync(msgText, embed: msgToLog.Embeds.First().ToEmbedBuilder().Build());
-            await Task.Delay(500);
+            foreach(var msg in messagesToLog)
+            {
+                var msgToLog = await channel.GetMessageAsync(msg.ChannelMessageId);
+                var messageUser = bot.GetGuild(Global.ServerID).GetUser(msg.UserId);
+                var msgText = msg.Anonymous && messageUser != null ? Extensions.FormatUserNameDetailed(messageUser) : "";
+                await targetChannel.SendMessageAsync(msgText, embed: msgToLog.Embeds.First().ToEmbedBuilder().Build());
+                await Task.Delay(500);
+            }
         }
+       
     }
 
     private async Task LogClosingHeader(ModMailThread modMailThread, int messageCount, string note, SocketTextChannel modMailLogChannel, SocketUser modmailUser){
@@ -267,38 +275,44 @@ namespace OnePlusBot.Base
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
         var user = guild.GetUser(thread.UserId);
-        var channelObj = guild.GetTextChannel(channel.Id);
         if(user == null)
         {
             throw new Exception("User was not found. Probably left the guild.");
         }
         IDMChannel userDmChannel = await user.GetOrCreateDMChannelAsync();
-        IMessage rawChannelMessage =  await channelObj.GetMessageAsync(messageToEdit.ChannelMessageId);
-        Embed newEmbed = rawChannelMessage.Embeds.First().ToEmbedBuilder().WithDescription(newText).Build();
-        // these ifs are needed, because when the message is cached it remains a socket message, when its older (or the bot was restarted) its a restmessage
-        if(rawChannelMessage is RestUserMessage)
-        {
-            var currentMessageInChannel = rawChannelMessage as RestUserMessage;
-            await currentMessageInChannel.ModifyAsync(msg => msg.Embed = newEmbed);
-        }
-        else if(rawChannelMessage is SocketUserMessage)
-        {
-            var currentMessageInChannel = rawChannelMessage as SocketUserMessage;
-            await currentMessageInChannel.ModifyAsync(msg => msg.Embed = newEmbed);
-        }
 
-        IMessage rawDmMessage = await userDmChannel.GetMessageAsync(messageToEdit.UserMessageId);
-        if(rawDmMessage is RestUserMessage)
+        var channelObj = guild.GetTextChannel(channel.Id);
+        if(channelObj != null)
         {
-            var currentMessageInUserDmChannel = rawDmMessage as RestUserMessage;
-            await currentMessageInUserDmChannel.ModifyAsync(msg => msg.Embed = newEmbed);
-        }
-        else if(rawDmMessage is SocketUserMessage)
-        {
-            var currentMessageInUserDmChannel = rawDmMessage as SocketUserMessage;
-            await currentMessageInUserDmChannel.ModifyAsync(msg => msg.Embed = newEmbed);
+            IMessage rawChannelMessage =  await channelObj.GetMessageAsync(messageToEdit.ChannelMessageId);
+            Embed newEmbed = rawChannelMessage.Embeds.First().ToEmbedBuilder().WithDescription(newText).Build();
+            // these ifs are needed, because when the message is cached it remains a socket message, when its older (or the bot was restarted) its a restmessage
+            if(rawChannelMessage is RestUserMessage)
+            {
+                var currentMessageInChannel = rawChannelMessage as RestUserMessage;
+                await currentMessageInChannel.ModifyAsync(msg => msg.Embed = newEmbed);
+            }
+            else if(rawChannelMessage is SocketUserMessage)
+            {
+                var currentMessageInChannel = rawChannelMessage as SocketUserMessage;
+                await currentMessageInChannel.ModifyAsync(msg => msg.Embed = newEmbed);
+            }
+
+             IMessage rawDmMessage = await userDmChannel.GetMessageAsync(messageToEdit.UserMessageId);
+            if(rawDmMessage is RestUserMessage)
+            {
+                var currentMessageInUserDmChannel = rawDmMessage as RestUserMessage;
+                await currentMessageInUserDmChannel.ModifyAsync(msg => msg.Embed = newEmbed);
+            }
+            else if(rawDmMessage is SocketUserMessage)
+            {
+                var currentMessageInUserDmChannel = rawDmMessage as SocketUserMessage;
+                await currentMessageInUserDmChannel.ModifyAsync(msg => msg.Embed = newEmbed);
+            }
         }
     }
+
+       
 
 
     private void AddModMailMessage(ulong channelId, RestUserMessage channelMessageId, IUserMessage userMessage, ulong userId, bool anonymous=false)
@@ -448,13 +462,17 @@ namespace OnePlusBot.Base
         {
             throw new Exception("User was not found. Probably left the guild.");
         }
-        var channelObj = guild.GetTextChannel(thread.ChannelId);
         IDMChannel userDmChannel = await user.GetOrCreateDMChannelAsync();
-        IMessage rawChannelMessage =  await channelObj.GetMessageAsync(message.ChannelMessageId);
-        if(deleteMessage)
+        var channelObj = guild.GetTextChannel(thread.ChannelId);
+        if(channelObj != null)
         {
-            await rawChannelMessage.DeleteAsync();
+            IMessage rawChannelMessage =  await channelObj.GetMessageAsync(message.ChannelMessageId);
+            if(deleteMessage)
+            {
+                await rawChannelMessage.DeleteAsync();
+            }
         }
+       
 
         IMessage rawDmMessage = await userDmChannel.GetMessageAsync(message.UserMessageId);
 

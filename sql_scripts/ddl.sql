@@ -105,6 +105,7 @@ CREATE TABLE `PersistentData` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` text NOT NULL,
   `val` bigint(20) unsigned NOT NULL,
+  `string` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
