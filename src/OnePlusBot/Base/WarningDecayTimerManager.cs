@@ -98,7 +98,7 @@ namespace OnePlusBot.Base
           Timestamp = DateTime.Now
         };
 
-        await guild.GetTextChannel(Global.Channels["decaylog"]).SendMessageAsync(embed: embed.Build());
+        await guild.GetTextChannel(Global.PostTargets[PostTarget.DECAY_LOG]).SendMessageAsync(embed: embed.Build());
         await Task.Delay(1000);
         counter++;
       }

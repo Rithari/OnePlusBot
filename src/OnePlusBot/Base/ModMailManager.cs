@@ -67,7 +67,7 @@ namespace OnePlusBot.Base
             modmailThread = db.ModMailThreads.Where(th => th.ChannelId == channel.Id).First(); 
         }
 
-        var modQueue = guild.GetTextChannel(Global.Channels["modqueue"]);
+        var modQueue = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_NOTIFICATION]);
         var staffRole = guild.GetRole(Global.Roles["staff"]);
         await staffRole.ModifyAsync(x => x.Mentionable = true);
         try 
@@ -237,7 +237,7 @@ namespace OnePlusBot.Base
         {
             messagesToLog = db.ThreadMessages.Where(ch => ch.ChannelId == closedthread.ChannelId).ToList();
         }
-        var modMailLogChannel = guild.GetTextChannel(Global.Channels["modmaillog"]);
+        var modMailLogChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_LOG]);
         await LogClosingHeader(closedthread, messagesToLog.Count(), note, modMailLogChannel, userObj);
 
         await LogModMailThreadMessagesToModmailLog(closedthread, note, messagesToLog, modMailLogChannel);
@@ -381,7 +381,7 @@ namespace OnePlusBot.Base
         {
             messagesToLog = db.ThreadMessages.Where(ch => ch.ChannelId == closedthread.ChannelId).ToList();
         }
-        var modMailLogChannel = guild.GetTextChannel(Global.Channels["modmaillog"]);
+        var modMailLogChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_LOG]);
         await LogDisablingHeader(closedthread, messagesToLog.Count(), note, modMailLogChannel, userObj, until);
 
         await LogModMailThreadMessagesToModmailLog(closedthread, note, messagesToLog, modMailLogChannel);

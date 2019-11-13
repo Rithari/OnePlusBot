@@ -20,5 +20,28 @@ namespace OnePlusBot.Data.Models
 
         [Column("modmail_muted_reminded")]
         public Boolean ModMailMutedReminded { get; set; }
+
+        [Column("xp")]
+        public ulong XP { get; set; }
+
+        [Column("xp_updated")]
+        public DateTime Updated { get; set; }
+
+        [Column("current_level")]
+        public uint Level { get; set; }
+
+        [Column("message_count")]
+        public ulong MessageCount { get; set; }
+
+        [Column("current_role_id")]
+        public uint? ExperienceRoleId { get; set; }
+
+
+        [ForeignKey("Level")]
+        public virtual ExperienceLevel CurrentLevel { get; set; }
+
+        [ForeignKey("ExperienceRoleId")]
+        public virtual ExperienceRole ExperienceRoleReference { get; set; }
+
     }
 }

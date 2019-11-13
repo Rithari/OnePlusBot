@@ -20,6 +20,8 @@ namespace OnePlusBot.Base
         public static Dictionary<string, ulong> Roles { get; }
         public static Dictionary<string, ulong> Channels { get; }
 
+        public static Dictionary<string, ulong> PostTargets { get; }
+
         public static Dictionary<ulong, ulong> NewsPosts { get; }
         public static List<Channel> FullChannels { get; }
 
@@ -44,6 +46,8 @@ namespace OnePlusBot.Base
         public static List<StarboardMessage> StarboardPosts { get; set; }
 
         public static List<Char> IllegalUserNameBeginnings { get; set; }
+
+        public static Dictionary<long, List<ulong>> RuntimeExp { get; set; }
         
         public static string Token
         {
@@ -93,6 +97,7 @@ namespace OnePlusBot.Base
         static Global()
         {
             Channels = new Dictionary<string, ulong>();
+            PostTargets = new Dictionary<string, ulong>();
             FullChannels = new List<Channel>();
             Random = new Random();
             NewsPosts = new Dictionary<ulong, ulong>();  
@@ -104,6 +109,7 @@ namespace OnePlusBot.Base
             InviteLinks = new List<InviteLink>();
             ModMailThreads = new List<ModMailThread>();
             ReportedProfanities = new List<UsedProfanity>();
+            RuntimeExp = new Dictionary<long, List<ulong>>();
             LoadGlobal();
         }
 
@@ -124,12 +130,21 @@ namespace OnePlusBot.Base
                
                 Channels.Clear();
                 FullChannels.Clear();
-                if (db.Channels.Any())
+                if (db.Channels.Any()) 
+                {
                     foreach (var channel in db.Channels)
                     {
-                        Channels.Add(channel.Name, channel.ChannelID);
+                        Channels.Add(channel.Name, channel.ChannelID2);
                         FullChannels.Add(channel);
                     }
+                }
+
+                PostTargets.Clear();
+                foreach(var target in db.PostTargets)
+                {
+                    PostTargets.Add(target.Name, target.ChannelId);
+                }
+                   
                        
                 Roles.Clear();
                 if (db.Roles.Any())
@@ -196,10 +211,6 @@ namespace OnePlusBot.Base
 
 
                 var ReadChannels = db.FAQCommandChannels
-                        .Include(faqComand => faqComand.Command)
-                        .Include(faqComand => faqComand.Channel)
-                        .Include(faqComand => faqComand.CommandChannelEntries)
-                        .OrderBy(command => command.Command.ID)
                         .ToList();
 
                 FAQCommands.Clear();
@@ -213,7 +224,7 @@ namespace OnePlusBot.Base
         }
 
         public static class OnePlusEmote {
-            public static IEmote SUCCESS = Emote.Parse("<:success:499567039451758603>");
+            public static IEmote SUCCESS = Emote.Parse("<:snow_avasnow_avasnow_avasnow_ava:604671718254182411>");
             public static IEmote FAIL = new Emoji("⚠");
             public static IEmote OP_YES =  Emote.Parse("<:OPYes:426070836269678614>");
             public static IEmote OP_NO = Emote.Parse("<:OPNo:426072515094380555>");

@@ -1,0 +1,181 @@
+using System.Collections;
+using Discord.Rest;
+using System;
+using System.Threading.Tasks;
+using System.Linq;
+using OnePlusBot.Data.Models;
+using OnePlusBot.Data;
+using Discord.Commands;
+using Microsoft.EntityFrameworkCore;
+using Discord.WebSocket;
+
+using System.Collections.Generic;
+
+namespace OnePlusBot.Base
+{
+  public class ExpManager 
+  {
+
+    public async Task<RuntimeResult> SetupTimers()
+    {
+      TimeSpan sinceMidnight = DateTime.Now.TimeOfDay;
+      TimeSpan nextMinute = TimeSpan.FromMinutes(Math.Ceiling(sinceMidnight.TotalMinutes));
+      TimeSpan timeSpanToDelay = (nextMinute - sinceMidnight);
+      // dont trigger exactly on the zero second, but on the :30 second and do the minute before
+      int secondsToDelay = (int) timeSpanToDelay.TotalSeconds + 30;
+      await Task.Delay(secondsToDelay * 1000);
+      await PersistExp();
+      System.Timers.Timer timer = new System.Timers.Timer(1000 * 60 * 1);
+      timer.Elapsed += new System.Timers.ElapsedEventHandler(TriggerPersitence);
+      timer.Enabled = true;
+      return CustomResult.FromSuccess();
+    }
+
+    public async void TriggerPersitence(object sender, System.Timers.ElapsedEventArgs e)
+    {
+      System.Timers.Timer timer = (System.Timers.Timer)sender;
+      await PersistExp();
+    }     
+
+    public async Task PersistExp()
+    {
+      Random rnd = new Random();
+      using(var db = new Database()){
+        var minuteToPersist = (long) DateTime.Now.Subtract(DateTime.MinValue).TotalMinutes - 1;
+        Console.WriteLine($"Persisting minute {minuteToPersist} + {DateTime.Now}");
+        var peopleToUpdate = new HashSet<User>();
+        while(Global.RuntimeExp.ContainsKey(minuteToPersist)){
+          var experienceToPersist = Global.RuntimeExp[minuteToPersist];
+          UpdateExperienceForMinute(experienceToPersist, db, peopleToUpdate, rnd);
+          minuteToPersist--;
+          Global.RuntimeExp.Remove(minuteToPersist);
+        }
+        if(peopleToUpdate.Count > 0){
+          var peopleWhoChangedLevel = new List<User>();
+          foreach(var person in peopleToUpdate){
+            var levelSegment = GetAppropriateLevelForExp(person.XP, db);
+            if(person.Level != levelSegment.Level){
+              peopleWhoChangedLevel.Add(person);
+              person.Level = levelSegment.Level;
+              db.Entry(person).Reference(s => s.CurrentLevel).Load();
+            }
+          }
+          if(peopleWhoChangedLevel.Count > 0)
+          {
+            var guild = Global.Bot.GetGuild(Global.ServerID);
+            var rolesGiven = new Dictionary<ulong, Discord.IRole>();
+            foreach(var person in peopleWhoChangedLevel){
+              var roleSegment = GetAppropriateRoleForLevel(person.CurrentLevel, db);
+              // null in case of first role
+              if(roleSegment != null){
+                if(roleSegment.ExperienceRoleId != person.ExperienceRoleId){
+                  if(!rolesGiven.ContainsKey(roleSegment.RoleReference.RoleID)){
+                    rolesGiven.Add(roleSegment.RoleReference.RoleID, guild.GetRole(roleSegment.RoleReference.RoleID));
+                  }
+                  ulong existingDiscordRoleFromUser = 0;
+                  if(person.ExperienceRoleReference != null){
+                    existingDiscordRoleFromUser = person.ExperienceRoleReference.RoleReference.RoleID;
+                
+                    if(!rolesGiven.ContainsKey(existingDiscordRoleFromUser)){
+                      rolesGiven.Add(existingDiscordRoleFromUser, guild.GetRole(existingDiscordRoleFromUser));
+                    }
+                  }
+                  
+                
+                  person.ExperienceRoleId = roleSegment.Id;
+                  var user = guild.GetUser(person.UserId);
+                  if(existingDiscordRoleFromUser != 0){
+                    await user.RemoveRoleAsync(rolesGiven[existingDiscordRoleFromUser]);
+                  }
+                  
+                 
+                  await user.AddRoleAsync(rolesGiven[roleSegment.RoleReference.RoleID]);
+                }
+              }
+            }
+          }
+        }
+
+        db.SaveChanges();
+        
+       
+      }
+    }
+     
+    public ExperienceLevel GetAppropriateLevelForExp(ulong xp, Database db){
+      return db.ExperienceLevels.Where(lv => lv.NeededExperience <= xp).OrderByDescending(lv => lv.Level).First();
+    }
+
+    public ExperienceRole GetAppropriateRoleForLevel(ExperienceLevel level, Database db){
+      return db.ExperienceRoles.Where( ro => ro.Level <= level.Level).Include(ro => ro.RoleReference).OrderByDescending(ro => ro.Level).FirstOrDefault();
+    }
+
+    public void UpdateExperienceForMinute(List<ulong> userToUpdate, Database db, HashSet<User> peopleToUpdate, Random r){
+      var updateDate = DateTime.Now;
+      foreach(var userId in userToUpdate){
+        var exp = db.Users.Where(e => e.UserId == userId).Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).FirstOrDefault();
+        if(exp != null){
+          exp.XP += (ulong) r.Next(10, 15);
+          peopleToUpdate.Add(exp);
+          exp.Updated = updateDate;
+        }
+      }
+    }
+
+    public async void UpdateLevelsOfMembers(RestUserMessage updateMessage){
+      var guild = Global.Bot.GetGuild(Global.ServerID);
+      await updateMessage.ModifyAsync(m => m.Content = "0 % Done");
+      using(var db = new Database()){
+        List<ExperienceRole> rolesUsedInExperience = db.ExperienceRoles.Include(ro => ro.RoleReference).ToList();
+        List<ExperienceLevel> levelConfiguration = db.ExperienceLevels.ToList();
+        List<User> users = db.Users.Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).ToList();
+        List<SocketRole> experienceRolesInGuild = new List<SocketRole>();
+        foreach(ExperienceRole role in rolesUsedInExperience){
+          experienceRolesInGuild.Add(guild.GetRole(role.RoleReference.RoleID));
+        }
+        var totalUsers = users.Count();
+        var userDone = 0;
+        foreach(var user in users){
+          var appropriateLevelForExp = levelConfiguration.Where(lv => lv.NeededExperience <= user.XP).OrderByDescending(lv => lv.Level).FirstOrDefault();
+          if(appropriateLevelForExp != null && user.Level != appropriateLevelForExp.Level){
+            user.Level = appropriateLevelForExp.Level;
+            db.Entry(user).Reference(s => s.CurrentLevel).Load();
+            var appropriateRoleForLevel = rolesUsedInExperience.Where(lv => lv.Level <= user.Level).OrderByDescending(ro => ro.Level).FirstOrDefault();
+            if(appropriateRoleForLevel != null && user.ExperienceRoleId != appropriateRoleForLevel.ExperienceRoleId){
+              user.ExperienceRoleId = appropriateRoleForLevel.Id;
+              db.Entry(user).Reference(s => s.ExperienceRoleReference).Load();
+              db.Entry(user.ExperienceRoleReference).Reference(s => s.RoleReference).Load();
+            }
+          }
+
+          var userInGuild = guild.GetUser(user.UserId);
+          if(userInGuild != null){
+            var experienceRolesTheUserHas = userInGuild.Roles.Intersect(experienceRolesInGuild).ToList();
+            var userHasCorrectRoles = experienceRolesTheUserHas.Count() == 1 && user.ExperienceRoleReference.RoleReference.RoleID == experienceRolesTheUserHas.First().Id;
+            if(!userHasCorrectRoles){
+              await Task.Delay(200);
+              if(experienceRolesTheUserHas.Count() > 0){
+                await userInGuild.RemoveRolesAsync(experienceRolesInGuild);
+              }
+              if(user.ExperienceRoleId != null){
+                var correctExperienceRole = experienceRolesInGuild.Where(role => role.Id == user.ExperienceRoleReference.RoleReference.RoleID).FirstOrDefault();
+                if(correctExperienceRole != null){
+                  await userInGuild.AddRoleAsync(correctExperienceRole);
+                }
+              }
+             
+            }
+          }
+          userDone++;
+          if(userDone % (Math.Floor((double) totalUsers / 10)) == 0){
+            await updateMessage.ModifyAsync(m => m.Content = $"{Math.Ceiling(((double)userDone / totalUsers) * 100)}% ({userDone}/{totalUsers}) done");
+          }
+          db.SaveChanges();
+        }
+        await updateMessage.ModifyAsync(m => m.Content = "Finished");
+      }
+     
+    }
+  
+  }
+}

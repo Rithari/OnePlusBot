@@ -10,7 +10,7 @@ using Discord.Addons.Interactive;
 using OnePlusBot.Base;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
-using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;    
 
 
@@ -165,63 +165,32 @@ namespace OnePlusBot.Modules
 
             channelStep.TextCallback = (string text, ConfigurationStep a) => 
             {
-                var channelIds = Regex.Matches(text, @"(?:\<#(?<channelId>\d{18})\>)*", 
-                RegexOptions.Multiline | 
-                RegexOptions.ExplicitCapture)
-                  .OfType<Match>()
-                  .Select (mt => mt.Groups["channelId"].Value);
+                using(var db = new Database()){
+                    var channelGroup = db.ChannelGroups.Where(ch => ch.Name == text).FirstOrDefault();
 
-                bool channelFound = false;
-
-                foreach(var channelId in channelIds)
-                {
-                    if(channelId != string.Empty)
+                    if(channelGroup == null)
                     {
-                        var channelIdLong = ulong.Parse(channelId);
-                        var channelObj = Global.FullChannels.Where(ch => ch.ChannelID == channelIdLong).DefaultIfEmpty(null).First();
-                        if(channelObj != null)
-                        {
-                            channelFound = true;
-                            var commandChannel = new FAQCommandChannel();
-                            commandChannel.ChannelId = channelObj.ID;
-                            commandChannel.CommandChannelEntries = new List<FAQCommandChannelEntry>();
-                            commandChannels.Add(commandChannel);
-                        } 
-
+                        a.Result = channelStep;
+                        return true;
                     }
-                }
 
-                if(channelFound)
-                {
-                    a.Result = aliasesStep;
-                }
-                else
-                {
-                    if(text.ToUpper().Contains("ALL"))
+                    var existingCommand = db.FAQCommandChannels
+                        .Include(faqComand => faqComand.Command)
+                        .Include(faqComand => faqComand.ChannelGroupReference)
+                        .Where(c => c.Command.Name == command.Name)
+                        .Where(c => c.ChannelGroupReference.Name == text).FirstOrDefault();
+                   
+                    if(existingCommand == null)
                     {
-                        var channelCommands = existingCommands.Where(c => c.Name == command.Name).DefaultIfEmpty(null).First();
-                        foreach(var channel in Global.FullChannels)
-                        {
-                            if(channelCommands != null)
-                            {
-                                var existingChannels = channelCommands.CommandChannels.Where(cch => cch.Channel?.ChannelID == channel.ChannelID);
-                                var channelAlreadyExists = existingChannels.Any();
-                                if(channelAlreadyExists)
-                                {
-                                    continue;
-                                }
-                            }
-                           
-                            var commandChannel = new FAQCommandChannel();
-                            commandChannel.ChannelId = channel.ID;
-                            commandChannel.CommandChannelEntries = new List<FAQCommandChannelEntry>();
-                            commandChannels.Add(commandChannel);
-                        }
+                        var commandChannel = new FAQCommandChannel();
+                        commandChannel.ChannelGroupId = channelGroup.Id;
+                        commandChannel.CommandChannelEntries = new List<FAQCommandChannelEntry>();
+                        commandChannels.Add(commandChannel);
                         a.Result = aliasesStep;
                     } 
                     else
                     {
-                        a.Result = channelStep;
+                        a.Result = aliasesStep;
                     }
                 }
                 return true;
@@ -451,7 +420,7 @@ namespace OnePlusBot.Modules
                                 var index = 1;
                                 foreach(var commandInChannel in channelCommands.CommandChannels)
                                 {
-                                    stringBuilder.Append($"{index}: {commandInChannel.Command.Name} in {commandInChannel.Channel.Name}" + Environment.NewLine);
+                                    stringBuilder.Append($"{index}: {commandInChannel.Command.Name} in {commandInChannel.ChannelGroupReference.Name}" + Environment.NewLine);
                                     index++;
                                 }
                                 step.additionalPosts.Clear();

@@ -25,11 +25,12 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> OBanAsync(ulong name, [Remainder] string reason = null)
         {
+            var banLogChannel = Context.Guild.GetTextChannel(Global.PostTargets[PostTarget.BAN_LOG]);
             await Context.Guild.AddBanAsync(name, 0, reason);
 
             MuteTimerManager.UnMuteUserCompletely(name);
 
-              
+
             if(reason == null)
             {
                 reason = "No reason provided.";
@@ -54,7 +55,7 @@ namespace OnePlusBot.Modules
                 .WithName("Link")
                 .WithValue(Extensions.GetMessageUrl(Global.ServerID, Context.Channel.Id, Context.Message.Id, "Jump!")));
 
-            await modlog.SendMessageAsync(embed: banMessage.Build());
+            await banLogChannel.SendMessageAsync(embed: banMessage.Build());
 
             return CustomResult.FromSuccess();
         }
@@ -99,8 +100,8 @@ namespace OnePlusBot.Modules
 
                 MuteTimerManager.UnMuteUserCompletely(user.Id);
 
-                var modlog = Context.Guild.GetTextChannel(Global.Channels["banlog"]);
-                var banMessage = new EmbedBuilder()
+                var banLogChannel = Context.Guild.GetTextChannel(Global.PostTargets[PostTarget.BAN_LOG]);
+                var banlog = new EmbedBuilder()
                 .WithColor(9896005)
                 .WithTitle("⛔️ Banned User")
                 .AddField(efb => efb
@@ -118,7 +119,7 @@ namespace OnePlusBot.Modules
                     .WithName("Link")
                     .WithValue(Extensions.GetMessageUrl(Global.ServerID, Context.Channel.Id, Context.Message.Id, "Jump!")));
 
-                await modlog.SendMessageAsync(embed: banMessage.Build());
+                await banLogChannel.SendMessageAsync(embed: banlog.Build());
 
                 return CustomResult.FromSuccess();
 
@@ -249,7 +250,7 @@ namespace OnePlusBot.Modules
                    .AddField("Muted until", $"{ targetTime:dd.MM.yyyy HH:mm}")
                    .AddField("Mute id", muteData.ID);
                
-            await guild.GetTextChannel(Global.Channels["mutes"]).SendMessageAsync(embed: builder.Build());
+            await guild.GetTextChannel(Global.PostTargets[PostTarget.MUTE_LOG]).SendMessageAsync(embed: builder.Build());
             // in case the mute is shorter than the timer defined in Mutetimer.cs, we better just start the unmuting process directly
             if(targetTime <= DateTime.Now.AddMinutes(60))
             {
@@ -325,7 +326,7 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> WarnAsync(IGuildUser user, [Optional] [Remainder] string reason)
         {
-            var warningsChannel = Context.Guild.GetTextChannel(Global.Channels["warnings"]);
+            var warningsChannel = Context.Guild.GetTextChannel(Global.PostTargets[PostTarget.WARN_LOG]);
 
             var monitor = Context.Message.Author;
 
@@ -389,7 +390,6 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> ClearwarnAsync(uint index)
         {
-            var warningsChannel = Context.Guild.GetTextChannel(Global.Channels["warnings"]);
             var monitor = Context.Message.Author;
 
             using (var db = new Database())
@@ -616,6 +616,90 @@ namespace OnePlusBot.Modules
                 await Context.Channel.SendMessageAsync(embed: builder.Build());
                 return CustomResult.FromSuccess();
             }
+        }
+
+        [
+            Command("updateLevels", RunMode = RunMode.Async),
+            Summary("Re-evaluates the experience, levels and assigns the roles to the users"),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> UpdateLevels()
+        {
+            var message = await Context.Channel.SendMessageAsync("Processing");
+            new ExpManager().UpdateLevelsOfMembers(message);
+            return CustomResult.FromSuccess();
+        }
+
+        [
+            Command("createChannelGroup"),
+            Summary("Creates a channel group to be used in other areas"),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> CreateChannelGroup([Remainder] string text)
+        {
+            var parts = text.Split(' ');
+            if(parts.Length < 1)
+            {
+                return CustomResult.FromError("syntax <name>");
+            }
+            var name = parts[0];
+            new ChannelManager().createChannelGroup(name);
+            await Task.CompletedTask;
+            return CustomResult.FromSuccess();
+        }
+
+        [
+            Command("addToChannelGroup"),
+            Summary("Adds the mentioned channels to the given channel group"),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> AddToChannelGroup([Remainder] string text)
+        {
+            var parts = text.Split(' ');
+            if(parts.Length < 2)
+            {
+                return CustomResult.FromError("syntax <name> <mentioned channels to be added>");
+            }
+            var name = parts[0];
+            new ChannelManager().addChannelsToChannelGroup(name, Context.Message);
+            await Task.CompletedTask;
+            return CustomResult.FromSuccess();
+        }
+
+        [
+            Command("removeFromChannelGroup"),
+            Summary("Remoes the mentioned channels from the given channel group"),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> RemoveFromChannelGroup([Remainder] string text)
+        {
+            var parts = text.Split(' ');
+            if(parts.Length < 2)
+            {
+                return CustomResult.FromError("syntax <name> <mentioned channels to be added>");
+            }
+            var name = parts[0];
+            new ChannelManager().removeChannelsFromGroup(name, Context.Message);
+            await Task.CompletedTask;
+            return CustomResult.FromSuccess();
+        }
+
+        [
+            Command("setPostTarget"),
+            Summary("Sets the target of a certain post"),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> SetPostTarget([Remainder] string text)
+        {
+            var parts = text.Split(' ');
+            if(parts.Length < 2 && Context.Message.MentionedChannels.Count() != 1)
+            {
+                return CustomResult.FromError("syntax <name> <channel>");
+            }
+            var name = parts[0];
+            new ChannelManager().setPostTarget(name, Context.Message);
+            await Task.CompletedTask;
+            return CustomResult.FromSuccess();
         }
     }
 }

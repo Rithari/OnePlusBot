@@ -9,17 +9,13 @@ namespace OnePlusBot.Data.Models
     [Table("Channels")]
     public class Channel
     {
-        [Key]
-        [Column("id")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Obsolete("Are you sure you don't want to use ChannelID?")]
-        public uint ID { get; set; }
-        
+       
         [Column("name")]
         public string Name { get; set; }
 
         [Column("channel_id")]
-        public ulong ChannelID { get; set; }
+        [Key]
+        public ulong ChannelID2 { get; set; }
         
         [Column("channel_type")]
         public ChannelType ChannelType { get; set; }
@@ -31,6 +27,13 @@ namespace OnePlusBot.Data.Models
         public bool InviteCheckExempt{ get; set;}
 
         public virtual ICollection<FAQCommandChannel> CommandChannels { get; set; }
+
+        public static readonly string STARBOARD = "starboard";
+        public static readonly string REFERRAL = "referralcodes";
+
+        public static readonly string SETUPS = "setups";
+        public static readonly string INFO = "info";
+        
 
     }
 }

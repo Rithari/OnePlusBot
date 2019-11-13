@@ -116,7 +116,7 @@ namespace OnePlusBot.Modules
             {
                 foreach (var channel in guild.TextChannels)
                 {
-                    if (db.Channels.Any(x => x.ChannelID == channel.Id))
+                    if (db.Channels.Any(x => x.ChannelID2 == channel.Id))
                         continue;
 
                     var newName = await Ask(
@@ -130,7 +130,7 @@ namespace OnePlusBot.Modules
                     db.Channels.Add(new Channel
                     {
                         Name = newName,
-                        ChannelID = channel.Id,
+                        ChannelID2 = channel.Id,
                         ChannelType = ChannelType.Text,
                         ProfanityCheckExempt = false,
                         InviteCheckExempt = false
@@ -145,12 +145,12 @@ namespace OnePlusBot.Modules
                 {
                     foreach (var channel in textChannels)
                     {
-                        if (guild.Channels.Any(x => x.Id == channel.ChannelID))
+                        if (guild.Channels.Any(x => x.Id == channel.ChannelID2))
                             continue;
 
                         db.Channels.Remove(channel);
 
-                        Console.WriteLine($"[DB] [Update] Removed channel {channel.Name} with ID {channel.ChannelID}");
+                        Console.WriteLine($"[DB] [Update] Removed channel {channel.Name} with ID {channel.ChannelID2}");
                         removals--;
                     }
                 }

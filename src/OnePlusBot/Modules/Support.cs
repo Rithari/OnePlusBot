@@ -160,7 +160,7 @@ namespace OnePlusBot.Modules
                 var matchingCommand = appropriateCommand.First();
                 if(matchingCommand.CommandChannels != null) 
                 {
-                    var commandChannels = matchingCommand.CommandChannels.Where(cha => cha.Channel.ChannelID == contextChannel.Id);
+                    var commandChannels = matchingCommand.CommandChannels.Where(cha => cha.ChannelGroupReference.Channels.Where(grp => grp.ChannelId == contextChannel.Id) != null);
                     if(commandChannels.Any())
                     {
                         var entries = commandChannels.First().CommandChannelEntries.OrderBy(entry => entry.Position);
@@ -201,7 +201,11 @@ namespace OnePlusBot.Modules
             }
         }
          public async Task PrintAvailableCommands(ISocketMessageChannel contextChannel){
-            var commandsAvailable = Global.FAQCommandChannels.Where(ch => ch.Channel.ChannelID == contextChannel.Id).ToList();
+            var commandsAvailable = Global.FAQCommandChannels.
+            Where(ch => ch.ChannelGroupReference.Channels.
+                Where(grp => grp.ChannelId == contextChannel.Id).
+                FirstOrDefault() != null)
+            .ToList();
             if(commandsAvailable.Count() == 0){
                 await Context.Channel.SendMessageAsync("No entry available.");
             } else {

@@ -2,7 +2,6 @@
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using Discord.Rest;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
 using OnePlusBot.Helpers;
@@ -11,7 +10,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using OnePlusBot.Base;
 using System.Net;
 using System.Collections.Generic;
 
@@ -37,6 +35,7 @@ namespace OnePlusBot.Base
             _bot.UserLeft += OnUserLeft;
             _bot.MessageReceived += OnCommandReceived;
             _bot.MessageReceived += OnMessageReceived;
+            _bot.MessageReceived += HandleExpGain;
             _bot.MessageDeleted += OnMessageRemoved;
             _bot.MessageUpdated += OnMessageUpdated;
             _bot.UserUnbanned += OnUserUnbanned;
@@ -48,17 +47,17 @@ namespace OnePlusBot.Base
 
         private async Task OnUserLeft(SocketGuildUser socketGuildUser)
         {
-            var modlog = socketGuildUser.Guild.GetTextChannel(Global.Channels["joinlog"]);
-            await modlog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + "left the guild");
+            var leaveLog = socketGuildUser.Guild.GetTextChannel(Global.PostTargets[PostTarget.LEAVE_LOG]);
+            await leaveLog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + " left the guild");
         }
 
         private async Task OnuserUserJoined(SocketGuildUser socketGuildUser)
         {
-            var modlog = socketGuildUser.Guild.GetTextChannel(Global.Channels["joinlog"]);
+            var joinlog = socketGuildUser.Guild.GetTextChannel(Global.PostTargets[PostTarget.JOIN_LOG]);
             string name = socketGuildUser.Username;
             if(Global.IllegalUserNameBeginnings.Contains(name[0]))
             {
-                var modQueue = socketGuildUser.Guild.GetTextChannel(Global.Channels["modqueue"]);
+                var modQueue = socketGuildUser.Guild.GetTextChannel(Global.PostTargets[PostTarget.USERNAME_QUEUE]);
                 var builder = new EmbedBuilder();
                 builder.Title = "User with illegal character joined!";
                 builder.Description = Extensions.FormatUserNameDetailed(socketGuildUser);
@@ -69,7 +68,7 @@ namespace OnePlusBot.Base
                 builder.ThumbnailUrl = socketGuildUser.GetAvatarUrl();
                 await modQueue.SendMessageAsync(embed: builder.Build());
             }
-            await modlog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + "joined the guild");
+            await joinlog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + " joined the guild");
         }
 
         private async Task OnUserJoinedMuteCheck(SocketGuildUser user)
@@ -85,14 +84,14 @@ namespace OnePlusBot.Base
 
         private async Task OnUserUnbanned(SocketUser socketUser, SocketGuild socketGuild)
         {
-            var modlog = socketGuild.GetTextChannel(Global.Channels["banlog"]);
+            var unBanlogChannel = socketGuild.GetTextChannel(Global.PostTargets[PostTarget.UNBAN_LOG]);
 
             var restAuditLogs = await socketGuild.GetAuditLogsAsync(10).FlattenAsync();
 
             var unbanLog = restAuditLogs.FirstOrDefault(x => x.Action == ActionType.Unban);
 
 
-            await modlog.EmbedAsync(new EmbedBuilder()
+            await unBanlogChannel.EmbedAsync(new EmbedBuilder()
                 .WithColor(9896005)
                 .WithTitle("♻️ Unbanned User")
                 .AddField(efb => efb
@@ -152,7 +151,7 @@ namespace OnePlusBot.Base
                     if(split.Length > 0)
                     {
                         var guild = Global.Bot.GetGuild(Global.ServerID);
-                        var newsChannel = guild.GetTextChannel(Global.Channels["news"]);
+                        var newsChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.NEWS]);
                         var newsRole = guild.GetRole(Global.Roles["news"]);
                         var rawMessage = await newsChannel.GetMessageAsync(Global.NewsPosts[message.Id]);
                         var existingMessage = rawMessage as SocketUserMessage;
@@ -186,7 +185,7 @@ namespace OnePlusBot.Base
                     Timestamp = DateTime.Now
                 };
 
-                await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: embed.Build());
+                await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.EDIT_LOG]).SendMessageAsync(embed: embed.Build());
             }
         }
 
@@ -210,7 +209,7 @@ namespace OnePlusBot.Base
                 return;
             }
 
-            if(channel.Id == Global.Channels["starboard"])
+            if(channel.Id == Global.Channels[Channel.STARBOARD])
             {
                 var starPost = Global.StarboardPosts.Where(po => po.StarboardMessageId == deletedMessage.Id).DefaultIfEmpty(null).First();
                 if(starPost != null)
@@ -253,7 +252,7 @@ namespace OnePlusBot.Base
                     ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
                     Timestamp = DateTime.Now
                 };
-                await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: embed.Build());
+                await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.DELETE_LOG]).SendMessageAsync(embed: embed.Build());
 
                 WebClient client = new WebClient();
                 for(int index = 0; index < attachments.Count; index++)
@@ -276,11 +275,11 @@ namespace OnePlusBot.Base
                                 Footer = new EmbedFooterBuilder() { Text =  attachmentDescription},
                                 ImageUrl = attachmentString,
                             };
-                            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendFileAsync(targetFileName, "", embed: pictureEmbed.Build());
+                            await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.DELETE_LOG]).SendFileAsync(targetFileName, "", embed: pictureEmbed.Build());
                         } 
                         else 
                         {
-                            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendFileAsync(targetFileName, attachmentDescription);
+                            await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.DELETE_LOG]).SendFileAsync(targetFileName, attachmentDescription);
                         }
                     }
                     catch(WebException webEx)
@@ -297,7 +296,7 @@ namespace OnePlusBot.Base
                                     Fields = {new EmbedFieldBuilder() { IsInline = false, Name = $":x: It returned ", Value = (int)response.StatusCode }},
                                     ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
                                 };
-                                await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: exceptionEmbed.Build());
+                                await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.DELETE_LOG]).SendMessageAsync(embed: exceptionEmbed.Build());
                             }
                             else
                             {
@@ -334,7 +333,7 @@ namespace OnePlusBot.Base
                 ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
                 Timestamp = DateTime.Now
             };
-            await channel.Guild.GetTextChannel(Global.Channels["modlog"]).SendMessageAsync(embed: exceptionEmbed.Build());
+            await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.DELETE_LOG]).SendMessageAsync(embed: exceptionEmbed.Build());
         }
 
         private static async Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
@@ -519,7 +518,7 @@ namespace OnePlusBot.Base
 
 
             var embed = builder.Build();
-            var modQueue = guild.GetTextChannel(Global.Channels["modqueue"]);
+            var modQueue = guild.GetTextChannel(Global.PostTargets[PostTarget.PROFANITY_QUEUE]);
 
             var report = await modQueue.SendMessageAsync(null,embed: embed);
 
@@ -590,7 +589,28 @@ namespace OnePlusBot.Base
             string messageText = message.Content;
             var channelObj = Global.FullChannels.Where(ch => ch.ChannelID == message.Channel.Id).FirstOrDefault();
             bool ignoredChannel = channelObj != null && channelObj.InviteCheckExempt;
-            return ContainsIllegalInvite(messageText) && message.Channel.Id != Global.Channels["referralcodes"] && !ignoredChannel;
+            return ContainsIllegalInvite(messageText) && message.Channel.Id != Global.Channels[Channel.REFERRAL]; && !ignoredChannel;
+        }
+
+        private static async Task HandleExpGain(SocketMessage message)
+        {
+            if(message.Author.IsBot){
+                return;
+            }
+            var minute = (long) DateTime.Now.Subtract(DateTime.MinValue).TotalMinutes;
+            var exists = Global.RuntimeExp.ContainsKey(minute);
+            if(!exists){
+                var element = new List<ulong>();
+                element.Add(message.Author.Id);
+                Global.RuntimeExp.Add(minute, element);
+            }
+            else
+            {
+                var poster = Global.RuntimeExp[minute];
+                if(!poster.Contains(message.Author.Id)){
+                    poster.Add(message.Author.Id);
+                }
+            }
         }
 
         private static async Task OnMessageReceived(SocketMessage message)
@@ -636,11 +656,11 @@ namespace OnePlusBot.Base
                
             var channelId = message.Channel.Id;
 
-            if (channelId == Global.Channels["setups"])
+            if (channelId == Global.Channels[Channel.SETUPS])
             {
                 await ValidateSetupsMessage(message);
             }
-            else if (channelId == Global.Channels["info"])
+            else if (channelId == Global.Channels[Channel.INFO])
             {
                 if (message.Embeds.Count == 1)
                 {
@@ -648,7 +668,7 @@ namespace OnePlusBot.Base
                     await RoleReact(userMessage);
                 }
             }
-            else if (channelId == Global.Channels["referralcodes"])
+            else if (channelId == Global.Channels[Channel.REFERRAL])
             {
                 if (message.Author.IsBot)
                     return;
