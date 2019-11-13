@@ -577,7 +577,9 @@ namespace OnePlusBot.Base
         private static bool ViolatesRule(SocketMessage message)
         {
             string messageText = message.Content;
-            return ContainsIllegalInvite(messageText) && message.Channel.Id != Global.Channels["referralcodes"];
+            var channelObj = Global.FullChannels.Where(ch => ch.ChannelID == message.Channel.Id).FirstOrDefault();
+            bool ignoredChannel = channelObj != null && channelObj.InviteCheckExempt;
+            return ContainsIllegalInvite(messageText) && message.Channel.Id != Global.Channels["referralcodes"] && !ignoredChannel;
         }
 
         private static async Task OnMessageReceived(SocketMessage message)

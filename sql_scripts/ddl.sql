@@ -23,6 +23,7 @@ CREATE TABLE `Channels` (
   `channel_id` bigint(20) unsigned NOT NULL,
   `channel_type` int(11) NOT NULL,
   `profanity_check_exempt` tinyint(4) NOT NULL,
+  `invite_check_exempt` tinyint(4) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
