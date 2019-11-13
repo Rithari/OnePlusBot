@@ -31,8 +31,7 @@ namespace OnePlusBot.Base
             
             var currentStarReaction = message.Reactions.Where(re => re.Key.Name == reaction.Emote.Name).DefaultIfEmpty().First();
 
-            var starboardChannelId = Global.Channels["starboard"];
-            var starboardChannel = guild.GetTextChannel(starboardChannelId);
+            var starboardChannel = guild.GetTextChannel(Global.Channels["starboard"]);
             var existingPostList = Global.StarboardPosts.Where(msg => msg.MessageId == message.Id);
 
             var starCount = await this.GetTrueStarCount(message, currentStarReaction);
