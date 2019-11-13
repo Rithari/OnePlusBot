@@ -27,6 +27,9 @@ namespace OnePlusBot.Data.Models
         [Column("profanity_check_exempt")]
         public bool ProfanityCheckExempt{ get; set;}
 
+        [Column("invite_check_exempt")]
+        public bool InviteCheckExempt{ get; set;}
+
         public virtual ICollection<FAQCommandChannel> CommandChannels { get; set; }
 
     }
