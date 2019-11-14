@@ -21,7 +21,7 @@ namespace OnePlusBot.Base
             var bot = Global.Bot;
             var guild = bot.GetGuild(Global.ServerID);
             var iGuildObj = (IGuild) guild;
-            var allowedroleObj =  iGuildObj.GetRole(Global.Roles[this.AllowedRole]);
+            var allowedroleObj =  iGuildObj.GetRole(Global.Roles[AllowedRole]);
             var user = (SocketGuildUser) context.User;
             if(user.Roles.Any(role => role.Id == allowedroleObj.Id)){
                 return Task.FromResult(PreconditionResult.FromSuccess());

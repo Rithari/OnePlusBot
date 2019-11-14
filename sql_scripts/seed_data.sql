@@ -26,4 +26,8 @@ INSERT INTO `Channels` (`id`, `name`, `channel_id`, `channel_type`, `profanity_c
 (43, 'starboard', 0, 0, 1),
 (47, 'mutes', 0, 0, 1),
 (48, 'modqueue', 0, 0, 1),
+(49, 'modmaillog', 0, 0, 1),
 (50, 'banlog', 0, 0, 0);
+
+INSERT INTO  `Roles` (`id` ,`name`, `role_id` ) VALUES 
+(1, 'staff', 0);
