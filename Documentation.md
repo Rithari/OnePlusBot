@@ -115,6 +115,10 @@ Can be used by anyone.\
 Syntax is `;suggest stuff`.\
 Suggestion will be posted to a #suggestions channel and bot will automatically react to this message using "Yes" and "No" emotes.
 
+### Invite filter
+
+To avoid unsollicited advertising an invite filter is present. Some channels and invitations can however be whitelisted (configurable in database).
+
 ## Specific to server
 
 ### Role ping to send news
@@ -177,10 +181,21 @@ It is usable by everyone.
 
 ## Misc
 
+### Server info
+
+`;serverinfo`\
+Returns server information using an embed.\
+It includes server name, server ID, server region, owner of the server, number of members, number of text and voice channels, number of roles, server creation date and guild features (defined at https://github.com/discordapp/discord-api-docs/blob/master/docs/resources/Guild.md#guild-features ). Custom emojis number is also displayed in same embed and emojis themselves (including animated ones) are sent as well in embed previously mentionned.
+
 ### User avatar display
 
 `;showavatar Username#1234`.
 Also works with user IDs.
+
+### Roulette
+
+`;roulette`\
+A version of russian roulette.
 
 ### Show bigger versions of emotes
 
