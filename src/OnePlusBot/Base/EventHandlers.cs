@@ -576,6 +576,17 @@ namespace OnePlusBot.Base
 
         private static bool ViolatesRule(SocketMessage message)
         {
+            var guildUser = message.Author as IGuildUser;
+            if (message.Channel is SocketDMChannel)
+            {
+                if (guildUser.RoleIds.Contains(Global.Roles["staff"]))
+                {
+                    var guild = Global.Bot.GetGuild(Global.ServerID);
+                    var feedbackChannel = guild.GetTextChannel(Global.Channels["feedback"]);
+                    feedbackChannel.SendMessageAsync("Feedback!" + Environment.NewLine + message.Content);
+                }
+            }
+
             string messageText = message.Content;
             var channelObj = Global.FullChannels.Where(ch => ch.ChannelID == message.Channel.Id).FirstOrDefault();
             bool ignoredChannel = channelObj != null && channelObj.InviteCheckExempt;
