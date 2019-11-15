@@ -1,7 +1,5 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Discord;
 using System.Collections.Generic;
 
 namespace OnePlusBot.Data.Models
@@ -15,6 +13,18 @@ namespace OnePlusBot.Data.Models
         
         [Column("name")]
         public string Name { get; set; }
+
+        [Column("profanity_check_exempt")]
+        public bool ProfanityCheckExempt { get; set;}
+
+        [Column("invite_check_exempt")]
+        public bool InviteCheckExempt { get; set;}
+
+        [Column("exp_gain_exempt")]
+        public bool ExperienceGainExempt { get; set; }
+
+        [Column("disabled")]
+        public bool Disabled { get; set; }
 
 
         public virtual ICollection<ChannelInGroup> Channels { get; set; }

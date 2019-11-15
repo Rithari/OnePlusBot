@@ -48,6 +48,8 @@ namespace OnePlusBot.Base
         public static List<Char> IllegalUserNameBeginnings { get; set; }
 
         public static Dictionary<long, List<ulong>> RuntimeExp { get; set; }
+
+        public static bool XPGainDisabled { get; set; }
         
         public static string Token
         {
@@ -132,10 +134,11 @@ namespace OnePlusBot.Base
                 FullChannels.Clear();
                 if (db.Channels.Any()) 
                 {
-                    foreach (var channel in db.Channels)
+                    var channelObjects = db.Channels.Include(ch => ch.GroupsChannelIsIn).ThenInclude(groupMembers => groupMembers.Group);
+                    foreach (var groupMember in channelObjects)
                     {
-                        Channels.Add(channel.Name, channel.ChannelID2);
-                        FullChannels.Add(channel);
+                        Channels.Add(groupMember.Name, groupMember.ChannelID);
+                        FullChannels.Add(groupMember);
                     }
                 }
 
@@ -179,6 +182,10 @@ namespace OnePlusBot.Base
                     .First(entry => entry.Name == "user_name_illegal_characters")
                     .StringValue.ToCharArray().ToList();
 
+                XPGainDisabled = db.PersistentData
+                    .First(entry => entry.Name == "xp_disabled")
+                    .Value == 1;
+
                 InviteLinks.Clear();
                 foreach(var link in db.InviteLinks)
                 {
@@ -211,6 +218,10 @@ namespace OnePlusBot.Base
 
 
                 var ReadChannels = db.FAQCommandChannels
+                        .Include(faqComand => faqComand.Command)
+                        .Include(faqComand => faqComand.ChannelGroupReference)
+                        .Include(faqComand => faqComand.CommandChannelEntries)
+                        .OrderBy(command => command.Command.ID)
                         .ToList();
 
                 FAQCommands.Clear();

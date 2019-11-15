@@ -1,4 +1,3 @@
-using System.Collections;
 using System;
 using System.Threading.Tasks;
 using Discord.Commands;
@@ -619,8 +618,8 @@ namespace OnePlusBot.Modules
         }
 
         [
-            Command("updateLevels", RunMode = RunMode.Async),
-            Summary("Re-evaluates the experience, levels and assigns the roles to the users"),
+            Command("updateLevels"),
+            Summary("Re-evaluates the experience, levels and assigns the roles to the users (takes a long time, use with care)"),
             RequireRole("staff")
         ]
         public async Task<RuntimeResult> UpdateLevels()
@@ -685,6 +684,43 @@ namespace OnePlusBot.Modules
         }
 
         [
+            Command("setXPDisabled"),
+            Summary("Enables/disables the xp gain in a certain channel group"),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> ToggleExperienceGainInChannelGroup([Remainder] string parameters){
+            var parts = parameters.Split(' ');
+            if(parts.Length < 2)
+            {
+                return CustomResult.FromError("setXPDisabled <name> <true/false>");
+            }
+            var name = parts[0];
+            var newValue = parts[1];
+            new ChannelManager().setExpDisabledTo(name, newValue == "true");
+            await Task.CompletedTask;
+            return CustomResult.FromSuccess();
+        }
+
+        [
+            Command("setGroupDisabled"),
+            Summary("Enables/disables the profanity/invitecheck/xpgain flags for a group"),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> ToggleGroupDisabled([Remainder] string parameters){
+            var parts = parameters.Split(' ');
+            if(parts.Length < 2)
+            {
+                return CustomResult.FromError("setGroupDisabled <name> <true/false>");
+            }
+            var name = parts[0];
+            var newValue = parts[1];
+            new ChannelManager().setGroupDisabledTo(name, newValue == "true");
+            await Task.CompletedTask;
+            return CustomResult.FromSuccess();
+        }
+
+
+        [
             Command("setPostTarget"),
             Summary("Sets the target of a certain post"),
             RequireRole("staff")
@@ -699,6 +735,17 @@ namespace OnePlusBot.Modules
             var name = parts[0];
             new ChannelManager().setPostTarget(name, Context.Message);
             await Task.CompletedTask;
+            return CustomResult.FromSuccess();
+        }
+
+        [
+            Command("listChannelGroups", RunMode=RunMode.Async),
+            Summary("Prints all the channel groups of the server"),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> ListChannelGroups()
+        {
+            await new ChannelManager().ListChannelGroups(Context.Channel);
             return CustomResult.FromSuccess();
         }
     }

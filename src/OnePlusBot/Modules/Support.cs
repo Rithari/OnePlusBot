@@ -209,17 +209,18 @@ namespace OnePlusBot.Modules
             if(commandsAvailable.Count() == 0){
                 await Context.Channel.SendMessageAsync("No entry available.");
             } else {
-                var stringBuilder = new StringBuilder();
-                stringBuilder.Append("Available entries in this channel " + Environment.NewLine);
+               var stringBuilder = new StringBuilder(" ");
                 for(var index = 0; index < commandsAvailable.Count; index++)
                 {
                     var command = commandsAvailable[index];
-                    stringBuilder.Append($"{command.Command.Name}");
+                    stringBuilder.Append($"`{command.Command.Name}`");
                     if(index < commandsAvailable.Count -1 ){
                         stringBuilder.Append(", ");
                     }
                 }
-                await Context.Channel.SendMessageAsync(stringBuilder.ToString());
+                var embedBuilder = new EmbedBuilder().WithTitle("Available entries in this channel").WithDescription(stringBuilder.ToString());
+                
+                await Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
             }
            
         }

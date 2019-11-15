@@ -9,7 +9,7 @@ namespace OnePlusBot.Data.Models
     {
 
         [Key]
-        [Column("user_id")]
+        [Column("id")]
         public ulong UserId { get; set; }
 
         [Column("modmail_muted")]

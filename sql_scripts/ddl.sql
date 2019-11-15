@@ -18,13 +18,10 @@ CREATE TABLE `AuthTokens` (
 
 DROP TABLE IF EXISTS `Channels`;
 CREATE TABLE `Channels` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `channel_id` bigint(20) unsigned NOT NULL,
   `channel_type` int(11) NOT NULL,
-  `profanity_check_exempt` tinyint(4) NOT NULL,
-  `invite_check_exempt` tinyint(4) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`channel_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -70,11 +67,11 @@ DROP TABLE IF EXISTS `FaqCommandChannel`;
 CREATE TABLE `FaqCommandChannel` (
   `command_channel_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `command_id` int(10) unsigned NOT NULL,
-  `channel_id` int(10) unsigned NOT NULL,
+  `channel_group_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`command_channel_id`),
-  KEY `fk_channel_id` (`channel_id`),
+  KEY `fk_channel_group_id` (`channel_group_id`),
   KEY `command_id` (`command_id`),
-  CONSTRAINT `fk_channel_id` FOREIGN KEY (`channel_id`) REFERENCES `Channels` (`id`),
+  CONSTRAINT `fk_channel_group_id` FOREIGN KEY (`channel_group_id`) REFERENCES `ChannelGroups` (`id`),
   CONSTRAINT `fk_command_id` FOREIGN KEY (`command_id`) REFERENCES `FaqCommand` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=359 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -117,7 +114,7 @@ CREATE TABLE `PersistentData` (
 
 DROP TABLE IF EXISTS `User`;
 CREATE TABLE `User` (
- `user_id` bigint(20) unsigned NOT NULL,
+ `id` bigint(20) unsigned NOT NULL,
  `modmail_muted` tinyint(4) NOT NULL,
  `modmail_muted_until` datetime NOT NULL,
  `modmail_muted_reminded` tinyint(4) NOT NULL,
@@ -290,7 +287,6 @@ CREATE TABLE `ThreadSubscribers` (
 -- Table structure for table `ThreadMessage`
 --
 
-
 DROP TABLE IF EXISTS `ThreadMessage`;
 CREATE TABLE `ThreadMessage` (
  `channel_id` bigint(20) unsigned NOT NULL,
@@ -302,5 +298,41 @@ CREATE TABLE `ThreadMessage` (
  CONSTRAINT `fk_msg_id` FOREIGN KEY (`channel_id`) REFERENCES `ModMailThread` (`channel_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `ChannelGroups`
+--
+
+CREATE TABLE `ChannelGroups` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+ `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `profanity_check_exempt` tinyint(4) NOT NULL,
+  `invite_check_exempt` tinyint(4) NOT NULL,
+  `exp_gain_exempt` tinyint(4) NOT NULL,
+  `disabled` tinyint(4) NOT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `ChannelInGroup`
+--
+
+CREATE TABLE `ChannelInGroup` (
+ `channel_id` bigint(20) unsigned NOT NULL,
+ `channel_group_id` int(10) unsigned NOT NULL,
+ PRIMARY KEY (`channel_id`,`channel_group_id`),
+ KEY `fk_group_id` (`channel_group_id`),
+ CONSTRAINT `fk_group_id` FOREIGN KEY (`channel_group_id`) REFERENCES `ChannelGroups` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `PostTargets`
+--
+
+CREATE TABLE `PostTargets` (
+ `channel_id` bigint(20) unsigned NOT NULL,
+ `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+ PRIMARY KEY (`name`),
+ UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS=1;

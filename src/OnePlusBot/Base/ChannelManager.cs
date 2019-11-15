@@ -1,7 +1,15 @@
+using System.Threading.Tasks;
+using System;
+using System.Collections.ObjectModel;
+using System.Text;
 using System.Linq;
 using Discord.WebSocket;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
+using OnePlusBot.Base.Errors;
+using Discord;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace OnePlusBot.Base
 {
@@ -10,6 +18,10 @@ namespace OnePlusBot.Base
         public void createChannelGroup(string name)
         {
             using(var db = new Database()){
+                var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
+                if(existingGroup != null){
+                    throw new ChannelGroupException("Channel group with name already exists.");
+                }
                 var channelGroup = new ChannelGroup();
                 channelGroup.Name = name;
                 db.ChannelGroups.Add(channelGroup);
@@ -37,6 +49,8 @@ namespace OnePlusBot.Base
                       
                     }
                     db.SaveChanges();
+                } else {
+                    throw new ChannelGroupException("Channel group not found.");
                 }
                 
             }
@@ -58,9 +72,41 @@ namespace OnePlusBot.Base
                         }
                     }
                     db.SaveChanges();
+                } else {
+                    throw new ChannelGroupException("Channel group not found.");
                 }
                 
             }
+        }
+
+        public void setExpDisabledTo(string name, bool newVal){
+            using(var db = new Database())
+            {
+                var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
+                if(existingGroup != null)
+                {
+                    existingGroup.ExperienceGainExempt = newVal;
+                } else {
+                    throw new ChannelGroupException("Channel group not found.");
+                }
+                db.SaveChanges();
+            }
+
+        }
+
+        public void setGroupDisabledTo(string name, bool newVal){
+            using(var db = new Database())
+            {
+                var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
+                if(existingGroup != null)
+                {
+                    existingGroup.Disabled = newVal;
+                } else {
+                    throw new ChannelGroupException("Channel group not found.");
+                }
+                db.SaveChanges();
+            }
+
         }
 
         public void setPostTarget(string name, SocketUserMessage message)
@@ -85,6 +131,49 @@ namespace OnePlusBot.Base
               
                 db.SaveChanges();
             }
+        }
+
+        public Collection<Embed> GetChannelListEmbed(){
+            Collection<Embed> embedsToPost = new Collection<Embed>();
+            using(var db = new Database())
+            {
+                var currentEmbedBuilder = new EmbedBuilder();
+                currentEmbedBuilder.WithTitle("Available channel groups");
+                var channelGroups = db.ChannelGroups.Include(ch => ch.Channels).ToList();
+                var count = 0;
+                foreach(var group in channelGroups)
+                {
+                    count++;
+                    currentEmbedBuilder.AddField(group.Name, getChannelsAsMentions(group.Channels));
+                    if(((count % EmbedBuilder.MaxFieldCount) == 0) && group != channelGroups.Last()){
+                        embedsToPost.Add(currentEmbedBuilder.Build());
+                        currentEmbedBuilder = new EmbedBuilder();
+                        var currentPage = count / EmbedBuilder.MaxFieldCount + 1;
+                        currentEmbedBuilder.WithFooter(new EmbedFooterBuilder().WithText($"Page {currentPage}"));
+                    }
+                   
+                }
+                embedsToPost.Add(currentEmbedBuilder.Build());
+            }
+            return embedsToPost;
+        }
+
+        public async Task ListChannelGroups(ISocketMessageChannel channelToRespondIn)
+        {
+            var embedsToPost = GetChannelListEmbed();
+            foreach(Embed embed in embedsToPost){
+                await channelToRespondIn.SendMessageAsync(embed: embed);
+                await Task.Delay(200);
+            }
+        }
+
+        private string getChannelsAsMentions(ICollection<ChannelInGroup> channels){
+            StringBuilder stringRepresentation = new StringBuilder();
+            foreach(ChannelInGroup ch in channels){
+                stringRepresentation.Append($"<#{ch.ChannelId}> ");
+            }
+
+            return stringRepresentation.ToString() != string.Empty ? stringRepresentation.ToString() : "no channels.";
         }
     }
 }

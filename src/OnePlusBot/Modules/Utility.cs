@@ -410,6 +410,7 @@ namespace OnePlusBot.Modules
                     embedBuilder.WithAuthor(new EmbedAuthorBuilder().WithIconUrl(userToUse.GetAvatarUrl()).WithName(userToUse.Username));
                     embedBuilder.AddField("Current XP", userInDb.XP, true);
                     embedBuilder.AddField("Current Level", userInDb.Level, true);
+                    embedBuilder.AddField("Messages", userInDb.MessageCount, true);
                     if(nextLevel != null){
                         embedBuilder.AddField("XP to next Level", nextLevel.NeededExperience - userInDb.XP, true);
                     }
@@ -429,19 +430,25 @@ namespace OnePlusBot.Modules
             var embedBuilder = new EmbedBuilder();
             using(var db = new Database()){
                 var allUsers = db.Users.OrderByDescending(us => us.XP).ToList();
-                var usersInLeaderboard = db.Users.OrderByDescending(us => us.XP).Skip(page * 10).Take(10).ToList();
+                var usersInLeaderboard = db.Users.OrderByDescending(us => us.XP);
+                System.Collections.Generic.List<User> usersToDisplay;
+                if(page > 1){
+                    usersToDisplay = usersInLeaderboard.Skip((page -1) * 10).Take(10).ToList();
+                } else {
+                    usersToDisplay = usersInLeaderboard.Take(10).ToList();
+                }
                 embedBuilder = embedBuilder.WithTitle("Leaderboard of gained experience");
                 var description = new StringBuilder();
                 if(page * 10 > allUsers.Count()){
                     description.Append("Page not found. \n");
                 } else {
-                    description.Append("Rank | Name \n");
-                    foreach(var user in usersInLeaderboard){
+                    description.Append("Rank | Name | Experience | Level | Messages \n");
+                    foreach(var user in usersToDisplay){
                         var rank = allUsers.IndexOf(user) + 1;
                         var userInGuild = Context.Guild.GetUser(user.UserId);
                         var name = userInGuild != null ? Extensions.FormatUserName(userInGuild) : "User left guild " + user.UserId;
                         description.Append($"[#{rank}] → {name}\n");
-                        description.Append($"Experience: {user.XP} Level: {user.Level} \n");
+                        description.Append($"XP: {user.XP} Level: {user.Level}: Messages: {user.MessageCount} \n");
                     }
                     description.Append("\n");
                 }
@@ -451,7 +458,7 @@ namespace OnePlusBot.Modules
                 if(caller != null){
                     var callRank = allUsers.IndexOf(caller) + 1;
                     var userInGuild = Context.Guild.GetUser(caller.UserId);
-                    description.Append($"[#{callRank}] → {Extensions.FormatUserName(userInGuild)} Experience: {caller.XP}");
+                    description.Append($"[#{callRank}] → {Extensions.FormatUserName(userInGuild)} XP: {caller.XP} messages: {caller.MessageCount}");
                 }
                 embedBuilder = embedBuilder.WithDescription(description.ToString());
                 embedBuilder.WithFooter(new EmbedFooterBuilder().WithText("Use leaderboard <page> to view more of the leaderboard"));

@@ -17,6 +17,9 @@ namespace OnePlusBot.Data.Models
 
         [ForeignKey("ChannelGroupId")]
         public virtual ChannelGroup Group { get; set; }
+
+        [ForeignKey("ChannelId")]
+        public virtual Channel ChannelReference { get; set; }
       
     }
 }

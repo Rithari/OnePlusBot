@@ -32,7 +32,7 @@ namespace OnePlusBot.Modules
             var addStep = new ConfigurationStep("What kind of post do you want to add? (💌 embed, 📖 textpost, ✅ nothing further)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
 
             var aliasesStep = new ConfigurationStep("Please write the aliases you want for this command (comma separated), type 'none' for none", Interactive, Context, ConfigurationStep.StepType.Text, addStep);
-            var channelStep = new ConfigurationStep("Which channels should the command be active in? Please mention the channels with # or type 'all' for all.", Interactive, Context, ConfigurationStep.StepType.Text, aliasesStep);
+            var channelStep = new ConfigurationStep("In which channel grops should the command be active in?", Interactive, Context, ConfigurationStep.StepType.Text, aliasesStep);
 
             var commandStep = new ConfigurationStep("What should the name of the command be?", Interactive, Context, ConfigurationStep.StepType.Text, channelStep);
             var textStep = new ConfigurationStep("Please post what the text of the text post should be", Interactive, Context, ConfigurationStep.StepType.Text, addStep);
@@ -123,7 +123,7 @@ namespace OnePlusBot.Modules
                         command.Aliases = "";
                     }                
                 }
-                return true;
+                return Task.CompletedTask;
             };
     
             commandStep.TextCallback = (string text, ConfigurationStep a) => 
@@ -137,19 +137,19 @@ namespace OnePlusBot.Modules
                 {
                      command.Name = text;
                 }
-                return true;
+                return Task.CompletedTask;
             };
 
             imageUrlStep.TextCallback = (string text, ConfigurationStep a) => 
             {
                 builder = builder.withImageUrl(text);
-                return true;
+                return Task.CompletedTask;
             };
 
             embedTextStep.TextCallback = (string text, ConfigurationStep a) => 
             {
                 builder = builder.withText(text);
-                return true;
+                return Task.CompletedTask;
             };
 
             textStep.TextCallback = (string text, ConfigurationStep a) => 
@@ -160,40 +160,61 @@ namespace OnePlusBot.Modules
                 entry.Position = (uint) entries.Count();
                 entries.Add(entry);
                 builder = new FaqCommandChannelEntryBuilder();
-                return true;
+                return Task.CompletedTask;
+            };
+
+            channelStep.beforeTextPosted = async (ConfigurationStep step) => {
+                var embeds = new ChannelManager().GetChannelListEmbed();
+                foreach(var embed in embeds){
+                    var postedMessage = await Context.Channel.SendMessageAsync(embed: embed);
+                    channelStep.MessagesToRemoveOnNextProgression.Add(postedMessage);
+                    await Task.Delay(100);
+                }
+                
+                await Task.CompletedTask;
             };
 
             channelStep.TextCallback = (string text, ConfigurationStep a) => 
             {
-                using(var db = new Database()){
-                    var channelGroup = db.ChannelGroups.Where(ch => ch.Name == text).FirstOrDefault();
+                using(var db = new Database())
+                {
+                    var groupNames = text.Split(' ');
+                    bool foundAnyMatchingGroup = false;
+                    foreach(var groupName in groupNames){
+                        var channelGroup = db.ChannelGroups.Where(ch => ch.Name == groupName).FirstOrDefault();
 
-                    if(channelGroup == null)
+                        if(channelGroup != null)
+                        {
+                           foundAnyMatchingGroup = true;
+                           a.Result = aliasesStep;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+
+                        var existingCommand = db.FAQCommandChannels
+                            .Include(faqComand => faqComand.Command)
+                            .Include(faqComand => faqComand.ChannelGroupReference)
+                            .Where(c => c.Command.Name == command.Name)
+                            .Where(c => c.ChannelGroupReference.Name == groupName).FirstOrDefault();
+                    
+                        if(existingCommand == null)
+                        {
+                            var commandChannel = new FAQCommandChannel();
+                            commandChannel.ChannelGroupId = channelGroup.Id;
+                            commandChannel.CommandChannelEntries = new List<FAQCommandChannelEntry>();
+                            commandChannels.Add(commandChannel);
+                        } 
+                    }
+
+                    if(!foundAnyMatchingGroup)
                     {
                         a.Result = channelStep;
-                        return true;
                     }
-
-                    var existingCommand = db.FAQCommandChannels
-                        .Include(faqComand => faqComand.Command)
-                        .Include(faqComand => faqComand.ChannelGroupReference)
-                        .Where(c => c.Command.Name == command.Name)
-                        .Where(c => c.ChannelGroupReference.Name == text).FirstOrDefault();
                    
-                    if(existingCommand == null)
-                    {
-                        var commandChannel = new FAQCommandChannel();
-                        commandChannel.ChannelGroupId = channelGroup.Id;
-                        commandChannel.CommandChannelEntries = new List<FAQCommandChannelEntry>();
-                        commandChannels.Add(commandChannel);
-                        a.Result = aliasesStep;
-                    } 
-                    else
-                    {
-                        a.Result = aliasesStep;
-                    }
                 }
-                return true;
+                return Task.CompletedTask;
             };
 
             chooseExistingEntryStep.TextCallback = (string text, ConfigurationStep a) => 
@@ -215,7 +236,7 @@ namespace OnePlusBot.Modules
                     a.Result = chooseExistingEntryStep;
                 }
                    
-                return false;
+                return Task.CompletedTask;
                
             };
 
@@ -223,7 +244,7 @@ namespace OnePlusBot.Modules
             addAction.Action = async (ConfigurationStep a) => 
             {
                 a.Result = commandStep;
-                 await Task.CompletedTask;
+                await Task.CompletedTask;
             };
 
             var deleteCommandChannelAction = new ReactionAction(new Emoji("➖"));
@@ -425,7 +446,7 @@ namespace OnePlusBot.Modules
                                 }
                                 step.additionalPosts.Clear();
                                 step.additionalPosts.Add(stringBuilder.ToString());
-                                return false;
+                                return Task.CompletedTask;
                             };
                             a.Result = chooseExistingEntryStep;
                             return;
@@ -467,7 +488,8 @@ namespace OnePlusBot.Modules
                                 {
                                     db.Entry(channel).State = Microsoft.EntityFrameworkCore.EntityState.Added;
                                 }
-                                foreach(var entry in channel.CommandChannelEntries){
+                                foreach(var entry in channel.CommandChannelEntries)
+                                {
                                      db.Entry(entry).State = Microsoft.EntityFrameworkCore.EntityState.Added;
                                 }
                             }

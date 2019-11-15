@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Security.Cryptography;
+using System.IO;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -126,7 +127,7 @@ namespace OnePlusBot.Base
 
             var fullChannel = Extensions.GetChannelById(message.Channel.Id);
             if(fullChannel != null){
-                if(!fullChannel.ProfanityCheckExempt){
+                if(!fullChannel.ProfanityExempt()){
                     var profanityChecks = Global.ProfanityChecks;
                     var lowerMessage = message.Content.ToLower();
                     foreach (var profanityCheck in profanityChecks)
@@ -588,15 +589,27 @@ namespace OnePlusBot.Base
 
             string messageText = message.Content;
             var channelObj = Global.FullChannels.Where(ch => ch.ChannelID == message.Channel.Id).FirstOrDefault();
-            bool ignoredChannel = channelObj != null && channelObj.InviteCheckExempt;
-            return ContainsIllegalInvite(messageText) && message.Channel.Id != Global.Channels[Channel.REFERRAL]; && !ignoredChannel;
+            bool ignoredChannel = channelObj != null && channelObj.InviteCheckExempt();
+            return ContainsIllegalInvite(messageText) && message.Channel.Id != Global.Channels[Channel.REFERRAL] && !ignoredChannel;
         }
 
         private static async Task HandleExpGain(SocketMessage message)
         {
-            if(message.Author.IsBot){
+            if(message.Author.IsBot)
+            {
                 return;
             }
+            if(Global.XPGainDisabled)
+            {
+                return;
+            }
+            var channelObj = Global.FullChannels.Where(ch => ch.ChannelID == message.Channel.Id).FirstOrDefault();
+            bool ignoredChannel = channelObj != null && channelObj.ExperienceGainExempt();
+            if(ignoredChannel)
+            {
+                return;
+            }
+            
             var minute = (long) DateTime.Now.Subtract(DateTime.MinValue).TotalMinutes;
             var exists = Global.RuntimeExp.ContainsKey(minute);
             if(!exists){
@@ -622,7 +635,7 @@ namespace OnePlusBot.Base
 
             var channel = Extensions.GetChannelById(message.Channel.Id);
             if(channel != null){
-                if(!channel.ProfanityCheckExempt){
+                if(!channel.ProfanityExempt()){
                     var profanityChecks = Global.ProfanityChecks;
                     var lowerMessage = message.Content.ToLower();
                     foreach (var profanityCheck in profanityChecks)

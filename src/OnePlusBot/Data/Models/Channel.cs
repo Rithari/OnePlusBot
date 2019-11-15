@@ -1,3 +1,4 @@
+using System.Linq;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,18 +16,27 @@ namespace OnePlusBot.Data.Models
 
         [Column("channel_id")]
         [Key]
-        public ulong ChannelID2 { get; set; }
+        public ulong ChannelID { get; set; }
         
         [Column("channel_type")]
         public ChannelType ChannelType { get; set; }
 
-        [Column("profanity_check_exempt")]
-        public bool ProfanityCheckExempt{ get; set;}
+        public virtual ICollection<ChannelInGroup> GroupsChannelIsIn { get; set; }
 
-        [Column("invite_check_exempt")]
-        public bool InviteCheckExempt{ get; set;}
+        public bool ProfanityExempt()
+        {
+            return this.GroupsChannelIsIn.Where(grp => grp.Group.ProfanityCheckExempt && !grp.Group.Disabled).FirstOrDefault() != null;
+        }
 
-        public virtual ICollection<FAQCommandChannel> CommandChannels { get; set; }
+        public bool InviteCheckExempt()
+        {
+            return this.GroupsChannelIsIn.Where(grp => grp.Group.InviteCheckExempt && !grp.Group.Disabled).FirstOrDefault() != null;
+        }
+
+        public bool ExperienceGainExempt()
+        {
+            return this.GroupsChannelIsIn.Where(grp => grp.Group.ExperienceGainExempt && !grp.Group.Disabled).FirstOrDefault() != null;
+        }
 
         public static readonly string STARBOARD = "starboard";
         public static readonly string REFERRAL = "referralcodes";
