@@ -209,7 +209,7 @@ namespace OnePlusBot.Modules
                 const string muteMessage = "You were muted on r/OnePlus for the following reason: {0} until {1} {2}.";
                 await user.SendMessageAsync(string.Format(muteMessage, reason, targetTime, TimeZoneInfo.Local));
             } 
-            catch(HttpException ex)
+            catch(HttpException)
             {
                 Console.WriteLine("Seems like user disabled the DMs, cannot send message about the mute.");
             }    
@@ -618,135 +618,45 @@ namespace OnePlusBot.Modules
         }
 
         [
-            Command("updateLevels"),
+            Command("updateLevels", RunMode=RunMode.Async),
             Summary("Re-evaluates the experience, levels and assigns the roles to the users (takes a long time, use with care)"),
             RequireRole("staff")
         ]
-        public async Task<RuntimeResult> UpdateLevels()
+        public async Task<RuntimeResult> UpdateLevels([Optional] IGuildUser user)
         {
-            var message = await Context.Channel.SendMessageAsync("Processing");
-            new ExpManager().UpdateLevelsOfMembers(message);
+            if(user == null)
+            {
+                await Context.Channel.SendMessageAsync("DO NOT execute commands changing the role experience configuration while this is processing. Especially do not start another one, while one is running.");
+                var message = await Context.Channel.SendMessageAsync("Processing");
+                new ExpManager().UpdateLevelsOfMembers(message);
+            }
+            else
+            {
+                await new ExpManager().UpdateLevelOf(user);
+            }
+          
             return CustomResult.FromSuccess();
         }
 
         [
-            Command("createChannelGroup"),
-            Summary("Creates a channel group to be used in other areas"),
+            Command("roleLevel"),
+            Summary("Sets the level at which a role is given. If no parameters, shows the current role configuration"),
             RequireRole("staff")
         ]
-        public async Task<RuntimeResult> CreateChannelGroup([Remainder] string text)
+        public async Task<RuntimeResult> SetRoleToLevel([Optional] uint level, [Optional] ulong roleId)
         {
-            var parts = text.Split(' ');
-            if(parts.Length < 1)
+            if(level == 0 && roleId == 0)
             {
-                return CustomResult.FromError("syntax <name>");
+                await new ExpManager().ShowLevelconfiguration(Context.Channel);
+            } 
+            else
+            {
+                new ExpManager().SetRoleToLevel(level, roleId);
             }
-            var name = parts[0];
-            new ChannelManager().createChannelGroup(name);
+           
             await Task.CompletedTask;
             return CustomResult.FromSuccess();
         }
-
-        [
-            Command("addToChannelGroup"),
-            Summary("Adds the mentioned channels to the given channel group"),
-            RequireRole("staff")
-        ]
-        public async Task<RuntimeResult> AddToChannelGroup([Remainder] string text)
-        {
-            var parts = text.Split(' ');
-            if(parts.Length < 2)
-            {
-                return CustomResult.FromError("syntax <name> <mentioned channels to be added>");
-            }
-            var name = parts[0];
-            new ChannelManager().addChannelsToChannelGroup(name, Context.Message);
-            await Task.CompletedTask;
-            return CustomResult.FromSuccess();
-        }
-
-        [
-            Command("removeFromChannelGroup"),
-            Summary("Remoes the mentioned channels from the given channel group"),
-            RequireRole("staff")
-        ]
-        public async Task<RuntimeResult> RemoveFromChannelGroup([Remainder] string text)
-        {
-            var parts = text.Split(' ');
-            if(parts.Length < 2)
-            {
-                return CustomResult.FromError("syntax <name> <mentioned channels to be added>");
-            }
-            var name = parts[0];
-            new ChannelManager().removeChannelsFromGroup(name, Context.Message);
-            await Task.CompletedTask;
-            return CustomResult.FromSuccess();
-        }
-
-        [
-            Command("setXPDisabled"),
-            Summary("Enables/disables the xp gain in a certain channel group"),
-            RequireRole("staff")
-        ]
-        public async Task<RuntimeResult> ToggleExperienceGainInChannelGroup([Remainder] string parameters){
-            var parts = parameters.Split(' ');
-            if(parts.Length < 2)
-            {
-                return CustomResult.FromError("setXPDisabled <name> <true/false>");
-            }
-            var name = parts[0];
-            var newValue = parts[1];
-            new ChannelManager().setExpDisabledTo(name, newValue == "true");
-            await Task.CompletedTask;
-            return CustomResult.FromSuccess();
-        }
-
-        [
-            Command("setGroupDisabled"),
-            Summary("Enables/disables the profanity/invitecheck/xpgain flags for a group"),
-            RequireRole("staff")
-        ]
-        public async Task<RuntimeResult> ToggleGroupDisabled([Remainder] string parameters){
-            var parts = parameters.Split(' ');
-            if(parts.Length < 2)
-            {
-                return CustomResult.FromError("setGroupDisabled <name> <true/false>");
-            }
-            var name = parts[0];
-            var newValue = parts[1];
-            new ChannelManager().setGroupDisabledTo(name, newValue == "true");
-            await Task.CompletedTask;
-            return CustomResult.FromSuccess();
-        }
-
-
-        [
-            Command("setPostTarget"),
-            Summary("Sets the target of a certain post"),
-            RequireRole("staff")
-        ]
-        public async Task<RuntimeResult> SetPostTarget([Remainder] string text)
-        {
-            var parts = text.Split(' ');
-            if(parts.Length < 2 && Context.Message.MentionedChannels.Count() != 1)
-            {
-                return CustomResult.FromError("syntax <name> <channel>");
-            }
-            var name = parts[0];
-            new ChannelManager().setPostTarget(name, Context.Message);
-            await Task.CompletedTask;
-            return CustomResult.FromSuccess();
-        }
-
-        [
-            Command("listChannelGroups", RunMode=RunMode.Async),
-            Summary("Prints all the channel groups of the server"),
-            RequireRole("staff")
-        ]
-        public async Task<RuntimeResult> ListChannelGroups()
-        {
-            await new ChannelManager().ListChannelGroups(Context.Channel);
-            return CustomResult.FromSuccess();
-        }
+        
     }
 }

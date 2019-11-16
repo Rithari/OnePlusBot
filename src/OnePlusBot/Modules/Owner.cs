@@ -172,7 +172,8 @@ namespace OnePlusBot.Modules
                     db.Roles.Add(new Role
                     {
                         Name = newName,
-                        RoleID = role.Id
+                        RoleID = role.Id,
+                        XPRole = false
                     });
 
                     Console.WriteLine($"[DB] [Update] Added role {role.Name} with Name {newName} and ID {role.Id}");

@@ -25,7 +25,7 @@ namespace OnePlusBot.Data.Models
         public static readonly string BAN_LOG = "banlog";
         public static readonly string DECAY_LOG = "decaylog";
         public static readonly string DELETE_LOG = "deletelog";
-        public static readonly string EDIT_LOG = "editog";
+        public static readonly string EDIT_LOG = "editlog";
         public static readonly string MODMAIL_LOG = "modmaillog";
         public static readonly string MODMAIL_NOTIFICATION = "modmailnotification";
         public static readonly string MUTE_LOG = "mutelog";

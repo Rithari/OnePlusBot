@@ -27,7 +27,7 @@ namespace OnePlusBot.Modules
         public async Task ConfigureFAQ()
         {
             var guild = Global.Bot.GetGuild(Global.ServerID);
-            var configurationStep = new ConfigurationStep("What do you want to do? (➕ add command, ➖ remove command in channel, ☠ delete command)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
+            var configurationStep = new ConfigurationStep("What do you want to do? (➕ add command, ➖ remove command in channel group, ☠ delete command)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
             configurationStep.additionalPosts.Add("To exit react with 🆘 or type exit, depending on the type of step you are in");
             var addStep = new ConfigurationStep("What kind of post do you want to add? (💌 embed, 📖 textpost, ✅ nothing further)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
 

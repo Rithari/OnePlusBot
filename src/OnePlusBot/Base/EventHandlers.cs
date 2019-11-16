@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.IO;
+﻿using System.IO;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -378,9 +377,12 @@ namespace OnePlusBot.Base
                     await context.Message.AddReactionAsync(Global.OnePlusEmote.FAIL);
 
                     if (result.ErrorReason == "The input text has too few parameters.")
-                    return;
+                    {
+                        return;
+                    }
+                  
 
-                        await context.Channel.SendMessageAsync(result.ErrorReason);
+                    await context.Channel.SendMessageAsync(result.ErrorReason);
                     return;
                  }
                 break;
@@ -624,6 +626,7 @@ namespace OnePlusBot.Base
                     poster.Add(message.Author.Id);
                 }
             }
+            await Task.CompletedTask;
         }
 
         private static async Task OnMessageReceived(SocketMessage message)

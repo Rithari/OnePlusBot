@@ -50,6 +50,10 @@ namespace OnePlusBot.Base
         public static Dictionary<long, List<ulong>> RuntimeExp { get; set; }
 
         public static bool XPGainDisabled { get; set; }
+
+        public static int XPGainRangeMin { get; set; }
+
+        public static int XPGainRangeMax { get; set; }
         
         public static string Token
         {
@@ -196,6 +200,13 @@ namespace OnePlusBot.Base
                     .First(entry => entry.Name == "modmail_category_id")
                     .Value;
 
+                XPGainRangeMin = (int) db.PersistentData
+                    .First(entry => entry.Name == "xp_gain_range_min")
+                    .Value;
+
+                XPGainRangeMax = (int) db.PersistentData
+                    .First(entry => entry.Name == "xp_gain_range_max")
+                    .Value;
 
                 StarboardPosts.Clear();
                 if(db.StarboardMessages.Any())

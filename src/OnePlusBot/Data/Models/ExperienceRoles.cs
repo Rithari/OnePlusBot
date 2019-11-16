@@ -14,7 +14,7 @@ namespace OnePlusBot.Data.Models
         public uint Id { get; set; }
 
         [Column("role_id")]
-        public uint ExperienceRoleId { get; set; }
+        public ulong ExperienceRoleId { get; set; }
         
         [Column("level")]
         public uint Level { get; set; }

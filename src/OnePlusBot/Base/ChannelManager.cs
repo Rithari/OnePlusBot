@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using System;
+using Discord;
 using System.Collections.ObjectModel;
 using System.Text;
 using System.Linq;
@@ -7,7 +7,6 @@ using Discord.WebSocket;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
 using OnePlusBot.Base.Errors;
-using Discord;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
@@ -109,9 +108,8 @@ namespace OnePlusBot.Base
 
         }
 
-        public void setPostTarget(string name, SocketUserMessage message)
+        public void setPostTarget(string name, IChannel channel)
         {
-            ulong channelIdToSet = message.MentionedChannels.First().Id;
             using(var db = new Database())
             {
                 var existingTarget = db.PostTargets.Where(pt => pt.Name == name).FirstOrDefault();
@@ -119,13 +117,13 @@ namespace OnePlusBot.Base
                 if(existingTarget != null)
                 {
                     newPostTarget = existingTarget;
-                    newPostTarget.ChannelId = channelIdToSet;
+                    newPostTarget.ChannelId = channel.Id;
                 }
                 else
                 {
                     newPostTarget = new PostTarget();
                     newPostTarget.Name = name;
-                    newPostTarget.ChannelId = channelIdToSet;
+                    newPostTarget.ChannelId = channel.Id;
                     db.PostTargets.Add(newPostTarget);
                 }
               
@@ -144,7 +142,7 @@ namespace OnePlusBot.Base
                 foreach(var group in channelGroups)
                 {
                     count++;
-                    currentEmbedBuilder.AddField(group.Name, getChannelsAsMentions(group.Channels));
+                    currentEmbedBuilder.AddField($"**{group.Name}**, XP exempt: {group.ExperienceGainExempt}  Profanity check exempt: {group.ProfanityCheckExempt}, InviteCheck exempt: {group.InviteCheckExempt}", getChannelsAsMentions(group.Channels));
                     if(((count % EmbedBuilder.MaxFieldCount) == 0) && group != channelGroups.Last()){
                         embedsToPost.Add(currentEmbedBuilder.Build());
                         currentEmbedBuilder = new EmbedBuilder();
@@ -174,6 +172,46 @@ namespace OnePlusBot.Base
             }
 
             return stringRepresentation.ToString() != string.Empty ? stringRepresentation.ToString() : "no channels.";
+        }
+
+        public Dictionary<string, bool> EvaluateChannelConfiguration(IChannel channel){
+            using(var db = new Database())
+            {
+                var perms = db.ChannelGroupMembers.Include(ch => ch.Group).Include(ch => ch.ChannelReference).Where(ch => ch.ChannelId == channel.Id).ToList();
+                var profanityDisabled = false;
+                var inviteLinksDisabled = false;
+                var xpDisabled = false;
+                foreach(var groupMember in perms)
+                {
+                    if(!groupMember.Group.Disabled){
+                        profanityDisabled |= groupMember.Group.ProfanityCheckExempt;
+                        inviteLinksDisabled |= groupMember.Group.InviteCheckExempt;
+                        xpDisabled |= groupMember.Group.ExperienceGainExempt;
+                    }
+                }
+                var result = new Dictionary<string, bool>();
+                result.Add("Profanity check disabled", profanityDisabled);
+                result.Add("XP Gain disabled", xpDisabled);
+                result.Add("Invite check disabled", inviteLinksDisabled);
+                return result;
+            }
+        }
+
+        public void RemoveChannelGroup(string name)
+        {
+            using(var db = new Database())
+            {
+                var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
+                if(existingGroup != null)
+                {
+                    db.ChannelGroups.Remove(existingGroup);
+                }
+                else 
+                {
+                    throw new ChannelGroupException("Channel group not found.");
+                }
+                db.SaveChanges();
+            }
         }
     }
 }

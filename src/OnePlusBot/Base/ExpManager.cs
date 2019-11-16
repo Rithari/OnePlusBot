@@ -1,4 +1,4 @@
-using System.Collections;
+using Discord;
 using Discord.Rest;
 using System;
 using System.Threading.Tasks;
@@ -8,7 +8,7 @@ using OnePlusBot.Data;
 using Discord.Commands;
 using Microsoft.EntityFrameworkCore;
 using Discord.WebSocket;
-
+using OnePlusBot.Base.Errors;
 using System.Collections.Generic;
 
 namespace OnePlusBot.Base
@@ -115,10 +115,71 @@ namespace OnePlusBot.Base
       foreach(var userId in userToUpdate){
         var exp = db.Users.Where(e => e.UserId == userId).Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).FirstOrDefault();
         if(exp != null){
-          exp.XP += (ulong) r.Next(10, 15);
+          exp.XP += (ulong) r.Next(Global.XPGainRangeMin, Global.XPGainRangeMax);
           exp.MessageCount += 1;
           peopleToUpdate.Add(exp);
           exp.Updated = updateDate;
+        }
+      }
+    }
+
+    public async Task UpdateLevelOf(IGuildUser user){
+        var guild = Global.Bot.GetGuild(Global.ServerID);
+        using(var db = new Database()){
+          User userToUpdate = db.Users.Where(us => us.UserId == user.Id).Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).FirstOrDefault();
+          List<ExperienceRole> rolesUsedInExperience = db.ExperienceRoles.Include(ro => ro.RoleReference).ToList();
+          List<ExperienceLevel> levelConfiguration = db.ExperienceLevels.ToList();
+          List<SocketRole> experienceRolesInGuild = new List<SocketRole>();
+          foreach(ExperienceRole role in rolesUsedInExperience){
+            experienceRolesInGuild.Add(guild.GetRole(role.RoleReference.RoleID));
+          }
+   
+          await UpdateLevelsForUser(userToUpdate, db, guild, rolesUsedInExperience, levelConfiguration, experienceRolesInGuild);
+          db.SaveChanges();
+        }
+    }
+
+    private async Task UpdateLevelsForUser(User user, Database db, 
+                                          SocketGuild guild,
+                                          List<ExperienceRole> rolesUsedInExperience,
+                                          List<ExperienceLevel> levelConfiguration,
+                                          List<SocketRole> experienceRolesInGuild,
+                                          bool delay=false){
+
+       var appropriateLevelForExp = levelConfiguration.Where(lv => lv.NeededExperience <= user.XP).OrderByDescending(lv => lv.Level).FirstOrDefault();
+      // the role may need to be updated, even if the level did not change, when the role config changed, so we need to always enter this if
+      if(appropriateLevelForExp != null){
+        user.Level = appropriateLevelForExp.Level;
+        db.Entry(user).Reference(s => s.CurrentLevel).Load();
+        var appropriateRoleForLevel = rolesUsedInExperience.Where(lv => lv.Level <= user.Level).OrderByDescending(ro => ro.Level).FirstOrDefault();
+        if(appropriateRoleForLevel != null && user.ExperienceRoleId != appropriateRoleForLevel.ExperienceRoleId){
+          user.ExperienceRoleId = appropriateRoleForLevel.Id;
+          db.Entry(user).Reference(s => s.ExperienceRoleReference).Load();
+          db.Entry(user.ExperienceRoleReference).Reference(s => s.RoleReference).Load();
+        }
+      }
+
+      var userInGuild = guild.GetUser(user.UserId);
+      if(userInGuild != null){
+        var experienceRolesTheUserHas = userInGuild.Roles.Intersect(experienceRolesInGuild).ToList();
+        var userHasCorrectRoles = experienceRolesTheUserHas.Count() == 1 && user.ExperienceRoleReference.RoleReference.RoleID == experienceRolesTheUserHas.First().Id;
+        if(!userHasCorrectRoles)
+        {
+          if(experienceRolesTheUserHas.Count() > 0)
+          {
+            await userInGuild.RemoveRolesAsync(experienceRolesInGuild);
+          }
+          if(delay)
+          {
+            await Task.Delay(200);
+          }
+          if(user.ExperienceRoleId != null){
+            var correctExperienceRole = experienceRolesInGuild.Where(role => role.Id == user.ExperienceRoleReference.RoleReference.RoleID).FirstOrDefault();
+            if(correctExperienceRole != null){
+              await userInGuild.AddRoleAsync(correctExperienceRole);
+            }
+          }
+        
         }
       }
     }
@@ -128,46 +189,19 @@ namespace OnePlusBot.Base
         var guild = Global.Bot.GetGuild(Global.ServerID);
         await updateMessage.ModifyAsync(m => m.Content = "0 % Done");
         using(var db = new Database()){
+          List<User> users = db.Users.Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).ToList();
+          var totalUsers = users.Count();
+          var userDone = 0;
           List<ExperienceRole> rolesUsedInExperience = db.ExperienceRoles.Include(ro => ro.RoleReference).ToList();
           List<ExperienceLevel> levelConfiguration = db.ExperienceLevels.ToList();
-          List<User> users = db.Users.Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).ToList();
           List<SocketRole> experienceRolesInGuild = new List<SocketRole>();
           foreach(ExperienceRole role in rolesUsedInExperience){
             experienceRolesInGuild.Add(guild.GetRole(role.RoleReference.RoleID));
           }
-          var totalUsers = users.Count();
-          var userDone = 0;
+   
           foreach(var user in users){
-            var appropriateLevelForExp = levelConfiguration.Where(lv => lv.NeededExperience <= user.XP).OrderByDescending(lv => lv.Level).FirstOrDefault();
-            if(appropriateLevelForExp != null && user.Level != appropriateLevelForExp.Level){
-              user.Level = appropriateLevelForExp.Level;
-              db.Entry(user).Reference(s => s.CurrentLevel).Load();
-              var appropriateRoleForLevel = rolesUsedInExperience.Where(lv => lv.Level <= user.Level).OrderByDescending(ro => ro.Level).FirstOrDefault();
-              if(appropriateRoleForLevel != null && user.ExperienceRoleId != appropriateRoleForLevel.ExperienceRoleId){
-                user.ExperienceRoleId = appropriateRoleForLevel.Id;
-                db.Entry(user).Reference(s => s.ExperienceRoleReference).Load();
-                db.Entry(user.ExperienceRoleReference).Reference(s => s.RoleReference).Load();
-              }
-            }
-
-            var userInGuild = guild.GetUser(user.UserId);
-            if(userInGuild != null){
-              var experienceRolesTheUserHas = userInGuild.Roles.Intersect(experienceRolesInGuild).ToList();
-              var userHasCorrectRoles = experienceRolesTheUserHas.Count() == 1 && user.ExperienceRoleReference.RoleReference.RoleID == experienceRolesTheUserHas.First().Id;
-              if(!userHasCorrectRoles){
-                await Task.Delay(200);
-                if(experienceRolesTheUserHas.Count() > 0){
-                  await userInGuild.RemoveRolesAsync(experienceRolesInGuild);
-                }
-                if(user.ExperienceRoleId != null){
-                  var correctExperienceRole = experienceRolesInGuild.Where(role => role.Id == user.ExperienceRoleReference.RoleReference.RoleID).FirstOrDefault();
-                  if(correctExperienceRole != null){
-                    await userInGuild.AddRoleAsync(correctExperienceRole);
-                  }
-                }
-              
-              }
-            }
+            await UpdateLevelsForUser(user, db, guild, rolesUsedInExperience, levelConfiguration, experienceRolesInGuild, true);
+           
             userDone++;
             if(userDone % (Math.Floor((double) totalUsers / 10)) == 0){
               await updateMessage.ModifyAsync(m => m.Content = $"{Math.Ceiling(((double)userDone / totalUsers) * 100)}% ({userDone}/{totalUsers}) done");
@@ -179,6 +213,69 @@ namespace OnePlusBot.Base
       }).ContinueWith(t => Console.WriteLine(t.Exception), TaskContinuationOptions.OnlyOnFaulted);
      
      
+    }
+
+    public void SetRoleToLevel(uint level, ulong roleId)
+    {
+      using(var db = new Database())
+      {
+        var existingLevel = db.ExperienceRoles.Where(ro => ro.Level == level).FirstOrDefault();
+
+        var existingRole = db.ExperienceRoles.Where(ro => ro.ExperienceRoleId == roleId).FirstOrDefault();
+        var role = db.Roles.Where(r => r.RoleID == roleId).FirstOrDefault();
+        if(role == null || !role.XPRole)
+        {
+          throw new ConfigurationException("Role does not exist or not usable for the xp tracking sytem.");
+        }
+        if(existingLevel != null)
+        {
+          existingLevel.ExperienceRoleId = role.RoleID;
+        }
+        else if(existingRole != null)
+        {
+          existingRole.Level = level;
+        }
+        else
+        {
+          var experienceRole = new ExperienceRole();
+          experienceRole.Level = level;
+          experienceRole.ExperienceRoleId = role.RoleID;
+          db.ExperienceRoles.Add(experienceRole);
+        }
+        db.SaveChanges();
+      }
+    }
+
+    public async Task ShowLevelconfiguration(ISocketMessageChannel channelToRespondIn)
+    {
+      using(var db = new Database())
+      {
+        var guild = Global.Bot.GetGuild(Global.ServerID);
+        var currentEmbedBuilder = new EmbedBuilder().WithTitle("Role level configuration");
+        var embeds = new List<Embed>();
+        var roles = db.ExperienceRoles.OrderBy(ro => ro.Level).Include(ro => ro.RoleReference).ToList();
+        var count = 0;
+        foreach(var role in roles)
+        {
+          count++;
+          currentEmbedBuilder.AddField(role.Level + "", guild.GetRole(role.RoleReference.RoleID).Name);
+            if(((count % EmbedBuilder.MaxFieldCount) == 0) && role != roles.Last()){
+              embeds.Add(currentEmbedBuilder.Build());
+              currentEmbedBuilder = new EmbedBuilder();
+              var currentPage = count / EmbedBuilder.MaxFieldCount + 1;
+              currentEmbedBuilder.WithFooter(new EmbedFooterBuilder().WithText($"Page {currentPage}"));
+            }
+        }
+
+        embeds.Add(currentEmbedBuilder.Build());
+
+        foreach(var embed in embeds)
+        {
+          await channelToRespondIn.SendMessageAsync(embed: embed);
+          await Task.Delay(200);
+        }
+
+      }
     }
   
   }
