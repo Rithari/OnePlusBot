@@ -403,7 +403,7 @@ namespace OnePlusBot.Modules
             }
             var embedBuilder = new EmbedBuilder();
             using(var db = new Database()){
-                var userInDb = db.Users.Where(us => us.UserId == userToUse.Id).FirstOrDefault();
+                var userInDb = db.Users.Where(us => us.Id == userToUse.Id).FirstOrDefault();
                 if(userInDb != null){
                     var rank = db.Users.OrderByDescending(us => us.XP).ToList().IndexOf(userInDb) + 1;
                     var nextLevel = db.ExperienceLevels.Where(lv => lv.Level == userInDb.Level + 1).FirstOrDefault();
@@ -445,8 +445,8 @@ namespace OnePlusBot.Modules
                     description.Append("Rank | Name | Experience | Level | Messages \n");
                     foreach(var user in usersToDisplay){
                         var rank = allUsers.IndexOf(user) + 1;
-                        var userInGuild = Context.Guild.GetUser(user.UserId);
-                        var name = userInGuild != null ? Extensions.FormatUserName(userInGuild) : "User left guild " + user.UserId;
+                        var userInGuild = Context.Guild.GetUser(user.Id);
+                        var name = userInGuild != null ? Extensions.FormatUserName(userInGuild) : "User left guild " + user.Id;
                         description.Append($"[#{rank}] → {name}\n");
                         description.Append($"XP: {user.XP} Level: {user.Level}: Messages: {user.MessageCount} \n");
                     }
@@ -454,10 +454,10 @@ namespace OnePlusBot.Modules
                 }
                
                 description.Append("Your placement: \n");
-                var caller = db.Users.Where(us => us.UserId == Context.Message.Author.Id).FirstOrDefault();
+                var caller = db.Users.Where(us => us.Id == Context.Message.Author.Id).FirstOrDefault();
                 if(caller != null){
                     var callRank = allUsers.IndexOf(caller) + 1;
-                    var userInGuild = Context.Guild.GetUser(caller.UserId);
+                    var userInGuild = Context.Guild.GetUser(caller.Id);
                     description.Append($"[#{callRank}] → {Extensions.FormatUserName(userInGuild)} XP: {caller.XP} messages: {caller.MessageCount}");
                 }
                 embedBuilder = embedBuilder.WithDescription(description.ToString());

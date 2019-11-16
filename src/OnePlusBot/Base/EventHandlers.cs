@@ -537,11 +537,11 @@ namespace OnePlusBot.Base
             profanity.Valid = false;
             profanity.ProfanityId = usedProfanity.ID;
             using(var db = new Database()){
-                var user = db.Users.Where(us => us.UserId == message.Author.Id).FirstOrDefault();
+                var user = db.Users.Where(us => us.Id == message.Author.Id).FirstOrDefault();
                 if(user == null)
                 {
                     var newUser = new User();
-                    newUser.UserId = message.Author.Id;
+                    newUser.Id = message.Author.Id;
                     newUser.ModMailMuted = false;
                     db.Users.Add(newUser);
                 }

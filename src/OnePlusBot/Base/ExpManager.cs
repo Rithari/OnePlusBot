@@ -83,7 +83,7 @@ namespace OnePlusBot.Base
                   
                 
                   person.ExperienceRoleId = roleSegment.Id;
-                  var user = guild.GetUser(person.UserId);
+                  var user = guild.GetUser(person.Id);
                   if(existingDiscordRoleFromUser != 0){
                     await user.RemoveRoleAsync(rolesGiven[existingDiscordRoleFromUser]);
                   }
@@ -113,7 +113,7 @@ namespace OnePlusBot.Base
     public void UpdateExperienceForMinute(List<ulong> userToUpdate, Database db, HashSet<User> peopleToUpdate, Random r){
       var updateDate = DateTime.Now;
       foreach(var userId in userToUpdate){
-        var exp = db.Users.Where(e => e.UserId == userId).Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).FirstOrDefault();
+        var exp = db.Users.Where(e => e.Id == userId).Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).FirstOrDefault();
         if(exp != null){
           exp.XP += (ulong) r.Next(Global.XPGainRangeMin, Global.XPGainRangeMax);
           exp.MessageCount += 1;
@@ -126,7 +126,7 @@ namespace OnePlusBot.Base
     public async Task UpdateLevelOf(IGuildUser user){
         var guild = Global.Bot.GetGuild(Global.ServerID);
         using(var db = new Database()){
-          User userToUpdate = db.Users.Where(us => us.UserId == user.Id).Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).FirstOrDefault();
+          User userToUpdate = db.Users.Where(us => us.Id == user.Id).Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).FirstOrDefault();
           List<ExperienceRole> rolesUsedInExperience = db.ExperienceRoles.Include(ro => ro.RoleReference).ToList();
           List<ExperienceLevel> levelConfiguration = db.ExperienceLevels.ToList();
           List<SocketRole> experienceRolesInGuild = new List<SocketRole>();
@@ -159,7 +159,7 @@ namespace OnePlusBot.Base
         }
       }
 
-      var userInGuild = guild.GetUser(user.UserId);
+      var userInGuild = guild.GetUser(user.Id);
       if(userInGuild != null){
         var experienceRolesTheUserHas = userInGuild.Roles.Intersect(experienceRolesInGuild).ToList();
         var userHasCorrectRoles = experienceRolesTheUserHas.Count() == 1 && user.ExperienceRoleReference.RoleReference.RoleID == experienceRolesTheUserHas.First().Id;

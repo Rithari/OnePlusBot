@@ -115,10 +115,17 @@ CREATE TABLE `PersistentData` (
 DROP TABLE IF EXISTS `User`;
 CREATE TABLE `User` (
  `id` bigint(20) unsigned NOT NULL,
- `modmail_muted` tinyint(4) NOT NULL,
- `modmail_muted_until` datetime NOT NULL,
- `modmail_muted_reminded` tinyint(4) NOT NULL,
- PRIMARY KEY (`user_id`)
+ `modmail_muted` tinyint(4) NOT NULL DEFAULT '0',
+ `modmail_muted_until` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ `modmail_muted_reminded` tinyint(4) NOT NULL DEFAULT '0',
+ `current_level` int(10) unsigned NOT NULL DEFAULT '0',
+ `xp` bigint(20) unsigned NOT NULL DEFAULT '0',
+ `xp_updated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ `current_role_id` int(10) unsigned DEFAULT NULL,
+ `message_count` bigint(20) unsigned NOT NULL DEFAULT '0',
+ PRIMARY KEY (`id`),
+ KEY `fk_role_ref` (`current_role_id`),
+ CONSTRAINT `fk_role_ref` FOREIGN KEY (`current_role_id`) REFERENCES `ExperienceRoles` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -147,7 +154,7 @@ CREATE TABLE `UsedProfanity` (
  KEY `fk_user_id` (`user_id`),
  KEY `fk_profanity_id` (`profanity_id`),
  CONSTRAINT `fk_profanity_id` FOREIGN KEY (`profanity_id`) REFERENCES `ProfanityChecks` (`id`),
- CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`)
+ CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `User` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -170,11 +177,11 @@ CREATE TABLE `ReferralCodes` (
 
 DROP TABLE IF EXISTS `Roles`;
 CREATE TABLE `Roles` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` text NOT NULL,
-  `role_id` bigint(20) unsigned NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
+ `name` text NOT NULL,
+ `role_id` bigint(20) unsigned NOT NULL,
+ `xp_role` tinyint(4) NOT NULL DEFAULT '0',
+ PRIMARY KEY (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Table structure for table `StarboardMessages`
@@ -267,7 +274,7 @@ CREATE TABLE `ModMailThread` (
  `state` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'INITIAL',
  PRIMARY KEY (`channel_id`),
  KEY `fk_user_id_ref` (`user_id`),
- CONSTRAINT `fk_user_id_ref` FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`)
+ CONSTRAINT `fk_user_id_ref` FOREIGN KEY (`user_id`) REFERENCES `User` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
