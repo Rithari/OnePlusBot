@@ -1,15 +1,10 @@
-﻿using System.Net;
-using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
-using System.Data.Common;
-using Discord;
+﻿using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Timers;

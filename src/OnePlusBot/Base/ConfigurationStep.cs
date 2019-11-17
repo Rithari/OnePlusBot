@@ -1,15 +1,16 @@
-using System.Text;
-using System.Collections.ObjectModel;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
-using Discord.Addons.Interactive;
 using OnePlusBot.Helpers;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace OnePlusBot.Base {
+namespace OnePlusBot.Base
+{
     public class ConfigurationStep : IReactionCallback 
     {
 

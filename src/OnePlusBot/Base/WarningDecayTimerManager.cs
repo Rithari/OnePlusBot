@@ -1,19 +1,17 @@
-using System.Text;
-using System;
-using System.Threading.Tasks;
-using System.Linq;
 using Discord;
-using OnePlusBot.Data;
 using Discord.Commands;
-using System.Collections.ObjectModel;
+using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
 using OnePlusBot.Helpers;
-
-using System.Collections.Generic;
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OnePlusBot.Base
 {
-  public class WarningDecaytimerManager 
+    public class WarningDecaytimerManager 
   {
       // TODO refactor this and MuteTimerManager to have a common abstract class or at least an interface
     public async Task<RuntimeResult> SetupTimers()

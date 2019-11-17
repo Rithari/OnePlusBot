@@ -1,8 +1,6 @@
-using System;
 using Discord;
-using Discord.Addons.Interactive;
-using Discord.Commands;
 using Discord.WebSocket;
+using System;
 using System.Threading.Tasks;
 
 namespace OnePlusBot.Base

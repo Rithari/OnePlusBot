@@ -1,10 +1,9 @@
-using System;
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
-using OnePlusBot.Data.Models;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using MySql.Data.MySqlClient;
+using OnePlusBot.Data.Models;
+using System;
 
 namespace OnePlusBot.Data
 {

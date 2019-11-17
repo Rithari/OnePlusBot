@@ -1,17 +1,16 @@
+using Discord;
+using Discord.Commands;
+using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
+using OnePlusBot.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
-using Discord;
-using OnePlusBot.Data;
-using OnePlusBot.Helpers;
-using Discord.Commands;
-using Discord.WebSocket;
+using System.Threading.Tasks;
 
 namespace OnePlusBot.Base
 {
-  public class MuteTimerManager 
+    public class MuteTimerManager 
   {
     public async Task<RuntimeResult> SetupTimers()
     {

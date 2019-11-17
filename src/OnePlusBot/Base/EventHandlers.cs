@@ -1,19 +1,17 @@
-﻿using System.IO;
-using Discord;
+﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using Discord.Rest;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
 using OnePlusBot.Helpers;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using OnePlusBot.Base;
-using System.Net;
-using System.Collections.Generic;
 
 namespace OnePlusBot.Base
 {

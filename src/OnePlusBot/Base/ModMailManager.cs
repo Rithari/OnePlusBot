@@ -1,20 +1,19 @@
-using System.Text;
+using Discord;
+using Discord.Rest;
+using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
+using OnePlusBot.Data;
+using OnePlusBot.Data.Models;
+using OnePlusBot.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
-using Discord;
-using OnePlusBot.Data.Models;
-using Discord.WebSocket;
-using OnePlusBot.Data;
-using Microsoft.EntityFrameworkCore;
-using OnePlusBot.Helpers;
-using Discord.Rest;
-using System.Globalization;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OnePlusBot.Base
 {
-  public class ModMailManager 
+    public class ModMailManager 
   {
     public async Task CreateModmailThread(SocketMessage message)
     {

@@ -1,15 +1,15 @@
-using System;
-using System.Text;
-using Discord.Commands;
 using Discord;
-using System.Threading.Tasks;
-using OnePlusBot.Helpers;
 using Discord.Addons.Interactive;
+using Discord.Commands;
+using MySql.Data.MySqlClient;
 using OnePlusBot.Base;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
+using OnePlusBot.Helpers;
+using System;
 using System.Linq;
-using MySql.Data.MySqlClient;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OnePlusBot.Modules
 {

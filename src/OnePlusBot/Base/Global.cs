@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Discord;
+﻿using Discord;
+using Discord.WebSocket;
+using Microsoft.EntityFrameworkCore;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
-using Microsoft.EntityFrameworkCore;
-using Discord.WebSocket;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace OnePlusBot.Base

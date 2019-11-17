@@ -1,14 +1,13 @@
-using System.Collections.Immutable;
-using System.Linq;
-using System.Text;
 using Discord;
 using Discord.WebSocket;
-using OnePlusBot.Data.Models;
-using System;
-using OnePlusBot.Helpers;
 using OnePlusBot.Base;
+using OnePlusBot.Data.Models;
+using OnePlusBot.Helpers;
+using System;
+using System.Linq;
+using System.Text;
 
-namespace OnePlusBot 
+namespace OnePlusBot
 {
     class ModMailEmbedHandler
     {

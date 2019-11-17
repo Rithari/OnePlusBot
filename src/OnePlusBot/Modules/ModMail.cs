@@ -1,12 +1,12 @@
-using System;
-using System.Linq;
+using Discord;
 using Discord.Commands;
 using OnePlusBot.Base;
-using System.Threading.Tasks;
-using OnePlusBot.Helpers;
-using OnePlusBot.Data.Models;
 using OnePlusBot.Data;
-using Discord;
+using OnePlusBot.Data.Models;
+using OnePlusBot.Helpers;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace OnePlusBot.Modules
 {

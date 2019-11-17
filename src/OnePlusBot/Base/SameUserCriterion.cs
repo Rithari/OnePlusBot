@@ -1,8 +1,8 @@
-using System.Threading.Tasks;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
-using Discord.Addons.Interactive;
-   
+using System.Threading.Tasks;
+
 namespace OnePlusBot.Base
 {
     internal class ReactionSameUserCriterion : ICriterion<SocketReaction>
