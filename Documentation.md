@@ -177,7 +177,8 @@ It is usable by everyone.
 
 ### Steam profile banner displayer
 
-`;steamp`
+`;steamp steam_id`\
+Example for user https://steamcommunity.com/id/azaza1 command will be `;steamp azaza1`
 
 ## Misc
 
