@@ -1,4 +1,4 @@
-Welcome! You can find here documentation for /r/oneplus Discord server bot.
+Welcome! You can find here documentation for [/r/oneplus Discord](https://discord.gg/oneplus) server bot.
 
 Its prefix is `;` but commands can also be triggered by pinging bot.\
 Note that commands only works in guilds.
