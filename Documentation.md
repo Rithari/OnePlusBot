@@ -145,6 +145,10 @@ Currently hardcoded in bot code https://github.com/Rithari/OnePlusBot/blob/maste
 Tell how much time lefts before an event when someone queries `;timeleft`.\
 Known issue: it outputs a negative time when event is over.
 
+### Referral codes handling
+
+Users can post their smartphone and headphones referral links they obtained [from OnePlus](https://www.oneplus.com/referral) in #referralcodes channel. Bot will delete them automatically to post them into an embed with username, discrim and [user ID](https://dis.gd/userid) of who sent the codes. Every two weeks users will be able to post again their codes.
+
 ## Fun
 
 ### Starboard
