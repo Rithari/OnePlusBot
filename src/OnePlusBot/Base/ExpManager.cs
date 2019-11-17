@@ -51,13 +51,14 @@ namespace OnePlusBot.Base
           minuteToPersist--;
           Global.RuntimeExp.Remove(minuteToPersist);
         }
+        db.SaveChanges();
         if(peopleToUpdate.Count > 0)
         {
           var peopleWhoChangedLevel = new List<User>();
           foreach(var person in peopleToUpdate)
           {
             var levelSegment = GetAppropriateLevelForExp(person.XP, db);
-            if(person.Level != levelSegment.Level)
+            if(levelSegment != null && person.Level != levelSegment.Level)
             {
               peopleWhoChangedLevel.Add(person);
               person.Level = levelSegment.Level;
@@ -107,7 +108,7 @@ namespace OnePlusBot.Base
     }
      
     public ExperienceLevel GetAppropriateLevelForExp(ulong xp, Database db){
-      return db.ExperienceLevels.Where(lv => lv.NeededExperience <= xp).OrderByDescending(lv => lv.Level).First();
+      return db.ExperienceLevels.Where(lv => lv.NeededExperience <= xp).OrderByDescending(lv => lv.Level).FirstOrDefault();
     }
 
     public ExperienceRole GetAppropriateRoleForLevel(ExperienceLevel level, Database db){
@@ -118,11 +119,31 @@ namespace OnePlusBot.Base
       var updateDate = DateTime.Now;
       foreach(var userId in userToUpdate){
         var exp = db.Users.Where(e => e.Id == userId).Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).FirstOrDefault();
-        if(exp != null && !exp.XPGainDisabled){
-          exp.XP += (ulong) r.Next(Global.XPGainRangeMin, Global.XPGainRangeMax);
+        var gainedExp = (ulong) r.Next(Global.XPGainRangeMin, Global.XPGainRangeMax);
+        if(exp != null){
+          if(exp.XPGainDisabled) {
+            continue;
+          }
+          exp.XP += gainedExp;
           exp.MessageCount += 1;
           peopleToUpdate.Add(exp);
           exp.Updated = updateDate;
+        } 
+        else 
+        {
+          // TODO refactor into a builder
+          var newUser = new User();
+          newUser.Id = userId;
+          newUser.ModMailMuted = false;
+          newUser.ModMailMutedReminded = false;
+          newUser.ModMailMutedUntil = DateTime.Now;
+          newUser.XPGainDisabled = false;
+          newUser.Level = 0;
+          newUser.MessageCount += 1;
+          newUser.XP = gainedExp;
+          newUser.Updated = updateDate;
+          db.Users.Add(newUser);
+          peopleToUpdate.Add(newUser);
         }
       }
     }
@@ -275,7 +296,7 @@ namespace OnePlusBot.Base
         foreach(var role in roles)
         {
           count++;
-          currentEmbedBuilder.AddField(role.Level + "", guild.GetRole(role.RoleReference.RoleID).Name);
+          currentEmbedBuilder.AddField(role.Level + "", guild.GetRole(role.RoleReference.RoleID).Name, true);
             if(((count % EmbedBuilder.MaxFieldCount) == 0) && role != roles.Last()){
               embeds.Add(currentEmbedBuilder.Build());
               currentEmbedBuilder = new EmbedBuilder();

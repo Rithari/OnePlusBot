@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Net;
 using System.Collections.Generic;
@@ -32,6 +33,7 @@ namespace OnePlusBot.Base
         {
             _bot.UserJoined += OnuserUserJoined;
             _bot.UserJoined += OnUserJoinedMuteCheck;
+            _bot.UserJoined += OnUserJoinedRole;
             _bot.UserLeft += OnUserLeft;
             _bot.MessageReceived += OnCommandReceived;
             _bot.MessageReceived += OnMessageReceived;
@@ -78,6 +80,21 @@ namespace OnePlusBot.Base
                 if(db.Mutes.Where(us => us.MutedUserID == user.Id && !us.MuteEnded).Any())
                 {
                     await Extensions.MuteUser(user);
+                }
+            }
+        }
+
+        private async Task OnUserJoinedRole(SocketGuildUser user)
+        {
+            using (var db = new Database())
+            {
+                var dbUser = db.Users.Where(us => us.Id == user.Id).Include(us => us.ExperienceRoleReference).FirstOrDefault();
+                if(dbUser != null)
+                {
+                    if(dbUser.ExperienceRoleReference != null){
+                        var role = user.Guild.GetRole(dbUser.ExperienceRoleReference.ExperienceRoleId);
+                        await user.AddRoleAsync(role);
+                    }
                 }
             }
         }
