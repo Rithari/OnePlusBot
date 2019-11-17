@@ -147,7 +147,7 @@ Known issue: it outputs a negative time when event is over.
 
 ### Referral codes handling
 
-Users can post their smartphone and headphones referral links they obtained [from OnePlus](https://www.oneplus.com/referral) in #referralcodes channel. Bot will delete them automatically to post them into an embed with username, discrim and [user ID](https://dis.gd/userid) of who sent the codes. Every two weeks users will be able to post again their codes.
+Users can post their smartphone and headphones referral links they obtained [from OnePlus](https://www.oneplus.com/referral) in #referralcodes channel. Bot will delete them automatically to post them into an embed with username, discrim and [user ID](https://dis.gd/userid) of who sent the codes. Users are able to post new referral links after two weeks.
 
 ## Fun
 
@@ -181,8 +181,8 @@ It is usable by everyone.
 
 ### Steam profile banner displayer
 
-`;steamp steam_id`\
-Example for user https://steamcommunity.com/id/azaza1 command will be `;steamp azaza1`
+`;steamp steam_id` Example for user https://steamcommunity.com/id/azaza1 command will be `;steamp azaza1`.\
+Bot response is an image with the avatar and Steam level. Note that if user queried doesn't exist, bot response will be an empty png file.
 
 ## Misc
 
