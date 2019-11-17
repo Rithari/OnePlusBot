@@ -123,6 +123,7 @@ CREATE TABLE `User` (
  `xp_updated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
  `current_role_id` int(10) unsigned DEFAULT NULL,
  `message_count` bigint(20) unsigned NOT NULL DEFAULT '0',
+ `xp_gain_disabled` tinyint(4) NOT NULL DEFAULT '0',
  PRIMARY KEY (`id`),
  KEY `fk_role_ref` (`current_role_id`),
  CONSTRAINT `fk_role_ref` FOREIGN KEY (`current_role_id`) REFERENCES `ExperienceRoles` (`id`)

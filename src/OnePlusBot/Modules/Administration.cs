@@ -657,6 +657,18 @@ namespace OnePlusBot.Modules
             await Task.CompletedTask;
             return CustomResult.FromSuccess();
         }
+
+        [
+            Command("disableXpGain"),
+            Summary("Enables/disables xp gain for a user"),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> SetExpGainEnabled(IGuildUser user, bool newValue)
+        {
+             new ExpManager().SetXPDisabledTo(user, newValue);
+            await Task.CompletedTask;
+            return CustomResult.FromSuccess();
+        }
         
     }
 }

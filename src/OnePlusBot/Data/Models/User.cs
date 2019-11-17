@@ -36,6 +36,9 @@ namespace OnePlusBot.Data.Models
         [Column("current_role_id")]
         public uint? ExperienceRoleId { get; set; }
 
+        [Column("xp_gain_disabled")]
+        public bool XPGainDisabled { get; set; }
+
 
         [ForeignKey("Level")]
         public virtual ExperienceLevel CurrentLevel { get; set; }

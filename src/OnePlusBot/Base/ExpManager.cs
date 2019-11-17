@@ -40,7 +40,8 @@ namespace OnePlusBot.Base
     public async Task PersistExp()
     {
       Random rnd = new Random();
-      using(var db = new Database()){
+      using(var db = new Database())
+      {
         var minuteToPersist = (long) DateTime.Now.Subtract(DateTime.MinValue).TotalMinutes - 1;
         Console.WriteLine($"Persisting minute {minuteToPersist} + {DateTime.Now}");
         var peopleToUpdate = new HashSet<User>();
@@ -50,11 +51,14 @@ namespace OnePlusBot.Base
           minuteToPersist--;
           Global.RuntimeExp.Remove(minuteToPersist);
         }
-        if(peopleToUpdate.Count > 0){
+        if(peopleToUpdate.Count > 0)
+        {
           var peopleWhoChangedLevel = new List<User>();
-          foreach(var person in peopleToUpdate){
+          foreach(var person in peopleToUpdate)
+          {
             var levelSegment = GetAppropriateLevelForExp(person.XP, db);
-            if(person.Level != levelSegment.Level){
+            if(person.Level != levelSegment.Level)
+            {
               peopleWhoChangedLevel.Add(person);
               person.Level = levelSegment.Level;
               db.Entry(person).Reference(s => s.CurrentLevel).Load();
@@ -114,7 +118,7 @@ namespace OnePlusBot.Base
       var updateDate = DateTime.Now;
       foreach(var userId in userToUpdate){
         var exp = db.Users.Where(e => e.Id == userId).Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).FirstOrDefault();
-        if(exp != null){
+        if(exp != null && !exp.XPGainDisabled){
           exp.XP += (ulong) r.Next(Global.XPGainRangeMin, Global.XPGainRangeMax);
           exp.MessageCount += 1;
           peopleToUpdate.Add(exp);
@@ -130,7 +134,8 @@ namespace OnePlusBot.Base
           List<ExperienceRole> rolesUsedInExperience = db.ExperienceRoles.Include(ro => ro.RoleReference).ToList();
           List<ExperienceLevel> levelConfiguration = db.ExperienceLevels.ToList();
           List<SocketRole> experienceRolesInGuild = new List<SocketRole>();
-          foreach(ExperienceRole role in rolesUsedInExperience){
+          foreach(ExperienceRole role in rolesUsedInExperience)
+          {
             experienceRolesInGuild.Add(guild.GetRole(role.RoleReference.RoleID));
           }
    
@@ -157,30 +162,42 @@ namespace OnePlusBot.Base
           db.Entry(user).Reference(s => s.ExperienceRoleReference).Load();
           db.Entry(user.ExperienceRoleReference).Reference(s => s.RoleReference).Load();
         }
+      } else {
+        user.Level = 0;
+        user.ExperienceRoleId = null;
+        db.Entry(user).Reference(s => s.ExperienceRoleReference).Load();
       }
 
       var userInGuild = guild.GetUser(user.Id);
       if(userInGuild != null){
         var experienceRolesTheUserHas = userInGuild.Roles.Intersect(experienceRolesInGuild).ToList();
-        var userHasCorrectRoles = experienceRolesTheUserHas.Count() == 1 && user.ExperienceRoleReference.RoleReference.RoleID == experienceRolesTheUserHas.First().Id;
-        if(!userHasCorrectRoles)
+        if(user.ExperienceRoleReference == null)
         {
-          if(experienceRolesTheUserHas.Count() > 0)
+          await userInGuild.RemoveRolesAsync(experienceRolesTheUserHas);
+        } 
+        else
+        {
+          var userHasCorrectRoles = experienceRolesTheUserHas.Count() == 1 && user.ExperienceRoleReference.RoleReference.RoleID == experienceRolesTheUserHas.First().Id;
+          if(!userHasCorrectRoles)
           {
-            await userInGuild.RemoveRolesAsync(experienceRolesInGuild);
-          }
-          if(delay)
-          {
-            await Task.Delay(200);
-          }
-          if(user.ExperienceRoleId != null){
-            var correctExperienceRole = experienceRolesInGuild.Where(role => role.Id == user.ExperienceRoleReference.RoleReference.RoleID).FirstOrDefault();
-            if(correctExperienceRole != null){
-              await userInGuild.AddRoleAsync(correctExperienceRole);
+            if(experienceRolesTheUserHas.Count() > 0)
+            {
+              await userInGuild.RemoveRolesAsync(experienceRolesInGuild);
             }
+            if(delay)
+            {
+              await Task.Delay(200);
+            }
+            if(user.ExperienceRoleId != null){
+              var correctExperienceRole = experienceRolesInGuild.Where(role => role.Id == user.ExperienceRoleReference.RoleReference.RoleID).FirstOrDefault();
+              if(correctExperienceRole != null){
+                await userInGuild.AddRoleAsync(correctExperienceRole);
+              }
+            }
+          
           }
-        
         }
+        
       }
     }
 
@@ -276,6 +293,23 @@ namespace OnePlusBot.Base
         }
 
       }
+    }
+
+    public void SetXPDisabledTo(IGuildUser user, bool newValue){
+      using(var db = new Database())
+      {
+        var userDB = db.Users.Where(us => us.Id == user.Id).FirstOrDefault();
+        if(userDB == null)
+        {
+          throw new NotFoundException("User not found");
+        }
+        else 
+        {
+          userDB.XPGainDisabled = newValue;
+        }
+        db.SaveChanges();
+      }
+
     }
   
   }

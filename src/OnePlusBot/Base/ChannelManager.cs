@@ -19,7 +19,7 @@ namespace OnePlusBot.Base
             using(var db = new Database()){
                 var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
                 if(existingGroup != null){
-                    throw new ChannelGroupException("Channel group with name already exists.");
+                    throw new NotFoundException("Channel group with name already exists.");
                 }
                 var channelGroup = new ChannelGroup();
                 channelGroup.Name = name;
@@ -49,7 +49,7 @@ namespace OnePlusBot.Base
                     }
                     db.SaveChanges();
                 } else {
-                    throw new ChannelGroupException("Channel group not found.");
+                    throw new NotFoundException("Channel group not found.");
                 }
                 
             }
@@ -72,7 +72,7 @@ namespace OnePlusBot.Base
                     }
                     db.SaveChanges();
                 } else {
-                    throw new ChannelGroupException("Channel group not found.");
+                    throw new NotFoundException("Channel group not found.");
                 }
                 
             }
@@ -86,7 +86,7 @@ namespace OnePlusBot.Base
                 {
                     existingGroup.ExperienceGainExempt = newVal;
                 } else {
-                    throw new ChannelGroupException("Channel group not found.");
+                    throw new NotFoundException("Channel group not found.");
                 }
                 db.SaveChanges();
             }
@@ -101,7 +101,7 @@ namespace OnePlusBot.Base
                 {
                     existingGroup.Disabled = newVal;
                 } else {
-                    throw new ChannelGroupException("Channel group not found.");
+                    throw new NotFoundException("Channel group not found.");
                 }
                 db.SaveChanges();
             }
@@ -208,7 +208,7 @@ namespace OnePlusBot.Base
                 }
                 else 
                 {
-                    throw new ChannelGroupException("Channel group not found.");
+                    throw new NotFoundException("Channel group not found.");
                 }
                 db.SaveChanges();
             }

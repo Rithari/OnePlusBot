@@ -388,7 +388,7 @@ namespace OnePlusBot.Modules
 
         [
             Command("rank"),
-            Summary("Shows your experience")
+            Summary("Shows your experience, level, and rank in the server")
         ]
         public async Task<RuntimeResult> ShowLevels([Optional] IGuildUser user)
         {
@@ -447,8 +447,8 @@ namespace OnePlusBot.Modules
                         var rank = allUsers.IndexOf(user) + 1;
                         var userInGuild = Context.Guild.GetUser(user.Id);
                         var name = userInGuild != null ? Extensions.FormatUserName(userInGuild) : "User left guild " + user.Id;
-                        description.Append($"[#{rank}] → {name}\n");
-                        description.Append($"XP: {user.XP} Level: {user.Level}: Messages: {user.MessageCount} \n");
+                        description.Append($"[#{rank}] → **{name}**\n");
+                        description.Append($"XP: {user.XP} Level: {user.Level}: Messages: {user.MessageCount} \n \n");
                     }
                     description.Append("\n");
                 }
