@@ -94,12 +94,33 @@ namespace OnePlusBot.Modules
             RequireRole("staff"),
             Alias("setTarget")
         ]
-        public async Task<RuntimeResult> SetPostTarget(string channelName, ISocketMessageChannel channel)
+        public async Task<RuntimeResult> SetPostTarget([Optional] string channelName, [Optional] ISocketMessageChannel channel)
         {
-            new ChannelManager().setPostTarget(channelName, channel);
+            if(channelName == null || channel == null)
+            {
+              await new ChannelManager().PostExistingPostTargets(Context.Channel);
+            }
+            else
+            {
+              new ChannelManager().SetPostTarget(channelName, channel);
+            }
             await Task.CompletedTask;
             return CustomResult.FromSuccess();
         }
+
+        [
+            Command("renameChannelGroup"),
+            Summary("Sets the target of a certain post"),
+            RequireRole("staff"),
+            Alias("rnChGrp")
+        ]
+        public async Task<RuntimeResult> RenameChannelGroup(string oldName, string newName)
+        {
+            new ChannelManager().RenameChannelGroup(oldName, newName);
+            await Task.CompletedTask;
+            return CustomResult.FromSuccess();
+        }
+
 
         [
             Command("listChannelGroups", RunMode=RunMode.Async),

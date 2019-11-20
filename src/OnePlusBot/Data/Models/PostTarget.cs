@@ -37,6 +37,16 @@ namespace OnePlusBot.Data.Models
         public static readonly string USERNAME_QUEUE = "usernamequeue";
         public static readonly string WARN_LOG = "warnlog";
         public static readonly string LEAVE_LOG = "leavelog";
+
+        public static readonly List<string> POST_TARGETS = 
+                              new List<string> { 
+                                OFFTOPIC, JOIN_LOG, BAN_LOG, 
+                                DECAY_LOG, DELETE_LOG, EDIT_LOG, 
+                                MODMAIL_LOG, MODMAIL_NOTIFICATION, 
+                                MUTE_LOG, NEWS, PROFANITY_QUEUE, 
+                                STARBOARD, UNBAN_LOG, SUGGESTIONS, 
+                                USERNAME_QUEUE, WARN_LOG, LEAVE_LOG
+                              };
       
     }
 }

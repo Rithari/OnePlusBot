@@ -100,7 +100,9 @@ namespace OnePlusBot.Base
                 if(existingGroup != null)
                 {
                     existingGroup.Disabled = newVal;
-                } else {
+                }
+                else 
+                {
                     throw new NotFoundException("Channel group not found.");
                 }
                 db.SaveChanges();
@@ -108,7 +110,40 @@ namespace OnePlusBot.Base
 
         }
 
-        public void setPostTarget(string name, IChannel channel)
+        public async Task PostExistingPostTargets(ISocketMessageChannel channelToRespondIn) 
+        {
+          var stringBuilder = new StringBuilder();
+          foreach(var target in PostTarget.POST_TARGETS){
+            stringBuilder.Append($"`{target}` ");
+          }
+          var builder = new EmbedBuilder();
+          builder.WithTitle("Currently available post targets");
+          builder.WithDescription(stringBuilder.ToString());
+          await channelToRespondIn.SendMessageAsync(embed: builder.Build());
+        }
+
+        public void RenameChannelGroup(string oldName, string newName) {
+          using(var db = new Database())
+          {
+            var existingGroup = db.ChannelGroups.Where(grp => grp.Name == oldName).FirstOrDefault();
+            if(existingGroup != null)
+            {
+              var newNameIsused = db.ChannelGroups.Where(grp => grp.Name == newName).Any();
+              if(newNameIsused)
+              {
+                throw new ConfigurationException("New name is already used by anothe group.");
+              }
+              existingGroup.Name = newName;
+            }
+            else 
+            {
+                throw new NotFoundException("Channel group not found.");
+            }
+            db.SaveChanges();
+          }
+        }
+
+        public void SetPostTarget(string name, IChannel channel)
         {
             using(var db = new Database())
             {
