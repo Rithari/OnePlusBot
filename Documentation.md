@@ -149,6 +149,10 @@ Known issue: it outputs a negative time when event is over.
 
 Users can post their smartphone and headphones referral links they obtained [from OnePlus](https://www.oneplus.com/referral) in #referralcodes channel. Bot will delete them automatically to post them into an embed with username, discrim and [user ID](https://dis.gd/userid) of who sent the codes. Users are able to post new referral links after two weeks.
 
+### Role attribution
+
+Users can assign themselves roles by reacting to the corresponding emote in a message posted in #info channel. They will lose the role if they remove their reaction. As of writing list of assignable roles (devices, Helper and News) is hardcoded at https://github.com/Rithari/OnePlusBot/blob/master/src/OnePlusBot/Base/RoleReactionAction.cs .
+
 ## Fun
 
 ### Starboard
