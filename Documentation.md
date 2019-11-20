@@ -57,7 +57,7 @@ Bans are logged into #modlog channel.
 `;kick @Username#1234 reason`
 
 Kick user from server. Only users with **Staff** role can use that command.\
-Command can also be used with [user IDs](https://dis.gd/userid)
+Command can also be used with [user IDs](https://dis.gd/userid).\
 It is made so that other bots can't be kicked with it.
 
 ### Mute
@@ -66,7 +66,7 @@ Mute users in both text and voice chats. It will give them the roles "Voice mute
 Syntax is `;mute @Username#1234 duration reason`
 Possible durations are days (d), hours (h), minutes (m) and seconds (s).\
 Eg `;mute @Username#1234 5d2h1m3s Get muted` to mute user Username#1234 for 5 days, 2 hours, 1 minute and 3 seconds.\
-Command can also be used with [user IDs](https://dis.gd/userid)
+Command can also be used with [user IDs](https://dis.gd/userid).\
 It is made so that other bots can't be muted with it.
 
 ### Bulk delete
@@ -84,7 +84,7 @@ The check for that action happens everyday at 00:00 UTC.
 
 Warnings list can be queried by moderators by issuing `;warnings` command. If list takes more than one embed it is possible to navigate using the arrows reaction. Warning of a specific user can be queried by using command `;warnings @Username#1234` which also works with [user IDs](https://dis.gd/userid). Active warnings and decayed warnings will be showed. Clicking on wastebasket reaction will delete the embed, otherwise the embed will delete by itself after two minutes without interaction with embed by user that requested list of warnings. 
 
-A warning can be manually cleared by a moderator by using command `;clearwarn case_id` (case ID is given with list of warnings.\
+A warning can be manually cleared by a moderator by using command `;clearwarn case_id` (case ID is given with list of warnings).\
 Note that however clearing warnings isn't logged in #mod-log channel unlike the automatic decay check and unlike when warns are given.
     
 Normal users can check their own warnings by using `;warnings` command, which will tell them how many active and total warnings they have. If they wish to get the reasons as well they need to ask moderators to check for them as it was decided that for "privacy" we won't let other users know why a user was warned.
@@ -98,11 +98,11 @@ Also works with [user IDs](https://dis.gd/userid) `;userinfo user_id`
 ### Profanity checker
 
 Checks profane words based on regex present in a database and post a message in a #modqueue channel when use has been detected.\
-This message contains the username, discrim and user ID of user that triggered the filter as well as message content and a jump link to it. It will also tell which type of profanity was detected (they're defined by a label in database).
+This message contains the username, discrim and [user ID](https://dis.gd/userid) of user that triggered the filter as well as message content and a jump link to it. It will also tell which type of profanity was detected (they're defined by a label in database).
 
 Positive and negative triggers are tracked: when an item goes in #modqueue channel, the first person that click on "yes" or "no" reaction will tell that trigger was correct or a false positive. 
 
-It is possible to know the number of false positive and correct profanities by using command `;profanities @Username#1234` (also works with [user IDs](https://dis.gd/userid) (restricted to users with **Staff** role).
+It is possible to know the number of false positive and correct profanities by using command `;profanities @Username#1234` (also works with [user IDs](https://dis.gd/userid)). That command is restricted to users with **Staff** role.
 
 ### Illegal character checker
 
@@ -195,7 +195,7 @@ It includes server name, server ID, server region, owner of the server, number o
 ### User avatar display
 
 `;showavatar Username#1234`.
-Also works with user IDs.
+Also works with [user IDs](https://dis.gd/userid).
 
 ### Roulette
 
