@@ -15,6 +15,12 @@ using System.Threading.Tasks;
 
 namespace OnePlusBot.Modules
 {
+    /// <summary>
+    /// The Administrative module includes any and all commands that may only be executed by the server's staff team.
+    /// These commands serve the purpose of easily administrating the server and correlated behind-the-curtain tasks.
+    /// Some are limited to the sole owner of the bot, others are limited to a certain ranking of staff due to restrictions in the permissions.
+    /// Furthermore, if need be, clarifications of certain snippets can be found throughout the module.
+    /// </summary>
     public class Administration : ModuleBase<SocketCommandContext>
     {
         [
@@ -22,25 +28,25 @@ namespace OnePlusBot.Modules
             Summary("Bans specified user."),
             RequireRole("staff")
         ]
-        public async Task<RuntimeResult> OBanAsync(ulong name, [Remainder] string reason = null)
+        public async Task<RuntimeResult> IDBanAsync(ulong bannedUserID, [Remainder] string reason)
         {
-            await Context.Guild.AddBanAsync(name, 0, reason);
+            await Context.Guild.AddBanAsync(bannedUserID, 0, reason);
 
-            MuteTimerManager.UnMuteUserCompletely(name);
+            MuteTimerManager.UnMuteUserCompletely(bannedUserID);
 
               
             if(reason == null)
             {
-                reason = "No reason provided.";
+                reason = $"No reason provided. (Bannee is {Context.Message.Author}) ";
             }
 
-            var modlog = Context.Guild.GetTextChannel(Global.Channels["banlog"]);
-            var banMessage = new EmbedBuilder()
+            var modlogChannel = Context.Guild.GetTextChannel(Global.Channels["banlog"]);
+            var banMessageEmbed = new EmbedBuilder()
             .WithColor(9896005)
             .WithTitle("⛔️ Banned User")
             .AddField(efb => efb
                 .WithName("UserId")
-                .WithValue(name)
+                .WithValue(bannedUserID)
                 .WithIsInline(true))
             .AddField(efb => efb
                 .WithName("By")
@@ -53,7 +59,7 @@ namespace OnePlusBot.Modules
                 .WithName("Link")
                 .WithValue(Extensions.GetMessageUrl(Global.ServerID, Context.Channel.Id, Context.Message.Id, "Jump!")));
 
-            await modlog.SendMessageAsync(embed: banMessage.Build());
+            await modlogChannel.SendMessageAsync(embed: banMessageEmbed.Build());
 
             return CustomResult.FromSuccess();
         }
@@ -65,15 +71,15 @@ namespace OnePlusBot.Modules
             RequireRole("staff"),
             RequireBotPermission(GuildPermission.BanMembers)
         ]
-        public async Task<RuntimeResult> BanAsync(IGuildUser user, [Remainder] string reason = null)
+        public async Task<RuntimeResult> BanAsync(IGuildUser bannedUser, [Remainder] string reason = null)
         {
-            if (user.IsBot)
+            if (bannedUser.IsBot)
             {
                 return CustomResult.FromError("You can't ban bots.");
             }
 
 
-            if (user.GuildPermissions.PrioritySpeaker)
+            if (bannedUser.GuildPermissions.PrioritySpeaker)
             {
                 return CustomResult.FromError("You can't ban staff.");
             }
@@ -86,25 +92,28 @@ namespace OnePlusBot.Modules
             try
             {
                 try 
-                {
-                    const string banDMMessage = "You were banned on r/OnePlus for the following reason: {0}\n" +
+                {   
+                    string banDMMessage = $"You were banned on r/OnePlus by {Context.Message.Author.Username} for the following reason: {0}\n" +
                                           "If you believe this to be a mistake, please send an appeal e-mail with all the details to oneplus.appeals@pm.me";
-                    await user.SendMessageAsync(string.Format(banDMMessage, reason));
-                } catch (HttpException){
-                    Console.WriteLine("User disabled DMs, unable to send message about ban.");
+                    await bannedUser.SendMessageAsync(string.Format(banDMMessage, reason));
+                }
+                catch (HttpException)
+                {
+                    //If this returns an HttpException we can be certain the message didn't go to the user's DMs.
+                    Console.WriteLine("The banned user's privacy settings disalllow DMs.");
                 }
                
-                await Context.Guild.AddBanAsync(user, 0, reason);
+                await Context.Guild.AddBanAsync(bannedUser, 0, reason);
 
-                MuteTimerManager.UnMuteUserCompletely(user.Id);
+                MuteTimerManager.UnMuteUserCompletely(bannedUser.Id);
 
-                var modlog = Context.Guild.GetTextChannel(Global.Channels["banlog"]);
+                var modlogChannel = Context.Guild.GetTextChannel(Global.Channels["banlog"]);
                 var banMessage = new EmbedBuilder()
                 .WithColor(9896005)
                 .WithTitle("⛔️ Banned User")
                 .AddField(efb => efb
                     .WithName("User")
-                    .WithValue(Extensions.FormatUserNameDetailed(user))
+                    .WithValue(Extensions.FormatUserNameDetailed(bannedUser))
                     .WithIsInline(true))
                 .AddField(efb => efb
                     .WithName("By")
@@ -117,14 +126,14 @@ namespace OnePlusBot.Modules
                     .WithName("Link")
                     .WithValue(Extensions.GetMessageUrl(Global.ServerID, Context.Channel.Id, Context.Message.Id, "Jump!")));
 
-                await modlog.SendMessageAsync(embed: banMessage.Build());
+                await modlogChannel.SendMessageAsync(embed: banMessage.Build());
 
                 return CustomResult.FromSuccess();
 
             }
             catch (Exception ex)
             {   
-                //  may not be needed
+                //  may not be needed, needs to be debugged properly.
                 // await Context.Guild.AddBanAsync(user, 0, reason);
                 return CustomResult.FromError(ex.Message);
             }
@@ -157,6 +166,7 @@ namespace OnePlusBot.Modules
             RequireRole("staff"),
             RequireBotPermission(GuildPermission.ManageRoles)
         ]
+        //TBD
         public async Task<RuntimeResult> MuteUser(IGuildUser user,params string[] arguments)
         {
             if (user.IsBot)
@@ -291,15 +301,18 @@ namespace OnePlusBot.Modules
 
             var isInModmailContext = Global.ModMailThreads.Exists(ch => ch.ChannelId == Context.Channel.Id);
 
-            // Download all messages that the user asks for to delete
+            // Download all messages that the user asks for to delete, maxing out at 100.
             var messages = await Context.Channel.GetMessagesAsync(oldmessage, Direction.Before, delmsgInt).FlattenAsync();
 
             var saveMessagesToDelete = new List<IMessage>();
-            if(isInModmailContext){
+            if(isInModmailContext)
+            {
                 var manager = new ModMailManager();
-                foreach(var message in messages){
+                foreach(var message in messages)
+                {
                    var messageCanBeDeleted = await manager.DeleteMessageInThread(Context.Channel.Id, message.Id, false);
-                   if(messageCanBeDeleted){
+                   if(messageCanBeDeleted)
+                    {
                        saveMessagesToDelete.Add(message);
                    }
                 }
