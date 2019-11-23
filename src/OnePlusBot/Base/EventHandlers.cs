@@ -576,8 +576,21 @@ namespace OnePlusBot.Base
 
         private static bool ViolatesRule(SocketMessage message)
         {
+        /*    var guildUser = message.Author as IGuildUser;
+            if (message.Channel is SocketDMChannel)
+            {
+                if (guildUser.RoleIds.Contains(Global.Roles["staff"]))
+                {
+                    var guild = Global.Bot.GetGuild(Global.ServerID);
+                    var feedbackChannel = guild.GetTextChannel(Global.Channels["feedback"]);
+                    feedbackChannel.SendMessageAsync("Feedback!" + Environment.NewLine + message.Content);
+                }
+            }*/
+
             string messageText = message.Content;
-            return ContainsIllegalInvite(messageText) && message.Channel.Id != Global.Channels["referralcodes"];
+            var channelObj = Global.FullChannels.Where(ch => ch.ChannelID == message.Channel.Id).FirstOrDefault();
+            bool ignoredChannel = channelObj != null && channelObj.InviteCheckExempt;
+            return ContainsIllegalInvite(messageText) && message.Channel.Id != Global.Channels["referralcodes"] && !ignoredChannel;
         }
 
         private static async Task OnMessageReceived(SocketMessage message)

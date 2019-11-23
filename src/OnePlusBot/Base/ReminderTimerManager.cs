@@ -104,7 +104,12 @@ namespace OnePlusBot.Base
                     .AddField("Note", reminderObj.RemindText)
                     .AddField("Link", Extensions.GetMessageUrl(guild.Id, reminderObj.ChannelId, reminderObj.MessageId, "Jump!"));
             var embed = builder.Build();
-            await guild.GetTextChannel(reminderObj.ChannelId).SendMessageAsync(user.Mention, embed: embed).ConfigureAwait(false);
+            var channel = guild.GetTextChannel(reminderObj.ChannelId);
+            if(channel != null)
+            {
+              await channel.SendMessageAsync(user.Mention, embed: embed).ConfigureAwait(false);
+            } 
+            
         }
         reminderObj.Reminded = true;
         db.SaveChanges();

@@ -25,10 +25,36 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> OBanAsync(ulong name, [Remainder] string reason = null)
         {
-            var modlog = Context.Guild.GetTextChannel(Global.Channels["modlog"]);
             await Context.Guild.AddBanAsync(name, 0, reason);
 
             MuteTimerManager.UnMuteUserCompletely(name);
+
+              
+            if(reason == null)
+            {
+                reason = "No reason provided.";
+            }
+
+            var modlog = Context.Guild.GetTextChannel(Global.Channels["banlog"]);
+            var banMessage = new EmbedBuilder()
+            .WithColor(9896005)
+            .WithTitle("⛔️ Banned User")
+            .AddField(efb => efb
+                .WithName("UserId")
+                .WithValue(name)
+                .WithIsInline(true))
+            .AddField(efb => efb
+                .WithName("By")
+                .WithValue(Extensions.FormatUserName(Context.User))
+                .WithIsInline(true))
+            .AddField(efb => efb
+                .WithName("Reason")
+                .WithValue(reason))
+            .AddField(efb => efb
+                .WithName("Link")
+                .WithValue(Extensions.GetMessageUrl(Global.ServerID, Context.Channel.Id, Context.Message.Id, "Jump!")));
+
+            await modlog.SendMessageAsync(embed: banMessage.Build());
 
             return CustomResult.FromSuccess();
         }
@@ -62,10 +88,10 @@ namespace OnePlusBot.Modules
             {
                 try 
                 {
-                    const string banMessage = "You were banned on r/OnePlus for the following reason: {0}\n" +
+                    const string banDMMessage = "You were banned on r/OnePlus for the following reason: {0}\n" +
                                           "If you believe this to be a mistake, please send an appeal e-mail with all the details to oneplus.appeals@pm.me";
-                    await user.SendMessageAsync(string.Format(banMessage, reason));
-                } catch (HttpException ex){
+                    await user.SendMessageAsync(string.Format(banDMMessage, reason));
+                } catch (HttpException){
                     Console.WriteLine("User disabled DMs, unable to send message about ban.");
                 }
                
@@ -73,8 +99,8 @@ namespace OnePlusBot.Modules
 
                 MuteTimerManager.UnMuteUserCompletely(user.Id);
 
-                var modlog = Context.Guild.GetTextChannel(Global.Channels["modlog"]);
-                var banlog = new EmbedBuilder()
+                var modlog = Context.Guild.GetTextChannel(Global.Channels["banlog"]);
+                var banMessage = new EmbedBuilder()
                 .WithColor(9896005)
                 .WithTitle("⛔️ Banned User")
                 .AddField(efb => efb
@@ -92,7 +118,7 @@ namespace OnePlusBot.Modules
                     .WithName("Link")
                     .WithValue(Extensions.GetMessageUrl(Global.ServerID, Context.Channel.Id, Context.Message.Id, "Jump!")));
 
-                await modlog.SendMessageAsync(embed: banlog.Build());
+                await modlog.SendMessageAsync(embed: banMessage.Build());
 
                 return CustomResult.FromSuccess();
 
