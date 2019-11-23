@@ -54,7 +54,6 @@ namespace OnePlusBot.Modules
                     await ReplyAsync("No module could be found with that name."); 
                     return;
                 }
-
                 output.Title = mod.Name;
                 output.Description = $"{mod.Summary}\n" +
                     (!string.IsNullOrEmpty(mod.Remarks) ? $"({mod.Remarks})\n" : "") +
@@ -90,11 +89,32 @@ namespace OnePlusBot.Modules
 
         public void AddCommand(CommandInfo command, ref EmbedBuilder builder)
         {
+           StringBuilder preconditions = new StringBuilder("");
+            foreach(var pre in command.Preconditions){
+              if(pre is RequireRole){
+                RequireRole casted = pre as RequireRole;
+                preconditions.Append("Required roles: ");
+                if(casted.AllowedRoles.Length > 1)
+                {
+                  string roleConcatenation = casted.mode == ConcatenationMode.AND ? " AND " : " OR ";
+                  preconditions.Append(string.Join(roleConcatenation, casted.AllowedRoles));
+                }
+                else
+                {
+                  preconditions.Append(casted.AllowedRoles[0]);
+                }
+                
+              } 
+            }
+            if(preconditions.ToString() != string.Empty){
+              preconditions.Append("\n");
+            }
             builder.AddField(f =>
             {
                 f.Name = $"**{command.Name}**";
                 f.Value = $"{command.Summary}\n" +
                 (!string.IsNullOrEmpty(command.Remarks) ? $"({command.Remarks})\n" : "") +
+                preconditions.ToString() +
                 (command.Aliases.Any() ? $"**Aliases:** {string.Join(", ", command.Aliases.Select(x => $"`{x}`"))}\n" : "") +
                 $"**Usage:** `{GetPrefix(command)} {GetAliases(command)}`";
             });

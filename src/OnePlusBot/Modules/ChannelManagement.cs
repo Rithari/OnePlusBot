@@ -14,7 +14,7 @@ namespace OnePlusBot.Modules
     {
 
         [
-            Command("chreateChannelGroup"),
+            Command("createChannelGroup"),
             Summary("Creates a channel group to be used in other areas"),
             RequireRole("staff"),
             Alias("createChGrp")
@@ -65,7 +65,7 @@ namespace OnePlusBot.Modules
         [
             Command("disableXP"),
             Summary("Enables/disables the xp gain in a certain channel group"),
-            RequireRole("staff")
+            RequireRole(new string[]{"admin", "founder"})
         ]
         public async Task<RuntimeResult> ToggleExperienceGainInChannelGroup(string groupName, bool newValue)
         {
@@ -77,7 +77,7 @@ namespace OnePlusBot.Modules
         [
             Command("disableChannelGroup"),
             Summary("Enables/disables the profanity/invitecheck/xpgain flags for a group"),
-            RequireRole("staff"),
+            RequireRole(new string[]{"admin", "founder"}),
             Alias("disableChGrp")
         ]
         public async Task<RuntimeResult> ToggleGroupDisabled(string groupName, bool newValue){

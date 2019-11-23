@@ -42,14 +42,22 @@ namespace OnePlusBot.Base
       Random rnd = new Random();
       using(var db = new Database())
       {
+        // this works this way, to not leave out any past experience trackings
         var minuteToPersist = (long) DateTime.Now.Subtract(DateTime.MinValue).TotalMinutes - 1;
         Console.WriteLine($"Persisting minute {minuteToPersist} + {DateTime.Now}");
         var peopleToUpdate = new HashSet<User>();
-        while(Global.RuntimeExp.ContainsKey(minuteToPersist)){
-          var experienceToPersist = Global.RuntimeExp[minuteToPersist];
-          UpdateExperienceForMinute(experienceToPersist, db, peopleToUpdate, rnd);
-          minuteToPersist--;
-          Global.RuntimeExp.Remove(minuteToPersist);
+        // if for some reason the elements were not persistet in the past rounds
+        // they will in the future, anda because they are removed afterwards, this means that there *should* not be anything done twice
+        var minutesInThePast = Global.RuntimeExp.Keys.Where(minute => minute <= minuteToPersist);
+        List<long> toRemove = new List<long>();
+        if(minutesInThePast.Any()){
+          foreach(var processedMinute in minutesInThePast){
+            UpdateExperienceForMinute(Global.RuntimeExp[processedMinute], db, peopleToUpdate, rnd);
+            toRemove.Add(processedMinute);
+          }
+        }
+        foreach(var minuteToRemove in toRemove){
+          Global.RuntimeExp.TryRemove(minuteToRemove, out _);
         }
         db.SaveChanges();
         if(peopleToUpdate.Count > 0)
@@ -296,7 +304,7 @@ namespace OnePlusBot.Base
         foreach(var role in roles)
         {
           count++;
-          currentEmbedBuilder.AddField(role.Level + "", guild.GetRole(role.RoleReference.RoleID).Name, true);
+          currentEmbedBuilder.AddField(guild.GetRole(role.RoleReference.RoleID).Name, role.Level + "", true);
             if(((count % EmbedBuilder.MaxFieldCount) == 0) && role != roles.Last()){
               embeds.Add(currentEmbedBuilder.Build());
               currentEmbedBuilder = new EmbedBuilder();

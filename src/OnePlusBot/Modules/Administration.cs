@@ -620,7 +620,7 @@ namespace OnePlusBot.Modules
         [
             Command("updateLevels", RunMode=RunMode.Async),
             Summary("Re-evaluates the experience, levels and assigns the roles to the users (takes a long time, use with care)"),
-            RequireRole("staff")
+            RequireRole(new string[]{"admin", "founder"})
         ]
         public async Task<RuntimeResult> UpdateLevels([Optional] IGuildUser user)
         {
@@ -641,7 +641,7 @@ namespace OnePlusBot.Modules
         [
             Command("roleLevel"),
             Summary("Sets the level at which a role is given. If no parameters, shows the current role configuration"),
-            RequireRole("staff")
+            RequireRole(new string[]{"admin", "founder"})
         ]
         public async Task<RuntimeResult> SetRoleToLevel([Optional] uint level, [Optional] ulong roleId)
         {
@@ -661,7 +661,7 @@ namespace OnePlusBot.Modules
         [
             Command("disableXpGain"),
             Summary("Enables/disables xp gain for a user"),
-            RequireRole("staff")
+            RequireRole(new string[]{"admin", "founder"})
         ]
         public async Task<RuntimeResult> SetExpGainEnabled(IGuildUser user, bool newValue)
         {

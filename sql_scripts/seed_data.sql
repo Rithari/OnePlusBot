@@ -10,7 +10,7 @@ INSERT INTO `PersistentData` VALUES
 (9, 'user_name_illegal_characters', 0, ''),
 (10, 'xp_disabled', 1, ''),
 (11, 'xp_gain_range_min', 10, ''),
-(12, 'xp_gain_range_max', 10, '');
+(12, 'xp_gain_range_max', 25, '');
 
 INSERT INTO `AuthTokens` VALUES 
 (1,'stable','REPLACE WITH TOKEN'),

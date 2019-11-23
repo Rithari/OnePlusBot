@@ -7,6 +7,7 @@ using OnePlusBot.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Discord.WebSocket;
 using System.Text.RegularExpressions;
+using System.Collections.Concurrent;
 
 namespace OnePlusBot.Base
 {
@@ -47,7 +48,7 @@ namespace OnePlusBot.Base
 
         public static List<Char> IllegalUserNameBeginnings { get; set; }
 
-        public static Dictionary<long, List<ulong>> RuntimeExp { get; set; }
+        public static ConcurrentDictionary<long, List<ulong>> RuntimeExp { get; set; }
 
         public static bool XPGainDisabled { get; set; }
 
@@ -115,7 +116,7 @@ namespace OnePlusBot.Base
             InviteLinks = new List<InviteLink>();
             ModMailThreads = new List<ModMailThread>();
             ReportedProfanities = new List<UsedProfanity>();
-            RuntimeExp = new Dictionary<long, List<ulong>>();
+            RuntimeExp = new ConcurrentDictionary<long, List<ulong>>();
             LoadGlobal();
         }
 

@@ -634,11 +634,12 @@ namespace OnePlusBot.Base
             if(!exists){
                 var element = new List<ulong>();
                 element.Add(message.Author.Id);
-                Global.RuntimeExp.Add(minute, element);
+                Global.RuntimeExp.TryAdd(minute, element);
             }
             else
             {
-                var poster = Global.RuntimeExp[minute];
+                List<ulong> poster = new List<ulong>();
+                Global.RuntimeExp.TryGetValue(minute, out poster);
                 if(!poster.Contains(message.Author.Id)){
                     poster.Add(message.Author.Id);
                 }
