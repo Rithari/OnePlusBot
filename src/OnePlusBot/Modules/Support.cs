@@ -182,7 +182,7 @@ namespace OnePlusBot.Modules
                 var matchingCommand = appropriateCommand.First();
                 if(matchingCommand.CommandChannels != null) 
                 {
-                    var commandChannels = matchingCommand.CommandChannels.Where(cha => cha.ChannelGroupReference.Channels.Where(grp => grp.ChannelId == contextChannel.Id) != null);
+                    var commandChannels = matchingCommand.CommandChannels.Where(cha => cha.ChannelGroupReference.Channels.Where(grp => grp.ChannelId == contextChannel.Id).FirstOrDefault() != null);
                     if(commandChannels.Any())
                     {
                         if(commandChannels.Count() > 1)
