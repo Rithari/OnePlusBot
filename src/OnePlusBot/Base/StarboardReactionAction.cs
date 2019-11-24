@@ -138,6 +138,10 @@ namespace OnePlusBot.Base
             {
                 emote = Global.OnePlusEmote.LVL_3_STAR.Name;
             }
+            if(starCount >= (int) Global.Level4Stars)
+            {
+                emote = Global.OnePlusEmote.LVL_4_STAR.ToString();
+            }
             return $"{emote} {starCount} <#{message.Channel.Id}> ID: {message.Id}"; 
         }
 
