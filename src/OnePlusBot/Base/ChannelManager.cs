@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Discord;
 using System.Collections.ObjectModel;
@@ -78,13 +79,21 @@ namespace OnePlusBot.Base
             }
         }
 
-        public void setExpDisabledTo(string name, bool newVal){
+        public void setExpDisabledTo(string name, bool newVal, Boolean? inviteCheck, Boolean? profanityCheck){
             using(var db = new Database())
             {
                 var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
                 if(existingGroup != null)
                 {
                     existingGroup.ExperienceGainExempt = newVal;
+                    if(inviteCheck != null)
+                    {
+                      existingGroup.InviteCheckExempt = inviteCheck.GetValueOrDefault();
+                    }
+                    if(profanityCheck != null)
+                    {
+                      existingGroup.ProfanityCheckExempt = profanityCheck.GetValueOrDefault();
+                    }
                 } else {
                     throw new NotFoundException("Channel group not found.");
                 }
@@ -131,7 +140,7 @@ namespace OnePlusBot.Base
               var newNameIsused = db.ChannelGroups.Where(grp => grp.Name == newName).Any();
               if(newNameIsused)
               {
-                throw new ConfigurationException("New name is already used by anothe group.");
+                throw new ConfigurationException("New name is already used by another group.");
               }
               existingGroup.Name = newName;
             }
@@ -177,7 +186,8 @@ namespace OnePlusBot.Base
                 foreach(var group in channelGroups)
                 {
                     count++;
-                    currentEmbedBuilder.AddField($"**{group.Name}**, XP exempt: {group.ExperienceGainExempt}  Profanity check exempt: {group.ProfanityCheckExempt}, InviteCheck exempt: {group.InviteCheckExempt}", getChannelsAsMentions(group.Channels));
+                    var disabledIndicator = group.Disabled ? " (Disabled)" : "";
+                    currentEmbedBuilder.AddField($"**{group.Name}**{disabledIndicator}, XP exempt: {group.ExperienceGainExempt}  Profanity check exempt: {group.ProfanityCheckExempt}, InviteCheck exempt: {group.InviteCheckExempt}", getChannelsAsMentions(group.Channels));
                     if(((count % EmbedBuilder.MaxFieldCount) == 0) && group != channelGroups.Last()){
                         embedsToPost.Add(currentEmbedBuilder.Build());
                         currentEmbedBuilder = new EmbedBuilder();
@@ -225,8 +235,8 @@ namespace OnePlusBot.Base
                     }
                 }
                 var result = new Dictionary<string, bool>();
-                result.Add("Profanity check disabled", profanityDisabled);
                 result.Add("XP Gain disabled", xpDisabled);
+                result.Add("Profanity check disabled", profanityDisabled);
                 result.Add("Invite check disabled", inviteLinksDisabled);
                 return result;
             }
@@ -239,7 +249,12 @@ namespace OnePlusBot.Base
                 var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
                 if(existingGroup != null)
                 {
-                    db.ChannelGroups.Remove(existingGroup);
+                  var existingChannelEntry = db.ChannelGroupMembers.Where(mem => mem.ChannelGroupId == existingGroup.Id).FirstOrDefault();
+                  if(existingChannelEntry != null)
+                  {
+                      throw new ConfigurationException("Channel group has configured channels. Remove them before deleting the channel group.");
+                  }
+                  db.ChannelGroups.Remove(existingGroup);
                 }
                 else 
                 {

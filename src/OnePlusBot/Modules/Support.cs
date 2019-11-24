@@ -93,7 +93,7 @@ namespace OnePlusBot.Modules
             foreach(var pre in command.Preconditions){
               if(pre is RequireRole){
                 RequireRole casted = pre as RequireRole;
-                preconditions.Append("Required roles: ");
+                preconditions.Append("Required role: ");
                 if(casted.AllowedRoles.Length > 1)
                 {
                   string roleConcatenation = casted.mode == ConcatenationMode.AND ? " AND " : " OR ";
@@ -183,25 +183,32 @@ namespace OnePlusBot.Modules
                     var commandChannels = matchingCommand.CommandChannels.Where(cha => cha.ChannelGroupReference.Channels.Where(grp => grp.ChannelId == contextChannel.Id) != null);
                     if(commandChannels.Any())
                     {
-                        var entries = commandChannels.First().CommandChannelEntries.OrderBy(entry => entry.Position);
-                        if(entries.Any())
+                        if(commandChannels.Count() > 1)
                         {
-                            foreach(var entry in entries)
-                            {
-                                if(!entry.IsEmbed)
-                                {
-                                    await Context.Channel.SendMessageAsync(entry.Text);
-                                }
-                                else 
-                                {
-                                    var embed = Extensions.FaqCommandEntryToBuilder(entry);
-                                    await Context.Channel.SendMessageAsync(embed: embed.Build());
-                                }
-                            }
-                        } 
-                        else
-                        {
-                            await Context.Channel.SendMessageAsync($"Channel has no posts configured for command {appropriateCommand.First().Name}.");
+                          await Context.Channel.SendMessageAsync("Warning command have different responses for this channel");
+                        }
+                        foreach(var commandChannel in commandChannels){
+                          var entries = commandChannels.First().CommandChannelEntries.OrderBy(entry => entry.Position);
+                          if(entries.Any())
+                          {
+                              foreach(var entry in entries)
+                              {
+                                  if(!entry.IsEmbed)
+                                  {
+                                      await Context.Channel.SendMessageAsync(entry.Text);
+                                  }
+                                  else 
+                                  {
+                                      var embed = Extensions.FaqCommandEntryToBuilder(entry);
+                                      await Context.Channel.SendMessageAsync(embed: embed.Build());
+                                  }
+                                  await Task.Delay(200);
+                              }
+                          } 
+                          else
+                          {
+                              await Context.Channel.SendMessageAsync($"Channel has no posts configured for command {appropriateCommand.First().Name}.");
+                          }
                         }
                     }
                     else

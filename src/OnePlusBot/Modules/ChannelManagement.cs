@@ -46,7 +46,7 @@ namespace OnePlusBot.Modules
 
         [
             Command("removeGroupChannels"),
-            Summary("Remoes the mentioned channels from the given channel group"),
+            Summary("Removes the mentioned channels from the given channel group"),
             RequireRole("staff"),
             Alias("rmGrpCh")
         ]
@@ -63,13 +63,14 @@ namespace OnePlusBot.Modules
         }
 
         [
-            Command("disableXP"),
-            Summary("Enables/disables the xp gain in a certain channel group"),
-            RequireRole(new string[]{"admin", "founder"})
+            Command("channelGroupAttributes"),
+            Summary("Enables/disables the attribues in a certain channel group"),
+            RequireRole(new string[]{"admin", "founder"}),
+            Alias("chGrpAtt")
         ]
-        public async Task<RuntimeResult> ToggleExperienceGainInChannelGroup(string groupName, bool newValue)
+        public async Task<RuntimeResult> ToggleExperienceGainInChannelGroup(string groupName, bool xpGain, [Optional] bool? profanityCheck, [Optional] Boolean? inviteCheck)
         {
-            new ChannelManager().setExpDisabledTo(groupName, newValue);
+            new ChannelManager().setExpDisabledTo(groupName, xpGain, inviteCheck, profanityCheck);
             await Task.CompletedTask;
             return CustomResult.FromSuccess();
         }
