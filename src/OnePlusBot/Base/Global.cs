@@ -39,6 +39,7 @@ namespace OnePlusBot.Base
 
         public static ulong Level2Stars { get; set; }
         public static ulong Level3Stars { get; set; }
+        public static ulong Level4Stars { get; set; }
 
         public static ulong ModmailCategoryId { get; set; }
 
@@ -178,6 +179,10 @@ namespace OnePlusBot.Base
                 Level3Stars = db.PersistentData
                     .First(entry => entry.Name == "level_3_stars")
                     .Value;
+
+                Level4Stars = db.PersistentData
+                    .First(entry => entry.Name == "level_4_stars")
+                    .Value;
                 
                 DecayDays = db.PersistentData
                     .First(entry => entry.Name == "decay_days")
@@ -256,6 +261,8 @@ namespace OnePlusBot.Base
             public static IEmote LVL_2_STAR = new Emoji("🌟");
 
             public static IEmote LVL_3_STAR = new Emoji("💫");
+
+            public static Emote LVL_4_STAR = Emote.Parse("<a:star4:640631410054529055>");
         }
 
         public static DiscordSocketClient Bot { get; set;}
