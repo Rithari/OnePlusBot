@@ -98,7 +98,9 @@ Also works with [user IDs](https://dis.gd/userid) `;userinfo user_id`
 ### Profanity checker
 
 Checks profane words based on regex present in a database and post a message in a #modqueue channel when use has been detected.\
-This message contains the username, discrim and [user ID](https://dis.gd/userid) of user that triggered the filter as well as message content and a jump link to it. It will also tell which type of profanity was detected (they're defined by a label in database).
+This message contains the username, discrim and [user ID](https://dis.gd/userid) of user that triggered the filter as well as message content and a jump link to it. It will also tell which type of profanity was detected (they're defined by a label in database).\
+
+Note: when regex is updated in database, it needs `;reloaddb` command to be executed to be taken into effect.
 
 Positive and negative triggers are tracked: when an item goes in #modqueue channel, the first person that click on "yes" or "no" reaction will tell that trigger was correct or a false positive. 
 
@@ -117,7 +119,7 @@ Suggestion will be posted to a #suggestions channel and bot will automatically r
 
 ### Invite filter
 
-To avoid unsollicited advertising an invite filter is present. Some channels and invitations can however be whitelisted (configurable in database).
+To avoid unsollicited advertising an invite filter is present. Some channels and invitations can however be whitelisted (configurable in database). Changes will require command `;reloaddb` to be issued to be taken into effect.
 
 ## Specific to server
 
@@ -151,7 +153,9 @@ Users can post their smartphone and headphones referral links they obtained [fro
 
 ### Role attribution
 
-Users can assign themselves roles by reacting to the corresponding emote in a message posted in #info channel. They will lose the role if they remove their reaction. As of writing list of assignable roles (devices, Helper and News) is hardcoded at https://github.com/Rithari/OnePlusBot/blob/master/src/OnePlusBot/Base/RoleReactionAction.cs .
+Users can assign themselves roles by reacting to the corresponding emote in a message posted in #info channel. They will lose the role if they remove their reaction. As of writing list of assignable roles (devices, Helper and News) is hardcoded at https://github.com/Rithari/OnePlusBot/blob/master/src/OnePlusBot/Base/RoleReactionAction.cs .\
+
+ID of message mentioned previously is stored in database for the purpose of being able to edit message whenever needed instead of deleting it and reposting it. Changing it will require `;reloaddb` command to be issued.
 
 ## Fun
 
