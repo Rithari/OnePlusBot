@@ -1,7 +1,7 @@
 Welcome! You can find here documentation for [/r/oneplus Discord](https://discord.gg/oneplus) server bot.
 
 Its prefix is `;` but commands can also be triggered by pinging bot.\
-Note that commands only works in guilds.
+Note that commands only works in guilds and that as of writing bot doesn't support being present in several servers at same time.
 
 # Features:
 
@@ -27,6 +27,9 @@ Updates the database with current roles and channels of the server.
 ### Modmail
 
 There exists a category (configurable in database) with the purpose of modmail. When a user dms the bot, a channel in this category the modmail channels will be created and staff role will be pinged. There also exists another separate channel for modmaillog, in which the messages will get stored when the thread has been closed.\
+
+Note: while ID of category can be changed in database, it requires command `;reloaddb` to be issued to be taken into effect.
+
 The user will get a response, that the inquiry is being handled and moderators get a notification in modqueue.\
 The following commands can only be used within an existing modmail thread and will execute actions in that modmail-thread.\
 Staff members can then answer the thread by executing the `;reply` command. This command will then pass on the message to the user and log the message in the current thread as well. This message will be in the form of an embed, with the author being marked.   There also exists the functionality of `;anonreply` for which the author will be replaced with a OP logo.\
@@ -79,8 +82,8 @@ Currently limited to 100 messages.
 Allow moderators (users with **Staff** role) to warn users.\
 A warning can be given by using command `;warn @Username#1234 reason` (reason field is optional). Also works with [user IDs](https://dis.gd/userid).\
 When someone is warned their warning is named as "active": three active warnings will lead to a server ban (as of writing banning command has to be issued by a moderator).\
-Every 90 days (delay configurable in database) warnings are decayed so that we can actually keep track of persons infractions.\
-The check for that action happens everyday at 00:00 UTC.
+Every 90 days (delay configurable in database and taken into account after use of `;reloaddb` command) warnings are decayed so that we can actually keep track of persons infractions.\
+The check for that action happens everyday at 00:00 UTC.\
 
 Warnings list can be queried by moderators by issuing `;warnings` command. If list takes more than one embed it is possible to navigate using the arrows reaction. Warning of a specific user can be queried by using command `;warnings @Username#1234` which also works with [user IDs](https://dis.gd/userid). Active warnings and decayed warnings will be showed. Clicking on wastebasket reaction will delete the embed, otherwise the embed will delete by itself after two minutes without interaction with embed by user that requested list of warnings. 
 
@@ -108,7 +111,7 @@ It is possible to know the number of false positive and correct profanities by u
 
 ### Illegal character checker
 
-Check username of users joining server so that it triggers a message in #modqueue when a user join with an illegal character at the first position.
+Check username of users joining server so that it triggers a message in #modqueue when a user join with an illegal character at the first position. Illegal characters are in a regex stored in database. Changing that regex will require use of `;reloaddb` command for changes to be taken into account.
 
 ### Server suggestions
 
@@ -162,7 +165,7 @@ ID of message mentioned previously is stored in database for the purpose of bein
 ### Starboard
 
 Basically a starboard, users can put a post in a special channel by reacting with :star: emote to it.\
-Minimum amount of stars required to put a post in #starboard channel can be set by users with * by issuing command `;setstars integer` (eg: `;setstars 5`). Note that higher levels (only configurable in database) are displayed with a different star emote in #starboard channel.
+Minimum amount of stars required to put a post in #starboard channel can be set by users with * by issuing command `;setstars integer` (eg: `;setstars 5`). Note that higher levels (only configurable in database) are displayed with a different star emote in #starboard channel. Changing those higher levels require `;reloaddb` command to be issued for changes to be taken into effect.
 
 `;starstats` command is usable by everyone and display statistics of starboard posts.\
 Note that system messages (eg: *Username pinned a message*) are ignored by bot and therefore can't go to #starboard channel.
