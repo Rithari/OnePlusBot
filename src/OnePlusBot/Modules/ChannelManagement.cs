@@ -68,9 +68,9 @@ namespace OnePlusBot.Modules
             RequireRole(new string[]{"admin", "founder"}),
             Alias("chGrpAtt")
         ]
-        public async Task<RuntimeResult> ToggleExperienceGainInChannelGroup(string groupName, bool xpGain, [Optional] bool? profanityCheck, [Optional] Boolean? inviteCheck)
+        public async Task<RuntimeResult> ToggleChannelGroupAttributes(string groupName, bool xpGain, [Optional] bool? profanityCheck, [Optional] Boolean? inviteCheck)
         {
-            new ChannelManager().setExpDisabledTo(groupName, xpGain, inviteCheck, profanityCheck);
+            new ChannelManager().SetChannelGroupAttributes(groupName, xpGain, inviteCheck, profanityCheck);
             await Task.CompletedTask;
             return CustomResult.FromSuccess();
         }
@@ -149,7 +149,8 @@ namespace OnePlusBot.Modules
             }
             Dictionary<string, bool> bools = new ChannelManager().EvaluateChannelConfiguration(channel);
             var embedBuilder = new EmbedBuilder().WithTitle($"Current configuration for {channel.Name}");
-            foreach(var config in bools.Keys){
+            foreach(var config in bools.Keys)
+            {
                 embedBuilder.AddField(config, bools[config]);
             }
             await Context.Channel.SendMessageAsync(embed: embedBuilder.Build());

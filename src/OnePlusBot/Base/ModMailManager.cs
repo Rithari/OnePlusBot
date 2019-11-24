@@ -395,7 +395,8 @@ namespace OnePlusBot.Base
 
     public void EnableModmailForUser(IGuildUser user)
     {
-        using(var db = new Database()){
+        using(var db = new Database())
+        {
             var userInDb = db.Users.Where(us => us.Id == user.Id).First();
             userInDb.ModMailMuted = false;
             db.SaveChanges();

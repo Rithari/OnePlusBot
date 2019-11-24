@@ -17,9 +17,11 @@ namespace OnePlusBot.Base
     {
         public void createChannelGroup(string name)
         {
-            using(var db = new Database()){
+            using(var db = new Database())
+            {
                 var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
-                if(existingGroup != null){
+                if(existingGroup != null)
+                {
                     throw new NotFoundException("Channel group with name already exists.");
                 }
                 var channelGroup = new ChannelGroup();
@@ -40,7 +42,8 @@ namespace OnePlusBot.Base
                     foreach(var channel in message.MentionedChannels)
                     {
                         var doesChannelGroupEntryAlreadyExist = db.ChannelGroupMembers.Where(mem => mem.ChannelGroupId == existingGroup.Id && mem.ChannelId == channel.Id).Count() != 0;
-                        if(!doesChannelGroupEntryAlreadyExist){
+                        if(!doesChannelGroupEntryAlreadyExist)
+                        {
                             var channelGroupMember = new ChannelInGroup();
                             channelGroupMember.ChannelGroupId = existingGroup.Id;
                             channelGroupMember.ChannelId = channel.Id;
@@ -49,7 +52,9 @@ namespace OnePlusBot.Base
                       
                     }
                     db.SaveChanges();
-                } else {
+                }
+                else 
+                {
                     throw new NotFoundException("Channel group not found.");
                 }
                 
@@ -72,14 +77,16 @@ namespace OnePlusBot.Base
                         }
                     }
                     db.SaveChanges();
-                } else {
+                }
+                else 
+                {
                     throw new NotFoundException("Channel group not found.");
                 }
-                
             }
         }
 
-        public void setExpDisabledTo(string name, bool newVal, Boolean? inviteCheck, Boolean? profanityCheck){
+        public void SetChannelGroupAttributes(string name, bool newVal, Boolean? inviteCheck, Boolean? profanityCheck)
+        {
             using(var db = new Database())
             {
                 var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
@@ -94,15 +101,17 @@ namespace OnePlusBot.Base
                     {
                       existingGroup.ProfanityCheckExempt = profanityCheck.GetValueOrDefault();
                     }
-                } else {
+                }
+                else 
+                {
                     throw new NotFoundException("Channel group not found.");
                 }
                 db.SaveChanges();
             }
-
         }
 
-        public void setGroupDisabledTo(string name, bool newVal){
+        public void setGroupDisabledTo(string name, bool newVal)
+        {
             using(var db = new Database())
             {
                 var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
@@ -122,7 +131,8 @@ namespace OnePlusBot.Base
         public async Task PostExistingPostTargets(ISocketMessageChannel channelToRespondIn) 
         {
           var stringBuilder = new StringBuilder();
-          foreach(var target in PostTarget.POST_TARGETS){
+          foreach(var target in PostTarget.POST_TARGETS)
+          {
             stringBuilder.Append($"`{target}` ");
           }
           var builder = new EmbedBuilder();
@@ -131,7 +141,8 @@ namespace OnePlusBot.Base
           await channelToRespondIn.SendMessageAsync(embed: builder.Build());
         }
 
-        public void RenameChannelGroup(string oldName, string newName) {
+        public void RenameChannelGroup(string oldName, string newName) 
+        {
           using(var db = new Database())
           {
             var existingGroup = db.ChannelGroups.Where(grp => grp.Name == oldName).FirstOrDefault();
@@ -170,12 +181,12 @@ namespace OnePlusBot.Base
                     newPostTarget.ChannelId = channel.Id;
                     db.PostTargets.Add(newPostTarget);
                 }
-              
                 db.SaveChanges();
             }
         }
 
-        public Collection<Embed> GetChannelListEmbed(){
+        public Collection<Embed> GetChannelListEmbed()
+        {
             Collection<Embed> embedsToPost = new Collection<Embed>();
             using(var db = new Database())
             {
@@ -188,13 +199,13 @@ namespace OnePlusBot.Base
                     count++;
                     var disabledIndicator = group.Disabled ? " (Disabled)" : "";
                     currentEmbedBuilder.AddField($"**{group.Name}**{disabledIndicator}, XP exempt: {group.ExperienceGainExempt}  Profanity check exempt: {group.ProfanityCheckExempt}, InviteCheck exempt: {group.InviteCheckExempt}", getChannelsAsMentions(group.Channels));
-                    if(((count % EmbedBuilder.MaxFieldCount) == 0) && group != channelGroups.Last()){
+                    if(((count % EmbedBuilder.MaxFieldCount) == 0) && group != channelGroups.Last())
+                    {
                         embedsToPost.Add(currentEmbedBuilder.Build());
                         currentEmbedBuilder = new EmbedBuilder();
                         var currentPage = count / EmbedBuilder.MaxFieldCount + 1;
                         currentEmbedBuilder.WithFooter(new EmbedFooterBuilder().WithText($"Page {currentPage}"));
-                    }
-                   
+                    }  
                 }
                 embedsToPost.Add(currentEmbedBuilder.Build());
             }
@@ -204,22 +215,26 @@ namespace OnePlusBot.Base
         public async Task ListChannelGroups(ISocketMessageChannel channelToRespondIn)
         {
             var embedsToPost = GetChannelListEmbed();
-            foreach(Embed embed in embedsToPost){
+            foreach(Embed embed in embedsToPost)
+            {
                 await channelToRespondIn.SendMessageAsync(embed: embed);
                 await Task.Delay(200);
             }
         }
 
-        private string getChannelsAsMentions(ICollection<ChannelInGroup> channels){
+        private string getChannelsAsMentions(ICollection<ChannelInGroup> channels)
+        {
             StringBuilder stringRepresentation = new StringBuilder();
-            foreach(ChannelInGroup ch in channels){
+            foreach(ChannelInGroup ch in channels)
+            {
                 stringRepresentation.Append($"<#{ch.ChannelId}> ");
             }
 
             return stringRepresentation.ToString() != string.Empty ? stringRepresentation.ToString() : "no channels.";
         }
 
-        public Dictionary<string, bool> EvaluateChannelConfiguration(IChannel channel){
+        public Dictionary<string, bool> EvaluateChannelConfiguration(IChannel channel)
+        {
             using(var db = new Database())
             {
                 var perms = db.ChannelGroupMembers.Include(ch => ch.Group).Include(ch => ch.ChannelReference).Where(ch => ch.ChannelId == channel.Id).ToList();
@@ -228,7 +243,8 @@ namespace OnePlusBot.Base
                 var xpDisabled = false;
                 foreach(var groupMember in perms)
                 {
-                    if(!groupMember.Group.Disabled){
+                    if(!groupMember.Group.Disabled)
+                    {
                         profanityDisabled |= groupMember.Group.ProfanityCheckExempt;
                         inviteLinksDisabled |= groupMember.Group.InviteCheckExempt;
                         xpDisabled |= groupMember.Group.ExperienceGainExempt;

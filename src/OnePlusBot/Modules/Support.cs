@@ -91,7 +91,8 @@ namespace OnePlusBot.Modules
         {
            StringBuilder preconditions = new StringBuilder("");
             foreach(var pre in command.Preconditions){
-              if(pre is RequireRole){
+              if(pre is RequireRole)
+              {
                 RequireRole casted = pre as RequireRole;
                 preconditions.Append("Required role: ");
                 if(casted.AllowedRoles.Length > 1)
@@ -106,7 +107,8 @@ namespace OnePlusBot.Modules
                 
               } 
             }
-            if(preconditions.ToString() != string.Empty){
+            if(preconditions.ToString() != string.Empty)
+            {
               preconditions.Append("\n");
             }
             builder.AddField(f =>

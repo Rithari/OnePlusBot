@@ -391,13 +391,7 @@ namespace OnePlusBot.Base
                     if (result.ErrorReason == "Unknown command.")
                     return;
 
-                    await context.Message.AddReactionAsync(Global.OnePlusEmote.FAIL);
-
-                    if (result.ErrorReason == "The input text has too few parameters.")
-                    {
-                        return;
-                    }
-                  
+                    await context.Message.AddReactionAsync(Global.OnePlusEmote.FAIL);                 
 
                     await context.Channel.SendMessageAsync(result.ErrorReason);
                     return;
@@ -631,7 +625,8 @@ namespace OnePlusBot.Base
             
             var minute = (long) DateTime.Now.Subtract(DateTime.MinValue).TotalMinutes;
             var exists = Global.RuntimeExp.ContainsKey(minute);
-            if(!exists){
+            if(!exists)
+            {
                 var element = new List<ulong>();
                 element.Add(message.Author.Id);
                 Global.RuntimeExp.TryAdd(minute, element);
@@ -640,7 +635,8 @@ namespace OnePlusBot.Base
             {
                 List<ulong> poster = new List<ulong>();
                 Global.RuntimeExp.TryGetValue(minute, out poster);
-                if(!poster.Contains(message.Author.Id)){
+                if(!poster.Contains(message.Author.Id))
+                {
                     poster.Add(message.Author.Id);
                 }
             }
@@ -655,8 +651,10 @@ namespace OnePlusBot.Base
             }
 
             var channel = Extensions.GetChannelById(message.Channel.Id);
-            if(channel != null){
-                if(!channel.ProfanityExempt()){
+            if(channel != null)
+            {
+                if(!channel.ProfanityExempt())
+                {
                     var profanityChecks = Global.ProfanityChecks;
                     var lowerMessage = message.Content.ToLower();
                     foreach (var profanityCheck in profanityChecks)

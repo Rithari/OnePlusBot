@@ -165,7 +165,8 @@ namespace OnePlusBot.Modules
 
             channelStep.beforeTextPosted = async (ConfigurationStep step) => {
                 var embeds = new ChannelManager().GetChannelListEmbed();
-                foreach(var embed in embeds){
+                foreach(var embed in embeds)
+                {
                     var postedMessage = await Context.Channel.SendMessageAsync(embed: embed);
                     channelStep.MessagesToRemoveOnNextProgression.Add(postedMessage);
                     await Task.Delay(100);
