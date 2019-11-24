@@ -106,12 +106,16 @@ namespace OnePlusBot.Base
                 
                   person.ExperienceRoleId = roleSegment.Id;
                   var user = guild.GetUser(person.Id);
-                  if(existingDiscordRoleFromUser != 0)
+                  if(user != null) 
                   {
-                    await user.RemoveRoleAsync(rolesGiven[existingDiscordRoleFromUser]);
+                    if(existingDiscordRoleFromUser != 0)
+                    {
+                      await user.RemoveRoleAsync(rolesGiven[existingDiscordRoleFromUser]);
+                    }
+                  
+                    await user.AddRoleAsync(rolesGiven[roleSegment.RoleReference.RoleID]);
                   }
-                 
-                  await user.AddRoleAsync(rolesGiven[roleSegment.RoleReference.RoleID]);
+                
                 }
               }
             }
