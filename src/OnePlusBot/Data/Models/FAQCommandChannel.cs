@@ -17,12 +17,12 @@ namespace OnePlusBot.Data.Models
         [Column("command_id")]
         public uint FAQCommandId { get; set; }
 
-        [Column("channel_id")]
-        public uint ChannelId { get; set; }
+        [Column("channel_group_id")]
+        public uint ChannelGroupId { get; set; }
 
 
-        [ForeignKey("ChannelId")]
-        public virtual Channel Channel { get; set; }
+        [ForeignKey("ChannelGroupId")]
+        public virtual ChannelGroup ChannelGroupReference { get; set; }
 
 
         [ForeignKey("FAQCommandId")]
@@ -30,8 +30,10 @@ namespace OnePlusBot.Data.Models
     
         public virtual ICollection<FAQCommandChannelEntry> CommandChannelEntries { get; set; }
 
+        
+
         public string display(){
-            return $"ID: {CommandChannelId}: command: {Command.Name} in {Channel.Name}";
+            return $"ID: {CommandChannelId}: command: {Command.Name} in {ChannelGroupReference.Name}";
         }
     }
 }

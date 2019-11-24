@@ -1,18 +1,14 @@
-﻿using System.Net;
-using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
-using System.Data.Common;
+﻿using System.Collections.ObjectModel;
 using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Timers;
+using OnePlusBot.Data.Models;
 
 namespace OnePlusBot.Base
 {
@@ -52,9 +48,18 @@ namespace OnePlusBot.Base
                 return Task.CompletedTask;
             };
 
+            Func<Task> expPersister = null;
+            expPersister = () => 
+            {
+                new ExpManager().SetupTimers().ContinueWith(t => Console.WriteLine(t.Exception), TaskContinuationOptions.OnlyOnFaulted);
+                bot.Ready -= expPersister;
+                return Task.CompletedTask;
+            };
+
             bot.Ready += remindTimer;
             bot.Ready += muteTimer;
             bot.Ready += warnDecayTimer;
+            bot.Ready += expPersister;
            
 
             if(Global.Token == string.Empty)
@@ -98,7 +103,7 @@ namespace OnePlusBot.Base
         /*private static void T2_Elapsed(object sender, ElapsedEventArgs e)
         {
             var guild = Global.Bot.GetGuild(Global.ServerID);
-            var offtopic = guild.GetTextChannel(Global.Channels["offtopic"]);
+            var offtopic = guild.GetTextChannel(Global.PostTargets[PostTarget.OFFTOPIC]);
             var Faded = guild.GetUser(167897643131863040);
             offtopic.SendMessageAsync(Faded.Mention + " Ho Ho Ho! 🎅");
         }*/

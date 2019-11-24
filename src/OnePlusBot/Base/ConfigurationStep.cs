@@ -1,8 +1,8 @@
+using System.Threading.Tasks;
 using System.Text;
 using System.Collections.ObjectModel;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -38,9 +38,9 @@ namespace OnePlusBot.Base {
         private ConfigurationStep parent;
         public Collection<string> additionalPosts = new Collection<string>();
 
-        public Func<String, ConfigurationStep, bool> TextCallback { get; set; }
+        public Func<String, ConfigurationStep, Task> TextCallback { get; set; }
 
-        public Func<ConfigurationStep, bool> beforeTextPosted { get; set; }
+        public Func<ConfigurationStep, Task> beforeTextPosted { get; set; }
 
 
         // the text to post to end the step
@@ -75,7 +75,7 @@ namespace OnePlusBot.Base {
             Interactive.ClearReactionCallbacks();
             if(this.beforeTextPosted != null)
             {
-                this.beforeTextPosted(this);
+                await this.beforeTextPosted(this);
             }
             if(additionalPosts.Count > 0)
             {
@@ -333,7 +333,7 @@ namespace OnePlusBot.Base {
             step.Actions.Add(forwardAction);
             step.Actions.Add(abortDeletionAction);
 
-            step.beforeTextPosted = (ConfigurationStep a) => 
+            step.beforeTextPosted = async (ConfigurationStep a) => 
             {
                 a.additionalPosts.Clear();
                 for(int i = currentPage * elementOnPage; i < currentPage * elementOnPage + elementOnPage && i < elements.Count; i++)
@@ -341,7 +341,7 @@ namespace OnePlusBot.Base {
                     var cmd = elements[i];
                     a.additionalPosts.Add(cmd.display());
                 }
-                return false;
+                await Task.CompletedTask;
             };
         }
 

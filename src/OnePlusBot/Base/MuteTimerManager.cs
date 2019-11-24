@@ -114,7 +114,7 @@ namespace OnePlusBot.Base
                         .AddField("Mute Id", muteId)
                         .AddField("Mute duration", Extensions.FormatTimeSpan(DateTime.Now - muteObj.MuteDate))
                         .AddField("Muted since", $"{ muteObj.MuteDate:dd.MM.yyyy HH:mm}");
-            await guild.GetTextChannel(Global.Channels["mutes"]).SendMessageAsync(embed: noticeEmbed.Build());
+            await guild.GetTextChannel(Global.PostTargets[PostTarget.MUTE_LOG]).SendMessageAsync(embed: noticeEmbed.Build());
           }
         }
         db.SaveChanges();

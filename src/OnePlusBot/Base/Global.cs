@@ -7,6 +7,7 @@ using OnePlusBot.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Discord.WebSocket;
 using System.Text.RegularExpressions;
+using System.Collections.Concurrent;
 
 namespace OnePlusBot.Base
 {
@@ -19,6 +20,8 @@ namespace OnePlusBot.Base
         public static ulong ServerID { get; set; }
         public static Dictionary<string, ulong> Roles { get; }
         public static Dictionary<string, ulong> Channels { get; }
+
+        public static Dictionary<string, ulong> PostTargets { get; }
 
         public static Dictionary<ulong, ulong> NewsPosts { get; }
         public static List<Channel> FullChannels { get; }
@@ -45,6 +48,14 @@ namespace OnePlusBot.Base
         public static List<StarboardMessage> StarboardPosts { get; set; }
 
         public static List<Char> IllegalUserNameBeginnings { get; set; }
+
+        public static ConcurrentDictionary<long, List<ulong>> RuntimeExp { get; set; }
+
+        public static bool XPGainDisabled { get; set; }
+
+        public static int XPGainRangeMin { get; set; }
+
+        public static int XPGainRangeMax { get; set; }
         
         public static string Token
         {
@@ -94,6 +105,7 @@ namespace OnePlusBot.Base
         static Global()
         {
             Channels = new Dictionary<string, ulong>();
+            PostTargets = new Dictionary<string, ulong>();
             FullChannels = new List<Channel>();
             Random = new Random();
             NewsPosts = new Dictionary<ulong, ulong>();  
@@ -105,6 +117,7 @@ namespace OnePlusBot.Base
             InviteLinks = new List<InviteLink>();
             ModMailThreads = new List<ModMailThread>();
             ReportedProfanities = new List<UsedProfanity>();
+            RuntimeExp = new ConcurrentDictionary<long, List<ulong>>();
             LoadGlobal();
         }
 
@@ -125,12 +138,22 @@ namespace OnePlusBot.Base
                
                 Channels.Clear();
                 FullChannels.Clear();
-                if (db.Channels.Any())
-                    foreach (var channel in db.Channels)
+                if (db.Channels.Any()) 
+                {
+                    var channelObjects = db.Channels.Include(ch => ch.GroupsChannelIsIn).ThenInclude(groupMembers => groupMembers.Group);
+                    foreach (var groupMember in channelObjects)
                     {
-                        Channels.Add(channel.Name, channel.ChannelID);
-                        FullChannels.Add(channel);
+                        Channels.Add(groupMember.Name, groupMember.ChannelID);
+                        FullChannels.Add(groupMember);
                     }
+                }
+
+                PostTargets.Clear();
+                foreach(var target in db.PostTargets)
+                {
+                    PostTargets.Add(target.Name, target.ChannelId);
+                }
+                   
                        
                 Roles.Clear();
                 if (db.Roles.Any())
@@ -169,6 +192,10 @@ namespace OnePlusBot.Base
                     .First(entry => entry.Name == "user_name_illegal_characters")
                     .StringValue.ToCharArray().ToList();
 
+                XPGainDisabled = db.PersistentData
+                    .First(entry => entry.Name == "xp_disabled")
+                    .Value == 1;
+
                 InviteLinks.Clear();
                 foreach(var link in db.InviteLinks)
                 {
@@ -179,6 +206,13 @@ namespace OnePlusBot.Base
                     .First(entry => entry.Name == "modmail_category_id")
                     .Value;
 
+                XPGainRangeMin = (int) db.PersistentData
+                    .First(entry => entry.Name == "xp_gain_range_min")
+                    .Value;
+
+                XPGainRangeMax = (int) db.PersistentData
+                    .First(entry => entry.Name == "xp_gain_range_max")
+                    .Value;
 
                 StarboardPosts.Clear();
                 if(db.StarboardMessages.Any())
@@ -202,7 +236,7 @@ namespace OnePlusBot.Base
 
                 var ReadChannels = db.FAQCommandChannels
                         .Include(faqComand => faqComand.Command)
-                        .Include(faqComand => faqComand.Channel)
+                        .Include(faqComand => faqComand.ChannelGroupReference)
                         .Include(faqComand => faqComand.CommandChannelEntries)
                         .OrderBy(command => command.Command.ID)
                         .ToList();

@@ -14,7 +14,7 @@ using System.Net.Http;
 using System.IO;
 using OnePlusBot.Data;
 using Microsoft.EntityFrameworkCore;
-
+using OnePlusBot.Data.Models;
 
 namespace OnePlusBot.Modules
 {
@@ -250,7 +250,7 @@ namespace OnePlusBot.Modules
 
         private String BuildStringForMessage(Data.Models.StarboardMessage[] values, List<String> badges)
         {
-            var starBoardChannelId = Global.Channels["starboard"];
+            var starBoardChannelId = Global.PostTargets[PostTarget.STARBOARD];
             var stringBuilder = new StringBuilder();
             for(var index = 0; index < badges.Count(); index++)
             {

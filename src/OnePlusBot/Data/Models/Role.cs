@@ -7,16 +7,15 @@ namespace OnePlusBot.Data.Models
     [Table("Roles")]
     public class Role
     {
-        [Key]
-        [Column("id")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Obsolete("Are you sure you don't want to use RoleID?")]
-        public uint ID { get; set; }
         
         [Column("name")]
         public string Name { get; set; }
         
         [Column("role_id")]
+        [Key]
         public ulong RoleID { get; set; }
+
+        [Column("xp_role")]
+        public bool XPRole {get; set; }
     }
 }

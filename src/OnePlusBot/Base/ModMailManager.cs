@@ -25,7 +25,7 @@ namespace OnePlusBot.Base
                 await message.Channel.SendMessageAsync($"You are unable to contact modmail until {userFromCache.ThreadUser.ModMailMutedUntil:dd.MM.yyyy HH:mm} {TimeZoneInfo.Local}.");
                 using(var db = new Database())
                 {
-                    db.Users.Where(us => us.UserId == message.Author.Id).First().ModMailMutedReminded = true;
+                    db.Users.Where(us => us.Id == message.Author.Id).First().ModMailMutedReminded = true;
                     db.SaveChanges();
                 }
 
@@ -36,11 +36,11 @@ namespace OnePlusBot.Base
 
         using(var db = new Database())
         {
-            var user = db.Users.Where(us => us.UserId == message.Author.Id).FirstOrDefault();
+            var user = db.Users.Where(us => us.Id == message.Author.Id).FirstOrDefault();
             if(user == null)
             {
                 var newUser = new User();
-                newUser.UserId = message.Author.Id;
+                newUser.Id = message.Author.Id;
                 newUser.ModMailMuted = false;
                 db.Users.Add(newUser);
                 db.SaveChanges();
@@ -67,7 +67,7 @@ namespace OnePlusBot.Base
             modmailThread = db.ModMailThreads.Where(th => th.ChannelId == channel.Id).First(); 
         }
 
-        var modQueue = guild.GetTextChannel(Global.Channels["modqueue"]);
+        var modQueue = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_NOTIFICATION]);
         var staffRole = guild.GetRole(Global.Roles["staff"]);
         await staffRole.ModifyAsync(x => x.Mentionable = true);
         try 
@@ -237,7 +237,7 @@ namespace OnePlusBot.Base
         {
             messagesToLog = db.ThreadMessages.Where(ch => ch.ChannelId == closedthread.ChannelId).ToList();
         }
-        var modMailLogChannel = guild.GetTextChannel(Global.Channels["modmaillog"]);
+        var modMailLogChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_LOG]);
         await LogClosingHeader(closedthread, messagesToLog.Count(), note, modMailLogChannel, userObj);
 
         await LogModMailThreadMessagesToModmailLog(closedthread, note, messagesToLog, modMailLogChannel);
@@ -335,7 +335,7 @@ namespace OnePlusBot.Base
         var guild = bot.GetGuild(Global.ServerID);
         using(var db = new Database()){
             var thread = db.ModMailThreads.Where(ch => ch.ChannelId == channel.Id).First();
-            var user = db.Users.Where(us => us.UserId == thread.UserId).First();
+            var user = db.Users.Where(us => us.Id == thread.UserId).First();
             user.ModMailMuted = true;
             user.ModMailMutedReminded = false;
             user.ModMailMutedUntil = until;
@@ -349,10 +349,10 @@ namespace OnePlusBot.Base
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
         using(var db = new Database()){
-            var userInDb = db.Users.Where(us => us.UserId == user.Id).FirstOrDefault();
+            var userInDb = db.Users.Where(us => us.Id == user.Id).FirstOrDefault();
             if(userInDb == null){
                 var newUser = new User();
-                newUser.UserId = user.Id;
+                newUser.Id = user.Id;
                 newUser.ModMailMuted = true;
                 newUser.ModMailMutedReminded = false;
                 newUser.ModMailMutedUntil = until;
@@ -381,7 +381,7 @@ namespace OnePlusBot.Base
         {
             messagesToLog = db.ThreadMessages.Where(ch => ch.ChannelId == closedthread.ChannelId).ToList();
         }
-        var modMailLogChannel = guild.GetTextChannel(Global.Channels["modmaillog"]);
+        var modMailLogChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_LOG]);
         await LogDisablingHeader(closedthread, messagesToLog.Count(), note, modMailLogChannel, userObj, until);
 
         await LogModMailThreadMessagesToModmailLog(closedthread, note, messagesToLog, modMailLogChannel);
@@ -395,8 +395,9 @@ namespace OnePlusBot.Base
 
     public void EnableModmailForUser(IGuildUser user)
     {
-        using(var db = new Database()){
-            var userInDb = db.Users.Where(us => us.UserId == user.Id).First();
+        using(var db = new Database())
+        {
+            var userInDb = db.Users.Where(us => us.Id == user.Id).First();
             userInDb.ModMailMuted = false;
             db.SaveChanges();
         }
@@ -412,11 +413,11 @@ namespace OnePlusBot.Base
                 return;
             }
 
-            var existingUser = db.Users.Where(us => us.UserId == user.Id).FirstOrDefault();
+            var existingUser = db.Users.Where(us => us.Id == user.Id).FirstOrDefault();
             if(existingUser == null)
             {
                 var newUser = new User();
-                newUser.UserId = user.Id;
+                newUser.Id = user.Id;
                 newUser.ModMailMuted = false;
                 db.Users.Add(newUser);
             }

@@ -131,9 +131,7 @@ namespace OnePlusBot.Modules
                     {
                         Name = newName,
                         ChannelID = channel.Id,
-                        ChannelType = ChannelType.Text,
-                        ProfanityCheckExempt = false,
-                        InviteCheckExempt = false
+                        ChannelType = ChannelType.Text
                     });
 
                     Console.WriteLine($"[DB] [Update] Added channel {channel.Name} with Name {newName} and ID {channel.Id}");
@@ -174,7 +172,8 @@ namespace OnePlusBot.Modules
                     db.Roles.Add(new Role
                     {
                         Name = newName,
-                        RoleID = role.Id
+                        RoleID = role.Id,
+                        XPRole = false
                     });
 
                     Console.WriteLine($"[DB] [Update] Added role {role.Name} with Name {newName} and ID {role.Id}");

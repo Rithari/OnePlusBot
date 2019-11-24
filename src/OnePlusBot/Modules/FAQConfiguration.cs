@@ -10,7 +10,7 @@ using Discord.Addons.Interactive;
 using OnePlusBot.Base;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
-using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;    
 
 
@@ -27,12 +27,12 @@ namespace OnePlusBot.Modules
         public async Task ConfigureFAQ()
         {
             var guild = Global.Bot.GetGuild(Global.ServerID);
-            var configurationStep = new ConfigurationStep("What do you want to do? (➕ add command, ➖ remove command in channel, ☠ delete command)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
+            var configurationStep = new ConfigurationStep("What do you want to do? (➕ add command, ➖ remove command in channel group, ☠ delete command)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
             configurationStep.additionalPosts.Add("To exit react with 🆘 or type exit, depending on the type of step you are in");
             var addStep = new ConfigurationStep("What kind of post do you want to add? (💌 embed, 📖 textpost, ✅ nothing further)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
 
             var aliasesStep = new ConfigurationStep("Please write the aliases you want for this command (comma separated), type 'none' for none", Interactive, Context, ConfigurationStep.StepType.Text, addStep);
-            var channelStep = new ConfigurationStep("Which channels should the command be active in? Please mention the channels with # or type 'all' for all.", Interactive, Context, ConfigurationStep.StepType.Text, aliasesStep);
+            var channelStep = new ConfigurationStep("In which channel groups should the command be active in?", Interactive, Context, ConfigurationStep.StepType.Text, aliasesStep);
 
             var commandStep = new ConfigurationStep("What should the name of the command be?", Interactive, Context, ConfigurationStep.StepType.Text, channelStep);
             var textStep = new ConfigurationStep("Please post what the text of the text post should be", Interactive, Context, ConfigurationStep.StepType.Text, addStep);
@@ -123,7 +123,7 @@ namespace OnePlusBot.Modules
                         command.Aliases = "";
                     }                
                 }
-                return true;
+                return Task.CompletedTask;
             };
     
             commandStep.TextCallback = (string text, ConfigurationStep a) => 
@@ -137,19 +137,19 @@ namespace OnePlusBot.Modules
                 {
                      command.Name = text;
                 }
-                return true;
+                return Task.CompletedTask;
             };
 
             imageUrlStep.TextCallback = (string text, ConfigurationStep a) => 
             {
                 builder = builder.withImageUrl(text);
-                return true;
+                return Task.CompletedTask;
             };
 
             embedTextStep.TextCallback = (string text, ConfigurationStep a) => 
             {
                 builder = builder.withText(text);
-                return true;
+                return Task.CompletedTask;
             };
 
             textStep.TextCallback = (string text, ConfigurationStep a) => 
@@ -160,71 +160,62 @@ namespace OnePlusBot.Modules
                 entry.Position = (uint) entries.Count();
                 entries.Add(entry);
                 builder = new FaqCommandChannelEntryBuilder();
-                return true;
+                return Task.CompletedTask;
+            };
+
+            channelStep.beforeTextPosted = async (ConfigurationStep step) => {
+                var embeds = new ChannelManager().GetChannelListEmbed();
+                foreach(var embed in embeds)
+                {
+                    var postedMessage = await Context.Channel.SendMessageAsync(embed: embed);
+                    channelStep.MessagesToRemoveOnNextProgression.Add(postedMessage);
+                    await Task.Delay(100);
+                }
+                
+                await Task.CompletedTask;
             };
 
             channelStep.TextCallback = (string text, ConfigurationStep a) => 
             {
-                var channelIds = Regex.Matches(text, @"(?:\<#(?<channelId>\d{18})\>)*", 
-                RegexOptions.Multiline | 
-                RegexOptions.ExplicitCapture)
-                  .OfType<Match>()
-                  .Select (mt => mt.Groups["channelId"].Value);
-
-                bool channelFound = false;
-
-                foreach(var channelId in channelIds)
+                using(var db = new Database())
                 {
-                    if(channelId != string.Empty)
-                    {
-                        var channelIdLong = ulong.Parse(channelId);
-                        var channelObj = Global.FullChannels.Where(ch => ch.ChannelID == channelIdLong).DefaultIfEmpty(null).First();
-                        if(channelObj != null)
+                    var groupNames = text.Split(' ');
+                    bool foundAnyMatchingGroup = false;
+                    foreach(var groupName in groupNames){
+                        var channelGroup = db.ChannelGroups.Where(ch => ch.Name == groupName).FirstOrDefault();
+
+                        if(channelGroup != null)
                         {
-                            channelFound = true;
+                           foundAnyMatchingGroup = true;
+                           a.Result = aliasesStep;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+
+                        var existingCommand = db.FAQCommandChannels
+                            .Include(faqComand => faqComand.Command)
+                            .Include(faqComand => faqComand.ChannelGroupReference)
+                            .Where(c => c.Command.Name == command.Name)
+                            .Where(c => c.ChannelGroupReference.Name == groupName).FirstOrDefault();
+                    
+                        if(existingCommand == null)
+                        {
                             var commandChannel = new FAQCommandChannel();
-                            commandChannel.ChannelId = channelObj.ID;
+                            commandChannel.ChannelGroupId = channelGroup.Id;
                             commandChannel.CommandChannelEntries = new List<FAQCommandChannelEntry>();
                             commandChannels.Add(commandChannel);
                         } 
-
                     }
-                }
 
-                if(channelFound)
-                {
-                    a.Result = aliasesStep;
-                }
-                else
-                {
-                    if(text.ToUpper().Contains("ALL"))
-                    {
-                        var channelCommands = existingCommands.Where(c => c.Name == command.Name).DefaultIfEmpty(null).First();
-                        foreach(var channel in Global.FullChannels)
-                        {
-                            if(channelCommands != null)
-                            {
-                                var existingChannels = channelCommands.CommandChannels.Where(cch => cch.Channel?.ChannelID == channel.ChannelID);
-                                var channelAlreadyExists = existingChannels.Any();
-                                if(channelAlreadyExists)
-                                {
-                                    continue;
-                                }
-                            }
-                           
-                            var commandChannel = new FAQCommandChannel();
-                            commandChannel.ChannelId = channel.ID;
-                            commandChannel.CommandChannelEntries = new List<FAQCommandChannelEntry>();
-                            commandChannels.Add(commandChannel);
-                        }
-                        a.Result = aliasesStep;
-                    } 
-                    else
+                    if(!foundAnyMatchingGroup)
                     {
                         a.Result = channelStep;
                     }
+                   
                 }
-                return true;
+                return Task.CompletedTask;
             };
 
             chooseExistingEntryStep.TextCallback = (string text, ConfigurationStep a) => 
@@ -246,7 +237,7 @@ namespace OnePlusBot.Modules
                     a.Result = chooseExistingEntryStep;
                 }
                    
-                return false;
+                return Task.CompletedTask;
                
             };
 
@@ -254,7 +245,7 @@ namespace OnePlusBot.Modules
             addAction.Action = async (ConfigurationStep a) => 
             {
                 a.Result = commandStep;
-                 await Task.CompletedTask;
+                await Task.CompletedTask;
             };
 
             var deleteCommandChannelAction = new ReactionAction(new Emoji("➖"));
@@ -451,12 +442,12 @@ namespace OnePlusBot.Modules
                                 var index = 1;
                                 foreach(var commandInChannel in channelCommands.CommandChannels)
                                 {
-                                    stringBuilder.Append($"{index}: {commandInChannel.Command.Name} in {commandInChannel.Channel.Name}" + Environment.NewLine);
+                                    stringBuilder.Append($"{index}: {commandInChannel.Command.Name} in {commandInChannel.ChannelGroupReference.Name}" + Environment.NewLine);
                                     index++;
                                 }
                                 step.additionalPosts.Clear();
                                 step.additionalPosts.Add(stringBuilder.ToString());
-                                return false;
+                                return Task.CompletedTask;
                             };
                             a.Result = chooseExistingEntryStep;
                             return;
@@ -498,7 +489,8 @@ namespace OnePlusBot.Modules
                                 {
                                     db.Entry(channel).State = Microsoft.EntityFrameworkCore.EntityState.Added;
                                 }
-                                foreach(var entry in channel.CommandChannelEntries){
+                                foreach(var entry in channel.CommandChannelEntries)
+                                {
                                      db.Entry(entry).State = Microsoft.EntityFrameworkCore.EntityState.Added;
                                 }
                             }
