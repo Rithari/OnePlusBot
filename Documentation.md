@@ -210,6 +210,7 @@ A version of russian roulette.
 
 Syntax is `;se :your_emote:`\
 Supports static and animated emotes.\
+[Twemoji](https://github.com/twitter/twemoji) emojis which are used by Discord as native emojis aren't supported.\
 It is usable by everyone.
 
 ### Echo
