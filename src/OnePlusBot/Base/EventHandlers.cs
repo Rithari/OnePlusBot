@@ -55,9 +55,10 @@ namespace OnePlusBot.Base
 
         private async Task OnuserUserJoined(SocketGuildUser socketGuildUser)
         {
+          
             var joinlog = socketGuildUser.Guild.GetTextChannel(Global.PostTargets[PostTarget.JOIN_LOG]);
-            string name = socketGuildUser.Username;
-            if(Global.IllegalUserNameBeginnings.Contains(name[0]))
+            string name = socketGuildUser.Username.ToLower();
+            if(Global.IllegalUserNameRegex.Match(name[0] + "").Success)
             {
                 var modQueue = socketGuildUser.Guild.GetTextChannel(Global.PostTargets[PostTarget.USERNAME_QUEUE]);
                 var builder = new EmbedBuilder();
