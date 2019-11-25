@@ -1,4 +1,3 @@
-using System.Collections;
 using System;
 using System.Threading.Tasks;
 using Discord.Commands;
@@ -25,11 +24,12 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> OBanAsync(ulong name, [Remainder] string reason = null)
         {
+            var banLogChannel = Context.Guild.GetTextChannel(Global.PostTargets[PostTarget.BAN_LOG]);
             await Context.Guild.AddBanAsync(name, 0, reason);
 
             MuteTimerManager.UnMuteUserCompletely(name);
 
-              
+
             if(reason == null)
             {
                 reason = "No reason provided.";
@@ -54,7 +54,7 @@ namespace OnePlusBot.Modules
                 .WithName("Link")
                 .WithValue(Extensions.GetMessageUrl(Global.ServerID, Context.Channel.Id, Context.Message.Id, "Jump!")));
 
-            await modlog.SendMessageAsync(embed: banMessage.Build());
+            await banLogChannel.SendMessageAsync(embed: banMessage.Build());
 
             return CustomResult.FromSuccess();
         }
@@ -99,8 +99,8 @@ namespace OnePlusBot.Modules
 
                 MuteTimerManager.UnMuteUserCompletely(user.Id);
 
-                var modlog = Context.Guild.GetTextChannel(Global.Channels["banlog"]);
-                var banMessage = new EmbedBuilder()
+                var banLogChannel = Context.Guild.GetTextChannel(Global.PostTargets[PostTarget.BAN_LOG]);
+                var banlog = new EmbedBuilder()
                 .WithColor(9896005)
                 .WithTitle("⛔️ Banned User")
                 .AddField(efb => efb
@@ -118,7 +118,7 @@ namespace OnePlusBot.Modules
                     .WithName("Link")
                     .WithValue(Extensions.GetMessageUrl(Global.ServerID, Context.Channel.Id, Context.Message.Id, "Jump!")));
 
-                await modlog.SendMessageAsync(embed: banMessage.Build());
+                await banLogChannel.SendMessageAsync(embed: banlog.Build());
 
                 return CustomResult.FromSuccess();
 
@@ -209,7 +209,7 @@ namespace OnePlusBot.Modules
                 const string muteMessage = "You were muted on r/OnePlus for the following reason: {0} until {1} {2}.";
                 await user.SendMessageAsync(string.Format(muteMessage, reason, targetTime, TimeZoneInfo.Local));
             } 
-            catch(HttpException ex)
+            catch(HttpException)
             {
                 Console.WriteLine("Seems like user disabled the DMs, cannot send message about the mute.");
             }    
@@ -249,7 +249,7 @@ namespace OnePlusBot.Modules
                    .AddField("Muted until", $"{ targetTime:dd.MM.yyyy HH:mm}")
                    .AddField("Mute id", muteData.ID);
                
-            await guild.GetTextChannel(Global.Channels["mutes"]).SendMessageAsync(embed: builder.Build());
+            await guild.GetTextChannel(Global.PostTargets[PostTarget.MUTE_LOG]).SendMessageAsync(embed: builder.Build());
             // in case the mute is shorter than the timer defined in Mutetimer.cs, we better just start the unmuting process directly
             if(targetTime <= DateTime.Now.AddMinutes(60))
             {
@@ -325,7 +325,7 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> WarnAsync(IGuildUser user, [Optional] [Remainder] string reason)
         {
-            var warningsChannel = Context.Guild.GetTextChannel(Global.Channels["warnings"]);
+            var warningsChannel = Context.Guild.GetTextChannel(Global.PostTargets[PostTarget.WARN_LOG]);
 
             var monitor = Context.Message.Author;
 
@@ -389,7 +389,6 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> ClearwarnAsync(uint index)
         {
-            var warningsChannel = Context.Guild.GetTextChannel(Global.Channels["warnings"]);
             var monitor = Context.Message.Author;
 
             using (var db = new Database())
@@ -617,5 +616,59 @@ namespace OnePlusBot.Modules
                 return CustomResult.FromSuccess();
             }
         }
+
+        [
+            Command("updateLevels", RunMode=RunMode.Async),
+            Summary("Re-evaluates the experience, levels and assigns the roles to the users (takes a long time, use with care)"),
+            RequireRole(new string[]{"admin", "founder"})
+        ]
+        public async Task<RuntimeResult> UpdateLevels([Optional] IGuildUser user)
+        {
+            if(user == null)
+            {
+                await Context.Channel.SendMessageAsync("DO NOT execute commands changing the role experience configuration while this is processing. Especially do not start another one, while one is running.");
+                var message = await Context.Channel.SendMessageAsync("Processing");
+                new ExpManager().UpdateLevelsOfMembers(message);
+            }
+            else
+            {
+                await new ExpManager().UpdateLevelOf(user);
+            }
+          
+            return CustomResult.FromSuccess();
+        }
+
+        [
+            Command("roleLevel"),
+            Summary("Sets the level at which a role is given. If no parameters, shows the current role configuration"),
+            RequireRole(new string[]{"admin", "founder"})
+        ]
+        public async Task<RuntimeResult> SetRoleToLevel([Optional] uint level, [Optional] ulong roleId)
+        {
+            if(level == 0 && roleId == 0)
+            {
+                await new ExpManager().ShowLevelconfiguration(Context.Channel);
+            } 
+            else
+            {
+                new ExpManager().SetRoleToLevel(level, roleId);
+            }
+           
+            await Task.CompletedTask;
+            return CustomResult.FromSuccess();
+        }
+
+        [
+            Command("disableXpGain"),
+            Summary("Enables/disables xp gain for a user"),
+            RequireRole(new string[]{"admin", "founder"})
+        ]
+        public async Task<RuntimeResult> SetExpGainEnabled(IGuildUser user, bool newValue)
+        {
+             new ExpManager().SetXPDisabledTo(user, newValue);
+            await Task.CompletedTask;
+            return CustomResult.FromSuccess();
+        }
+        
     }
 }

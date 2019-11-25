@@ -42,6 +42,16 @@ namespace OnePlusBot.Data
 
         public DbSet<InviteLink> InviteLinks { get; set; }
 
+        public DbSet<ExperienceLevel> ExperienceLevels { get; set; }
+
+        public DbSet<ExperienceRole> ExperienceRoles { get; set; }
+
+        public DbSet<PostTarget> PostTargets { get; set; }
+
+        public DbSet<ChannelGroup> ChannelGroups { get; set; }
+
+        public DbSet<ChannelInGroup> ChannelGroupMembers { get; set; }
+
         // TODO needs to be replaced with proper dependency injection
         [Obsolete]
         public static readonly LoggerFactory LoggerFactory
@@ -80,6 +90,8 @@ namespace OnePlusBot.Data
             modelBuilder.Entity<StarboardPostRelation>().HasKey(c => new { c.MessageId, c.UserId });
             modelBuilder.Entity<ThreadSubscriber>().HasKey(c => new { c.UserId, c.ModMailThreadId });
             modelBuilder.Entity<ThreadMessage>().HasKey(c => new { c.ChannelId, c.ChannelMessageId });
+            modelBuilder.Entity<ChannelInGroup>().HasKey(c => new {c.ChannelId, c.ChannelGroupId});
+            modelBuilder.Entity<PostTarget>().HasIndex(p => p.Name).IsUnique();
         }
 
     }

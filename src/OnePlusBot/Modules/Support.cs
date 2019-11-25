@@ -54,7 +54,6 @@ namespace OnePlusBot.Modules
                     await ReplyAsync("No module could be found with that name."); 
                     return;
                 }
-
                 output.Title = mod.Name;
                 output.Description = $"{mod.Summary}\n" +
                     (!string.IsNullOrEmpty(mod.Remarks) ? $"({mod.Remarks})\n" : "") +
@@ -90,11 +89,34 @@ namespace OnePlusBot.Modules
 
         public void AddCommand(CommandInfo command, ref EmbedBuilder builder)
         {
+           StringBuilder preconditions = new StringBuilder("");
+            foreach(var pre in command.Preconditions){
+              if(pre is RequireRole)
+              {
+                RequireRole casted = pre as RequireRole;
+                preconditions.Append("Required role: ");
+                if(casted.AllowedRoles.Length > 1)
+                {
+                  string roleConcatenation = casted.mode == ConcatenationMode.AND ? " AND " : " OR ";
+                  preconditions.Append(string.Join(roleConcatenation, casted.AllowedRoles));
+                }
+                else
+                {
+                  preconditions.Append(casted.AllowedRoles[0]);
+                }
+                
+              } 
+            }
+            if(preconditions.ToString() != string.Empty)
+            {
+              preconditions.Append("\n");
+            }
             builder.AddField(f =>
             {
                 f.Name = $"**{command.Name}**";
                 f.Value = $"{command.Summary}\n" +
                 (!string.IsNullOrEmpty(command.Remarks) ? $"({command.Remarks})\n" : "") +
+                preconditions.ToString() +
                 (command.Aliases.Any() ? $"**Aliases:** {string.Join(", ", command.Aliases.Select(x => $"`{x}`"))}\n" : "") +
                 $"**Usage:** `{GetPrefix(command)} {GetAliases(command)}`";
             });
@@ -160,28 +182,35 @@ namespace OnePlusBot.Modules
                 var matchingCommand = appropriateCommand.First();
                 if(matchingCommand.CommandChannels != null) 
                 {
-                    var commandChannels = matchingCommand.CommandChannels.Where(cha => cha.Channel.ChannelID == contextChannel.Id);
+                    var commandChannels = matchingCommand.CommandChannels.Where(cha => cha.ChannelGroupReference.Channels.Where(grp => grp.ChannelId == contextChannel.Id).FirstOrDefault() != null);
                     if(commandChannels.Any())
                     {
-                        var entries = commandChannels.First().CommandChannelEntries.OrderBy(entry => entry.Position);
-                        if(entries.Any())
+                        if(commandChannels.Count() > 1)
                         {
-                            foreach(var entry in entries)
-                            {
-                                if(!entry.IsEmbed)
-                                {
-                                    await Context.Channel.SendMessageAsync(entry.Text);
-                                }
-                                else 
-                                {
-                                    var embed = Extensions.FaqCommandEntryToBuilder(entry);
-                                    await Context.Channel.SendMessageAsync(embed: embed.Build());
-                                }
-                            }
-                        } 
-                        else
-                        {
-                            await Context.Channel.SendMessageAsync($"Channel has no posts configured for command {appropriateCommand.First().Name}.");
+                          await Context.Channel.SendMessageAsync("Warning command have different responses for this channel");
+                        }
+                        foreach(var commandChannel in commandChannels){
+                          var entries = commandChannels.First().CommandChannelEntries.OrderBy(entry => entry.Position);
+                          if(entries.Any())
+                          {
+                              foreach(var entry in entries)
+                              {
+                                  if(!entry.IsEmbed)
+                                  {
+                                      await Context.Channel.SendMessageAsync(entry.Text);
+                                  }
+                                  else 
+                                  {
+                                      var embed = Extensions.FaqCommandEntryToBuilder(entry);
+                                      await Context.Channel.SendMessageAsync(embed: embed.Build());
+                                  }
+                                  await Task.Delay(200);
+                              }
+                          } 
+                          else
+                          {
+                              await Context.Channel.SendMessageAsync($"Channel has no posts configured for command {appropriateCommand.First().Name}.");
+                          }
                         }
                     }
                     else
@@ -201,21 +230,26 @@ namespace OnePlusBot.Modules
             }
         }
          public async Task PrintAvailableCommands(ISocketMessageChannel contextChannel){
-            var commandsAvailable = Global.FAQCommandChannels.Where(ch => ch.Channel.ChannelID == contextChannel.Id).ToList();
+            var commandsAvailable = Global.FAQCommandChannels.
+            Where(ch => ch.ChannelGroupReference.Channels.
+                Where(grp => grp.ChannelId == contextChannel.Id).
+                FirstOrDefault() != null)
+            .ToList();
             if(commandsAvailable.Count() == 0){
                 await Context.Channel.SendMessageAsync("No entry available.");
             } else {
-                var stringBuilder = new StringBuilder();
-                stringBuilder.Append("Available entries in this channel " + Environment.NewLine);
+               var stringBuilder = new StringBuilder(" ");
                 for(var index = 0; index < commandsAvailable.Count; index++)
                 {
                     var command = commandsAvailable[index];
-                    stringBuilder.Append($"{command.Command.Name}");
+                    stringBuilder.Append($"`{command.Command.Name}`");
                     if(index < commandsAvailable.Count -1 ){
                         stringBuilder.Append(", ");
                     }
                 }
-                await Context.Channel.SendMessageAsync(stringBuilder.ToString());
+                var embedBuilder = new EmbedBuilder().WithTitle("Available entries in this channel").WithDescription(stringBuilder.ToString());
+                
+                await Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
             }
            
         }

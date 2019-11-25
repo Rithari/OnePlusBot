@@ -31,7 +31,7 @@ namespace OnePlusBot.Base
             
             var currentStarReaction = message.Reactions.Where(re => re.Key.Name == reaction.Emote.Name).DefaultIfEmpty().First();
 
-            var starboardChannel = guild.GetTextChannel(Global.Channels["starboard"]);
+            var starboardChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.STARBOARD]);
             var existingPostList = Global.StarboardPosts.Where(msg => msg.MessageId == message.Id);
 
             var starCount = await this.GetTrueStarCount(message, currentStarReaction);
@@ -137,6 +137,10 @@ namespace OnePlusBot.Base
             if(starCount >= (int) Global.Level3Stars)
             {
                 emote = Global.OnePlusEmote.LVL_3_STAR.Name;
+            }
+            if(starCount >= (int) Global.Level4Stars)
+            {
+                emote = Global.OnePlusEmote.LVL_4_STAR.ToString();
             }
             return $"{emote} {starCount} <#{message.Channel.Id}> ID: {message.Id}"; 
         }
