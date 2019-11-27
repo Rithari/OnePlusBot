@@ -157,7 +157,7 @@ namespace OnePlusBot.Base
             }
             else 
             {
-                throw new NotFoundException("Channel group not found.");
+              throw new NotFoundException("Channel group not found.");
             }
             db.SaveChanges();
           }
@@ -176,10 +176,14 @@ namespace OnePlusBot.Base
                 }
                 else
                 {
-                    newPostTarget = new PostTarget();
-                    newPostTarget.Name = name;
-                    newPostTarget.ChannelId = channel.Id;
-                    db.PostTargets.Add(newPostTarget);
+                  if(!PostTarget.POST_TARGETS.Where(t => t == name).Any())
+                  {
+                    throw new NotFoundException("Post target does not exist.");
+                  }
+                  newPostTarget = new PostTarget();
+                  newPostTarget.Name = name;
+                  newPostTarget.ChannelId = channel.Id;
+                  db.PostTargets.Add(newPostTarget);
                 }
                 db.SaveChanges();
             }

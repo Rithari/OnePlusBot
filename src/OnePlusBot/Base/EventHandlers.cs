@@ -40,11 +40,106 @@ namespace OnePlusBot.Base
             _bot.MessageReceived += HandleExpGain;
             _bot.MessageDeleted += OnMessageRemoved;
             _bot.MessageUpdated += OnMessageUpdated;
+            // when only listening to the guild member updated event, the before state of the user contained the same username
+            // as the after state, so we need to listen on both
+            _bot.GuildMemberUpdated += OnGuildMemberUpdated;
+            _bot.UserUpdated += OnGlobalUserUpdated;
             _bot.UserUnbanned += OnUserUnbanned;
             _bot.UserVoiceStateUpdated += UserChangedVoiceState;
             _commands.CommandExecuted += OnCommandExecutedAsync;
 
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+        }
+
+        private async Task OnGlobalUserUpdated(SocketUser before, SocketUser after){
+          // fires when the username changed
+          bool userNameChanged = before.Username != after.Username;
+          SocketGuild guild = Global.Bot.GetGuild(Global.ServerID);
+          SocketGuildUser userInGuild = guild.GetUser(after.Id);
+          bool nicknameSet = userInGuild.Nickname != null;
+          string beforeText = before.Username ?? "No username?";
+          string afterText = after.Username ?? "No username?";
+          if(userNameChanged && !nicknameSet)
+          {
+            if(IllegalUserName(after.Username))
+            {
+              string embedTitle = "User changed username to an illegal username";
+             
+              await NotifyAboutIllegalUserName(embedTitle, beforeText, afterText, after, guild);
+            }
+          }
+          if(userNameChanged && !nicknameSet){
+            await HandleNameChangesForModmail(after, guild, "User Changed username", beforeText, afterText);
+          }
+        }
+
+        private async Task HandleNameChangesForModmail(IUser user, SocketGuild guild, string embedTitle, string beforeText, string afterText)
+        {
+          using(var db = new Database())
+          {
+            var modmailThread = db.ModMailThreads.Where(th => th.UserId == user.Id && th.State != "CLOSED");
+            var modmailThreadExists = modmailThread.Any();
+            if(modmailThreadExists)
+            {
+              EmbedBuilder builder = new EmbedBuilder();
+              builder.Title = embedTitle;
+              builder.AddField("Before", beforeText);
+              builder.AddField("After", afterText);
+              builder.Color = Color.DarkBlue;
+              builder.Timestamp = DateTime.Now;
+                
+              builder.ThumbnailUrl = user.GetAvatarUrl();
+              await guild.GetTextChannel(modmailThread.First().ChannelId).SendMessageAsync(embed: builder.Build());
+            }  
+          }
+        }
+
+        private async Task OnGuildMemberUpdated(SocketGuildUser before, SocketGuildUser after)
+        {
+          // fires when the nickname changes
+          bool nickNameChanged = before.Nickname != after.Nickname;
+          bool nicknameSet = after.Nickname != null;
+          string beforeText = before.Nickname ?? "No nickname";
+          string afterText = after.Nickname ?? "No nickname";
+          string embedTitle = "User changed nickname";
+          if(nickNameChanged && nicknameSet) 
+          {
+            if(IllegalUserName(after.Nickname))
+            {
+              embedTitle = "User changed nickname to an illegal nickname";
+            
+              await NotifyAboutIllegalUserName(embedTitle, beforeText, afterText, after, after.Guild);
+            }
+          } 
+          else if(nickNameChanged && !nicknameSet)
+          {
+            if(IllegalUserName(after.Username))
+            {
+              embedTitle = "User removed nickname, and username is illegal";
+              beforeText = before.Nickname;
+              afterText = after.Username ?? "No username?";
+              await NotifyAboutIllegalUserName(embedTitle, beforeText, afterText, after, after.Guild);
+            }
+          }
+          if(nickNameChanged)
+          {
+            await HandleNameChangesForModmail(after, after.Guild, embedTitle, beforeText, afterText);
+          }
+        }
+
+        private async Task NotifyAboutIllegalUserName(string embedTitle, string beforeText, string afterText, IUser user, SocketGuild guild){
+          EmbedBuilder builder = new EmbedBuilder();
+          builder.Title = embedTitle;
+          builder.AddField("Before", beforeText);
+          builder.AddField("After", afterText);
+          builder.Color = Color.DarkBlue;
+        
+          builder.Timestamp = DateTime.Now;
+          
+          builder.ThumbnailUrl = user.GetAvatarUrl();
+
+          var userlog = guild.GetTextChannel(Global.PostTargets[PostTarget.USERNAME_QUEUE]);
+          await userlog.SendMessageAsync(embed: builder.Build());
         }
 
         private async Task OnUserLeft(SocketGuildUser socketGuildUser)
@@ -57,8 +152,8 @@ namespace OnePlusBot.Base
         {
           
             var joinlog = socketGuildUser.Guild.GetTextChannel(Global.PostTargets[PostTarget.JOIN_LOG]);
-            string name = socketGuildUser.Username.ToLower();
-            if(Global.IllegalUserNameRegex.Match(name[0] + "").Success)
+            string name = socketGuildUser.Username;
+            if(IllegalUserName(name))
             {
                 var modQueue = socketGuildUser.Guild.GetTextChannel(Global.PostTargets[PostTarget.USERNAME_QUEUE]);
                 var builder = new EmbedBuilder();
@@ -72,6 +167,10 @@ namespace OnePlusBot.Base
                 await modQueue.SendMessageAsync(embed: builder.Build());
             }
             await joinlog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + " joined the guild");
+        }
+
+        private bool IllegalUserName(string userName){
+          return Global.IllegalUserNameRegex.Match(userName.ToLower()[0] + "").Success;
         }
 
         private async Task OnUserJoinedMuteCheck(SocketGuildUser user)

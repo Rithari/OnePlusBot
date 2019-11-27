@@ -7,6 +7,7 @@ using OnePlusBot.Helpers;
 using OnePlusBot.Data.Models;
 using OnePlusBot.Data;
 using Discord;
+using System.Runtime.InteropServices;
 
 namespace OnePlusBot.Modules
 {
@@ -99,9 +100,21 @@ namespace OnePlusBot.Modules
             RequireRole("staff"),
             RequireModMailContext
         ]
-        public async Task<RuntimeResult> CloseThread([Remainder] string note)
+        public async Task<RuntimeResult> CloseThread([Optional] [Remainder] string note)
         {
-            await new ModMailManager().CloseThread(Context.Message, Context.Channel, Context.User, note);
+            await new ModMailManager().CloseThread(Context.Channel, note);
+            return CustomResult.FromIgnored();
+        }
+
+        [
+            Command("closeSilently", RunMode = RunMode.Async),
+            Summary("Closes the thread without notifying the user"),
+            RequireRole("staff"),
+            RequireModMailContext
+        ]
+        public async Task<RuntimeResult> CloseThreadSilently([Optional] [Remainder] string note)
+        {
+            await new ModMailManager().CloseThreadSilently(Context.Channel, note);
             return CustomResult.FromIgnored();
         }
 

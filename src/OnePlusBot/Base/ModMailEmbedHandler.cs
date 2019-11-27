@@ -77,7 +77,8 @@ namespace OnePlusBot
 
         private static StringBuilder GetClosingHeader(ModMailThread thread, int messageCount, SocketUser user, string note){
             var descriptionBuilder = new StringBuilder();
-            descriptionBuilder.Append($"A modmail thread has been closed with the note '{note}' \n ");
+            string defaultedNote = note ?? "No note";
+            descriptionBuilder.Append($"A modmail thread has been closed with the note '{ defaultedNote }' \n ");
             descriptionBuilder.Append($"There were {messageCount} interactions with the user {Extensions.FormatUserNameDetailed(user)}. \n");
             descriptionBuilder.Append($"It has been opened on {thread.CreateDate:dd.MM.yyyy HH:mm} {TimeZoneInfo.Local}");
             descriptionBuilder.Append($" and lasted {Extensions.FormatTimeSpan(DateTime.Now - thread.CreateDate)}.");
