@@ -51,7 +51,8 @@ namespace OnePlusBot.Base
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
         }
 
-        private async Task OnGlobalUserUpdated(SocketUser before, SocketUser after){
+        private async Task OnGlobalUserUpdated(SocketUser before, SocketUser after)
+        {
           // fires when the username changed
           bool userNameChanged = before.Username != after.Username;
           SocketGuild guild = Global.Bot.GetGuild(Global.ServerID);
@@ -68,7 +69,8 @@ namespace OnePlusBot.Base
               await NotifyAboutIllegalUserName(embedTitle, beforeText, afterText, after, guild);
             }
           }
-          if(userNameChanged && !nicknameSet){
+          if(userNameChanged && !nicknameSet)
+          {
             await HandleNameChangesForModmail(after, guild, "User Changed username", beforeText, afterText);
           }
         }
@@ -127,7 +129,8 @@ namespace OnePlusBot.Base
           }
         }
 
-        private async Task NotifyAboutIllegalUserName(string embedTitle, string beforeText, string afterText, IUser user, SocketGuild guild){
+        private async Task NotifyAboutIllegalUserName(string embedTitle, string beforeText, string afterText, IUser user, SocketGuild guild)
+        {
           EmbedBuilder builder = new EmbedBuilder();
           builder.Title = embedTitle;
           builder.AddField("Before", beforeText);
@@ -169,7 +172,8 @@ namespace OnePlusBot.Base
             await joinlog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + " joined the guild");
         }
 
-        private bool IllegalUserName(string userName){
+        private bool IllegalUserName(string userName)
+        {
           return Global.IllegalUserNameRegex.Match(userName.ToLower()[0] + "").Success;
         }
 
