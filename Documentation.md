@@ -100,7 +100,7 @@ Also works with [user IDs](https://dis.gd/userid) `;userinfo user_id`
 
 ### Profanity checker
 
-Checks profane words based on regex present in a database and post a message in a #modqueue channel when use has been detected.\
+Checks profane words based on regex present in a database and post a message in a #modqueue channel when use has been detected. This detection is triggered on both posts and edits.\
 This message contains the username, discrim and [user ID](https://dis.gd/userid) of user that triggered the filter as well as message content and a jump link to it. It will also tell which type of profanity was detected (they're defined by a label in database).\
 
 Note: when regex is updated in database, it needs `;reloaddb` command to be executed to be taken into effect.
