@@ -331,6 +331,7 @@ CREATE TABLE `ChannelInGroup` (
  `channel_group_id` int(10) unsigned NOT NULL,
  PRIMARY KEY (`channel_id`,`channel_group_id`),
  KEY `fk_group_id` (`channel_group_id`),
+ CONSTRAINT `fk_channel_id_ref` FOREIGN KEY (`channel_id`) REFERENCES `Channels` (`channel_id`),
  CONSTRAINT `fk_group_id` FOREIGN KEY (`channel_group_id`) REFERENCES `ChannelGroups` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
