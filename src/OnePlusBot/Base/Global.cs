@@ -47,7 +47,7 @@ namespace OnePlusBot.Base
 
         public static List<StarboardMessage> StarboardPosts { get; set; }
 
-        public static List<Char> IllegalUserNameBeginnings { get; set; }
+        public static Regex IllegalUserNameRegex { get; set; }
 
         public static ConcurrentDictionary<long, List<ulong>> RuntimeExp { get; set; }
 
@@ -188,9 +188,9 @@ namespace OnePlusBot.Base
                     .First(entry => entry.Name == "decay_days")
                     .Value;
 
-                IllegalUserNameBeginnings = db.PersistentData
-                    .First(entry => entry.Name == "user_name_illegal_characters")
-                    .StringValue.ToCharArray().ToList();
+                IllegalUserNameRegex = new Regex(db.PersistentData
+                    .First(entry => entry.Name == "illegal_user_name_regex")
+                    .StringValue, RegexOptions.Singleline | RegexOptions.Compiled);
 
                 XPGainDisabled = db.PersistentData
                     .First(entry => entry.Name == "xp_disabled")
