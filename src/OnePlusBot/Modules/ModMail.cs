@@ -97,6 +97,7 @@ namespace OnePlusBot.Modules
             Command("close", RunMode = RunMode.Async),
             Summary("Closes the modmail thread"),
             RequireRole("staff"),
+            RequireBotPermission(GuildPermission.ManageChannels),
             RequireModMailContext
         ]
         public async Task<RuntimeResult> CloseThread([Remainder] string note)
@@ -109,6 +110,7 @@ namespace OnePlusBot.Modules
             Command("edit", RunMode = RunMode.Async),
             Summary("edits your message in the modmail thread"),
             RequireRole("staff"),
+            RequireBotPermission(GuildPermission.ManageMessages),
             RequireModMailContext
         ]
         public async Task<RuntimeResult> EditMessage(params string[] parameters)
@@ -132,6 +134,7 @@ namespace OnePlusBot.Modules
             Command("disableThread", RunMode = RunMode.Async),
             Summary("disables and closes the modmail thread for a certain time period. The user will be notified and he will be able to contact modmail after the period again."),
             RequireRole("staff"),
+            RequireBotPermission(GuildPermission.ManageChannels),
             RequireModMailContext
         ]
         public async Task<RuntimeResult> DisableCurrentThread(params string[] arguments)
@@ -160,7 +163,8 @@ namespace OnePlusBot.Modules
         [
             Command("disableModmail"),
             Summary("Disables modmail for a certain time period. The target user will be able to contact modmail after the time has been reached."),
-            RequireRole("staff")
+            RequireRole("staff"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> DisableModMailForUser(IGuildUser user,  params string[] arguments)
         {
@@ -179,7 +183,8 @@ namespace OnePlusBot.Modules
         [
             Command("enableModmail"),
             Summary("Enables the modmail for a certain user immediatelly. No-op on users who have access."),
-            RequireRole("staff")
+            RequireRole("staff"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> EnableModmailForUser(IGuildUser user)
         {
@@ -191,7 +196,9 @@ namespace OnePlusBot.Modules
         [
             Command("contact"),
             Summary("Opens a thread with the specified user"),
-            RequireRole("staff")
+            RequireRole("staff"),
+            RequireBotPermission(GuildPermission.ManageChannels),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> ContactUser(IGuildUser user)
         {
@@ -203,6 +210,7 @@ namespace OnePlusBot.Modules
             Command("delete"),
             Summary("Deletes your message within a modmail thread"),
             RequireRole("staff"),
+            RequireBotPermission(GuildPermission.ManageMessages),
             RequireModMailContext
         ]
         public async Task<RuntimeResult> DeleteMessage(params string[] parameters)

@@ -24,7 +24,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("help"),
-            Summary("Lists all available commands.")
+            Summary("Lists all available commands."),
+            CommandDisabledCheck
         ]
         public async Task Help(string path = "")
         {
@@ -160,8 +161,11 @@ namespace OnePlusBot.Modules
             return output;
         }
 
-        [Command("faq")]
-        [Summary("Answers frequently asked questions with a predetermined response.")]
+        [
+          Command("faq"),
+          Summary("Answers frequently asked questions with a predetermined response."),
+          CommandDisabledCheck
+        ]
         public async Task FAQAsync([Optional] [Remainder] string parameter)
         {
             var contextChannel = Context.Channel;

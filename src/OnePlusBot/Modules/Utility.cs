@@ -1,4 +1,4 @@
-using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -22,7 +22,8 @@ namespace OnePlusBot.Modules
     {
         [
             Command("showavatar"),
-            Summary("Shows avatar of a user.")
+            Summary("Shows avatar of a user."),
+            CommandDisabledCheck
         ]
         public async Task Avatar(IGuildUser user = null)
         {
@@ -64,7 +65,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("userinfo"),
-            Summary("Displays User Information")
+            Summary("Displays User Information"),
+            CommandDisabledCheck
         ]
         public async Task UserInfo(IGuildUser user = null)
         {
@@ -118,7 +120,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("se"),
-            Summary("Shows bigger version of am emote.")
+            Summary("Shows bigger version of am emote."),
+            CommandDisabledCheck
         ]
         public async Task Showemojis([Remainder] string _) // need to have the parameter so that the message.tags gets populated
         {
@@ -134,7 +137,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("suggest"),
-            Summary("Suggests something to the server.")
+            Summary("Suggests something to the server."),
+            CommandDisabledCheck
         ]
         public async Task SuggestAsync([Remainder] string suggestion)
         {
@@ -161,7 +165,8 @@ namespace OnePlusBot.Modules
         [
             Command("news"),
             Summary("Posts a News article to the server."),
-            RequireRole("journalist")
+            RequireRole("journalist"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> NewsAsync([Remainder] string news)
         {
@@ -210,7 +215,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("serverinfo"),
-            Summary("Shows server information.")
+            Summary("Shows server information."),
+            CommandDisabledCheck
         ]
         public async Task sinfo(string guildName = null)
         {
@@ -285,7 +291,8 @@ namespace OnePlusBot.Modules
         [
             Command("echo"),
             Summary("Echoes back the remainder argument of the command."),
-            RequireRole("staff")
+            RequireRole("staff"),
+            CommandDisabledCheck
         ]
         public Task EchoAsync([Remainder] string text)
         {
@@ -294,7 +301,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("ping"),
-            Summary("Standard ping command.")
+            Summary("Standard ping command."),
+            CommandDisabledCheck
         ]
         public async Task PingAsync()
         {
@@ -307,7 +315,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("remind"),
-            Summary("Reminds you of a text after a defined time period.")
+            Summary("Reminds you of a text after a defined time period."),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> HandleRemindInput(params string[] arguments)
         {
@@ -365,7 +374,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("unremind"),
-            Summary("Cancells the reminder by id.")
+            Summary("Cancells the reminder by id."),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> HandleUnRemindInput(ulong reminderId)
         {
@@ -388,7 +398,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("rank"),
-            Summary("Shows your/another users experience, level, and rank in the server")
+            Summary("Shows your/another users experience, level, and rank in the server"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> ShowLevels([Optional] IGuildUser user)
         {
@@ -434,7 +445,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("leaderboard"),
-            Summary("shows the top page of the leaderboard (or a certain page)")
+            Summary("shows the top page of the leaderboard (or a certain page)"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> ShowLeaderboard([Optional] int page)
         {
@@ -489,6 +501,41 @@ namespace OnePlusBot.Modules
            
             return CustomResult.FromSuccess();
         }
+
+        [
+            Command("availableCommands"),
+            Summary("Shows the available commands for the current (or given channel) channel")
+        ]
+        public async Task<RuntimeResult> ShowAvailableCommands([Optional] SocketGuildChannel targetChannel)
+        {
+          ISocketMessageChannel channelToExecuteFor = targetChannel == null ?  Context.Channel : targetChannel as ISocketMessageChannel;
+          var embedBuilder = new EmbedBuilder();
+          embedBuilder.WithTitle($"Currently available commands for channel {channelToExecuteFor.Name}");
+          StringBuilder sb = new StringBuilder();
+          using(var db = new Database())
+          {
+            var modules = db.Modules;
+            foreach(var module in modules){
+              var commandsInModule = db.Commands.Include(c => c.GroupsCommandIsIn).Where(coChGrp => coChGrp.ModuleId == module.ID);
+              var commandGroups = Global.CommandChannelGroups.Where(chg => chg.CommandReference.ModuleId == module.ID);
+              sb.Append($"\n Module: {module.Name} \n");
+              if(commandsInModule.Any())
+              {
+                foreach(var command in commandsInModule)
+                {
+                  if(command.CommandEnabled(channelToExecuteFor.Id) || command.GroupsCommandIsIn.Count() == 0)
+                    sb.Append($"`{command.Name}` ");
+                  }
+                }
+              }
+            }
+              
+          embedBuilder.WithDescription(sb.ToString());
+          await Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
+          await Task.Delay(200);
+          return CustomResult.FromSuccess();
+        }
+
 
        /* [Command("timeleft")]
         [Summary("How long until the 7 Launch event.")]

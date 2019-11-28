@@ -33,6 +33,8 @@ namespace OnePlusBot.Base
 
         public static List<InviteLink> InviteLinks { get; set; }
 
+        public static List<CommandInChannelGroup> CommandChannelGroups { get; set; }
+
         public static ulong CommandExecutorId { get; set; }
 
         public static ulong StarboardStars { get; set; }
@@ -118,6 +120,7 @@ namespace OnePlusBot.Base
             ModMailThreads = new List<ModMailThread>();
             ReportedProfanities = new List<UsedProfanity>();
             RuntimeExp = new ConcurrentDictionary<long, List<ulong>>();
+            CommandChannelGroups = new List<CommandInChannelGroup>();
             LoadGlobal();
         }
 
@@ -246,6 +249,13 @@ namespace OnePlusBot.Base
 
                 FAQCommandChannels = ReadChannels;
                 FAQCommands = db.FAQCommands.ToList();
+
+                CommandChannelGroups = db.CommandInChannelGroups
+                .Include(comIChGrp => comIChGrp.ChannelGroupReference)
+                .Include(comIChGrp => comIChGrp.ChannelGroupReference.Channels)
+                .Include(comIChGrp => comIChGrp.CommandReference)
+                .Include(comIChGrp => comIChGrp.CommandReference.Module).ThenInclude(mo => mo.Commands)
+                .ToList();
             }
 
             ReloadModmailThreads();

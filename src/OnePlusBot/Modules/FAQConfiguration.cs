@@ -22,7 +22,8 @@ namespace OnePlusBot.Modules
         [
             Command("configureFAQ", RunMode = RunMode.Async),
             Summary("Configures the faq command entries."),
-            RequireRole("staff")
+            RequireRole("staff"),
+            CommandDisabledCheck
         ]
         public async Task ConfigureFAQ()
         {

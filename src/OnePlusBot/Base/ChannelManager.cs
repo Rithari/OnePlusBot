@@ -279,5 +279,30 @@ namespace OnePlusBot.Base
                 db.SaveChanges();
             }
         }
+
+        public async Task ListCommandsWithGroups(ISocketMessageChannel channelToRespondIn)
+        {
+          EmbedBuilder builder = new EmbedBuilder();
+          builder.WithTitle("Command channel group overview");
+          StringBuilder sb = new StringBuilder();
+          using(var db = new Database()){
+            var commands = db.Commands.Include(c => c.GroupsCommandIsIn).ThenInclude(g => g.ChannelGroupReference);
+            foreach(var cmd in commands){
+              sb.Append($"{cmd.Name}: ");
+              if(cmd.GroupsCommandIsIn == null || cmd.GroupsCommandIsIn.Count() == 0){
+                sb.Append("No groups.\n");
+                continue;
+              }
+              foreach(var group in cmd.GroupsCommandIsIn){
+                var disabledPart = group.Disabled ? "(Disabled)" : "";
+                sb.Append($"`{group.ChannelGroupReference.Name}` {disabledPart},");
+              }
+              sb.Append("\n");
+             
+            }
+          }
+          builder.WithDescription(sb.ToString());
+          await channelToRespondIn.SendMessageAsync(embed: builder.Build());
+        }
     }
 }
