@@ -169,7 +169,7 @@ namespace OnePlusBot.Base
         var threadUser = guild.GetUser(userObj.UserId);
         if(threadUser != null)
         {
-            var replyEmbed = ModMailEmbedHandler.GetModeratorReplyEmbed(clearMessage, "Moderator replied", message, anonymous ? null : moderatorUser);
+            var replyEmbed = ModMailEmbedHandler.GetModeratorReplyEmbed(clearMessage, "Moderator posted", message, anonymous ? null : moderatorUser);
             await AnswerUserAndLogEmbed(threadUser, channel, replyEmbed, message, anonymous);
         }
         else
@@ -195,7 +195,14 @@ namespace OnePlusBot.Base
         return threadObj;
     }
 
-    private async Task LogModMailThreadMessagesToModmailLog(ModMailThread modMailThread, string note, List<ThreadMessage> messagesToLog, SocketTextChannel targetChannel)
+    /// <summary>
+    /// Logs the messages between staff and user (only interactions) from the given modmail thread towards the given channel with a delay of 500
+    /// </summary>
+    /// <param name="modMailThread">The <see cref"OnePlusBot.Data.Models.ModMailThread"/> object containing the information of the thread</param>
+    /// <param name="messagesToLog">List containing the messages between the moderators and the user which should be logged.</param>
+    /// <param name="targetChannel">The <see cref"Discord.WebSocket.SocketTextChannel"/> object these messages should be logged to</param>
+    /// <returns>Task</returns>
+    private async Task LogModMailThreadMessagesToModmailLog(ModMailThread modMailThread, List<ThreadMessage> messagesToLog, SocketTextChannel targetChannel)
     {
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
@@ -226,27 +233,61 @@ namespace OnePlusBot.Base
         await modMailLogChannel.SendMessageAsync(embed: closingEmbed);
     }
 
-    public async Task CloseThread(SocketMessage message, ISocketMessageChannel channel, SocketUser moderatorUser, string note)
+    /// <summary>
+    /// Retrieves the interactions between the moderators and staff, calls the methods reponsible for logging the interactions and deletes the channel
+    /// </summary>
+    /// <param name="closedThread">The <see cref"OnePlusBot.Data.Models.ModMailThread"/> object of the thread being closed</param>
+    /// <param name="channel">The <see cref"Discord.WebSocket.ISocketMessageChannel"/> object in which the modmail interactions happened</param>
+    /// <param name="note">Optional note used when closing the thread</param>
+    /// <returns>Task containing the number of logged messages.</returns>
+    private async Task<int> DeleteChannelAndLogThread(ModMailThread closedThread, ISocketMessageChannel channel, string note){
+      var bot = Global.Bot;
+      var guild = bot.GetGuild(Global.ServerID);
+      SocketGuildUser userObj = guild.GetUser(closedThread.UserId);
+      List<ThreadMessage> messagesToLog;
+      using(var db = new Database())
+      {
+          messagesToLog = db.ThreadMessages.Where(ch => ch.ChannelId == closedThread.ChannelId).ToList();
+      }
+      var modMailLogChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_LOG]);
+      await LogClosingHeader(closedThread, messagesToLog.Count(), note, modMailLogChannel, userObj);
+
+      await LogModMailThreadMessagesToModmailLog(closedThread, messagesToLog, modMailLogChannel);
+      await (channel as SocketTextChannel).DeleteAsync();
+      return messagesToLog.Count();
+    }
+
+    /// <summary>
+    /// Calls the methods for closing the thread in the db and logging the modmail thread. 
+    /// Also sends a message to the user, in case there were interactions 
+    /// </summary>
+    /// <param name="channel">The <see cref"Discord.WebSocket.ISocketMessageChannel"/> object of the channel which is getting closed</param>
+    /// <param name="note">The optional note which is used when closing the thread</param>
+    /// <returns>Task</returns>
+    public async Task CloseThread(ISocketMessageChannel channel, string note)
     { 
-        var closedthread = CloseThreadInDb(channel);   
+        var closedThread = CloseThreadInDb(channel);  
+        int messagesToLogCount = await DeleteChannelAndLogThread(closedThread, channel, note);
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
-        SocketGuildUser userObj = guild.GetUser(closedthread.UserId);
-        List<ThreadMessage> messagesToLog;
-        using(var db = new Database())
-        {
-            messagesToLog = db.ThreadMessages.Where(ch => ch.ChannelId == closedthread.ChannelId).ToList();
-        }
-        var modMailLogChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_LOG]);
-        await LogClosingHeader(closedthread, messagesToLog.Count(), note, modMailLogChannel, userObj);
-
-        await LogModMailThreadMessagesToModmailLog(closedthread, note, messagesToLog, modMailLogChannel);
-        await (channel as SocketTextChannel).DeleteAsync();
+        SocketGuildUser userObj = guild.GetUser(closedThread.UserId);
         // only send the user a dm, in case the user initiated, if we use contact it should not happen
-        if(userObj != null && messagesToLog.Count() > 0)
+        if(userObj != null && messagesToLogCount > 0)
         {
             await userObj.SendMessageAsync(embed: ModMailEmbedHandler.GetClosingEmbed());
         }
+    }
+
+    /// <summary>
+    /// Calls the methods for closing the thread in the db and logging the modmail thread. 
+    /// </summary>
+    /// <param name="channel">The <see cref"Discord.WebSocket.ISocketMessageChannel"/> object of the channel which is getting closed</param>
+    /// <param name="note">The optional note which is used when closing the thread</param>
+    /// <returns>Task</returns>
+    public async Task CloseThreadSilently(ISocketMessageChannel channel, string note)
+    { 
+      var closedThread = CloseThreadInDb(channel);  
+      await DeleteChannelAndLogThread(closedThread, channel, note);
     }
 
     
@@ -384,7 +425,7 @@ namespace OnePlusBot.Base
         var modMailLogChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_LOG]);
         await LogDisablingHeader(closedthread, messagesToLog.Count(), note, modMailLogChannel, userObj, until);
 
-        await LogModMailThreadMessagesToModmailLog(closedthread, note, messagesToLog, modMailLogChannel);
+        await LogModMailThreadMessagesToModmailLog(closedthread, messagesToLog, modMailLogChannel);
         await (channel as SocketTextChannel).DeleteAsync();
 
         if(userObj != null)

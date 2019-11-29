@@ -40,11 +40,150 @@ namespace OnePlusBot.Base
             _bot.MessageReceived += HandleExpGain;
             _bot.MessageDeleted += OnMessageRemoved;
             _bot.MessageUpdated += OnMessageUpdated;
+            // when only listening to the guild member updated event, the before state of the user contained the same username
+            // as the after state, so we need to listen on both
+            _bot.GuildMemberUpdated += OnGuildMemberUpdated;
+            _bot.UserUpdated += OnGlobalUserUpdated;
             _bot.UserUnbanned += OnUserUnbanned;
             _bot.UserVoiceStateUpdated += UserChangedVoiceState;
             _commands.CommandExecuted += OnCommandExecutedAsync;
 
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+        }
+
+        /// <summary>
+        /// Fires when the global user is updated and checks if the new user is in accordance with the defined username regex.
+        /// In case it violates this regex and no nickname is set, this method calls another method responsible for notifying the moderators.
+        /// Additionally, calls the method responsible for notifying currently active modmail threads.
+        /// </summary>
+        /// <param name="before">The <see cref="Discord.WebSocket.SocketUser"/> object containing the user before the update</param>
+        /// <param name="after">The <see cref="Discord.WebSocket.SocketUser"/> object containing the user after the update</param>
+        /// <returns>Task</returns>
+        private async Task OnGlobalUserUpdated(SocketUser before, SocketUser after)
+        {
+          // fires when the username changed
+          bool userNameChanged = before.Username != after.Username;
+          SocketGuild guild = Global.Bot.GetGuild(Global.ServerID);
+          SocketGuildUser userInGuild = guild.GetUser(after.Id);
+          bool nicknameSet = userInGuild.Nickname != null;
+          string beforeText = before.Username ?? "No username?";
+          string afterText = after.Username ?? "No username?";
+          if(userNameChanged && !nicknameSet)
+          {
+            if(IllegalUserName(after.Username))
+            {
+              string embedTitle = "User changed username to an illegal username";
+             
+              await NotifyAboutIllegalUserName(embedTitle, beforeText, afterText, after, guild);
+            }
+          }
+          if(userNameChanged && !nicknameSet)
+          {
+            await HandleNameChangesForModmail(after, guild, "User Changed username", beforeText, afterText);
+          }
+        }
+
+        /// <summary>
+        /// In case there is a curently open modmail thread for the given user, 
+        /// this method posts an embed with the given title and values for two fields called 'Before' and 'After'
+        /// </summary>
+        /// <param name="user">The <see cref="Discord.IUser" /> object to check if there exists a modmail thread.</param>
+        /// <param name="guild">The <see cref"Discord.WebSocket.SocketGuild"/> object for which the check should be executed for. </param>
+        /// <param name="embedTitle">Title of the embed</param>
+        /// <param name="beforeText">Text for the field 'Before'</param>
+        /// <param name="afterText">Text for the field 'After'</param>
+        /// <returns>Task</returns>
+        private async Task HandleNameChangesForModmail(IUser user, SocketGuild guild, string embedTitle, string beforeText, string afterText)
+        {
+          using(var db = new Database())
+          {
+            var modmailThread = db.ModMailThreads.Where(th => th.UserId == user.Id && th.State != "CLOSED");
+            var modmailThreadExists = modmailThread.Any();
+            if(modmailThreadExists)
+            {
+              var embed = GetUserNameNotificationEmbed(embedTitle, beforeText, afterText, user);
+              await guild.GetTextChannel(modmailThread.First().ChannelId).SendMessageAsync(embed: embed);
+            }  
+          }
+        }
+
+        /// <summary>
+        /// Builds the embed posted in case a user changes the username/nickname.
+        /// </summary>
+        /// <param name="embedTitle">Title of the embed</param>
+        /// <param name="beforeText">The text of the field 'Before' for the embed</param>
+        /// <param name="afterText">The text of the field 'After' for the embed</param>
+        /// <param name="user">The <see cref"Discord.IUser"/> object to take the avatar as thumbnail</param>
+        /// <returns>Embed containing build after the given parameters</returns>
+        private Embed GetUserNameNotificationEmbed(string embedTitle, string beforeText, string afterText, IUser user)
+        {
+          EmbedBuilder builder = new EmbedBuilder();
+          builder.Title = embedTitle;
+          builder.AddField("Before", beforeText);
+          builder.AddField("After", afterText);
+          builder.Color = Color.DarkBlue;
+          builder.Timestamp = DateTime.Now;
+            
+          builder.ThumbnailUrl = user.GetAvatarUrl();
+          return builder.Build();
+        }
+
+        /// <summary>
+        /// Fires in case the guild user updates and checks if the new nickname (or username, if user removed the nickname) is in accordance of the rules for usernames.
+        /// If not, calls the method to notify the moderators. Additionally, calls the method responsible for notifying currently active modmail threads.
+        /// </summary>
+        /// <param name="before">The <see cref"Discord.WebSocket.SocketGuildUser"/> object containing the user before the update</param>
+        /// <param name="after">The <see cref"Discord.WebSocket.SocketGuildUser"/> object containing the user after the update</param>
+        /// <returns>Task</returns>
+        private async Task OnGuildMemberUpdated(SocketGuildUser before, SocketGuildUser after)
+        {
+          // fires when the nickname changes
+          bool nickNameChanged = before.Nickname != after.Nickname;
+          bool nicknameSet = after.Nickname != null;
+          string beforeText = before.Nickname ?? "No nickname";
+          string afterText = after.Nickname ?? "No nickname";
+          string embedTitle = "User changed nickname";
+          if(nickNameChanged && nicknameSet) 
+          {
+            if(IllegalUserName(after.Nickname))
+            {
+              embedTitle = "User changed nickname to an illegal nickname";
+            
+              await NotifyAboutIllegalUserName(embedTitle, beforeText, afterText, after, after.Guild);
+            }
+          } 
+          else if(nickNameChanged && !nicknameSet)
+          {
+            // in case the user reset its nickname to nothing
+            if(IllegalUserName(after.Username))
+            {
+              embedTitle = "User removed nickname, and username is illegal";
+              beforeText = before.Nickname;
+              afterText = after.Username ?? "No username?";
+              await NotifyAboutIllegalUserName(embedTitle, beforeText, afterText, after, after.Guild);
+            }
+          }
+          if(nickNameChanged)
+          {
+            await HandleNameChangesForModmail(after, after.Guild, embedTitle, beforeText, afterText);
+          }
+        }
+
+        /// <summary>
+        /// Posts a message towards the 'UserNameQueue' post target containing the name before and after the change with the given title.
+        /// The embed has as thumbnail the avatar of the user (none if default) and is posted towards the given guild.
+        /// </summary>
+        /// <param name="embedTitle">Title of the embed</param>
+        /// <param name="beforeText">Text of the embed to be used for the 'Before' field</param>
+        /// <param name="afterText">Text of the embed to be used for the 'After' field</param>
+        /// <param name="user">User with the invalid username, used for the avatar in the embed.</param>
+        /// <param name="guild">The <see cref"Discord.WebSocket.SocketGuild"/> guild where this is posted towards in the 'UserNameQueue' post target</param>
+        /// <returns></returns>
+        private async Task NotifyAboutIllegalUserName(string embedTitle, string beforeText, string afterText, IUser user, SocketGuild guild)
+        {
+          var embed = GetUserNameNotificationEmbed(embedTitle, beforeText, afterText, user);
+          var userlog = guild.GetTextChannel(Global.PostTargets[PostTarget.USERNAME_QUEUE]);
+          await userlog.SendMessageAsync(embed: embed);
         }
 
         private async Task OnUserLeft(SocketGuildUser socketGuildUser)
@@ -53,12 +192,18 @@ namespace OnePlusBot.Base
             await leaveLog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + " left the guild");
         }
 
+        /// <summary>
+        /// Fires when a user joins the guild. Checks if the username of the user is in accordance with the given username regex.
+        /// If this is not the case, calls the method to notify the moderators.
+        /// </summary>
+        /// <param name="socketGuildUser">The <see cref"Discord.WebSocket.SocketGuildUser"/> object containing the user joining the guild.</param>
+        /// <returns>Task</returns>
         private async Task OnuserUserJoined(SocketGuildUser socketGuildUser)
         {
           
             var joinlog = socketGuildUser.Guild.GetTextChannel(Global.PostTargets[PostTarget.JOIN_LOG]);
-            string name = socketGuildUser.Username.ToLower();
-            if(Global.IllegalUserNameRegex.Match(name[0] + "").Success)
+            string name = socketGuildUser.Username;
+            if(IllegalUserName(name))
             {
                 var modQueue = socketGuildUser.Guild.GetTextChannel(Global.PostTargets[PostTarget.USERNAME_QUEUE]);
                 var builder = new EmbedBuilder();
@@ -72,6 +217,16 @@ namespace OnePlusBot.Base
                 await modQueue.SendMessageAsync(embed: builder.Build());
             }
             await joinlog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + " joined the guild");
+        }
+
+        /// <summary>
+        /// Checks if the given string is in accordance with the given username regex (only the first character is checked)
+        /// </summary>
+        /// <param name="userName">The username as string which is checked</param>
+        /// <returns>True in case the string matches with the username regex.</returns>
+        private bool IllegalUserName(string userName)
+        {
+          return Global.IllegalUserNameRegex.Match(userName.ToLower()[0] + "").Success;
         }
 
         private async Task OnUserJoinedMuteCheck(SocketGuildUser user)
