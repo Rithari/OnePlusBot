@@ -162,16 +162,22 @@ namespace OnePlusBot.Base
             db.SaveChanges();
           }
         }
-
+        /// <summary>
+        /// Sets the target of the post target defined by the name to the given channel in the database. Does not reload the Global object. 
+        /// In case the post target was valid, but not yet defined, this method creates a new one.
+        /// </summary>
+        /// <param name="name">Name of the post target to change</param>
+        /// <param name="channel">The <see cref="Discord.IChannel"/> object the posts of this post target should be posted towards</param>
+        /// <exception cref="OnePlusBot.Base.Errors.NotFoundException">In case the desired post target is not found</exception>
         public void SetPostTarget(string name, IChannel channel)
         {
             using(var db = new Database())
             {
-                var existingTarget = db.PostTargets.Where(pt => pt.Name == name).FirstOrDefault();
+                var existingTarget = db.PostTargets.Where(pt => pt.Name == name);
                 PostTarget newPostTarget;
-                if(existingTarget != null)
+                if(existingTarget.Any())
                 {
-                    newPostTarget = existingTarget;
+                    newPostTarget = existingTarget.First();
                     newPostTarget.ChannelId = channel.Id;
                 }
                 else

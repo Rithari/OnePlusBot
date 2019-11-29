@@ -75,6 +75,14 @@ namespace OnePlusBot
             return embed.Build();
         }
 
+        /// <summary>
+        /// Returns the string containing the given parameters formatted as the header used in the 'ModMailLog' embed which is used as the header
+        /// </summary>
+        /// <param name="thread">The <see cref"OnePlusBot.Data.Models.ModMailThread"/> object which is being closed.</param>
+        /// <param name="messageCount">The amount of interactions between the user and the staff</param>
+        /// <param name="user">The <see cref"Discord.WebSocket.SocketUser"/> object for who the thread was created</param>
+        /// <param name="note">An optional note which is displayed as information in the closing header</param>
+        /// <returns>The StringBuilder object containing the formatted information used as closing header.</returns>
         private static StringBuilder GetClosingHeader(ModMailThread thread, int messageCount, SocketUser user, string note){
             var descriptionBuilder = new StringBuilder();
             string defaultedNote = note ?? "No note";

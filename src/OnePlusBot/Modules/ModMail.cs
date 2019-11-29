@@ -94,6 +94,12 @@ namespace OnePlusBot.Modules
             return CustomResult.FromSuccess();
         }
 
+
+        /// <summary>
+        /// Closes the thread with the given note
+        /// </summary>
+        /// <param name="note">Note to be used for logging</param>
+        /// <returns>Result whether or not the closing was successful</returns>
         [
             Command("close", RunMode = RunMode.Async),
             Summary("Closes the modmail thread"),
@@ -106,6 +112,11 @@ namespace OnePlusBot.Modules
             return CustomResult.FromIgnored();
         }
 
+        /// <summary>
+        /// Closes the thread silently with the given note
+        /// </summary>
+        /// <param name="note">Note to be used for logging</param>
+        /// <returns>Result whether or not the closing was succesful</returns>
         [
             Command("closeSilently", RunMode = RunMode.Async),
             Summary("Closes the thread without notifying the user"),

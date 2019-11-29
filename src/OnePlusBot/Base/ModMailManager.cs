@@ -195,6 +195,13 @@ namespace OnePlusBot.Base
         return threadObj;
     }
 
+    /// <summary>
+    /// Logs the messages between staff and user (only interactions) from the given modmail thread towards the given channel with a delay of 500
+    /// </summary>
+    /// <param name="modMailThread">The <see cref"OnePlusBot.Data.Models.ModMailThread"/> object containing the information of the thread</param>
+    /// <param name="messagesToLog">List containing the messages between the moderators and the user which should be logged.</param>
+    /// <param name="targetChannel">The <see cref"Discord.WebSocket.SocketTextChannel"/> object these messages should be logged to</param>
+    /// <returns>Task</returns>
     private async Task LogModMailThreadMessagesToModmailLog(ModMailThread modMailThread, List<ThreadMessage> messagesToLog, SocketTextChannel targetChannel)
     {
         var bot = Global.Bot;
@@ -226,6 +233,13 @@ namespace OnePlusBot.Base
         await modMailLogChannel.SendMessageAsync(embed: closingEmbed);
     }
 
+    /// <summary>
+    /// Retrieves the interactions between the moderators and staff, calls the methods reponsible for logging the interactions and deletes the channel
+    /// </summary>
+    /// <param name="closedThread">The <see cref"OnePlusBot.Data.Models.ModMailThread"/> object of the thread being closed</param>
+    /// <param name="channel">The <see cref"Discord.WebSocket.ISocketMessageChannel"/> object in which the modmail interactions happened</param>
+    /// <param name="note">Optional note used when closing the thread</param>
+    /// <returns>Task containing the number of logged messages.</returns>
     private async Task<int> DeleteChannelAndLogThread(ModMailThread closedThread, ISocketMessageChannel channel, string note){
       var bot = Global.Bot;
       var guild = bot.GetGuild(Global.ServerID);
@@ -243,6 +257,13 @@ namespace OnePlusBot.Base
       return messagesToLog.Count();
     }
 
+    /// <summary>
+    /// Calls the methods for closing the thread in the db and logging the modmail thread. 
+    /// Also sends a message to the user, in case there were interactions 
+    /// </summary>
+    /// <param name="channel">The <see cref"Discord.WebSocket.ISocketMessageChannel"/> object of the channel which is getting closed</param>
+    /// <param name="note">The optional note which is used when closing the thread</param>
+    /// <returns>Task</returns>
     public async Task CloseThread(ISocketMessageChannel channel, string note)
     { 
         var closedThread = CloseThreadInDb(channel);  
@@ -257,6 +278,12 @@ namespace OnePlusBot.Base
         }
     }
 
+    /// <summary>
+    /// Calls the methods for closing the thread in the db and logging the modmail thread. 
+    /// </summary>
+    /// <param name="channel">The <see cref"Discord.WebSocket.ISocketMessageChannel"/> object of the channel which is getting closed</param>
+    /// <param name="note">The optional note which is used when closing the thread</param>
+    /// <returns>Task</returns>
     public async Task CloseThreadSilently(ISocketMessageChannel channel, string note)
     { 
       var closedThread = CloseThreadInDb(channel);  
