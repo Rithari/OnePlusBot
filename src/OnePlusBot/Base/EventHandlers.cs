@@ -119,12 +119,13 @@ namespace OnePlusBot.Base
         {
           EmbedBuilder builder = new EmbedBuilder();
           builder.Title = embedTitle;
+          builder.AddField("User", user.Mention);
           builder.AddField("Before", beforeText);
           builder.AddField("After", afterText);
           builder.Color = Color.DarkBlue;
           builder.Timestamp = DateTime.Now;
+          builder.WithFooter(new EmbedFooterBuilder().WithIconUrl(user.GetAvatarUrl()).WithText("ID: " + user.Id));
             
-          builder.ThumbnailUrl = user.GetAvatarUrl();
           return builder.Build();
         }
 
