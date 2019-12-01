@@ -25,17 +25,17 @@ namespace OnePlusBot.Data.Models
 
         public bool ProfanityExempt()
         {
-            return this.GroupsChannelIsIn.Where(grp => grp.Group.ProfanityCheckExempt && !grp.Group.Disabled).FirstOrDefault() != null;
+            return this.GroupsChannelIsIn.Where(grp => grp.Group.ProfanityCheckExempt && !grp.Group.Disabled && grp.Group.ChannelGroupType == ChannelGroupType.CHECKS).FirstOrDefault() != null;
         }
 
         public bool InviteCheckExempt()
         {
-            return this.GroupsChannelIsIn.Where(grp => grp.Group.InviteCheckExempt && !grp.Group.Disabled).FirstOrDefault() != null;
+            return this.GroupsChannelIsIn.Where(grp => grp.Group.InviteCheckExempt && !grp.Group.Disabled  && grp.Group.ChannelGroupType == ChannelGroupType.CHECKS).FirstOrDefault() != null;
         }
 
         public bool ExperienceGainExempt()
         {
-            return this.GroupsChannelIsIn.Where(grp => grp.Group.ExperienceGainExempt && !grp.Group.Disabled).FirstOrDefault() != null;
+            return this.GroupsChannelIsIn.Where(grp => grp.Group.ExperienceGainExempt && !grp.Group.Disabled  && grp.Group.ChannelGroupType == ChannelGroupType.CHECKS).FirstOrDefault() != null;
         }
 
         public static readonly string STARBOARD = "starboard";

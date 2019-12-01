@@ -516,8 +516,10 @@ namespace OnePlusBot.Modules
           {
             var modules = db.Modules;
             foreach(var module in modules){
-              var commandsInModule = db.Commands.Include(c => c.GroupsCommandIsIn).Where(coChGrp => coChGrp.ModuleId == module.ID);
-              var commandGroups = Global.CommandChannelGroups.Where(chg => chg.CommandReference.ModuleId == module.ID);
+              var commandsInModule = db.Commands.Include(c => c.GroupsCommandIsIn)
+              .ThenInclude(grp => grp.ChannelGroupReference)
+              .ThenInclude(grp => grp.Channels)
+              .Where(coChGrp => coChGrp.ModuleId == module.ID);
               sb.Append($"\n Module: {module.Name} \n");
               if(commandsInModule.Any())
               {

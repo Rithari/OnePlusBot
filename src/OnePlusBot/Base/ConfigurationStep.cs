@@ -185,7 +185,14 @@ namespace OnePlusBot.Base {
             {
                 if(actionToExecute.Emote.Equals(emote))
                 {
-                    await actionToExecute.Action(this);
+                    try
+                    {
+                      await actionToExecute.Action(this);
+                    }
+                    catch(Exception e)
+                    {
+                      await Context.Channel.SendMessageAsync(e.Message);
+                    }
                     break;
                 }
             }

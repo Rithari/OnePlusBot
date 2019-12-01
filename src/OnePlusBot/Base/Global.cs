@@ -33,7 +33,7 @@ namespace OnePlusBot.Base
 
         public static List<InviteLink> InviteLinks { get; set; }
 
-        public static List<CommandInChannelGroup> CommandChannelGroups { get; set; }
+        public static List<Command> Commands { get; set; }
 
         public static ulong CommandExecutorId { get; set; }
 
@@ -120,7 +120,7 @@ namespace OnePlusBot.Base
             ModMailThreads = new List<ModMailThread>();
             ReportedProfanities = new List<UsedProfanity>();
             RuntimeExp = new ConcurrentDictionary<long, List<ulong>>();
-            CommandChannelGroups = new List<CommandInChannelGroup>();
+            Commands = new  List<Command>();
             LoadGlobal();
         }
 
@@ -250,11 +250,8 @@ namespace OnePlusBot.Base
                 FAQCommandChannels = ReadChannels;
                 FAQCommands = db.FAQCommands.ToList();
 
-                CommandChannelGroups = db.CommandInChannelGroups
-                .Include(comIChGrp => comIChGrp.ChannelGroupReference)
-                .Include(comIChGrp => comIChGrp.ChannelGroupReference.Channels)
-                .Include(comIChGrp => comIChGrp.CommandReference)
-                .Include(comIChGrp => comIChGrp.CommandReference.Module).ThenInclude(mo => mo.Commands)
+                Commands = db.Commands
+                .Include(co => co.GroupsCommandIsIn).ThenInclude(grp => grp.ChannelGroupReference).ThenInclude(ch => ch.Channels)
                 .ToList();
             }
 
@@ -262,7 +259,7 @@ namespace OnePlusBot.Base
         }
 
         public static class OnePlusEmote {
-            public static IEmote SUCCESS = Emote.Parse("<:success:499567039451758603>");
+            public static IEmote SUCCESS = Emote.Parse("<:snow_avasnow_avasnow_avasnow_ava:604671718254182411>");
             public static IEmote FAIL = new Emoji("⚠");
             public static IEmote OP_YES =  Emote.Parse("<:OPYes:426070836269678614>");
             public static IEmote OP_NO = Emote.Parse("<:OPNo:426072515094380555>");

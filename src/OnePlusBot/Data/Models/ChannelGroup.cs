@@ -26,8 +26,25 @@ namespace OnePlusBot.Data.Models
         [Column("disabled")]
         public bool Disabled { get; set; }
 
+        [Column("channel_group_type")]
+        public string ChannelGroupType { get; set; }
 
         public virtual ICollection<ChannelInGroup> Channels { get; set; }
+
+        public virtual ICollection<CommandInChannelGroup> Commands { get; set; }     
       
     }
+
+      public static class ChannelGroupType {
+          public static string CHECKS = "CHECKS";
+
+          public static string FAQ = "FAQ";
+          
+          public static string COMMANDS = "COMMANDS";
+
+          public static List<string> TYPES =
+                              new List<string> { 
+                               CHECKS, FAQ, COMMANDS
+                              };
+        }
 }

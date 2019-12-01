@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System;
 using System.Threading.Tasks;
 using Discord;
@@ -15,7 +16,7 @@ namespace OnePlusBot.Base
 {
     public class ChannelManager
     {
-        public void createChannelGroup(string name)
+        public void createChannelGroup(string name, string type)
         {
             using(var db = new Database())
             {
@@ -26,6 +27,7 @@ namespace OnePlusBot.Base
                 }
                 var channelGroup = new ChannelGroup();
                 channelGroup.Name = name;
+                channelGroup.ChannelGroupType = type;
                 db.ChannelGroups.Add(channelGroup);
                 
                 db.SaveChanges();
@@ -185,20 +187,35 @@ namespace OnePlusBot.Base
             }
         }
 
-        public Collection<Embed> GetChannelListEmbed()
+        /// <summary>
+        /// Renders the configured channel groups of the given type (if type is null, all of them) into a collection of embeds.
+        /// Included information is: xp disabled, profanity check disabled, invite check disabled, whether or not the group is disabled and the type of the group
+        /// </summary>
+        /// <param name="type">The type of group you want to render, if null, it will render all</param>
+        /// <returns>Collection of <see cref="Discord.Embed"> representing the channel groups </returns>
+        public Collection<Embed> GetChannelListEmbed(string type)
         {
             Collection<Embed> embedsToPost = new Collection<Embed>();
             using(var db = new Database())
             {
                 var currentEmbedBuilder = new EmbedBuilder();
                 currentEmbedBuilder.WithTitle("Available channel groups");
-                var channelGroups = db.ChannelGroups.Include(ch => ch.Channels).ToList();
+                List<ChannelGroup> channelGroups;
+                if(type != null)
+                {
+                   channelGroups = db.ChannelGroups.Where(grp => grp.ChannelGroupType == type).Include(ch => ch.Channels).ToList();
+                }
+                else
+                {
+                  channelGroups = db.ChannelGroups.Include(ch => ch.Channels).ToList();
+                }
+               
                 var count = 0;
                 foreach(var group in channelGroups)
                 {
                     count++;
                     var disabledIndicator = group.Disabled ? " (Disabled)" : "";
-                    currentEmbedBuilder.AddField($"**{group.Name}**{disabledIndicator}, XP exempt: {group.ExperienceGainExempt}  Profanity check exempt: {group.ProfanityCheckExempt}, InviteCheck exempt: {group.InviteCheckExempt}", getChannelsAsMentions(group.Channels));
+                    currentEmbedBuilder.AddField($"**{group.Name}** {group.ChannelGroupType} {disabledIndicator}, XP exempt: {group.ExperienceGainExempt}  Profanity check exempt: {group.ProfanityCheckExempt}, InviteCheck exempt: {group.InviteCheckExempt}", getChannelsAsMentions(group.Channels));
                     if(((count % EmbedBuilder.MaxFieldCount) == 0) && group != channelGroups.Last())
                     {
                         embedsToPost.Add(currentEmbedBuilder.Build());
@@ -212,9 +229,9 @@ namespace OnePlusBot.Base
             return embedsToPost;
         }
 
-        public async Task ListChannelGroups(ISocketMessageChannel channelToRespondIn)
+        public async Task ListChannelGroups(ISocketMessageChannel channelToRespondIn, string type)
         {
-            var embedsToPost = GetChannelListEmbed();
+            var embedsToPost = GetChannelListEmbed(type);
             foreach(Embed embed in embedsToPost)
             {
                 await channelToRespondIn.SendMessageAsync(embed: embed);
@@ -243,7 +260,7 @@ namespace OnePlusBot.Base
                 var xpDisabled = false;
                 foreach(var groupMember in perms)
                 {
-                    if(!groupMember.Group.Disabled)
+                    if(!groupMember.Group.Disabled && groupMember.Group.ChannelGroupType == ChannelGroupType.CHECKS)
                     {
                         profanityDisabled |= groupMember.Group.ProfanityCheckExempt;
                         inviteLinksDisabled |= groupMember.Group.InviteCheckExempt;
@@ -280,22 +297,46 @@ namespace OnePlusBot.Base
             }
         }
 
-        public async Task ListCommandsWithGroups(ISocketMessageChannel channelToRespondIn)
+        public void ChangeChannelGroupTypeTo(string groupName, string newType)
+        {
+          if(!ChannelGroupType.TYPES.Where(n => n == newType).Any())
+          {
+            throw new ConfigurationException("Group type not valid");
+          }
+          using(var db = new Database())
+          {
+            var channelGroup = db.ChannelGroups.Where(grp => grp.Name == groupName);
+            if(!channelGroup.Any())
+            {
+              throw new NotFoundException("Channel group not found");
+            }
+            channelGroup.First().ChannelGroupType = newType;
+            db.SaveChanges();
+          }
+        }
+
+        public async Task ListGroupsWithCommands(ISocketMessageChannel channelToRespondIn)
         {
           EmbedBuilder builder = new EmbedBuilder();
           builder.WithTitle("Command channel group overview");
           StringBuilder sb = new StringBuilder();
           using(var db = new Database()){
-            var commands = db.Commands.Include(c => c.GroupsCommandIsIn).ThenInclude(g => g.ChannelGroupReference);
-            foreach(var cmd in commands){
-              sb.Append($"{cmd.Name}: ");
-              if(cmd.GroupsCommandIsIn == null || cmd.GroupsCommandIsIn.Count() == 0){
-                sb.Append("No groups.\n");
+            var commandGroups = db.ChannelGroups.Include(grp => grp.Commands).ThenInclude(ch => ch.CommandReference);
+            foreach(var grp in commandGroups)
+            {
+              var disabledPart = grp.Disabled ? "(Disabled)" : "";
+              sb.Append($"{grp.Name} {grp.ChannelGroupType} {disabledPart}: ");
+              if(grp.Commands == null || grp.Commands.Count() == 0){
+                sb.Append("No commands.\n");
                 continue;
               }
-              foreach(var group in cmd.GroupsCommandIsIn){
-                var disabledPart = group.Disabled ? "(Disabled)" : "";
-                sb.Append($"`{group.ChannelGroupReference.Name}` {disabledPart},");
+              foreach(var cmd in grp.Commands)
+              {
+                var commandDisabledPart = cmd.Disabled ? "(Disabled)" : "";
+                sb.Append($"`{cmd.CommandReference.Name}` {commandDisabledPart}");
+                if(cmd != grp.Commands.Last()){
+                  sb.Append(", ");
+                }
               }
               sb.Append("\n");
              

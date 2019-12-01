@@ -165,7 +165,7 @@ namespace OnePlusBot.Modules
             };
 
             channelStep.beforeTextPosted = async (ConfigurationStep step) => {
-                var embeds = new ChannelManager().GetChannelListEmbed();
+                var embeds = new ChannelManager().GetChannelListEmbed(ChannelGroupType.FAQ);
                 foreach(var embed in embeds)
                 {
                     var postedMessage = await Context.Channel.SendMessageAsync(embed: embed);
@@ -183,7 +183,7 @@ namespace OnePlusBot.Modules
                     var groupNames = text.Split(' ');
                     bool foundAnyMatchingGroup = false;
                     foreach(var groupName in groupNames){
-                        var channelGroup = db.ChannelGroups.Where(ch => ch.Name == groupName).FirstOrDefault();
+                        var channelGroup = db.ChannelGroups.Where(ch => ch.Name == groupName && ch.ChannelGroupType == ChannelGroupType.FAQ).FirstOrDefault();
 
                         if(channelGroup != null)
                         {

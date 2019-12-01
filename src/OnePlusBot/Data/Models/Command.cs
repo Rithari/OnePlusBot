@@ -28,7 +28,19 @@ namespace OnePlusBot.Data.Models
 
         public bool CommandEnabled(ulong channelId)
         {
-            return this.GroupsCommandIsIn.Where(grp => !grp.Disabled && grp.ChannelGroupReference.Channels.Where(ch => ch.ChannelId == channelId).Any()).Any();
+            bool result = false;
+            var cmdGroups = this.GroupsCommandIsIn.Where(grp => grp.ChannelGroupReference.ChannelGroupType == ChannelGroupType.COMMANDS
+                                                          && !grp.ChannelGroupReference.Disabled
+                                                          && grp.ChannelGroupReference.Channels.Where(ch => ch.ChannelId == channelId).Any());
+            if(cmdGroups.Any())
+            {
+              result = this.GroupsCommandIsIn.Where(grp => !grp.Disabled).Any();
+            }
+            else 
+            {
+              result = true;
+            }
+          return result;
         }
     }
 }
