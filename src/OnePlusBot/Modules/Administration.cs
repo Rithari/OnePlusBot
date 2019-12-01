@@ -685,12 +685,17 @@ namespace OnePlusBot.Modules
             return CustomResult.FromSuccess();
         }
 
+        /// <summary>
+        /// Sets the flag of the command identified by the given name in the channel group identified by the given group name to the given value
+        /// </summary>
+        /// <exception cref="OnePlusBot.Base.Errors.NotFoundException">In case no channel group or command with that name is found</exception>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
             Command("disableCommand"),
             Summary("Disables command in a specified channel group"),
             RequireRole(new string[]{"admin", "founder"})
         ]
-        public async Task<RuntimeResult> SetExpGainEnabled(string commandName, string channelGroupName, bool newValue)
+        public async Task<RuntimeResult> DisableCommandInGroup(string commandName, string channelGroupName, bool newValue)
         {
             using(var db = new Database())
             {

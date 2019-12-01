@@ -26,6 +26,15 @@ namespace OnePlusBot.Data.Models
         public virtual ICollection<CommandInChannelGroup> GroupsCommandIsIn { get; set; }
 
 
+        /// <summary>
+        /// Returns wheter or not the command should be considered enabled.
+        /// A command is enabled if:
+        /// its not configured in any channel group of type COMMANDS
+        /// its configured in *any* channel group of type COMMANDS, but its enabled in this group
+        /// its configured for groups of type COMMANDS, but these groups are disabled
+        /// </summary>
+        /// <param name="channelId">The id of the channel to check for</param>
+        /// <returns>bool wheter or not this command is enabled</returns>
         public bool CommandEnabled(ulong channelId)
         {
             bool result = false;

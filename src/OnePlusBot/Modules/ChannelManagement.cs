@@ -14,6 +14,11 @@ namespace OnePlusBot.Modules
     public class Channels : InteractiveBase<SocketCommandContext>
     {
 
+        /// <summary>
+        /// Command responsibel for creating a channel group
+        /// </summary>
+        /// <param name="groupName">The name of the channel group to create</param>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
             Command("createChannelGroup", RunMode = RunMode.Async),
             Summary("Creates a channel group to be used in other areas"),
@@ -206,6 +211,11 @@ namespace OnePlusBot.Modules
             return CustomResult.FromSuccess();
         }
 
+
+        /// <summary>
+        /// Command used to display the groups of type COMMANDS, and the respective commands configured to be in this group
+        /// </summary>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
             Command("listGroupCommands"),
             Summary("Lists the groups which have specific commands defined for them"),
@@ -219,6 +229,12 @@ namespace OnePlusBot.Modules
             return CustomResult.FromSuccess();
         }
 
+
+        /// <summary>
+        /// Command used to change the type of a channel group
+        /// </summary>
+        /// <param name="groupName">The name of the channel group to change the type for</param>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
             Command("changeGroupType", RunMode = RunMode.Async),
             Summary("Changes the type of a group"),

@@ -16,6 +16,13 @@ namespace OnePlusBot.Base
 {
     public class ChannelManager
     {
+        /// <summary>
+        /// Creates the channel group in the database with the given channel group type
+        /// </summary>
+        /// <param name="name">The name of the channel group which should be created</param>
+        /// <param name="type">The type of the channel group to create</param>
+        /// <exception cref="OnePlusBot.Base.Errors.ConfigurationException">In case a channel group already exists with this name</exception>
+      
         public void createChannelGroup(string name, string type)
         {
             using(var db = new Database())
@@ -23,7 +30,7 @@ namespace OnePlusBot.Base
                 var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
                 if(existingGroup != null)
                 {
-                    throw new NotFoundException("Channel group with name already exists.");
+                    throw new ConfigurationException("Channel group with name already exists.");
                 }
                 var channelGroup = new ChannelGroup();
                 channelGroup.Name = name;
@@ -229,6 +236,12 @@ namespace OnePlusBot.Base
             return embedsToPost;
         }
 
+        /// <summary>
+        /// Creates the embeds containing the channels from the given group and posts them towards the given channel
+        /// </summary>
+        /// <param name="channelToRespondIn">The <see cref="Discord.WebSocket.ISocketMessageChannel"> object where the embeds should be posted towards</param>
+        /// <param name="type">The of the channel groups to display</param>
+        /// <returns>Task</returns>
         public async Task ListChannelGroups(ISocketMessageChannel channelToRespondIn, string type)
         {
             var embedsToPost = GetChannelListEmbed(type);
@@ -297,6 +310,13 @@ namespace OnePlusBot.Base
             }
         }
 
+        /// <summary>
+        /// Changes the type of the channel group identified by the channel group name to the given channel group type (if its a valid one)
+        /// </summary>
+        /// <param name="groupName">The name of the group to change the type for</param>
+        /// <param name="newType">The type the group should be changed to (needs to be a valid group type)</param>
+        /// <exception cref="OnePlusBot.Base.Errors.ConfigurationException">In case the type is not valid</exception>
+        /// <exception cref="OnePlusBot.Base.Errors.NotFoundException">In case no channel group with that name is found</exception>
         public void ChangeChannelGroupTypeTo(string groupName, string newType)
         {
           if(!ChannelGroupType.TYPES.Where(n => n == newType).Any())
@@ -315,6 +335,12 @@ namespace OnePlusBot.Base
           }
         }
 
+        /// <summary>
+        /// Creates embed and posts the embeds towards the given channel containing information about all the channel groups of type COMMAND.
+        /// In case there are channels configured for this group, they get printed as well.
+        /// </summary>
+        /// <param name="channelToRespondIn">The <see cref="Discord.WebSocket.ISocketMessageChannel"> object where the embeds should be posted towards</param>
+        /// <returns>Task</returns>
         public async Task ListGroupsWithCommands(ISocketMessageChannel channelToRespondIn)
         {
           EmbedBuilder builder = new EmbedBuilder();

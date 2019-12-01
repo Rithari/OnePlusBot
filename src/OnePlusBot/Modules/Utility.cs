@@ -502,6 +502,10 @@ namespace OnePlusBot.Modules
             return CustomResult.FromSuccess();
         }
 
+        /// <summary>
+        /// Command used to show the currently availble commands for the current channel, or for the given channel
+        /// </summary>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
             Command("availableCommands"),
             Summary("Shows the available commands for the current (or given channel) channel")

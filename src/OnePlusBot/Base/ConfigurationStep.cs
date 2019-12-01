@@ -177,6 +177,11 @@ namespace OnePlusBot.Base {
            
         }
 
+        /// <summary>
+        /// Checks what kind of action should be taked based on the kind of reaction which was added to the message
+        /// </summary>
+        /// <param name="reaction">The <see cref="Discord.WebSocket.SocketReaction"> reaction which was added by the user</param>
+        /// <returns></returns>
         public async Task<bool> HandleCallbackAsync(SocketReaction reaction)
         {
             await RemoveMessagesOnNextProgression();

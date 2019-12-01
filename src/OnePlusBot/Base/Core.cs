@@ -126,6 +126,10 @@ namespace OnePlusBot.Base
             RemoveReactionActions.Add(new StarboardRemovedReactionAction());
         }
 
+        /// <summary>
+        /// Synchronizes the state of the "Command" and "CommandModule" table in the database with the currently available commands/modules
+        /// </summary>
+        /// <param name="commandHandler">Reference to the <see cref="Discord.Commands.CommandService"> service containing information about the currently available commands</param>
         private static void UpdateCommandsInDb(CommandService commandHandler)
         {
           using(var db = new Database())
@@ -160,10 +164,12 @@ namespace OnePlusBot.Base
               }
               db.SaveChanges();
               var commandsInDb = db.Modules.Include(mo => mo.Commands).Where(mo => mo.Name == module.Name).FirstOrDefault();
-              if(commandsInDb != null){
+              if(commandsInDb != null)
+              {
                 var commandsToDelete = new List<Command>();
                 foreach(var command in commandsInDb.Commands)
                 {
+                    // the command exists in the db, but is not found in the module, we need to delete it
                    if(!module.Commands.Where(co => co.Name == command.Name).Any()) 
                    {
                     commandsToDelete.Add(command);
@@ -171,6 +177,7 @@ namespace OnePlusBot.Base
                 }
                 foreach(var toDelete in commandsToDelete)
                 {
+                  // also delete the channel group configuration for this commands, else the foreign keys fail
                   db.CommandInChannelGroups.RemoveRange(db.CommandInChannelGroups.Where(co => co.CommandID == toDelete.ID));
                   commandsInDb.Commands.Remove(toDelete);
                 }
