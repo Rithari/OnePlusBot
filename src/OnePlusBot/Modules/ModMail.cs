@@ -7,6 +7,7 @@ using OnePlusBot.Helpers;
 using OnePlusBot.Data.Models;
 using OnePlusBot.Data;
 using Discord;
+using System.Runtime.InteropServices;
 
 namespace OnePlusBot.Modules
 {
@@ -93,6 +94,12 @@ namespace OnePlusBot.Modules
             return CustomResult.FromSuccess();
         }
 
+
+        /// <summary>
+        /// Closes the thread with the given note
+        /// </summary>
+        /// <param name="note">Note to be used for logging</param>
+        /// <returns>Result whether or not the closing was successful</returns>
         [
             Command("close", RunMode = RunMode.Async),
             Summary("Closes the modmail thread"),
@@ -100,9 +107,26 @@ namespace OnePlusBot.Modules
             RequireBotPermission(GuildPermission.ManageChannels),
             RequireModMailContext
         ]
-        public async Task<RuntimeResult> CloseThread([Remainder] string note)
+        public async Task<RuntimeResult> CloseThread([Optional] [Remainder] string note)
         {
-            await new ModMailManager().CloseThread(Context.Message, Context.Channel, Context.User, note);
+            await new ModMailManager().CloseThread(Context.Channel, note);
+            return CustomResult.FromIgnored();
+        }
+
+        /// <summary>
+        /// Closes the thread silently with the given note
+        /// </summary>
+        /// <param name="note">Note to be used for logging</param>
+        /// <returns>Result whether or not the closing was succesful</returns>
+        [
+            Command("closeSilently", RunMode = RunMode.Async),
+            Summary("Closes the thread without notifying the user"),
+            RequireRole("staff"),
+            RequireModMailContext
+        ]
+        public async Task<RuntimeResult> CloseThreadSilently([Optional] [Remainder] string note)
+        {
+            await new ModMailManager().CloseThreadSilently(Context.Channel, note);
             return CustomResult.FromIgnored();
         }
 

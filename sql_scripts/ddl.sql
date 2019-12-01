@@ -310,6 +310,7 @@ CREATE TABLE `ThreadMessage` (
 -- Table structure for table `ChannelGroups`
 --
 
+DROP TABLE IF EXISTS `ChannelGroups`;
 CREATE TABLE `ChannelGroups` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -324,11 +325,13 @@ CREATE TABLE `ChannelGroups` (
 -- Table structure for table `ChannelInGroup`
 --
 
+DROP TABLE IF EXISTS `ChannelInGroup`;
 CREATE TABLE `ChannelInGroup` (
  `channel_id` bigint(20) unsigned NOT NULL,
  `channel_group_id` int(10) unsigned NOT NULL,
  PRIMARY KEY (`channel_id`,`channel_group_id`),
  KEY `fk_group_id` (`channel_group_id`),
+ CONSTRAINT `fk_channel_id_ref` FOREIGN KEY (`channel_id`) REFERENCES `Channels` (`channel_id`),
  CONSTRAINT `fk_group_id` FOREIGN KEY (`channel_group_id`) REFERENCES `ChannelGroups` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -336,6 +339,7 @@ CREATE TABLE `ChannelInGroup` (
 -- Table structure for table `PostTargets`
 --
 
+DROP TABLE IF EXISTS `PostTargets`;
 CREATE TABLE `PostTargets` (
  `channel_id` bigint(20) unsigned NOT NULL,
  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -377,5 +381,33 @@ CREATE TABLE `CommandInChannelGroup` (
  CONSTRAINT `fk_channel_group_reference` FOREIGN KEY (`channel_group_id`) REFERENCES `ChannelGroups` (`id`),
  CONSTRAINT `fk_command_reference` FOREIGN KEY (`command_id`) REFERENCES `Commands` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+
+--
+-- Table structure for table `ExperienceRoles`
+--
+
+DROP TABLE IF EXISTS `ExperienceRoles`;
+CREATE TABLE `ExperienceRoles` (
+ `role_id` bigint(20) unsigned NOT NULL,
+ `level` int(10) unsigned NOT NULL,
+ `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+ PRIMARY KEY (`id`),
+ KEY `fk_level` (`level`),
+ KEY `fk_role` (`role_id`),
+ CONSTRAINT `fk_level` FOREIGN KEY (`level`) REFERENCES `ExperienceLevels` (`level`),
+ CONSTRAINT `fk_role` FOREIGN KEY (`role_id`) REFERENCES `Roles` (`role_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `ExperienceRoles`
+--
+
+DROP TABLE IF EXISTS `ExperienceLevels`;
+CREATE TABLE `ExperienceLevels` (
+ `level` int(10) unsigned NOT NULL,
+ `needed_experience` bigint(20) unsigned NOT NULL,
+ PRIMARY KEY (`level`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 SET FOREIGN_KEY_CHECKS=1;
