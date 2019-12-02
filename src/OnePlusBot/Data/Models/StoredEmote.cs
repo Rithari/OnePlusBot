@@ -32,8 +32,10 @@ namespace OnePlusBot.Data.Models
 
         public virtual ICollection<ReactionRole> EmoteReaction { get; set; }
 
-        public IEmote GetAsEmote(){
-          if(Custom){
+        public IEmote GetAsEmote()
+        {
+          if(Custom)
+          {
              var animatedPart = this.Amimated ? "a" : "";
             return Emote.Parse($"<{animatedPart}:{Name}:{EmoteId}>");
           }

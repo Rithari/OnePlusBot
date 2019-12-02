@@ -521,7 +521,7 @@ namespace OnePlusBot.Base
                     }
                     else
                     {
-                        await context.Message.AddReactionAsync(Global.OnePlusEmote.FAIL);
+                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.FAIL].GetAsEmote());
                         await context.Channel.SendMessageAsync(conditionResult.ErrorReason);
                     }
                     break;
@@ -536,7 +536,7 @@ namespace OnePlusBot.Base
                     }
                     else
                     {
-                        await context.Message.AddReactionAsync(Global.OnePlusEmote.FAIL);
+                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.FAIL].GetAsEmote());
                         await context.Channel.SendMessageAsync(customResult.Reason);
                     }
                     break;
@@ -548,7 +548,7 @@ namespace OnePlusBot.Base
                     if (result.ErrorReason == "Unknown command.")
                     return;
 
-                    await context.Message.AddReactionAsync(Global.OnePlusEmote.FAIL);                 
+                    await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.FAIL].GetAsEmote());                 
 
                     await context.Channel.SendMessageAsync(result.ErrorReason);
                     return;

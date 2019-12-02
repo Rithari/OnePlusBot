@@ -8,7 +8,8 @@ using System.Collections.Generic;
    
 namespace OnePlusBot.Base
 {
-  public class SelfAssignabeRolesManager {
+  public class SelfAssignabeRolesManager 
+  {
     public async Task SetupInfoPost(){
       var infoChannelId = Global.Channels[Channel.INFO];
       var guild = Global.Bot.GetGuild(Global.ServerID);

@@ -15,10 +15,8 @@ namespace OnePlusBot.Data.Models
         [Column("area")]
         public string Area { get; set; }
 
-
         [ForeignKey("RoleID")]
         public virtual Role RoleReference { get; set; }
-
 
         [ForeignKey("EmoteId")]
         public virtual StoredEmote EmoteReference { get; set; }

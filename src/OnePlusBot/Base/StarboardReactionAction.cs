@@ -21,7 +21,7 @@ namespace OnePlusBot.Base
         protected bool RelationAdded = false;
         public Boolean ActionApplies(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction)
         {
-            return reaction.Emote.Equals(Global.OnePlusEmote.STAR) && message.Author.Id != reaction.UserId;
+            return reaction.Emote.Equals(Global.Emotes[Global.OnePlusEmote.STAR].GetAsEmote()) && message.Author.Id != reaction.UserId;
         }
         public virtual async Task Execute(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction) 
         {
@@ -129,25 +129,25 @@ namespace OnePlusBot.Base
 
         private string GetStarboardMessage(IUserMessage message, KeyValuePair<IEmote, ReactionMetadata> reactionInfo, IReaction reaction, int starCount)
         {
-            var emote = Global.OnePlusEmote.STAR.Name;
+            var emote = Global.Emotes[Global.OnePlusEmote.STAR].GetAsEmote();
             if(starCount >= (int) Global.Level2Stars)
             {
-                emote = Global.OnePlusEmote.LVL_2_STAR.Name;
+                emote = Global.Emotes[Global.OnePlusEmote.LVL_2_STAR].GetAsEmote();
             }
             if(starCount >= (int) Global.Level3Stars)
             {
-                emote = Global.OnePlusEmote.LVL_3_STAR.Name;
+                emote = Global.Emotes[Global.OnePlusEmote.LVL_3_STAR].GetAsEmote();
             }
             if(starCount >= (int) Global.Level4Stars)
             {
-                emote = Global.OnePlusEmote.LVL_4_STAR.ToString();
+                emote = Global.Emotes[Global.OnePlusEmote.LVL_4_STAR].GetAsEmote();
             }
             return $"{emote} {starCount} <#{message.Channel.Id}> ID: {message.Id}"; 
         }
 
         private async Task<int> GetTrueStarCount(IUserMessage message, KeyValuePair<IEmote, ReactionMetadata> starReaction)
         {
-            var reactions = message.GetReactionUsersAsync(Global.OnePlusEmote.STAR, starReaction.Value.ReactionCount);
+            var reactions = message.GetReactionUsersAsync(Global.Emotes[Global.OnePlusEmote.STAR].GetAsEmote(), starReaction.Value.ReactionCount);
             var validReactions = 0;
             await reactions.ForEachAsync(collection =>
             {
@@ -174,7 +174,7 @@ namespace OnePlusBot.Base
                 if(this.TriggeredThreshold)
                 {
                     var currentStarReaction = message.Reactions.Where(re => re.Key.Name == reaction.Emote.Name).DefaultIfEmpty().First();
-                    var reactions = message.GetReactionUsersAsync(Global.OnePlusEmote.STAR, currentStarReaction.Value.ReactionCount);
+                    var reactions = message.GetReactionUsersAsync(Global.Emotes[Global.OnePlusEmote.STAR].GetAsEmote(), currentStarReaction.Value.ReactionCount);
                     await reactions.ForEachAsync(collection =>
                     {
                         foreach(var user in collection)

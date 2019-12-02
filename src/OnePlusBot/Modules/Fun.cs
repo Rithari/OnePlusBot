@@ -240,7 +240,7 @@ namespace OnePlusBot.Modules
                 stringBuilder.Append(" - ");
                 stringBuilder.Append(element.Value);
                 stringBuilder.Append(" ");
-                stringBuilder.Append(Global.OnePlusEmote.STAR);
+                stringBuilder.Append(Global.Emotes[Global.OnePlusEmote.STAR].GetAsEmote());
                 stringBuilder.Append(" ");
                 stringBuilder.Append(userReference);
                 stringBuilder.Append(Environment.NewLine);
@@ -263,7 +263,7 @@ namespace OnePlusBot.Modules
                 stringBuilder.Append(" - ");
                 stringBuilder.Append(element.Starcount);
                 stringBuilder.Append(" ");
-                stringBuilder.Append(Global.OnePlusEmote.STAR);
+                stringBuilder.Append(Global.Emotes[Global.OnePlusEmote.STAR].GetAsEmote());
                 stringBuilder.Append(" ");
                 stringBuilder.Append(Extensions.GetMessageUrl(Global.ServerID, starBoardChannelId, element.StarboardMessageId, "Jump!"));
                 stringBuilder.Append(Environment.NewLine);

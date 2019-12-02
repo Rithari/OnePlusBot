@@ -251,14 +251,14 @@ namespace OnePlusBot.Base
 
         public static class OnePlusEmote {
             public static string SUCCESS = "SUCCESS";
-            public static IEmote FAIL = new Emoji("⚠");
+            public static string FAIL = "FAIL";
             public static string OP_YES =  "OP_YES";
             public static string OP_NO = "OP_NO";
 
-            public static IEmote STAR = new Emoji("⭐");
-            public static IEmote LVL_2_STAR = new Emoji("🌟");
+            public static string STAR = "STAR";
+            public static string LVL_2_STAR = "LVL_2_STAR";
 
-            public static IEmote LVL_3_STAR = new Emoji("💫");
+            public static string LVL_3_STAR = "LVL_3_STAR";
 
             public static string LVL_4_STAR = "LVL_4_STAR";
 
