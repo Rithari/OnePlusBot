@@ -1,92 +1,117 @@
 using System;
 using Discord;
-using Discord.Commands;
+using OnePlusBot.Data;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using OnePlusBot.Data.Models;
 
 namespace OnePlusBot.Base
 {
     public class RemoveRoleReactionAction : IReactionAction
     {
+        /// <summary>
+        /// Checks wheter or not the added reaction should be handled by this action
+        /// </summary>
+        /// <param name="message">The <see cref="Discord.IUserMessage"> object containing the info message reponsible for handling the info post</param>
+        /// <param name="channel">The <see cref="Discord.WebSocket.ISocketMessageChannel"> info context channel</param>
+        /// <param name="reaction">The <see cref="Discord.WebSocket.SocketReaction"> object containing the added reaction</param>
+        /// <returns>boolean whether or not this action should be executed</returns>
         public Boolean ActionApplies(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction)
         {
-            return reaction.MessageId == Global.RoleManagerMessageId;
+            return reaction.MessageId == Global.InfoRoleManagerMessageId;
         }
+
+        /// <summary>
+        /// Removes the mapped role from the user reacting to the message in info (devices/helper/news)
+        /// </summary>
+        /// <param name="message">The <see cref="Discord.IUserMessage"> object containing the info message reponsible for handling the info post</param>
+        /// <param name="channel">The <see cref="Discord.WebSocket.ISocketMessageChannel"> info context channel</param>
+        /// <param name="reaction">The <see cref="Discord.WebSocket.SocketReaction"> object containing the added reaction</param>
+        /// <returns>Task</returns>
         public async Task Execute(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction) 
         {
-            var dict = new Dictionary<string, string> //TODO: Change from string to emote and role IDs
+            if(!(channel is IGuildChannel))
             {
-                { "1_", "OnePlus One" },
-                { "2_", "OnePlus 2" },
-                { "X_", "OnePlus X" },
-                { "3_", "OnePlus 3" },
-                { "3T", "OnePlus 3T" },
-                { "5_", "OnePlus 5" },
-                { "5T", "OnePlus 5T" },
-                { "6_", "OnePlus 6" },
-                { "6T", "OnePlus 6T" },
-                { "7_", "OnePlus 7" },
-                { "7P", "OnePlus 7 Pro" },
-                { "7T", "OnePlus 7T" },
-                { "7TP", "OnePlus 7T Pro" },
-                { "\x2753", "Helper" },
-                { "\xD83D\xDCF0", "News" }
-            };
-
-            if (dict.TryGetValue(reaction.Emote.Name, out string roleName))
-            {
-                var guild = ((IGuildChannel) channel).Guild;
-                var role = guild.Roles.FirstOrDefault(x => x.Name == roleName);
-                if (role != null)
-                {
-                    var user = (IGuildUser) reaction.User.Value;
-                    await user.RemoveRoleAsync(role);
-                }
+              return;
             }
-            await Task.CompletedTask;
+            var guildChannel = (IGuildChannel) channel;
+            var isCustom = !(reaction.Emote is Emoji);
+            using(var db = new Database())
+            {
+              IQueryable<ReactionRole> appropriateRole;
+              if(isCustom)
+              {
+                var emote = reaction.Emote as Emote;
+                appropriateRole = db.ReactionRoles.Include(ro => ro.EmoteReference).Where(ro => ro.EmoteReference.EmoteId == emote.Id);
+              }
+              else
+              {
+                var emoji = reaction.Emote as Emoji;
+                appropriateRole = db.ReactionRoles.Include(ro => ro.EmoteReference).Where(ro => ro.EmoteReference.Name == emoji.Name);
+              }
+              if(appropriateRole.Any())
+              {
+                var user = (IGuildUser) reaction.User.Value;
+                var role = guildChannel.Guild.GetRole(appropriateRole.First().RoleID);
+                await user.RemoveRoleAsync(role);
+              }
+             
+            }
         }
     }
 
     public class AddRoleReactionAction : IReactionAction
     {
+        /// <summary>
+        /// Checks wheter or not the added reaction should be handled by this action
+        /// </summary>
+        /// <param name="message">The <see cref="Discord.IUserMessage"> object containing the info message reponsible for handling the info post</param>
+        /// <param name="channel">The <see cref="Discord.WebSocket.ISocketMessageChannel"> info context channel</param>
+        /// <param name="reaction">The <see cref="Discord.WebSocket.SocketReaction"> object containing the added reaction</param>
+        /// <returns>boolean whether or not this action should be executed</returns>
         public Boolean ActionApplies(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction)
         {
-            return reaction.MessageId == Global.RoleManagerMessageId;
+            return reaction.MessageId == Global.InfoRoleManagerMessageId;
         }
+
+        /// <summary>
+        /// Gives the user reacting to the message in info the mapped role (devices/helper/news)
+        /// </summary>
+        /// <param name="message">The <see cref="Discord.IUserMessage"> object containing the info message reponsible for handling the info post</param>
+        /// <param name="channel">The <see cref="Discord.WebSocket.ISocketMessageChannel"> info context channel</param>
+        /// <param name="reaction">The <see cref="Discord.WebSocket.SocketReaction"> object containing the added reaction</param>
+        /// <returns>task</returns>
         public async Task Execute(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction) 
         {
-            var dict = new Dictionary<string, string> //TODO: Change from string to emote and role IDs
+            if(!(channel is IGuildChannel))
             {
-                { "1_", "OnePlus One" },
-                { "2_", "OnePlus 2" },
-                { "X_", "OnePlus X" },
-                { "3_", "OnePlus 3" },
-                { "3T", "OnePlus 3T" },
-                { "5_", "OnePlus 5" },
-                { "5T", "OnePlus 5T" },
-                { "6_", "OnePlus 6" },
-                { "6T", "OnePlus 6T" },
-                { "7_", "OnePlus 7" },
-                { "7P", "OnePlus 7 Pro" },
-                { "7T", "OnePlus 7T" },
-                { "7TP", "OnePlus 7T Pro" },
-                { "\x2753", "Helper" },
-                { "\xD83D\xDCF0", "News" }
-            };
-
-            if (dict.TryGetValue(reaction.Emote.Name, out string roleName))
-            {
-                var guild = ((IGuildChannel) channel).Guild;
-                var role = guild.Roles.FirstOrDefault(x => x.Name == roleName);
-                if (role != null)
-                {
-                    var user = (IGuildUser) reaction.User.Value;
-                    await user.AddRoleAsync(role);
-                }
+              return;
             }
-            await Task.CompletedTask;
+            var guildChannel = (IGuildChannel) channel;
+            var isCustom = !(reaction.Emote is Emoji);
+            using(var db = new Database())
+            {
+              IQueryable<ReactionRole> appropriateRole;
+              if(isCustom)
+              {
+                var emote = reaction.Emote as Emote;
+                appropriateRole = db.ReactionRoles.Include(ro => ro.EmoteReference).Where(ro => ro.EmoteReference.EmoteId == emote.Id);
+              }
+              else
+              {
+                var emoji = reaction.Emote as Emoji;
+                appropriateRole = db.ReactionRoles.Include(ro => ro.EmoteReference).Where(ro => ro.EmoteReference.Name == emoji.Name);
+              }
+              if(appropriateRole.Any())
+              {
+                var user = (IGuildUser) reaction.User.Value;
+                var role = guildChannel.Guild.GetRole(appropriateRole.First().RoleID);
+                await user.AddRoleAsync(role);
+              }
+            }
         }
     }
 }

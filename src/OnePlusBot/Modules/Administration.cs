@@ -685,6 +685,21 @@ namespace OnePlusBot.Modules
             return CustomResult.FromSuccess();
         }
 
+
+        /// <summary>
+        /// Creates the post in info responsible for managing the roles
+        /// </summary>
+        /// <returns>Task</returns>
+        [
+            Command("setupInfoPost"),
+            Summary("Sets up the info post to let user self assign the roles"),
+            RequireRole(new string[]{"admin", "founder"})
+        ]
+        public async Task<RuntimeResult> SetupInfoPost()
+        {
+            await new SelfAssignabeRolesManager().SetupInfoPost();
+            return CustomResult.FromSuccess();
+        }
         /// <summary>
         /// Sets the flag of the command identified by the given name in the channel group identified by the given group name to the given value
         /// </summary>

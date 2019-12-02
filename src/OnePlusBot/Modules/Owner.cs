@@ -23,7 +23,7 @@ namespace OnePlusBot.Modules
         ]
         public async Task ShutdownAsync()
         {
-            await Context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
+            await Context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.SUCCESS].GetAsEmote());
             Environment.Exit(0);
         }
 
@@ -62,7 +62,7 @@ namespace OnePlusBot.Modules
                         await sql.ExecuteNonQueryAsync();
                     }
                 }
-                await Context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
+                await Context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.SUCCESS].GetAsEmote());
             }
             catch
             {

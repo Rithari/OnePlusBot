@@ -351,6 +351,7 @@ CREATE TABLE `PostTargets` (
 -- Table structure for table `Commands`
 --
 
+DROP TABLE IF EXISTS `Commands`;
 CREATE TABLE `Commands` (
  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
  `name` text COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -362,6 +363,7 @@ CREATE TABLE `Commands` (
 -- Table structure for table `CommandModules`
 --
 
+DROP TABLE IF EXISTS `CommandModules`;
 CREATE TABLE `CommandModules` (
  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
  `name` text COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -372,6 +374,7 @@ CREATE TABLE `CommandModules` (
 -- Table structure for table `CommandInChannelGroup`
 --
 
+DROP TABLE IF EXISTS `CommandInChannelGroup`;
 CREATE TABLE `CommandInChannelGroup` (
  `command_id` int(10) unsigned NOT NULL,
  `channel_group_id` int(10) unsigned NOT NULL,
@@ -407,6 +410,36 @@ CREATE TABLE `ExperienceLevels` (
  `level` int(10) unsigned NOT NULL,
  `needed_experience` bigint(20) unsigned NOT NULL,
  PRIMARY KEY (`level`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `Emotes`
+--
+
+DROP TABLE IF EXISTS `Emotes`;
+CREATE TABLE `Emotes` (
+ `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+ `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+ `emote_key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+ `animated` tinyint(4) NOT NULL DEFAULT '0',
+ `emote_id` bigint(20) unsigned NOT NULL DEFAULT '0',
+ `custom` tinyint(4) NOT NULL DEFAULT '1',
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `ReactionRoles`
+--
+
+DROP TABLE IF EXISTS `Emotes`;
+CREATE TABLE `ReactionRoles` (
+ `emote_id` int(10) unsigned NOT NULL,
+ `role_id` bigint(20) unsigned NOT NULL,
+ `area` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+ PRIMARY KEY (`emote_id`,`role_id`),
+ KEY `fk_emote_role_ref` (`role_id`),
+ CONSTRAINT `fk_emote` FOREIGN KEY (`emote_id`) REFERENCES `Emotes` (`id`),
+ CONSTRAINT `fk_emote_role_ref` FOREIGN KEY (`role_id`) REFERENCES `Roles` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 

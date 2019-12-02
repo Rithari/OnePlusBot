@@ -155,8 +155,8 @@ namespace OnePlusBot.Modules
 
             await oldmessage.AddReactionsAsync(new IEmote[]
             {
-                Global.OnePlusEmote.OP_YES, 
-                Global.OnePlusEmote.OP_NO
+              Global.Emotes[Global.OnePlusEmote.OP_NO].GetAsEmote(), 
+              Global.Emotes[Global.OnePlusEmote.OP_YES].GetAsEmote()
             });
             
             await Context.Message.DeleteAsync();

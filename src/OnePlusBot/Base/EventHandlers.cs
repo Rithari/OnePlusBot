@@ -510,6 +510,13 @@ namespace OnePlusBot.Base
             await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.DELETE_LOG]).SendMessageAsync(embed: exceptionEmbed.Build());
         }
 
+        /// <summary>
+        /// Gets executed after a command has been completed. Reacts with either success reaction, a warn symbole accompanid with an error message or nothing, if the result is ignored.
+        /// </summary>
+        /// <param name="command">The <see cref="Discord.Commands.CommandInfo"> object which just finished executing</param>
+        /// <param name="context">The <see cref="Discord.ICommandContext"> in which the command finished executing</param>
+        /// <param name="result">The <see cref="Discord.Commands.IResult"> object containing the result of the command</param>
+        /// <returns></returns>
         private static async Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
             switch(result)
@@ -517,11 +524,11 @@ namespace OnePlusBot.Base
                 case PreconditionResult conditionResult:
                     if (conditionResult.IsSuccess)
                     {
-                        await context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
+                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.SUCCESS].GetAsEmote());
                     }
                     else
                     {
-                        await context.Message.AddReactionAsync(Global.OnePlusEmote.FAIL);
+                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.FAIL].GetAsEmote());
                         await context.Channel.SendMessageAsync(conditionResult.ErrorReason);
                     }
                     break;
@@ -532,11 +539,11 @@ namespace OnePlusBot.Base
                     }
                     if (customResult.IsSuccess)
                     {
-                        await context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
+                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.SUCCESS].GetAsEmote());
                     }
                     else
                     {
-                        await context.Message.AddReactionAsync(Global.OnePlusEmote.FAIL);
+                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.FAIL].GetAsEmote());
                         await context.Channel.SendMessageAsync(customResult.Reason);
                     }
                     break;
@@ -548,38 +555,13 @@ namespace OnePlusBot.Base
                     if (result.ErrorReason == "Unknown command.")
                     return;
 
-                    await context.Message.AddReactionAsync(Global.OnePlusEmote.FAIL);                 
+                    await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.FAIL].GetAsEmote());                 
 
                     await context.Channel.SendMessageAsync(result.ErrorReason);
                     return;
                  }
                 break;
             }
-        }
-
-        private static async Task RoleReact(IUserMessage message)
-        {
-            Global.RoleManagerMessageId = message.Id;
-
-            await message.AddReactionsAsync(new IEmote[]
-            {
-
-                Emote.Parse("<a:1_:623172008540110859>"),
-                Emote.Parse("<a:2_:623171995684831252>"),
-                Emote.Parse("<a:X_:623171985542742027>"),
-                Emote.Parse("<a:3_:623171978198777856>"),
-                Emote.Parse("<a:3T:623171970326069268>"),
-                Emote.Parse("<a:5_:623171961400590366>"),
-                Emote.Parse("<a:5T:623171951510159371>"),
-                Emote.Parse("<a:6_:623171940647043092>"),
-                Emote.Parse("<a:6T:623171933407674369>"),
-                Emote.Parse("<a:7_:623171923706380329>"),
-                Emote.Parse("<a:7P:623171916236324874>"),
-                Emote.Parse("<a:7T:623171903447760906>"),
-                Emote.Parse("<a:7TP:625640956133113869>"),
-                new Emoji("\u2753"), 
-                new Emoji("\uD83D\uDCF0")
-            });
         }
 
         private static async Task ValidateSetupsMessage(SocketMessage message)
@@ -695,8 +677,8 @@ namespace OnePlusBot.Base
 
             await report.AddReactionsAsync(new IEmote[]
             {
-                Global.OnePlusEmote.OP_YES, 
-                Global.OnePlusEmote.OP_NO
+                Global.Emotes[Global.OnePlusEmote.OP_YES].GetAsEmote(), 
+                Global.Emotes[Global.OnePlusEmote.OP_NO].GetAsEmote()
             });
 
             var profanity = new UsedProfanity();
@@ -848,14 +830,6 @@ namespace OnePlusBot.Base
             if (channelId == Global.Channels[Channel.SETUPS])
             {
                 await ValidateSetupsMessage(message);
-            }
-            else if (channelId == Global.Channels[Channel.INFO])
-            {
-                if (message.Embeds.Count == 1)
-                {
-                    var userMessage = (IUserMessage) message;
-                    await RoleReact(userMessage);
-                }
             }
             else if (channelId == Global.Channels[Channel.REFERRAL])
             {
