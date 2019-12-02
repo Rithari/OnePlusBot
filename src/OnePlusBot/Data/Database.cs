@@ -56,6 +56,13 @@ namespace OnePlusBot.Data
 
         public DbSet<ReactionRole> ReactionRoles { get; set; }
 
+        public DbSet<Command> Commands { get; set; }
+
+        public DbSet<CommandModule> Modules { get; set; }
+
+        public DbSet<CommandInChannelGroup> CommandInChannelGroups { get; set; }
+
+
         // TODO needs to be replaced with proper dependency injection
         [Obsolete]
         public static readonly LoggerFactory LoggerFactory
@@ -96,6 +103,7 @@ namespace OnePlusBot.Data
             modelBuilder.Entity<ThreadMessage>().HasKey(c => new { c.ChannelId, c.ChannelMessageId });
             modelBuilder.Entity<ChannelInGroup>().HasKey(c => new {c.ChannelId, c.ChannelGroupId});
             modelBuilder.Entity<ReactionRole>().HasKey(c => new {c.EmoteId, c.RoleID});
+            modelBuilder.Entity<CommandInChannelGroup>().HasKey(c => new {c.CommandID, c.ChannelGroupId});
             modelBuilder.Entity<PostTarget>().HasIndex(p => p.Name).IsUnique();
         }
 

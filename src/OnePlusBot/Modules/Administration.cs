@@ -12,6 +12,7 @@ using Discord.WebSocket;
 using Discord.Net;
 using System.Collections.Generic;
 using System.Globalization;
+using OnePlusBot.Base.Errors;
 
 namespace OnePlusBot.Modules
 {
@@ -20,7 +21,8 @@ namespace OnePlusBot.Modules
         [
             Command("banid", RunMode = RunMode.Async),
             Summary("Bans specified user."),
-            RequireRole("staff")
+            RequireRole("staff"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> OBanAsync(ulong name, [Remainder] string reason = null)
         {
@@ -64,7 +66,8 @@ namespace OnePlusBot.Modules
             Command("ban", RunMode = RunMode.Async),
             Summary("Bans specified user."),
             RequireRole("staff"),
-            RequireBotPermission(GuildPermission.BanMembers)
+            RequireBotPermission(GuildPermission.BanMembers),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> BanAsync(IGuildUser user, [Remainder] string reason = null)
         {
@@ -135,7 +138,8 @@ namespace OnePlusBot.Modules
             Command("kick", RunMode = RunMode.Async),
             Summary("Kicks specified user."),
             RequireRole("staff"),
-            RequireBotPermission(GuildPermission.KickMembers)
+            RequireBotPermission(GuildPermission.KickMembers),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> KickAsync(IGuildUser user, [Remainder] string reason = null)
         {
@@ -156,7 +160,8 @@ namespace OnePlusBot.Modules
             Command("mute", RunMode=RunMode.Async),
             Summary("Mutes a specified user for a set amount of time"),
             RequireRole("staff"),
-            RequireBotPermission(GuildPermission.ManageRoles)
+            RequireBotPermission(GuildPermission.ManageRoles),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> MuteUser(IGuildUser user,params string[] arguments)
         {
@@ -269,7 +274,8 @@ namespace OnePlusBot.Modules
             Command("unmute", RunMode=RunMode.Async),
             Summary("Unmutes a specified user"),
             RequireRole("staff"),
-            RequireBotPermission(GuildPermission.ManageRoles)
+            RequireBotPermission(GuildPermission.ManageRoles),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> UnMuteUser(IGuildUser user)
         {
@@ -280,7 +286,8 @@ namespace OnePlusBot.Modules
             Command("purge", RunMode = RunMode.Async),
             Summary("Deletes specified amount of messages."),
             RequireRole("staff"),
-            RequireBotPermission(GuildPermission.ManageMessages)
+            RequireBotPermission(GuildPermission.ManageMessages),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> PurgeAsync([Remainder] double delmsg)
         {
@@ -321,7 +328,8 @@ namespace OnePlusBot.Modules
             Command("warn"),
             Summary("Warn someone."),
             RequireRole("staff"),
-            RequireBotPermission(GuildPermission.Administrator)
+            RequireBotPermission(GuildPermission.Administrator),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> WarnAsync(IGuildUser user, [Optional] [Remainder] string reason)
         {
@@ -385,7 +393,8 @@ namespace OnePlusBot.Modules
             Command("clearwarn"),
             Summary("Clear warnings."),
             RequireRole("staff"),
-            RequireBotPermission(GuildPermission.Administrator)
+            RequireBotPermission(GuildPermission.Administrator),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> ClearwarnAsync(uint index)
         {
@@ -503,6 +512,7 @@ namespace OnePlusBot.Modules
         [
             Command("warnings"),
             Summary("Gets all warnings of given user"),
+            CommandDisabledCheck
         ]
         public async Task GetWarnings([Optional] IGuildUser user)
         {
@@ -565,7 +575,8 @@ namespace OnePlusBot.Modules
         [
             Command("setstars"),
             Summary("sets the amount required to appear on the starboard"),
-            RequireRole("staff")
+            RequireRole("staff"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> SetStars(string input)
         {
@@ -590,7 +601,8 @@ namespace OnePlusBot.Modules
         [
             Command("profanities"),
             Summary("Shows the actual and false profanities of a user"),
-            RequireRole("staff")
+            RequireRole("staff"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> ShowProfanities(IGuildUser user)
         {
@@ -620,7 +632,8 @@ namespace OnePlusBot.Modules
         [
             Command("updateLevels", RunMode=RunMode.Async),
             Summary("Re-evaluates the experience, levels and assigns the roles to the users (takes a long time, use with care)"),
-            RequireRole(new string[]{"admin", "founder"})
+            RequireRole(new string[]{"admin", "founder"}),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> UpdateLevels([Optional] IGuildUser user)
         {
@@ -641,7 +654,8 @@ namespace OnePlusBot.Modules
         [
             Command("roleLevel"),
             Summary("Sets the level at which a role is given. If no parameters, shows the current role configuration"),
-            RequireRole(new string[]{"admin", "founder"})
+            RequireRole(new string[]{"admin", "founder"}),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> SetRoleToLevel([Optional] uint level, [Optional] ulong roleId)
         {
@@ -661,7 +675,8 @@ namespace OnePlusBot.Modules
         [
             Command("disableXpGain"),
             Summary("Enables/disables xp gain for a user"),
-            RequireRole(new string[]{"admin", "founder"})
+            RequireRole(new string[]{"admin", "founder"}),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> SetExpGainEnabled(IGuildUser user, bool newValue)
         {
@@ -669,6 +684,7 @@ namespace OnePlusBot.Modules
             await Task.CompletedTask;
             return CustomResult.FromSuccess();
         }
+
 
         [
             Command("setupInfoPost"),
@@ -678,6 +694,54 @@ namespace OnePlusBot.Modules
         public async Task<RuntimeResult> SetupInfoPost()
         {
             await new SelfAssignabeRolesManager().SetupInfoPost();
+            return CustomResult.FromSuccess();
+        }
+        /// <summary>
+        /// Sets the flag of the command identified by the given name in the channel group identified by the given group name to the given value
+        /// </summary>
+        /// <exception cref="OnePlusBot.Base.Errors.NotFoundException">In case no channel group or command with that name is found</exception>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
+        [
+            Command("disableCommand"),
+            Summary("Disables command in a specified channel group"),
+            RequireRole(new string[]{"admin", "founder"})
+        ]
+        public async Task<RuntimeResult> DisableCommandInGroup(string commandName, string channelGroupName, bool newValue)
+        {
+            using(var db = new Database())
+            {
+              var commandInChannelGroup = db.CommandInChannelGroups.Where(co => co.ChannelGroupReference.Name == channelGroupName && co.CommandReference.Name == commandName);
+              if(commandInChannelGroup.Any())
+              {
+                commandInChannelGroup.First().Disabled = newValue;
+              }
+              else 
+              {
+                var command = db.Commands.Where(co => co.Name == commandName);
+                if(command.Any())
+                {
+                  var channelGroup = db.ChannelGroups.Where(chgrp => chgrp.Name == channelGroupName);
+                  if(channelGroup.Any())
+                  {
+                    var newCommandInChannelGroup = new CommandInChannelGroup();
+                    newCommandInChannelGroup.ChannelGroupId = channelGroup.First().Id;
+                    newCommandInChannelGroup.CommandID = command.First().ID; 
+                    newCommandInChannelGroup.Disabled = newValue;
+                    db.CommandInChannelGroups.Add(newCommandInChannelGroup);
+                  } 
+                  else 
+                  {
+                    throw new NotFoundException("Channel group not found");
+                  }
+                }
+                else 
+                {
+                  throw new NotFoundException("Command not found");
+                }
+                
+              }
+              db.SaveChanges();
+            }
             await Task.CompletedTask;
             return CustomResult.FromSuccess();
         }

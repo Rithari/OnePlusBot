@@ -22,7 +22,8 @@ namespace OnePlusBot.Modules
     {
         [
             Command("8ball"),
-            Summary("Magic 8Ball for Discord!")
+            Summary("Magic 8Ball for Discord!"),
+            CommandDisabledCheck
         ]
         public async Task MagicBallAsync([Remainder] string search)
         {
@@ -53,7 +54,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("lovecalc"),
-            Summary("lovecalc search for Discord!")
+            Summary("lovecalc search for Discord!"),
+            CommandDisabledCheck
         ]
         public async Task LoveCalcAsync(string subjectA, [Remainder] string subjectB)
         {
@@ -64,7 +66,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("roulette"),
-            Summary("Russian roulette for Discord!")
+            Summary("Russian roulette for Discord!"),
+            CommandDisabledCheck
         ]
         public async Task RouletteAsync()
         {
@@ -80,7 +83,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("yt"),
-            Summary("YouTube search for Discord!")
+            Summary("YouTube search for Discord!"),
+            CommandDisabledCheck
         ]
         public async Task YouTubeAsync([Remainder] string parameter)
         {
@@ -106,7 +110,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("define"),
-            Summary("Grabs the first Urban Dictionary result based on the parameter.")
+            Summary("Grabs the first Urban Dictionary result based on the parameter."),
+            CommandDisabledCheck
         ]
         public async Task DefineAsync([Remainder] string searchquery)
         {
@@ -136,7 +141,8 @@ namespace OnePlusBot.Modules
         
         [
             Command("steamp"),
-            Summary("Steam profile banner for Discord!")
+            Summary("Steam profile banner for Discord!"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> SteampAsync([Remainder] string user)
         {
@@ -166,7 +172,8 @@ namespace OnePlusBot.Modules
 
         [
             Command("starstats"),
-            Summary("Shows the statistics for the star board posts")
+            Summary("Shows the statistics for the star board posts"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> PrintStarStats()
         {

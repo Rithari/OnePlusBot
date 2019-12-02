@@ -3,26 +3,58 @@ using System;
 using System.Threading.Tasks;
 using Discord.Commands;
 using OnePlusBot.Base;
-using System.Linq;
+using OnePlusBot.Data.Models;
 using Discord;
 using Discord.WebSocket;
 using System.Runtime.InteropServices;
+using Discord.Addons.Interactive;
 
 namespace OnePlusBot.Modules
 {
-    public class Channels : ModuleBase<SocketCommandContext>
+    public class Channels : InteractiveBase<SocketCommandContext>
     {
 
+        /// <summary>
+        /// Command responsibel for creating a channel group
+        /// </summary>
+        /// <param name="groupName">The name of the channel group to create</param>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
-            Command("createChannelGroup"),
+            Command("createChannelGroup", RunMode = RunMode.Async),
             Summary("Creates a channel group to be used in other areas"),
             RequireRole("staff"),
-            Alias("createChGrp")
+            Alias("createChGrp"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> CreateChannelGroup(string groupName)
         {
-            new ChannelManager().createChannelGroup(groupName);
-            await Task.CompletedTask;
+            var configurationStep = new ConfigurationStep("What type of group is this? (🏁 checks, ❓ FAQ, 🤖 command)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
+            var addAction = new ReactionAction(new Emoji("🏁"));
+            addAction.Action = async (ConfigurationStep a) => 
+            {
+                new ChannelManager().createChannelGroup(groupName, ChannelGroupType.CHECKS);
+                await Task.CompletedTask;
+            };
+
+            var deleteCommandChannelAction = new ReactionAction(new Emoji("❓"));
+            deleteCommandChannelAction.Action = async (ConfigurationStep a) => 
+            {
+                new ChannelManager().createChannelGroup(groupName,  ChannelGroupType.FAQ);
+                await Task.CompletedTask;
+            };
+
+            var deleteCommandAction = new ReactionAction(new Emoji("🤖"));
+            deleteCommandAction.Action = async (ConfigurationStep a) => 
+            {
+                new ChannelManager().createChannelGroup(groupName,  ChannelGroupType.COMMANDS);
+                await Task.CompletedTask;
+            };
+
+            configurationStep.Actions.Add(addAction);
+            configurationStep.Actions.Add(deleteCommandChannelAction);
+            configurationStep.Actions.Add(deleteCommandAction);
+            
+            await configurationStep.SetupMessage();
             return CustomResult.FromSuccess();
         }
 
@@ -30,7 +62,8 @@ namespace OnePlusBot.Modules
             Command("addGroupChannels"),
             Summary("Adds the mentioned channels to the given channel group"),
             RequireRole("staff"),
-            Alias("addGrpCh")
+            Alias("addGrpCh"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> AddToChannelGroup(string groupName, [Remainder] string text)
         {
@@ -48,7 +81,8 @@ namespace OnePlusBot.Modules
             Command("removeGroupChannels"),
             Summary("Removes the mentioned channels from the given channel group"),
             RequireRole("staff"),
-            Alias("rmGrpCh")
+            Alias("rmGrpCh"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> RemoveFromChannelGroup(string groupName, [Remainder] string text)
         {
@@ -66,7 +100,8 @@ namespace OnePlusBot.Modules
             Command("channelGroupAttributes"),
             Summary("Enables/disables the attribues in a certain channel group"),
             RequireRole(new string[]{"admin", "founder"}),
-            Alias("chGrpAtt")
+            Alias("chGrpAtt"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> ToggleChannelGroupAttributes(string groupName, bool xpGain, [Optional] bool? profanityCheck, [Optional] Boolean? inviteCheck)
         {
@@ -79,7 +114,8 @@ namespace OnePlusBot.Modules
             Command("disableChannelGroup"),
             Summary("Enables/disables the profanity/invitecheck/xpgain flags for a group"),
             RequireRole(new string[]{"admin", "founder"}),
-            Alias("disableChGrp")
+            Alias("disableChGrp"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> ToggleGroupDisabled(string groupName, bool newValue){
           
@@ -93,7 +129,8 @@ namespace OnePlusBot.Modules
             Command("setPostTarget"),
             Summary("Sets the target of a certain post"),
             RequireRole("staff"),
-            Alias("setTarget")
+            Alias("setTarget"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> SetPostTarget([Optional] string channelName, [Optional] ISocketMessageChannel channel)
         {
@@ -113,7 +150,8 @@ namespace OnePlusBot.Modules
             Command("renameChannelGroup"),
             Summary("Sets the target of a certain post"),
             RequireRole("staff"),
-            Alias("rnChGrp")
+            Alias("rnChGrp"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> RenameChannelGroup(string oldName, string newName)
         {
@@ -125,13 +163,14 @@ namespace OnePlusBot.Modules
 
         [
             Command("listChannelGroups", RunMode=RunMode.Async),
-            Summary("Prints all the channel groups of the server"),
+            Summary("Prints all the channel groups of the server (optional type: COMMANDS, CHECKS, FAQ)"),
             RequireRole("staff"),
-            Alias("listChGrp")
+            Alias("listChGrp"),
+            CommandDisabledCheck
         ]
-        public async Task<RuntimeResult> ListChannelGroups()
+        public async Task<RuntimeResult> ListChannelGroups([Optional] string type)
         {
-            await new ChannelManager().ListChannelGroups(Context.Channel);
+            await new ChannelManager().ListChannelGroups(Context.Channel, type);
             return CustomResult.FromSuccess();
         }
 
@@ -139,7 +178,8 @@ namespace OnePlusBot.Modules
             Command("showChannelConfig"),
             Summary("Show the configuration (disableXP/invitecheck/profanity) of the given or current channel"),
             RequireRole("staff"),
-            Alias("shChCfg")
+            Alias("shChCfg"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> ShowChannelConfig([Optional] ISocketMessageChannel channel)
         {
@@ -161,13 +201,78 @@ namespace OnePlusBot.Modules
             Command("removeChannelGroup"),
             Summary("Deletes a channel group (will fail if the group is used anywhere)"),
             RequireRole("staff"),
-            Alias("rmChGrp")
+            Alias("rmChGrp"),
+            CommandDisabledCheck
         ]
         public async Task<RuntimeResult> RemoveChannelGroup(string name)
         {
             new ChannelManager().RemoveChannelGroup(name);
             await Task.CompletedTask;
             return CustomResult.FromSuccess();
+        }
+
+
+        /// <summary>
+        /// Command used to display the groups of type COMMANDS, and the respective commands configured to be in this group
+        /// </summary>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
+        [
+            Command("listGroupCommands"),
+            Summary("Lists the groups which have specific commands defined for them"),
+            RequireRole("staff"),
+            Alias("lsGrpCmd"),
+            CommandDisabledCheck
+        ]
+        public async Task<RuntimeResult> ListCommandsWithGroups()
+        {
+            await new ChannelManager().ListGroupsWithCommands(Context.Channel);
+            return CustomResult.FromSuccess();
+        }
+
+
+        /// <summary>
+        /// Command used to change the type of a channel group
+        /// </summary>
+        /// <param name="groupName">The name of the channel group to change the type for</param>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
+        [
+            Command("changeGroupType", RunMode = RunMode.Async),
+            Summary("Changes the type of a group"),
+            RequireRole("staff"),
+            Alias("chGrpTyp"),
+            CommandDisabledCheck
+        ]
+        public async Task<RuntimeResult> ChangeGropTypeTo(string groupName)
+        {
+          var configurationStep = new ConfigurationStep("What type should the group have? (🏁 checks, ❓ FAQ, 🤖 command)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
+          var addAction = new ReactionAction(new Emoji("🏁"));
+          addAction.Action = async (ConfigurationStep a) => 
+          {
+              new ChannelManager().ChangeChannelGroupTypeTo(groupName, ChannelGroupType.CHECKS);
+              await Task.CompletedTask;
+          };
+
+          var deleteCommandChannelAction = new ReactionAction(new Emoji("❓"));
+          deleteCommandChannelAction.Action = async (ConfigurationStep a) => 
+          {
+              new ChannelManager().ChangeChannelGroupTypeTo(groupName,  ChannelGroupType.FAQ);
+              await Task.CompletedTask;
+          };
+
+          var deleteCommandAction = new ReactionAction(new Emoji("🤖"));
+          deleteCommandAction.Action = async (ConfigurationStep a) => 
+          {
+              new ChannelManager().ChangeChannelGroupTypeTo(groupName,  ChannelGroupType.COMMANDS);
+              await Task.CompletedTask;
+          };
+
+          configurationStep.Actions.Add(addAction);
+          configurationStep.Actions.Add(deleteCommandChannelAction);
+          configurationStep.Actions.Add(deleteCommandAction);
+            
+          await configurationStep.SetupMessage();
+         
+          return CustomResult.FromSuccess();
         }
 
     }
