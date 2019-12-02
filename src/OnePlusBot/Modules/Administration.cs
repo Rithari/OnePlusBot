@@ -669,6 +669,18 @@ namespace OnePlusBot.Modules
             await Task.CompletedTask;
             return CustomResult.FromSuccess();
         }
+
+        [
+            Command("setupInfoPost"),
+            Summary("Sets up the info post to let user self assign the roles"),
+            RequireRole(new string[]{"admin", "founder"})
+        ]
+        public async Task<RuntimeResult> SetupInfoPost()
+        {
+            await new SelfAssignabeRolesManager().SetupInfoPost();
+            await Task.CompletedTask;
+            return CustomResult.FromSuccess();
+        }
         
     }
 }

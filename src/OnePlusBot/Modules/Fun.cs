@@ -140,7 +140,7 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> SteampAsync([Remainder] string user)
         {
-            await Context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
+            await Context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.SUCCESS].GetAsEmote());
 
             var request = (HttpWebRequest) WebRequest.Create(string.Format(BadgeUrl, user));
             

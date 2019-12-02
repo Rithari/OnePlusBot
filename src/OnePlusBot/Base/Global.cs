@@ -13,7 +13,7 @@ namespace OnePlusBot.Base
 {
     internal static class Global
     {
-        private static ulong MessageId;
+        public static ulong InfoRoleManagerMessageId;
 
         public static Random Random { get; }
 
@@ -51,6 +51,8 @@ namespace OnePlusBot.Base
 
         public static ConcurrentDictionary<long, List<ulong>> RuntimeExp { get; set; }
 
+        public static Dictionary<string, StoredEmote> Emotes { get; set; }
+
         public static bool XPGainDisabled { get; set; }
 
         public static int XPGainRangeMin { get; set; }
@@ -82,21 +84,7 @@ namespace OnePlusBot.Base
                 }
             }
         }
-
-        public static ulong RoleManagerMessageId
-        {
-            get => MessageId;
-            set
-            {
-                using (var db = new Database())
-                {
-                    db.PersistentData
-                        .First(x => x.Name == "rolemanager_message_id")
-                        .Value = value;
-                    db.SaveChanges();
-                }
-            }
-        }
+      
 
        public static List<ProfanityCheck> ProfanityChecks { get; }
 
@@ -118,6 +106,7 @@ namespace OnePlusBot.Base
             ModMailThreads = new List<ModMailThread>();
             ReportedProfanities = new List<UsedProfanity>();
             RuntimeExp = new ConcurrentDictionary<long, List<ulong>>();
+            Emotes = new Dictionary<string, StoredEmote>();
             LoadGlobal();
         }
 
@@ -164,7 +153,7 @@ namespace OnePlusBot.Base
                     .First(x => x.Name == "server_id")
                     .Value;
                 
-                MessageId = db.PersistentData
+                InfoRoleManagerMessageId = db.PersistentData
                     .First(x => x.Name == "rolemanager_message_id")
                     .Value;
 
@@ -214,6 +203,15 @@ namespace OnePlusBot.Base
                     .First(entry => entry.Name == "xp_gain_range_max")
                     .Value;
 
+                Emotes.Clear();
+                if(db.Emotes.Any())
+                {
+                    foreach(var post in db.Emotes)
+                    {
+                      Emotes.Add(post.Key, post);
+                    }
+                }
+
                 StarboardPosts.Clear();
                 if(db.StarboardMessages.Any())
                 {
@@ -252,17 +250,18 @@ namespace OnePlusBot.Base
         }
 
         public static class OnePlusEmote {
-            public static IEmote SUCCESS = Emote.Parse("<:success:499567039451758603>");
+            public static string SUCCESS = "SUCCESS";
             public static IEmote FAIL = new Emoji("⚠");
-            public static IEmote OP_YES =  Emote.Parse("<:OPYes:426070836269678614>");
-            public static IEmote OP_NO = Emote.Parse("<:OPNo:426072515094380555>");
+            public static string OP_YES =  "OP_YES";
+            public static string OP_NO = "OP_NO";
 
             public static IEmote STAR = new Emoji("⭐");
             public static IEmote LVL_2_STAR = new Emoji("🌟");
 
             public static IEmote LVL_3_STAR = new Emoji("💫");
 
-            public static Emote LVL_4_STAR = Emote.Parse("<a:star4:640631410054529055>");
+            public static string LVL_4_STAR = "LVL_4_STAR";
+
         }
 
         public static DiscordSocketClient Bot { get; set;}

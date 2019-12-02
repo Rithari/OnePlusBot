@@ -517,7 +517,7 @@ namespace OnePlusBot.Base
                 case PreconditionResult conditionResult:
                     if (conditionResult.IsSuccess)
                     {
-                        await context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
+                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.SUCCESS].GetAsEmote());
                     }
                     else
                     {
@@ -532,7 +532,7 @@ namespace OnePlusBot.Base
                     }
                     if (customResult.IsSuccess)
                     {
-                        await context.Message.AddReactionAsync(Global.OnePlusEmote.SUCCESS);
+                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.SUCCESS].GetAsEmote());
                     }
                     else
                     {
@@ -555,31 +555,6 @@ namespace OnePlusBot.Base
                  }
                 break;
             }
-        }
-
-        private static async Task RoleReact(IUserMessage message)
-        {
-            Global.RoleManagerMessageId = message.Id;
-
-            await message.AddReactionsAsync(new IEmote[]
-            {
-
-                Emote.Parse("<a:1_:623172008540110859>"),
-                Emote.Parse("<a:2_:623171995684831252>"),
-                Emote.Parse("<a:X_:623171985542742027>"),
-                Emote.Parse("<a:3_:623171978198777856>"),
-                Emote.Parse("<a:3T:623171970326069268>"),
-                Emote.Parse("<a:5_:623171961400590366>"),
-                Emote.Parse("<a:5T:623171951510159371>"),
-                Emote.Parse("<a:6_:623171940647043092>"),
-                Emote.Parse("<a:6T:623171933407674369>"),
-                Emote.Parse("<a:7_:623171923706380329>"),
-                Emote.Parse("<a:7P:623171916236324874>"),
-                Emote.Parse("<a:7T:623171903447760906>"),
-                Emote.Parse("<a:7TP:625640956133113869>"),
-                new Emoji("\u2753"), 
-                new Emoji("\uD83D\uDCF0")
-            });
         }
 
         private static async Task ValidateSetupsMessage(SocketMessage message)
@@ -695,8 +670,8 @@ namespace OnePlusBot.Base
 
             await report.AddReactionsAsync(new IEmote[]
             {
-                Global.OnePlusEmote.OP_YES, 
-                Global.OnePlusEmote.OP_NO
+                Global.Emotes[Global.OnePlusEmote.OP_YES].GetAsEmote(), 
+                Global.Emotes[Global.OnePlusEmote.OP_NO].GetAsEmote()
             });
 
             var profanity = new UsedProfanity();
@@ -848,14 +823,6 @@ namespace OnePlusBot.Base
             if (channelId == Global.Channels[Channel.SETUPS])
             {
                 await ValidateSetupsMessage(message);
-            }
-            else if (channelId == Global.Channels[Channel.INFO])
-            {
-                if (message.Embeds.Count == 1)
-                {
-                    var userMessage = (IUserMessage) message;
-                    await RoleReact(userMessage);
-                }
             }
             else if (channelId == Global.Channels[Channel.REFERRAL])
             {

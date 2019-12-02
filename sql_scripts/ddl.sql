@@ -375,4 +375,32 @@ CREATE TABLE `ExperienceLevels` (
  PRIMARY KEY (`level`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `Emotes`
+--
+
+CREATE TABLE `Emotes` (
+ `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+ `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+ `emote_key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+ `animated` tinyint(4) NOT NULL DEFAULT '0',
+ `emote_id` bigint(20) unsigned NOT NULL DEFAULT '0',
+ `custom` tinyint(4) NOT NULL DEFAULT '1',
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `ReactionRoles`
+--
+
+CREATE TABLE `ReactionRoles` (
+ `emote_id` int(10) unsigned NOT NULL,
+ `role_id` bigint(20) unsigned NOT NULL,
+ `area` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+ PRIMARY KEY (`emote_id`,`role_id`),
+ KEY `fk_emote_role_ref` (`role_id`),
+ CONSTRAINT `fk_emote` FOREIGN KEY (`emote_id`) REFERENCES `Emotes` (`id`),
+ CONSTRAINT `fk_emote_role_ref` FOREIGN KEY (`role_id`) REFERENCES `Roles` (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS=1;

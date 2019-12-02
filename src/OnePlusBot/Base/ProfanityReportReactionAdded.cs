@@ -24,12 +24,12 @@ namespace OnePlusBot.Base
                 var profanity = db.Profanities.Where(prof => prof.MessageId == message.Id).FirstOrDefault();
                 if(profanity != null)
                 {
-                    if(reaction.Emote.Name == Global.OnePlusEmote.OP_NO.Name)
+                    if(reaction.Emote.Name == Global.Emotes[Global.OnePlusEmote.OP_NO].GetAsEmote().Name)
                     {
                         profanity.Valid = false;
                         emoteMatched = true;
                     }
-                    else if(reaction.Emote.Name == Global.OnePlusEmote.OP_YES.Name)
+                    else if(reaction.Emote.Name == Global.Emotes[Global.OnePlusEmote.OP_YES].GetAsEmote().Name)
                     {
                         profanity.Valid = true;
                         emoteMatched = true;
