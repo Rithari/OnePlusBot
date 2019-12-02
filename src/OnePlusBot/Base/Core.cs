@@ -9,6 +9,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Timers;
 using OnePlusBot.Data.Models;
+using OnePlusBot.Data;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+
 
 namespace OnePlusBot.Base
 {
@@ -97,6 +102,8 @@ namespace OnePlusBot.Base
 
             FillReactionActions();
 
+            UpdateCommandsInDb(services.GetRequiredService<CommandService>());
+
             await Task.Delay(-1);
         }
 
@@ -117,6 +124,69 @@ namespace OnePlusBot.Base
             AddReactionActions.Add(new ProfanityReportReactionAdded());
             RemoveReactionActions.Add(new RemoveRoleReactionAction());
             RemoveReactionActions.Add(new StarboardRemovedReactionAction());
+        }
+
+        /// <summary>
+        /// Synchronizes the state of the "Command" and "CommandModule" table in the database with the currently available commands/modules
+        /// </summary>
+        /// <param name="commandHandler">Reference to the <see cref="Discord.Commands.CommandService"> service containing information about the currently available commands</param>
+        private static void UpdateCommandsInDb(CommandService commandHandler)
+        {
+          using(var db = new Database())
+          {
+            var modules = commandHandler.Modules;
+            foreach(var module in modules)
+            {
+              var moduleQuery = db.Modules.Where(mo => mo.Name == module.Name);
+              CommandModule moduleToUse;
+              if(!moduleQuery.Any())
+              {
+                var newModule = new CommandModule();
+                newModule.Name = module.Name;
+                db.Modules.Add(newModule);
+                db.SaveChanges();
+                moduleToUse = newModule; 
+              }
+              else
+              {
+                moduleToUse = moduleQuery.First();
+              }
+              
+              foreach(var command in module.Commands)
+              {
+                if(!db.Commands.Where(com => com.Name == command.Name).Any())
+                {
+                  var commandToCreate = new Command();
+                  commandToCreate.Name = command.Name;
+                  commandToCreate.ModuleId = moduleToUse.ID;
+                  db.Commands.Add(commandToCreate);
+                }
+              }
+              db.SaveChanges();
+              var commandsInDb = db.Modules.Include(mo => mo.Commands).Where(mo => mo.Name == module.Name).FirstOrDefault();
+              if(commandsInDb != null)
+              {
+                var commandsToDelete = new List<Command>();
+                foreach(var command in commandsInDb.Commands)
+                {
+                    // the command exists in the db, but is not found in the module, we need to delete it
+                   if(!module.Commands.Where(co => co.Name == command.Name).Any()) 
+                   {
+                    commandsToDelete.Add(command);
+                   }
+                }
+                foreach(var toDelete in commandsToDelete)
+                {
+                  // also delete the channel group configuration for this commands, else the foreign keys fail
+                  db.CommandInChannelGroups.RemoveRange(db.CommandInChannelGroups.Where(co => co.CommandID == toDelete.ID));
+                  commandsInDb.Commands.Remove(toDelete);
+                }
+              }
+              
+            }
+            db.SaveChanges();
+          }
+         
         }
 
         private static void OnTimerElapsed(object sender, ElapsedEventArgs e)

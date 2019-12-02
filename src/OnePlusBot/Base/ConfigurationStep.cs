@@ -177,6 +177,11 @@ namespace OnePlusBot.Base {
            
         }
 
+        /// <summary>
+        /// Checks what kind of action should be taked based on the kind of reaction which was added to the message
+        /// </summary>
+        /// <param name="reaction">The <see cref="Discord.WebSocket.SocketReaction"> reaction which was added by the user</param>
+        /// <returns></returns>
         public async Task<bool> HandleCallbackAsync(SocketReaction reaction)
         {
             await RemoveMessagesOnNextProgression();
@@ -185,7 +190,14 @@ namespace OnePlusBot.Base {
             {
                 if(actionToExecute.Emote.Equals(emote))
                 {
-                    await actionToExecute.Action(this);
+                    try
+                    {
+                      await actionToExecute.Action(this);
+                    }
+                    catch(Exception e)
+                    {
+                      await Context.Channel.SendMessageAsync(e.Message);
+                    }
                     break;
                 }
             }

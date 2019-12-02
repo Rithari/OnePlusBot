@@ -347,6 +347,40 @@ CREATE TABLE `PostTargets` (
  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `Commands`
+--
+
+CREATE TABLE `Commands` (
+ `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+ `name` text COLLATE utf8mb4_unicode_ci NOT NULL,
+ `module_id` int(10) unsigned NOT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=246 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `CommandModules`
+--
+
+CREATE TABLE `CommandModules` (
+ `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+ `name` text COLLATE utf8mb4_unicode_ci NOT NULL,
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `CommandInChannelGroup`
+--
+
+CREATE TABLE `CommandInChannelGroup` (
+ `command_id` int(10) unsigned NOT NULL,
+ `channel_group_id` int(10) unsigned NOT NULL,
+ `disabled` tinyint(4) NOT NULL,
+ PRIMARY KEY (`command_id`,`channel_group_id`),
+ KEY `fk_channel_group_reference` (`channel_group_id`),
+ CONSTRAINT `fk_channel_group_reference` FOREIGN KEY (`channel_group_id`) REFERENCES `ChannelGroups` (`id`),
+ CONSTRAINT `fk_command_reference` FOREIGN KEY (`command_id`) REFERENCES `Commands` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 
 --
 -- Table structure for table `ExperienceRoles`
@@ -374,5 +408,6 @@ CREATE TABLE `ExperienceLevels` (
  `needed_experience` bigint(20) unsigned NOT NULL,
  PRIMARY KEY (`level`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 SET FOREIGN_KEY_CHECKS=1;
