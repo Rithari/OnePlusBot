@@ -12,10 +12,25 @@ namespace OnePlusBot.Base
 {
     public class RemoveRoleReactionAction : IReactionAction
     {
+        /// <summary>
+        /// Checks wheter or not the added reaction should be handled by this action
+        /// </summary>
+        /// <param name="message">The <see cref="Discord.IUserMessage"> object containing the info message reponsible for handling the info post</param>
+        /// <param name="channel">The <see cref="Discord.WebSocket.ISocketMessageChannel"> info context channel</param>
+        /// <param name="reaction">The <see cref="Discord.WebSocket.SocketReaction"> object containing the added reaction</param>
+        /// <returns>boolean whether or not this action should be executed</returns>
         public Boolean ActionApplies(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction)
         {
             return reaction.MessageId == Global.InfoRoleManagerMessageId;
         }
+
+        /// <summary>
+        /// Removes the mapped role from the user reacting to the message in info (devices/helper/news)
+        /// </summary>
+        /// <param name="message">The <see cref="Discord.IUserMessage"> object containing the info message reponsible for handling the info post</param>
+        /// <param name="channel">The <see cref="Discord.WebSocket.ISocketMessageChannel"> info context channel</param>
+        /// <param name="reaction">The <see cref="Discord.WebSocket.SocketReaction"> object containing the added reaction</param>
+        /// <returns>Task</returns>
         public async Task Execute(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction) 
         {
             if(!(channel is IGuildChannel))
@@ -50,10 +65,25 @@ namespace OnePlusBot.Base
 
     public class AddRoleReactionAction : IReactionAction
     {
+        /// <summary>
+        /// Checks wheter or not the added reaction should be handled by this action
+        /// </summary>
+        /// <param name="message">The <see cref="Discord.IUserMessage"> object containing the info message reponsible for handling the info post</param>
+        /// <param name="channel">The <see cref="Discord.WebSocket.ISocketMessageChannel"> info context channel</param>
+        /// <param name="reaction">The <see cref="Discord.WebSocket.SocketReaction"> object containing the added reaction</param>
+        /// <returns>boolean whether or not this action should be executed</returns>
         public Boolean ActionApplies(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction)
         {
             return reaction.MessageId == Global.InfoRoleManagerMessageId;
         }
+
+        /// <summary>
+        /// Gives the user reacting to the message in info the mapped role (devices/helper/news)
+        /// </summary>
+        /// <param name="message">The <see cref="Discord.IUserMessage"> object containing the info message reponsible for handling the info post</param>
+        /// <param name="channel">The <see cref="Discord.WebSocket.ISocketMessageChannel"> info context channel</param>
+        /// <param name="reaction">The <see cref="Discord.WebSocket.SocketReaction"> object containing the added reaction</param>
+        /// <returns>task</returns>
         public async Task Execute(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction) 
         {
             if(!(channel is IGuildChannel))

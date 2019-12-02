@@ -510,6 +510,13 @@ namespace OnePlusBot.Base
             await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.DELETE_LOG]).SendMessageAsync(embed: exceptionEmbed.Build());
         }
 
+        /// <summary>
+        /// Gets executed after a command has been completed. Reacts with either success reaction, a warn symbole accompanid with an error message or nothing, if the result is ignored.
+        /// </summary>
+        /// <param name="command">The <see cref="Discord.Commands.CommandInfo"> object which just finished executing</param>
+        /// <param name="context">The <see cref="Discord.ICommandContext"> in which the command finished executing</param>
+        /// <param name="result">The <see cref="Discord.Commands.IResult"> object containing the result of the command</param>
+        /// <returns></returns>
         private static async Task OnCommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
             switch(result)

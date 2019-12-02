@@ -256,6 +256,10 @@ namespace OnePlusBot.Base
             ReloadModmailThreads();
         }
 
+
+        /// <summary>
+        /// Class containing the keys by which the emotes are stored in the database
+        /// </summary>
         public static class OnePlusEmote {
             public static string SUCCESS = "SUCCESS";
             public static string FAIL = "FAIL";

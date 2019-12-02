@@ -127,6 +127,14 @@ namespace OnePlusBot.Base
             return builder.Build();
         }
 
+        /// <summary>
+        /// Builds the message of a starboard message containing the messageID, the channel of th epost, the star count and an emote.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="reactionInfo"></param>
+        /// <param name="reaction"></param>
+        /// <param name="starCount"></param>
+        /// <returns></returns>
         private string GetStarboardMessage(IUserMessage message, KeyValuePair<IEmote, ReactionMetadata> reactionInfo, IReaction reaction, int starCount)
         {
             var emote = Global.Emotes[Global.OnePlusEmote.STAR].GetAsEmote();
@@ -145,6 +153,12 @@ namespace OnePlusBot.Base
             return $"{emote} {starCount} <#{message.Channel.Id}> ID: {message.Id}"; 
         }
 
+        /// <summary>
+        /// Returns the actual star count on a message (the count of star reactions without the author)
+        /// </summary>
+        /// <param name="message">The <see cref="Discord.IUserMessage"> object to get the star count for</param>
+        /// <param name="starReaction">The pair of the reaction with the reaction metadata of the current reaction which was just added</param>
+        /// <returns>The amount of reactions besides the original author of the message</returns>
         private async Task<int> GetTrueStarCount(IUserMessage message, KeyValuePair<IEmote, ReactionMetadata> starReaction)
         {
             var reactions = message.GetReactionUsersAsync(Global.Emotes[Global.OnePlusEmote.STAR].GetAsEmote(), starReaction.Value.ReactionCount);

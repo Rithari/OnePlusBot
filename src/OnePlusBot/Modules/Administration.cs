@@ -686,6 +686,10 @@ namespace OnePlusBot.Modules
         }
 
 
+        /// <summary>
+        /// Creates the post in info responsible for managing the roles
+        /// </summary>
+        /// <returns>Task</returns>
         [
             Command("setupInfoPost"),
             Summary("Sets up the info post to let user self assign the roles"),

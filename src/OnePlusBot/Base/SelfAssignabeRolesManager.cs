@@ -10,8 +10,13 @@ namespace OnePlusBot.Base
 {
   public class SelfAssignabeRolesManager 
   {
-    public async Task SetupInfoPost(){
-      var infoChannelId = Global.Channels[Channel.INFO];
+    /// <summary>
+    /// Creates the post containing the fields for the different roles, reacts with the proper reactions to the post and deletes the old post.
+    /// </summary>
+    /// <returns>Task</returns>
+    public async Task SetupInfoPost()
+    {
+      var infoChannelId = Global.PostTargets[PostTarget.INFO];
       var guild = Global.Bot.GetGuild(Global.ServerID);
    
       var embedBuilder = new EmbedBuilder();
@@ -41,6 +46,7 @@ namespace OnePlusBot.Base
         }
         var message = await infoChannel.SendMessageAsync(embed: embedBuilder.Build());
         Global.InfoRoleManagerMessageId = message.Id;
+        // TODO refactor
         db.PersistentData.Where(dt => dt.Name == "rolemanager_message_id").First().Value = message.Id;
         await message.AddReactionsAsync(reactions.ToArray());
         db.SaveChanges();

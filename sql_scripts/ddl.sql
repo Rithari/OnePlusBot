@@ -351,6 +351,7 @@ CREATE TABLE `PostTargets` (
 -- Table structure for table `Commands`
 --
 
+DROP TABLE IF EXISTS `Commands`;
 CREATE TABLE `Commands` (
  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
  `name` text COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -362,6 +363,7 @@ CREATE TABLE `Commands` (
 -- Table structure for table `CommandModules`
 --
 
+DROP TABLE IF EXISTS `CommandModules`;
 CREATE TABLE `CommandModules` (
  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
  `name` text COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -372,6 +374,7 @@ CREATE TABLE `CommandModules` (
 -- Table structure for table `CommandInChannelGroup`
 --
 
+DROP TABLE IF EXISTS `CommandInChannelGroup`;
 CREATE TABLE `CommandInChannelGroup` (
  `command_id` int(10) unsigned NOT NULL,
  `channel_group_id` int(10) unsigned NOT NULL,
@@ -413,6 +416,7 @@ CREATE TABLE `ExperienceLevels` (
 -- Table structure for table `Emotes`
 --
 
+DROP TABLE IF EXISTS `Emotes`;
 CREATE TABLE `Emotes` (
  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -427,6 +431,7 @@ CREATE TABLE `Emotes` (
 -- Table structure for table `ReactionRoles`
 --
 
+DROP TABLE IF EXISTS `Emotes`;
 CREATE TABLE `ReactionRoles` (
  `emote_id` int(10) unsigned NOT NULL,
  `role_id` bigint(20) unsigned NOT NULL,
