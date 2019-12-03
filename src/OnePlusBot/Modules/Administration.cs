@@ -749,6 +749,25 @@ namespace OnePlusBot.Modules
             await Task.CompletedTask;
             return CustomResult.FromSuccess();
         }
+
+        /// <summary>
+        /// Changes the nickname of a user on the server (newNickname is optional, if not provided, will reset the nickname)
+        /// </summary>
+        /// <param name="user">The <see cref="Discord.IGuildUser"> object to change the nickname for</param>
+        /// <param name="newNickname">The new nickname, optional, if not provided, it will reset the nickname</param>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
+        [
+            Command("setNickname"),
+            Summary("Changes the nickname of a given user, resets if empty"),
+            RequireRole("staff"),
+            CommandDisabledCheck
+        ]
+        public async Task<RuntimeResult> SetNicknameTo(IGuildUser user, [Optional]string newNickname)
+        {
+          await user.ModifyAsync((user) => user.Nickname = newNickname);
+          return CustomResult.FromSuccess();
+        }
+
         
     }
 }
