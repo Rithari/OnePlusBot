@@ -1,9 +1,6 @@
-using System.Runtime.ConstrainedExecution;
-using System.Runtime.CompilerServices;
-using System.Data.Common;
+using OnePlusBot.Helpers;
 using System;
 using Discord;
-using Discord.Commands;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -81,7 +78,7 @@ namespace OnePlusBot.Base
                 if(starCount >= (int) Global.StarboardStars)
                 {
                     var starboardMessage = await starboardChannel.SendMessageAsync(GetStarboardMessage(message, currentStarReaction, reaction, starCount), 
-                    embed: GetStarboardEmbed(message, currentStarReaction));
+                    embed: GetStarboardEmbed(message));
                     using (var db = new Database())
                     {
                         var starboardMessageDto = new StarboardMessage();
@@ -104,26 +101,15 @@ namespace OnePlusBot.Base
             }
         }
 
-        private Embed GetStarboardEmbed(IUserMessage message, KeyValuePair<IEmote, ReactionMetadata> reactionInfo)
+        /// <summary>
+        /// Creates an embed containing the starred message and a field containing al link to the starred message
+        /// </summary>
+        /// <param name="message">The <see cref="Discord.IUserMessage"> object containing the message which is getting starred.</param>
+        /// <returns>The rendered embed containing the desired info</returns>
+        private Embed GetStarboardEmbed(IUserMessage message)
         {
-            var builder =  new EmbedBuilder()
-                .WithColor(9896005)
-                .WithAuthor(author => author
-                    .WithIconUrl(message.Author.GetAvatarUrl())
-                    .WithName(message.Author.Username)
-                    )
-                    
-                .WithDescription(message.Content)
-                .AddField(fb => fb
-                    .WithName("Original")
-                    .WithValue(OnePlusBot.Helpers.Extensions.GetMessageUrl(Global.ServerID, message.Channel.Id, message.Id, "Jump!"))
-                    )
-                .WithTimestamp(message.CreatedAt);
-            if(message.Attachments.Count > 0)
-            {
-                builder = builder.WithImageUrl(message.Attachments.First().ProxyUrl);
-            }
-
+            var builder = Extensions.GetMessageAsEmbed(message);
+            builder.AddField("Original", OnePlusBot.Helpers.Extensions.GetMessageUrl(Global.ServerID, message.Channel.Id, message.Id, "Jump!"));
             return builder.Build();
         }
 
