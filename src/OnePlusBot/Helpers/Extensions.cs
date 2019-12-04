@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Discord;
 using OnePlusBot.Base;
 using OnePlusBot.Data.Models;
+using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 
 namespace OnePlusBot.Helpers
@@ -69,15 +70,18 @@ namespace OnePlusBot.Helpers
             return FormatUserName(user) + " (" + user?.Id +  ")";
         }
 
-        public static String FormatMentionDetailed(IUser user){
+        public static String FormatMentionDetailed(IUser user)
+        {
             return user?.Mention + " " + FormatUserNameDetailed(user);
         }
 
-        public static Channel GetChannelById(ulong channelId){
+        public static Channel GetChannelById(ulong channelId)
+        {
             return Global.FullChannels.Where(chan => chan.ChannelID == channelId).DefaultIfEmpty(null).First();
         }
 
-        public static EmbedBuilder FaqCommandEntryToBuilder(FAQCommandChannelEntry entry) {
+        public static EmbedBuilder FaqCommandEntryToBuilder(FAQCommandChannelEntry entry) 
+        {
             var faqEmbedEntry = new EmbedBuilder();
             faqEmbedEntry.WithColor(new Color(entry.HexColor));
             faqEmbedEntry.WithDescription(entry.Text);
@@ -88,6 +92,50 @@ namespace OnePlusBot.Helpers
             faqEmbedEntry.WithAuthor(entry.Author, entry.AuthorAvatarUrl);
 
             return faqEmbedEntry;
+        }
+
+        /// <summary>
+        /// Creates an embed builder which is the best estimation at how the message can be represented as an ambed.
+        /// Contains *one* attachment, if the message contained more, containst a simplified version of an embed, if a message with an ambed is linked
+        /// </summary>
+        /// <param name="message">The <see cref="Discord.IMessage"> object representing the message to built an embed out of</param>
+        /// <returns>An <see cref="Discord.EmbedBuilder"> object representing the given message</returns>
+        public static EmbedBuilder GetMessageAsEmbed(IMessage message)
+        {
+          var builder = new EmbedBuilder();
+          builder.WithAuthor(new EmbedAuthorBuilder().WithIconUrl(message.Author.GetAvatarUrl()).WithName(message.Author.Username + '#' + message.Author.Discriminator));
+          var stringBuilder = new StringBuilder();
+          stringBuilder.Append(message.Content);
+          if(message.Attachments.Count() > 0)
+          {
+            builder.WithImageUrl(message.Attachments.First().ProxyUrl);
+          }
+          if(message.Embeds.Count() > 0)
+          {
+            // TODO needs refactoring, because of max description length (for example help embeds.... ), should be done when adding a mechanism for all of the embeds in in the whole bot
+            foreach(var embed in message.Embeds)
+            {
+              // only support rich emebds for now
+              if(embed.Type != EmbedType.Rich) 
+              {
+                continue; 
+              }
+
+              stringBuilder.Append($" Embed \n");
+              if(embed.Title != string.Empty && embed.Title != null)
+              {
+                stringBuilder.Append($"**{embed.Title}** \n");
+              }
+              stringBuilder.Append($"{embed.Description} \n");
+              foreach(var field in embed.Fields)
+              {
+                stringBuilder.Append($" *{field.Name}*: {field.Value} \n");
+              }
+            }
+          }
+          builder.WithDescription(stringBuilder.ToString());
+          builder.WithTimestamp(message.Timestamp);
+          return builder;
         }
 
         private static string DiscordChannelUrl = "https://discordapp.com/channels/{0}/{1}";
