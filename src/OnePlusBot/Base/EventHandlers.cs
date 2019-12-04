@@ -805,7 +805,6 @@ namespace OnePlusBot.Base
                 var channelId = Convert.ToUInt64(match.Groups[3].Value);
                 var messageId = Convert.ToUInt64(match.Groups[4].Value);
                 var server = bot.GetGuild(serverId);
-                messageContent = messageContent.Replace(match.Groups[1].Value, "");
                 if(server != null)
                 {
                   var channel = server.GetTextChannel(channelId);
@@ -814,6 +813,7 @@ namespace OnePlusBot.Base
                     var messageToEmbed = await channel.GetMessageAsync(messageId);
                     if(messageToEmbed != null)
                     {
+                      messageContent = messageContent.Replace(match.Groups[1].Value, "");
                       var embedBuilder = Extensions.GetMessageAsEmbed(messageToEmbed);
                       var fieldValue = message.Author.Mention + " in " + Extensions.GetMessageUrl(server.Id, message.Channel.Id, message.Id, server.GetTextChannel(message.Channel.Id).Name);
                       embedBuilder.AddField("Quoted by", fieldValue);
