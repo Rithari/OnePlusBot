@@ -26,7 +26,7 @@ Updates the database with current roles and channels of the server.
 
 ### Modmail
 
-There exists a category (configurable in database) with the purpose of modmail. When a user dms the bot, a channel in this category the modmail channels will be created and staff role will be pinged. There also exists another separate channel for modmaillog, in which the messages will get stored when the thread has been closed.\
+There exists a category (configurable in database) with the purpose of modmail. When a user dms the bot, a channel in this category the modmail channels will be created and staff role will be pinged. There also exists another separate channel for modmaillog, in which the messages will get stored when the thread has been closed.
 
 Note: while ID of category can be changed in database, it requires command `;reloaddb` to be issued to be taken into effect.
 
@@ -123,6 +123,12 @@ Suggestion will be posted to a #suggestions channel and bot will automatically r
 ### Invite filter
 
 To avoid unsollicited advertising an invite filter is present. Some channels and invitations can however be whitelisted (configurable in database). Changes will require command `;reloaddb` to be issued to be taken into effect.
+
+### Set nickname
+
+Set a new nickname for a user. Reset nickname if parameter is empty. It can only be used by users with **Staff** role.\
+Syntax is `;setnickame @Username#1234 nickname`.\
+It also works with [user IDs](https://dis.gd/userid).
 
 ## Specific to server
 
