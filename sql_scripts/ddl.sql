@@ -431,7 +431,7 @@ CREATE TABLE `Emotes` (
 -- Table structure for table `ReactionRoles`
 --
 
-DROP TABLE IF EXISTS `Emotes`;
+DROP TABLE IF EXISTS `ReactionRoles`;
 CREATE TABLE `ReactionRoles` (
  `emote_id` int(10) unsigned NOT NULL,
  `role_id` bigint(20) unsigned NOT NULL,
