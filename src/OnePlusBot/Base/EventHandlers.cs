@@ -22,7 +22,7 @@ namespace OnePlusBot.Base
         private readonly CommandService _commands;
         private readonly IServiceProvider _services;
 
-        private static Regex messageRegex = new Regex("https://(canary.){0,1}discordapp.com/channels/(\\d+)/(\\d+)/(\\d+)", RegexOptions.Singleline | RegexOptions.Compiled);
+        private static Regex messageRegex = new Regex("https://(?:canary.)?discordapp.com/channels/(\\d+)/(\\d+)/(\\d+)", RegexOptions.Singleline | RegexOptions.Compiled);
 
         public CommandHandler(DiscordSocketClient bot, CommandService commands, IServiceProvider services)
         {
@@ -800,9 +800,9 @@ namespace OnePlusBot.Base
               var bot = Global.Bot;
               foreach(Match match in matches)
               {
-                var serverId = Convert.ToUInt64(match.Groups[2].Value);
-                var channelId = Convert.ToUInt64(match.Groups[3].Value);
-                var messageId = Convert.ToUInt64(match.Groups[4].Value);
+                var serverId = Convert.ToUInt64(match.Groups[1].Value);
+                var channelId = Convert.ToUInt64(match.Groups[2].Value);
+                var messageId = Convert.ToUInt64(match.Groups[3].Value);
                 var server = bot.GetGuild(serverId);
                 if(server != null)
                 {
