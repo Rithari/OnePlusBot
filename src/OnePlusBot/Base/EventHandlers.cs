@@ -22,6 +22,8 @@ namespace OnePlusBot.Base
         private readonly CommandService _commands;
         private readonly IServiceProvider _services;
 
+        private static Regex messageRegex = new Regex("(https://(?:(?:canary|ptb).)?discordapp.com/channels/(\\d+)/(\\d+)/(\\d+))+", RegexOptions.Singleline | RegexOptions.Compiled);
+
         public CommandHandler(DiscordSocketClient bot, CommandService commands, IServiceProvider services)
         {
             _bot = bot;
@@ -37,6 +39,7 @@ namespace OnePlusBot.Base
             _bot.UserLeft += OnUserLeft;
             _bot.MessageReceived += OnCommandReceived;
             _bot.MessageReceived += OnMessageReceived;
+            _bot.MessageReceived += OnMessageReceivedEmbed;
             _bot.MessageReceived += HandleExpGain;
             _bot.MessageDeleted += OnMessageRemoved;
             _bot.MessageUpdated += OnMessageUpdated;
@@ -780,6 +783,53 @@ namespace OnePlusBot.Base
                 }
             }
             await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Checks if the message content contains a link to message and if so (and the channel is in a guild) embeds the message in the context channel
+        /// </summary>
+        /// <param name="message">The <see cref="Discord.WebSocket.SocketMessage"> object to check for message links</param>
+        /// <returns>Task</returns>
+        private static async Task OnMessageReceivedEmbed(SocketMessage message)
+        {
+          if(message.Channel is SocketGuildChannel)
+          {
+            var messageContent = message.Content;
+            var matches = messageRegex.Matches(messageContent);
+            if(matches.Count() > 0)
+            {
+              var bot = Global.Bot;
+              foreach(Match match in matches)
+              {
+                var serverId = Convert.ToUInt64(match.Groups[2].Value);
+                var channelId = Convert.ToUInt64(match.Groups[3].Value);
+                var messageId = Convert.ToUInt64(match.Groups[4].Value);
+                var server = bot.GetGuild(serverId);
+                messageContent = messageContent.Replace(match.Groups[1].Value, "");
+                if(server != null)
+                {
+                  var channel = server.GetTextChannel(channelId);
+                  if(channel != null)
+                  {
+                    var messageToEmbed = await channel.GetMessageAsync(messageId);
+                    if(messageToEmbed != null)
+                    {
+                      var embedBuilder = Extensions.GetMessageAsEmbed(messageToEmbed);
+                      var fieldValue = message.Author.Mention + " in " + Extensions.GetMessageUrl(server.Id, message.Channel.Id, message.Id, server.GetTextChannel(message.Channel.Id).Name);
+                      embedBuilder.AddField("Quoted by", fieldValue);
+                      await message.Channel.SendMessageAsync(embed: embedBuilder.Build());
+                      await Task.Delay(500);
+                    }
+                  }
+                }
+              }
+              if(messageContent.Trim() == string.Empty)
+              {
+                await message.DeleteAsync();
+              }
+            }
+           
+          }
         }
 
         private static async Task OnMessageReceived(SocketMessage message)
