@@ -22,7 +22,7 @@ namespace OnePlusBot.Base
         private readonly CommandService _commands;
         private readonly IServiceProvider _services;
 
-        private static Regex messageRegex = new Regex("https://(?:(?:canary|ptb).)?discordapp.com/channels/(\\d+)/(\\d+)/(\\d+)", RegexOptions.Singleline | RegexOptions.Compiled);
+        private static Regex messageRegex = new Regex("(https://(?:(?:canary|ptb).)?discordapp.com/channels/(\\d+)/(\\d+)/(\\d+))+", RegexOptions.Singleline | RegexOptions.Compiled);
 
         public CommandHandler(DiscordSocketClient bot, CommandService commands, IServiceProvider services)
         {
@@ -794,16 +794,18 @@ namespace OnePlusBot.Base
         {
           if(message.Channel is SocketGuildChannel)
           {
-            var matches = messageRegex.Matches(message.Content);
+            var messageContent = message.Content;
+            var matches = messageRegex.Matches(messageContent);
             if(matches.Count() > 0)
             {
               var bot = Global.Bot;
               foreach(Match match in matches)
               {
-                var serverId = Convert.ToUInt64(match.Groups[1].Value);
-                var channelId = Convert.ToUInt64(match.Groups[2].Value);
-                var messageId = Convert.ToUInt64(match.Groups[3].Value);
+                var serverId = Convert.ToUInt64(match.Groups[2].Value);
+                var channelId = Convert.ToUInt64(match.Groups[3].Value);
+                var messageId = Convert.ToUInt64(match.Groups[4].Value);
                 var server = bot.GetGuild(serverId);
+                messageContent = messageContent.Replace(match.Groups[1].Value, "");
                 if(server != null)
                 {
                   var channel = server.GetTextChannel(channelId);
@@ -812,14 +814,21 @@ namespace OnePlusBot.Base
                     var messageToEmbed = await channel.GetMessageAsync(messageId);
                     if(messageToEmbed != null)
                     {
-                      var embedToSend = Extensions.GetMessageAsEmbed(messageToEmbed);
-                      await message.Channel.SendMessageAsync(embed: embedToSend.Build());
+                      var embedBuilder = Extensions.GetMessageAsEmbed(messageToEmbed);
+                      var fieldValue = message.Author.Mention + " in " + Extensions.GetMessageUrl(server.Id, message.Channel.Id, message.Id, server.GetTextChannel(message.Channel.Id).Name);
+                      embedBuilder.AddField("Quoted by", fieldValue);
+                      await message.Channel.SendMessageAsync(embed: embedBuilder.Build());
                       await Task.Delay(500);
                     }
                   }
                 }
               }
+              if(messageContent.Trim() == string.Empty)
+              {
+                await message.DeleteAsync();
+              }
             }
+           
           }
         }
 

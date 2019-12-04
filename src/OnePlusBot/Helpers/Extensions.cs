@@ -103,7 +103,7 @@ namespace OnePlusBot.Helpers
         public static EmbedBuilder GetMessageAsEmbed(IMessage message)
         {
           var builder = new EmbedBuilder();
-          builder.WithAuthor(new EmbedAuthorBuilder().WithIconUrl(message.Author.GetAvatarUrl()).WithName(message.Author.Username));
+          builder.WithAuthor(new EmbedAuthorBuilder().WithIconUrl(message.Author.GetAvatarUrl()).WithName(message.Author.Username + '#' + message.Author.Discriminator));
           var stringBuilder = new StringBuilder();
           stringBuilder.Append(message.Content);
           if(message.Attachments.Count() > 0)
