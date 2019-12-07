@@ -33,22 +33,25 @@ namespace OnePlusBot.Base
             var profaneLinq = db.Profanities.Where(p => p.PromptMessagId == message.Id);
             if(profaneLinq.Any())
             {
+              var profaneMessageFromDb = profaneLinq.First();
               if(reaction.Emote.Name == StoredEmote.GetEmote(Global.OnePlusEmote.OP_YES).Name)
               {
-                var profaneMessageFromDb = profaneLinq.First();
                 var profaneMessage = await guild.GetTextChannel(profaneMessageFromDb.ChannelId).GetMessageAsync(profaneMessageFromDb.MessageId);
-                if(profaneMessage is RestUserMessage)
+                if(profaneMessage != null)
                 {
-                  var castedProfaneMessage = profaneMessage as RestUserMessage;
-                  await castedProfaneMessage.DeleteAsync();
+                  if(profaneMessage is RestUserMessage)
+                  {
+                    var castedProfaneMessage = profaneMessage as RestUserMessage;
+                    await castedProfaneMessage.DeleteAsync();
+                  }
+                  else if(profaneMessage is SocketUserMessage)
+                  {
+                    var castedProfaneMessage = profaneMessage as SocketUserMessage;
+                    await castedProfaneMessage.DeleteAsync();
+                  }
                 }
-                else if(profaneMessage is SocketUserMessage)
-                {
-                  var castedProfaneMessage = profaneMessage as SocketUserMessage;
-                  await castedProfaneMessage.DeleteAsync();
-                }
-                Global.ReportedProfanities.Remove(profaneMessageFromDb);
               }
+              Global.ReportedProfanities.Remove(profaneMessageFromDb);
             }
           }
           await message.DeleteAsync();
