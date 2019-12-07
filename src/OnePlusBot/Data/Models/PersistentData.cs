@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using OnePlusBot.Base.Errors;
 
 namespace OnePlusBot.Data.Models
 {
@@ -19,5 +21,47 @@ namespace OnePlusBot.Data.Models
 
         [Column("string")]
         public string StringValue { get; set; }
+
+        public static ulong GetConfiguredInt(string name)
+        {
+          using(var db = new Database())
+          {
+            return GetConfiguredInt(name, db);
+          }
+        }
+
+        public static ulong GetConfiguredInt(string name, Database db)
+        {
+          var value = db.PersistentData.Where(p => p.Name == name);
+          if(value.Any())
+          {
+            return value.First().Value;
+          }
+          else
+          {
+            throw new NotFoundException("Persistent value with name not found");
+          }
+        }
+
+        public static string GetConfiguredString(string name)
+        {
+          using(var db = new Database())
+          {
+            return GetConfiguredString(name, db);
+          }
+        }
+
+        public static string GetConfiguredString(string name, Database db)
+        {
+          var value = db.PersistentData.Where(p => p.Name == name);
+          if(value.Any())
+          {
+            return value.First().StringValue;
+          }
+          else
+          {
+            throw new NotFoundException("Persistent value with name not found");
+          }
+        }
     }
 }

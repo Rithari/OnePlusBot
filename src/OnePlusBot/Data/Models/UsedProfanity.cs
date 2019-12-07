@@ -15,6 +15,21 @@ namespace OnePlusBot.Data.Models
         [Key]
         public ulong MessageId { get; set; }
 
+        [Column("channel_id")]
+        public ulong ChannelId { get; set; }
+
+        [Column("report_message_id")]
+        public ulong ReportMessageId { get; set; }
+
+        [Column("prompt_posted")]
+        public bool PromptPosted { get; set; }
+
+        [Column("prompt_message_id")]
+        public ulong PromptMessagId { get; set; }
+
+        [Column("prompt_channel_id")]
+        public ulong PromptChannelId { get; set; }
+
         [Column("profanity_id")]
         public uint ProfanityId { get; set; }
 

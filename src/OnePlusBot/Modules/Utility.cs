@@ -155,8 +155,8 @@ namespace OnePlusBot.Modules
 
             await oldmessage.AddReactionsAsync(new IEmote[]
             {
-              Global.Emotes[Global.OnePlusEmote.OP_NO].GetAsEmote(), 
-              Global.Emotes[Global.OnePlusEmote.OP_YES].GetAsEmote()
+              StoredEmote.GetEmote(Global.OnePlusEmote.OP_NO), 
+              StoredEmote.GetEmote(Global.OnePlusEmote.OP_YES)
             });
             
             await Context.Message.DeleteAsync();
@@ -374,7 +374,7 @@ namespace OnePlusBot.Modules
 
         [
             Command("unremind"),
-            Summary("Cancells the reminder by id."),
+            Summary("Cancells the reminder by id. Does nothing is reminder is already cancelled."),
             CommandDisabledCheck
         ]
         public async Task<RuntimeResult> HandleUnRemindInput(ulong reminderId)

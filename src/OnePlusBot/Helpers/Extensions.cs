@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Discord;
 using OnePlusBot.Base;
 using OnePlusBot.Data.Models;
-using System.Collections.ObjectModel;
+using Discord.WebSocket;
 using System.Text.RegularExpressions;
 
 namespace OnePlusBot.Helpers
@@ -162,6 +162,35 @@ namespace OnePlusBot.Helpers
         public static IUser GetUserById(ulong userId)
         {
             return Global.Bot.GetGuild(Global.ServerID).GetUser(userId); 
+        }
+
+        public static bool UserHasRole(SocketGuildUser user, string[] AllowedRoles, ConcatenationMode mode = ConcatenationMode.OR){
+          bool allowed = mode == ConcatenationMode.AND;
+          var bot = Global.Bot;
+          var guild = bot.GetGuild(Global.ServerID);
+          var iGuildObj = (IGuild) guild;
+          foreach(string roleName in AllowedRoles)
+          {
+            var allowedroleObj =  iGuildObj.GetRole(Global.Roles[roleName]);
+            var hasRole = user.Roles.Where(role => role.Id == allowedroleObj.Id).Any();
+            if(mode == ConcatenationMode.AND)
+            {
+              if(!hasRole)
+              {
+                allowed = false;
+                break;
+              } 
+            }
+            else
+            {
+              if(hasRole)
+              {
+                allowed = true;
+                break;
+              }
+            }
+          }
+          return allowed;
         }
         
 
