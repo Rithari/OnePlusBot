@@ -15,6 +15,7 @@ using Discord.WebSocket;
 using System.Net;
 using System.IO;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace OnePlusBot.Modules
 {
@@ -539,6 +540,53 @@ namespace OnePlusBot.Modules
           embedBuilder.WithDescription(sb.ToString());
           await Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
           await Task.Delay(200);
+          return CustomResult.FromSuccess();
+        }
+
+        /// <summary>
+        /// Posts embeds containing the currently active reminders for the user executing the command.
+        /// </summary>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
+        [
+            Command("reminders"),
+            Summary("Shows the currently active reminders")
+        ]
+        public async Task<RuntimeResult> ShowActiveReminders()
+        {
+          using(var db = new Database())
+          {
+            var activeReminders = db.Reminders.Where(r => !r.Reminded && r.RemindedUserId == Context.User.Id);
+            var currentEmbedBuilder = new EmbedBuilder();
+            var embedsToPost = new List<Embed>();
+            currentEmbedBuilder.WithTitle("Active reminders");
+            if(activeReminders.Count() > 0)
+            {
+              var count = 0;
+              foreach(var reminder in activeReminders)
+              {
+                currentEmbedBuilder.AddField($"Reminder {count + 1}", reminder.RemindText + $" { reminder.ReminderDate:dd.MM.yyyy HH:mm}" , true);
+                count++;
+                if(((count % EmbedBuilder.MaxFieldCount) == 0) && reminder != activeReminders.Last())
+                {
+                  embedsToPost.Add(currentEmbedBuilder.Build());
+                  currentEmbedBuilder = new EmbedBuilder();
+                  var currentPage = count / EmbedBuilder.MaxFieldCount + 1;
+                  currentEmbedBuilder.WithFooter(new EmbedFooterBuilder().WithText($"Page {currentPage}"));
+                }
+              }
+              embedsToPost.Add(currentEmbedBuilder.Build());
+            }
+            else
+            {
+              currentEmbedBuilder.WithDescription("No active reminders");
+              embedsToPost.Add(currentEmbedBuilder.Build());
+            }
+            foreach(var embed in embedsToPost)
+            {
+              await Context.Channel.SendMessageAsync(embed: embed);
+              await Task.Delay(400);
+            }
+          }
           return CustomResult.FromSuccess();
         }
 
