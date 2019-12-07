@@ -564,7 +564,7 @@ namespace OnePlusBot.Modules
               var count = 0;
               foreach(var reminder in activeReminders)
               {
-                currentEmbedBuilder.AddField($"Reminder {count + 1}", reminder.RemindText + $" { reminder.ReminderDate:dd.MM.yyyy HH:mm}" , true);
+                currentEmbedBuilder.AddField($"Reminder {reminder.ID}", reminder.RemindText + $" { reminder.ReminderDate:dd.MM.yyyy HH:mm}" , true);
                 count++;
                 if(((count % EmbedBuilder.MaxFieldCount) == 0) && reminder != activeReminders.Last())
                 {
