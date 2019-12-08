@@ -18,9 +18,9 @@ namespace OnePlusBot.Base
   {
 
     /// <summary>
-    /// Crates a modmail thread for a user. This is initiated by the user when the user sends the bot a DM.
+    /// Creates a modmail thread for a user. This is initiated by the user when the user sends the bot a DM.
     /// This includes:
-    /// Creating the channel, createing the records in the db and pinging staff
+    /// Creating the channel, creating the records in the db and pinging staff
     /// </summary>
     /// <param name="message">The <see cref="Discord.WebSocket.SocketMessage"> object containing the message send by the user to initiate this</param>
     /// <returns>Task</returns>
