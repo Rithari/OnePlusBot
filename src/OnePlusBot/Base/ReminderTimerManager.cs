@@ -31,6 +31,14 @@ namespace OnePlusBot.Base
       await ExecuteReminderLogic(false);
     }
 
+
+    /// <summary>
+    /// Goes over the current reminders in the near futuer (<1h), and schedules tasks for them to be executed asynchronously.
+    /// If the user left it removes the reminder. If the bot just started up, this will take all reminders not yet reminded.
+    /// If this is coming from the regularly scheduled timer: only takes the reminders which are not yet scheduled by the direct `remind` command
+    /// </summary>
+    /// <param name="initialStartup">bool whether or not we come from the startup logic.</param>
+    /// <returns>Task</returns>
     public async Task ExecuteReminderLogic(bool initialStartup)
     {
        var bot = Global.Bot;
@@ -47,7 +55,7 @@ namespace OnePlusBot.Base
         } 
         else 
         {
-          remindersInFuture=  db.Reminders.Where(x => x.TargetDate < maxDate && !x.Reminded && !x.ReminderScheduled).ToList(); 
+          remindersInFuture = db.Reminders.Where(x => x.TargetDate < maxDate && !x.Reminded && !x.ReminderScheduled).ToList(); 
         }
         if(remindersInFuture.Any())
         {
@@ -65,6 +73,8 @@ namespace OnePlusBot.Base
             {
               timeToRemind = TimeSpan.FromSeconds(1);
             }
+            futureReminder.ReminderScheduled = true;
+            db.SaveChanges();
             // the reason why I am dragging the IDs into the function call is to be sure, that the objects are still valid when the remind function is executed
             RemindUserIn(userObj.Id, timeToRemind, futureReminder.ID);
           }
