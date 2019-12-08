@@ -94,7 +94,7 @@ Normal users can check their own warnings by using `;warnings` command, which wi
 
 ### User info
 
-Display user information: status (offline/DND/idle/online), activity (Rich Presence state), Discord account registration date, join server date.\
+Display user information: status (offline/DND/idle/online), activity (Rich Presence state), Discord account registration date, join server date and their nickname.\
 Syntax is `;userinfo @Username#1234`.\
 Also works with [user IDs](https://dis.gd/userid) `;userinfo user_id`
 
@@ -244,3 +244,6 @@ Syntax is `;remind lenght your_text` with lenght being days, hours, minutes and 
 Eg `;remind 2d1h3m write documentation`\
 After executing the remind command, the bot will ping you and inform you of the id this reminder has.\
 You can cancel the reminder by using `;unremind remind_ID`
+
+Users can check their active reminders by using command `;reminders`.\
+It will list them, give their ID, tell their content and add a jump link towards the original reminders.
