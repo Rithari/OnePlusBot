@@ -60,6 +60,8 @@ namespace OnePlusBot.Base
         public static int XPGainRangeMin { get; set; }
 
         public static int XPGainRangeMax { get; set; }
+
+        public static Dictionary<ulong, ulong> UserNameNotifications { get; set; }
         
         public static string Token
         {
@@ -110,6 +112,7 @@ namespace OnePlusBot.Base
             RuntimeExp = new ConcurrentDictionary<long, List<ulong>>();
             Emotes = new Dictionary<string, StoredEmote>();
             Commands = new  List<Command>();
+            UserNameNotifications = new Dictionary<ulong, ulong>();
             LoadGlobal();
         }
 
@@ -272,6 +275,8 @@ namespace OnePlusBot.Base
             public static string LVL_3_STAR = "LVL_3_STAR";
 
             public static string LVL_4_STAR = "LVL_4_STAR";
+
+            public static string OPEN_MODMAIL = "OPEN_MODMAIL";
 
         }
 
