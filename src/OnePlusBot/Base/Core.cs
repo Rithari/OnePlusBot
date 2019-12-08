@@ -122,7 +122,6 @@ namespace OnePlusBot.Base
             AddReactionActions.Add(new AddRoleReactionAction());
             AddReactionActions.Add(new StarboardAddedReactionAction());
             AddReactionActions.Add(new ProfanityReportReactionAdded());
-            AddReactionActions.Add(new ProfanityPromptReaction());
             RemoveReactionActions.Add(new RemoveRoleReactionAction());
             RemoveReactionActions.Add(new StarboardRemovedReactionAction());
         }
