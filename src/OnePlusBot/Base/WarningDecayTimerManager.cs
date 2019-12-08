@@ -79,6 +79,14 @@ namespace OnePlusBot.Base
         {
           builder.Append(warnText);
         }
+        var remainingWarnings = 0;
+        using(var db = new Database())
+        {
+          remainingWarnings = db.Warnings.Where(w => w.WarnedUserID == user.Id && !w.Decayed).Count();
+        }
+        var message = $"Your warning from {warning.Date} with the reason '{warning.Reason}' has been cleared. You have {remainingWarnings} warning(s) left.";
+        await user.SendMessageAsync(message);
+        await Task.Delay(500);
       }
       if(builder.ToString() == string.Empty)
       {
