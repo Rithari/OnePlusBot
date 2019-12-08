@@ -1,9 +1,11 @@
+using System.Net;
 using System.Linq;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Discord;
 using System.Collections.Generic;
+using OnePlusBot.Base;
 
 namespace OnePlusBot.Data.Models
 {
@@ -43,6 +45,11 @@ namespace OnePlusBot.Data.Models
           {
             return new Emoji(Name);
           }
+        }
+
+        public static IEmote GetEmote(string name)
+        {
+          return Global.Emotes[name].GetAsEmote();
         }
 
     }

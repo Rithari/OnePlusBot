@@ -48,9 +48,7 @@ namespace OnePlusBot.Base
             var user = db.Users.Where(us => us.Id == message.Author.Id).FirstOrDefault();
             if(user == null)
             {
-                var newUser = new User();
-                newUser.Id = message.Author.Id;
-                newUser.ModMailMuted = false;
+                var newUser = new UserBuilder(message.Author.Id).Build();
                 db.Users.Add(newUser);
                 db.SaveChanges();
             }
@@ -401,11 +399,7 @@ namespace OnePlusBot.Base
         using(var db = new Database()){
             var userInDb = db.Users.Where(us => us.Id == user.Id).FirstOrDefault();
             if(userInDb == null){
-                var newUser = new User();
-                newUser.Id = user.Id;
-                newUser.ModMailMuted = true;
-                newUser.ModMailMutedReminded = false;
-                newUser.ModMailMutedUntil = until;
+                var newUser = new UserBuilder(user.Id).WithModmailConfig(true, false, until).Build();
                 db.Users.Add(newUser);
             } else {
                 userInDb.ModMailMuted = true;
@@ -455,10 +449,18 @@ namespace OnePlusBot.Base
     }
 
 
-    public async Task ContactUser(IGuildUser user, ISocketMessageChannel channel){
+    /// <summary>
+    /// Creates a modmail thread with the given user and responds in the given thread with a link to the newly created channel.
+    /// </summary>
+    /// <param name="user">The <see cref="Discord.IGuildUser"> to create the channel for</param>
+    /// <param name="channel">The <see cref="Discord.ISocketMessageChannel"> in which the response should be posted to</param>
+    /// <returns>Task</returns>
+    public async Task ContactUser(IGuildUser user, ISocketMessageChannel channel)
+    {
         using(var db = new Database()){
             var exists = db.ModMailThreads.Where(th => th.UserId == user.Id && th.State != "CLOSED");
-            if(exists.Count() > 0){
+            if(exists.Count() > 0)
+            {
                 await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetThreadAlreadyExistsEmbed(exists.First()));
                 return;
             }
@@ -466,9 +468,7 @@ namespace OnePlusBot.Base
             var existingUser = db.Users.Where(us => us.Id == user.Id).FirstOrDefault();
             if(existingUser == null)
             {
-                var newUser = new User();
-                newUser.Id = user.Id;
-                newUser.ModMailMuted = false;
+                var newUser = new UserBuilder(user.Id).Build();
                 db.Users.Add(newUser);
             }
             else 

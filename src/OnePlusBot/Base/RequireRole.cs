@@ -1,5 +1,4 @@
-using System.Runtime.CompilerServices;
-using System.Linq;
+using OnePlusBot.Helpers;
 using System;
 using System.Threading.Tasks;
 using Discord.Commands;
@@ -48,28 +47,7 @@ namespace OnePlusBot.Base
             var guild = bot.GetGuild(Global.ServerID);
             var iGuildObj = (IGuild) guild;
             var user = (SocketGuildUser) context.User;
-            bool allowed = mode == ConcatenationMode.AND;
-            foreach(string roleName in AllowedRoles)
-            {
-              var allowedroleObj =  iGuildObj.GetRole(Global.Roles[roleName]);
-              var hasRole = user.Roles.Where(role => role.Id == allowedroleObj.Id).Any();
-              if(mode == ConcatenationMode.AND)
-              {
-                if(!hasRole)
-                {
-                  allowed = false;
-                  break;
-                } 
-              }
-              else
-              {
-                if(hasRole)
-                {
-                  allowed = true;
-                  break;
-                }
-              }
-            }
+            var allowed = Extensions.UserHasRole(user, AllowedRoles, mode);
             if(allowed)
             {
               return Task.FromResult(PreconditionResult.FromSuccess());

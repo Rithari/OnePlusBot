@@ -156,19 +156,10 @@ namespace OnePlusBot.Base
         } 
         else 
         {
-          // TODO refactor into a builder
-          var newUser = new User();
-          newUser.Id = userId;
-          newUser.ModMailMuted = false;
-          newUser.ModMailMutedReminded = false;
-          newUser.ModMailMutedUntil = DateTime.Now;
-          newUser.XPGainDisabled = false;
-          newUser.Level = 0;
-          newUser.MessageCount = 1;
-          newUser.XP = gainedExp;
-          newUser.Updated = updateDate;
-          db.Users.Add(newUser);
-          peopleToUpdate.Add(newUser);
+          var userBuilder = new UserBuilder(userId).WithMessageCount(1).WithXP(gainedExp);
+          var user = userBuilder.Build();
+          db.Users.Add(user);
+          peopleToUpdate.Add(user);
         }
       }
     }
