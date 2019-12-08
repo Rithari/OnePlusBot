@@ -187,7 +187,9 @@ namespace OnePlusBot.Base
         {
           var embed = GetUserNameNotificationEmbed(embedTitle, beforeText, afterText, user);
           var userlog = guild.GetTextChannel(Global.PostTargets[PostTarget.USERNAME_QUEUE]);
-          await userlog.SendMessageAsync(embed: embed);
+          var message = await userlog.SendMessageAsync(embed: embed);
+          await message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.OPEN_MODMAIL].GetAsEmote());
+          Global.UserNameNotifications.Add(message.Id, user.Id);
         }
 
         private async Task OnUserLeft(SocketGuildUser socketGuildUser)
