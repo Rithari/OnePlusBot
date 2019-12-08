@@ -16,13 +16,22 @@ namespace OnePlusBot.Base
 {
   public class ModMailManager 
   {
+
+    /// <summary>
+    /// Creates a modmail thread for a user. This is initiated by the user when the user sends the bot a DM.
+    /// This includes:
+    /// Creating the channel, creating the records in the db and pinging staff
+    /// </summary>
+    /// <param name="message">The <see cref="Discord.WebSocket.SocketMessage"> object containing the message send by the user to initiate this</param>
+    /// <returns>Task</returns>
     public async Task CreateModmailThread(SocketMessage message)
     {
         var userFromCache = Global.ModMailThreads.Where(th => th.UserId == message.Author.Id).FirstOrDefault();
         if(userFromCache != null &&  userFromCache.ThreadUser.ModMailMuted && userFromCache.ThreadUser.ModMailMutedUntil > DateTime.Now)
         {
-            if(!userFromCache.ThreadUser.ModMailMutedReminded) {
-                await message.Channel.SendMessageAsync($"You are unable to contact modmail until {userFromCache.ThreadUser.ModMailMutedUntil:dd.MM.yyyy HH:mm} {TimeZoneInfo.Local}.");
+            if(!userFromCache.ThreadUser.ModMailMutedReminded) 
+            {
+                await message.Channel.SendMessageAsync($"You are unable to contact modmail until {Extensions.FormatDateTime(userFromCache.ThreadUser.ModMailMutedUntil)} {TimeZoneInfo.Local}.");
                 using(var db = new Database())
                 {
                     db.Users.Where(us => us.Id == message.Author.Id).First().ModMailMutedReminded = true;
