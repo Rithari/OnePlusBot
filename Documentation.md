@@ -246,4 +246,4 @@ After executing the remind command, the bot will ping you and inform you of the 
 You can cancel the reminder by using `;unremind remind_ID`
 
 Users can check their active reminders by using command `;reminders`.\
-It will list them, give their ID, tell their content and add a jump link towards the original reminders.
+It will list them, give their ID, tell their content, when they are due and add a jump link towards the original reminders.
