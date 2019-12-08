@@ -529,11 +529,11 @@ namespace OnePlusBot.Base
                 case PreconditionResult conditionResult:
                     if (conditionResult.IsSuccess)
                     {
-                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.SUCCESS].GetAsEmote());
+                        await context.Message.AddReactionAsync(StoredEmote.GetEmote(Global.OnePlusEmote.SUCCESS));
                     }
                     else
                     {
-                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.FAIL].GetAsEmote());
+                        await context.Message.AddReactionAsync(StoredEmote.GetEmote(Global.OnePlusEmote.FAIL));
                         await context.Channel.SendMessageAsync(conditionResult.ErrorReason);
                     }
                     break;
@@ -544,11 +544,11 @@ namespace OnePlusBot.Base
                     }
                     if (customResult.IsSuccess)
                     {
-                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.SUCCESS].GetAsEmote());
+                        await context.Message.AddReactionAsync(StoredEmote.GetEmote(Global.OnePlusEmote.SUCCESS));
                     }
                     else
                     {
-                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.FAIL].GetAsEmote());
+                        await context.Message.AddReactionAsync(StoredEmote.GetEmote(Global.OnePlusEmote.FAIL));
                         await context.Channel.SendMessageAsync(customResult.Reason);
                     }
                     break;
@@ -560,7 +560,7 @@ namespace OnePlusBot.Base
                     if (result.ErrorReason == "Unknown command.")
                     return;
 
-                    await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.FAIL].GetAsEmote());                 
+                    await context.Message.AddReactionAsync(StoredEmote.GetEmote(Global.OnePlusEmote.FAIL));                 
 
                     await context.Channel.SendMessageAsync(result.ErrorReason);
                     return;
@@ -650,8 +650,15 @@ namespace OnePlusBot.Base
             await message.DeleteAsync();
         }
 
-        private static async Task ReportProfanity(SocketMessage message, ProfanityCheck usedProfanity){
-
+        private static async Task ReportProfanity(SocketMessage message, ProfanityCheck usedProfanity)
+        {
+            using(var db = new Database())
+            {
+              if(db.Profanities.Where(p => p.MessageId == message.Id).Any())
+              {
+                return;
+              }  
+            }
             var guild = Global.Bot.GetGuild(Global.ServerID);
             var builder = new EmbedBuilder();
             builder.Title = "Profanity has been used!";
@@ -682,22 +689,22 @@ namespace OnePlusBot.Base
 
             await report.AddReactionsAsync(new IEmote[]
             {
-                Global.Emotes[Global.OnePlusEmote.OP_YES].GetAsEmote(), 
-                Global.Emotes[Global.OnePlusEmote.OP_NO].GetAsEmote()
+                StoredEmote.GetEmote(Global.OnePlusEmote.OP_YES), 
+                StoredEmote.GetEmote(Global.OnePlusEmote.OP_NO)
             });
 
             var profanity = new UsedProfanity();
-            profanity.MessageId = report.Id;
+            profanity.MessageId = message.Id;
+            profanity.ReportMessageId = report.Id;
             profanity.UserId = message.Author.Id;
             profanity.Valid = false;
             profanity.ProfanityId = usedProfanity.ID;
+            profanity.ChannelId = message.Channel.Id;
             using(var db = new Database()){
                 var user = db.Users.Where(us => us.Id == message.Author.Id).FirstOrDefault();
                 if(user == null)
                 {
-                    var newUser = new User();
-                    newUser.Id = message.Author.Id;
-                    newUser.ModMailMuted = false;
+                    var newUser = new UserBuilder(message.Author.Id).Build();
                     db.Users.Add(newUser);
                 }
                

@@ -47,4 +47,48 @@ namespace OnePlusBot.Data.Models
         public virtual ExperienceRole ExperienceRoleReference { get; set; }
 
     }
+
+    public class UserBuilder
+    {
+      private User InstanceToBuild;
+
+      public UserBuilder(ulong id)
+      {
+        this.InstanceToBuild = new User();
+        this.InstanceToBuild.Id = id;
+        this.InstanceToBuild.ModMailMuted = false;
+        this.InstanceToBuild.ModMailMutedReminded = false;
+        this.InstanceToBuild.ModMailMutedUntil = DateTime.Now;
+        this.InstanceToBuild.XPGainDisabled = false;
+        this.InstanceToBuild.Level = 0;
+        this.InstanceToBuild.MessageCount = 0;
+        this.InstanceToBuild.XP = 0;
+        this.InstanceToBuild.Updated = DateTime.Now;
+      }
+
+      public UserBuilder WithXP(ulong xp)
+      {
+        this.InstanceToBuild.XP = xp;
+        return this;
+      }
+
+      public UserBuilder WithMessageCount(ulong messages){
+        this.InstanceToBuild.MessageCount = messages;
+        return this;
+      }
+
+      public UserBuilder WithModmailConfig(bool muted, bool reminded, DateTime mutedUntil)
+      {
+        this.InstanceToBuild.ModMailMuted = muted;
+        this.InstanceToBuild.ModMailMutedReminded = reminded;
+        this.InstanceToBuild.ModMailMutedUntil = mutedUntil;
+        return this;
+      }
+
+      public User Build()
+      {
+        return InstanceToBuild;
+      }
+
+    }
 }
