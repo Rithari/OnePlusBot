@@ -8,8 +8,7 @@ using Discord.Commands;
 using System.Collections.ObjectModel;
 using OnePlusBot.Data.Models;
 using OnePlusBot.Helpers;
-
-using System.Collections.Generic;
+using Discord.Net;
 
 namespace OnePlusBot.Base
 {
@@ -59,6 +58,11 @@ namespace OnePlusBot.Base
       await ReportDecay(decayedWarnings);
     }
 
+    /// <summary>
+    /// Builds the embed reporting the decays and posts them in towards decaylog. Also sends earch user a notification, that a warning has been decayed.
+    /// </summary>
+    /// <param name="warnings">The warnings to decay.</param>
+    /// <returns>Task</returns>
     private async Task ReportDecay(Collection<WarnEntry> warnings)
     {
       StringBuilder builder = new StringBuilder("");
@@ -78,6 +82,24 @@ namespace OnePlusBot.Base
         else
         {
           builder.Append(warnText);
+        }
+        if(user != null)
+        {
+          var remainingWarnings = 0;
+          using(var db = new Database())
+          {
+            remainingWarnings = db.Warnings.Where(w => w.WarnedUserID == user.Id && !w.Decayed).Count();
+          }
+          var message = $"Your warning from {warning.Date} with the reason '{warning.Reason}' has been cleared. You have {remainingWarnings} warning(s) left.";
+          try 
+          {
+            await user.SendMessageAsync(message);
+            await Task.Delay(500);
+          }
+          catch (HttpException)
+          {
+            Console.WriteLine($"User {user.Id} disabled DMs, unable to send message about decay.");
+          }
         }
       }
       if(builder.ToString() == string.Empty)
