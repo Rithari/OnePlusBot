@@ -63,61 +63,55 @@ namespace OnePlusBot.Modules
         }
 
 
+        /// <summary>
+        /// Shows information about the given (or executing in case given is null) user. This information includes registration/join date, current status and nickname.
+        /// </summary>
+        /// <param name="user">The <see cref="Discord.IGuildUser"> to post the informatoin for</param>
+        /// <returns>Task</returns>
         [
             Command("userinfo"),
             Summary("Displays User Information"),
             CommandDisabledCheck
         ]
-        public async Task UserInfo(IGuildUser user = null)
+        public async Task UserInfo([Optional] IGuildUser user)
         {
-            user = user ?? (IGuildUser) Context.User;
-            
-            var embed = new EmbedBuilder();
+          user = user ?? (IGuildUser) Context.User;
+          
+          var embedBuilder = new EmbedBuilder();
 
-            embed.WithColor(9896005);
-            embed.WithAuthor(x =>
-            {
-                x.Name = user.Username;
-            });
+          embedBuilder.WithColor(9896005);
+          embedBuilder.WithAuthor(x =>
+          {
+              x.Name = user.Username;
+          });
 
-            embed.ThumbnailUrl = user.GetAvatarUrl();
-            
-            embed.AddField(x =>
-            {
-                x.Name = "Status";
-                x.Value = user.Status.ToString();
-                x.IsInline = true;
-            });
-            
+          embedBuilder.ThumbnailUrl = user.GetAvatarUrl();
 
-            embed.AddField(x =>
-            {
-                x.Name = "Activity";
-                x.Value = user.Activity?.Name ?? "Nothing";
-                x.IsInline = true;
-            });
+          embedBuilder.AddField("Status", user.Status.ToString(), true);
 
-            if (user.JoinedAt.HasValue)
-            {
-                embed.AddField(x =>
-                {
-                    x.Name = "Joined";
-                    x.Value = user.JoinedAt.Value.DateTime.ToString("ddd, MMM dd, yyyy, HH:mm tt", CultureInfo.InvariantCulture);
-                    x.IsInline = true;
-                });
-            }
-            
-            embed.AddField(x =>
-            {
-                x.Name = "Registered";
-                x.Value = user.CreatedAt.DateTime.ToString("ddd, MMM dd, yyyy, HH:mm tt", CultureInfo.InvariantCulture);
-                x.IsInline = true;
-            });
-            
-            
-            await Context.Channel.EmbedAsync(embed);
+          if(user.Nickname != null)
+          {
+            embedBuilder.AddField("Nickname", user.Nickname, true);
+          }
+          
+          embedBuilder.AddField("Activity", user.Activity?.Name ?? "Nothing", true);
+
+          if (user.JoinedAt.HasValue)
+          {
+            embedBuilder.AddField("Joined", Extensions.FormatDateTime(user.JoinedAt.Value.DateTime), true);
+          }
+
+          embedBuilder.AddField("Registered", Extensions.FormatDateTime(user.CreatedAt.DateTime), true);
+                      
+          await Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
         }
 
+
+        /// <summary>
+        /// Searches for all of the custom emoji in the parameters and posts a bigger image and the direct link
+        /// </summary>
+        /// <param name="_">Text containing the emoji with the URLs </param>
+        /// <returns>Task</returns>
         [
             Command("se"),
             Summary("Shows bigger version of am emote."),
@@ -129,10 +123,14 @@ namespace OnePlusBot.Modules
             
             var result = string.Join("\n", tags.Select(m => "**Name:** " + m + " **Link:** " + m.Url));
 
-            if (string.IsNullOrWhiteSpace(result))
-                await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("No special emojis found."));
-            else
-                await Context.Channel.SendMessageAsync(result).ConfigureAwait(false);
+            if (string.IsNullOrWhiteSpace(result)) 
+            {
+               await Context.Channel.EmbedAsync(new EmbedBuilder().WithColor(9896005).WithDescription("No special emojis found."));
+            }
+            else 
+            {
+              await Context.Channel.SendMessageAsync(result);
+            }
         }
 
         [
@@ -213,6 +211,12 @@ namespace OnePlusBot.Modules
 
          public readonly DiscordSocketClient _client;
 
+
+        /// <summary>
+        /// Shows general information about the server: name, owner, creation date, channel count, features, members and custom emoji
+        /// </summary>
+        /// <param name="guildName"></param>
+        /// <returns></returns>
         [
             Command("serverinfo"),
             Summary("Shows server information."),
@@ -245,7 +249,7 @@ namespace OnePlusBot.Modules
                 .AddField(fb => fb.WithName("Members").WithValue(guild.MemberCount.ToString()).WithIsInline(true))
                 .AddField(fb => fb.WithName("Text channels").WithValue(textchn.ToString()).WithIsInline(true))
                 .AddField(fb => fb.WithName("Voice channels").WithValue(voicechn.ToString()).WithIsInline(true))
-                .AddField(fb => fb.WithName("Created at").WithValue($"{ createdAt:dd.MM.yyyy HH:mm}").WithIsInline(true))
+                .AddField(fb => fb.WithName("Created at").WithValue($"{ Extensions.FormatDateTime(createdAt)}").WithIsInline(true))
                 .AddField(fb => fb.WithName("Region").WithValue(guild.VoiceRegionId.ToString()).WithIsInline(true))
                 .AddField(fb => fb.WithName("Roles").WithValue((guild.Roles.Count - 1).ToString()).WithIsInline(true))
                 .AddField(fb => fb.WithName("Features").WithValue(features).WithIsInline(true))

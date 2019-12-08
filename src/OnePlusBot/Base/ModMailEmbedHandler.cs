@@ -19,6 +19,12 @@ namespace OnePlusBot
             return builder;
         }
 
+        /// <summary>
+        /// Builds an embed containing the header of a newly (externally) created modmail thread (amount of threads and username)
+        /// </summary>
+        /// <param name="pastThreadCount">The amoun tof threads in the past</param>
+        /// <param name="user">The <see cref="Discord.WebSocket.SocketUser"> for which this thread was created</param>
+        /// <returns><see cref="Discord.Embed"> object containing the information</returns>
         public static Embed GetUserInformation(int pastThreadCount, SocketUser user)
         {
             var descriptionText = new StringBuilder();
@@ -68,10 +74,15 @@ namespace OnePlusBot
             return embed.Build();
         }
 
-         public static Embed GetDisablingEmbed(DateTime date){
+        /// <summary>
+        /// Creates the embed send to the user when an open thread was disabled for a certain time period.
+        /// </summary>
+        /// <param name="date">The <see cref="System.DateTime"> date at which modmail will be available for the user again</param>
+        /// <returns>The <see cref="Discord.Embed"> object sent to the user containing the information about when the user can contact modmail again</returns>
+        public static Embed GetDisablingEmbed(DateTime date){
             var embed = GetBaseEmbed();
             embed.WithAuthor(GetOneplusAuthor());
-            embed.WithDescription($"Your inquiry has been closed. You will be able to contact modmail again at {date:dd.MM.yyyy HH:mm} {TimeZoneInfo.Local}.");
+            embed.WithDescription($"Your inquiry has been closed. You will be able to contact modmail again at {Extensions.FormatDateTime(date)} {TimeZoneInfo.Local}.");
             return embed.Build();
         }
 
@@ -88,7 +99,7 @@ namespace OnePlusBot
             string defaultedNote = note ?? "No note";
             descriptionBuilder.Append($"A modmail thread has been closed with the note '{ defaultedNote }' \n ");
             descriptionBuilder.Append($"There were {messageCount} interactions with the user {Extensions.FormatUserNameDetailed(user)}. \n");
-            descriptionBuilder.Append($"It has been opened on {thread.CreateDate:dd.MM.yyyy HH:mm} {TimeZoneInfo.Local}");
+            descriptionBuilder.Append($"It has been opened on {Extensions.FormatDateTime(thread.CreateDate)} {TimeZoneInfo.Local}");
             descriptionBuilder.Append($" and lasted {Extensions.FormatTimeSpan(DateTime.Now - thread.CreateDate)}.");
             return descriptionBuilder;
         }
@@ -101,9 +112,18 @@ namespace OnePlusBot
             return embed.Build();
         }
 
+        /// <summary>
+        /// Builds the header for the log when the thread has been closed and disabled for a certain timeperiod
+        /// </summary>
+        /// <param name="thread">The <see cref="OnePlusBot.Data.Models.ModMailThread"> being closed</param>
+        /// <param name="messageCount">The amount of messages between the moderators and the user</param>
+        /// <param name="user">The <see cref="Discord.WebSocket.SocketUser"> object for which the thread was opened</param>
+        /// <param name="note">The note (optional) which was used to close the thread</param>
+        /// <param name="until">The <see cref="System.DateTime"> at which modmail will be available again for the user</param>
+        /// <returns>The <see cref="Discord.Embed"> containing the information</returns>
         public static Embed GetMutingSummaryEmbed(ModMailThread thread, int messageCount, SocketUser user, string note, DateTime until){
             StringBuilder description = GetClosingHeader(thread, messageCount, user, note);
-            description.Append($"\n It has been disabled and will be available again at {until:dd.MM.yyyy HH:mm} {TimeZoneInfo.Local}.");
+            description.Append($"\n It has been disabled and will be available again at {Extensions.FormatDateTime(until)} {TimeZoneInfo.Local}.");
             var embed = GetBaseEmbed();
             embed.WithTitle("Modmail thread has been disabled for user");
             embed.WithDescription(description.ToString());

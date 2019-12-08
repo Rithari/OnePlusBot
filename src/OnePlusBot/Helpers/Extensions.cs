@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Discord;
 using OnePlusBot.Base;
 using OnePlusBot.Data.Models;
-using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace OnePlusBot.Helpers
@@ -262,6 +262,16 @@ namespace OnePlusBot.Helpers
             TimeSpan timeSpanToDelay = (nextHour - sinceMidnight);
             int secondsToDelay = (int) timeSpanToDelay.TotalSeconds;
             await Task.Delay(secondsToDelay * 1000);
+        }
+
+        /// <summary>
+        /// Formates the given datetime in the global english culture
+        /// </summary>
+        /// <param name="dateTime"><see cref="System.DateTime"> object to format</param>
+        /// <returns>The formatted string</returns>
+        public static string FormatDateTime(DateTime dateTime) 
+        {
+          return dateTime.ToString("dd/MMM/yyyy, HH:mm", CultureInfo.CurrentCulture);
         }
     }
 }
