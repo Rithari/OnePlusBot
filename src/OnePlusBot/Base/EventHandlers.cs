@@ -220,7 +220,9 @@ namespace OnePlusBot.Base
                 builder.Timestamp = DateTime.Now;
                 
                 builder.ThumbnailUrl = socketGuildUser.GetAvatarUrl();
-                await modQueue.SendMessageAsync(embed: builder.Build());
+                var message = await modQueue.SendMessageAsync(embed: builder.Build());
+                await message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.OPEN_MODMAIL].GetAsEmote());
+                Global.UserNameNotifications.Add(message.Id, socketGuildUser.Id);
             }
             await joinlog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + " joined the guild");
         }
