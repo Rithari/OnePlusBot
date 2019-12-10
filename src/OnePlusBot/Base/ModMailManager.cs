@@ -31,7 +31,7 @@ namespace OnePlusBot.Base
         {
             if(!userFromCache.ThreadUser.ModMailMutedReminded) 
             {
-                await message.Channel.SendMessageAsync($"You are unable to contact modmail until {Extensions.FormatDateTime(userFromCache.ThreadUser.ModMailMutedUntil)} {TimeZoneInfo.Local}.");
+                await message.Channel.SendMessageAsync($"You are unable to contact modmail until {Extensions.FormatDateTime(userFromCache.ThreadUser.ModMailMutedUntil)}.");
                 using(var db = new Database())
                 {
                     db.Users.Where(us => us.Id == message.Author.Id).First().ModMailMutedReminded = true;
@@ -64,15 +64,18 @@ namespace OnePlusBot.Base
         var channel = await CreateModMailThread(message.Author);
         var guild = Global.Bot.GetGuild(Global.ServerID);
         await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetUserInformation(pastThreads, message.Author));
-        var channelMessage = await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetReplyEmbed(message, "Initial message from user"));
-        AddModMailMessage(channel.Id, channelMessage, null, message.Author.Id);
-        await message.Author.SendMessageAsync(embed: ModMailEmbedHandler.GetInitialUserReply(message));
 
         ModMailThread modmailThread;
         using(var db = new Database())
         {
-            modmailThread = db.ModMailThreads.Where(th => th.ChannelId == channel.Id).First(); 
+          modmailThread = db.ModMailThreads.Where(th => th.ChannelId == channel.Id).First(); 
         }
+
+        await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetUserInfoHeader(modmailThread));
+        var channelMessage = await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetReplyEmbed(message, "Initial message from user"));
+        AddModMailMessage(channel.Id, channelMessage, null, message.Author.Id);
+        await message.Author.SendMessageAsync(embed: ModMailEmbedHandler.GetInitialUserReply(message));
+
 
         var modQueue = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_NOTIFICATION]);
         var staffRole = guild.GetRole(Global.Roles["staff"]);
@@ -485,6 +488,8 @@ namespace OnePlusBot.Base
         using(var db = new Database()){
             createdModMailThread = db.ModMailThreads.Where(th => th.ChannelId == createdChannel.Id).First();
         }
+
+        await createdChannel.SendMessageAsync(embed: ModMailEmbedHandler.GetUserInfoHeader(createdModMailThread));
         var embedContainingLink = ModMailEmbedHandler.GetThreadHasBeendCreatedEmbed(createdModMailThread);
         await channel.SendMessageAsync(embed: embedContainingLink);
     }
