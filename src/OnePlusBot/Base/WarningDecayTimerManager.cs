@@ -72,7 +72,16 @@ namespace OnePlusBot.Base
       {
         var user = guild.GetUser(warning.WarnedUserID);
         var staff = guild.GetUser(warning.WarnedByID);
-        var warnText = $"Warning towards {Extensions.FormatUserNameDetailed(user)} on {warning.Date} with the reason '{warning.Reason}' by staff member {Extensions.FormatUserName(staff)}. \n \n";
+        var userText = "";
+        if(user != null)
+        {
+          userText = Extensions.FormatUserNameDetailed(user);
+        }
+        else
+        {
+          userText = warning.WarnedUserID + "";
+        }
+        var warnText = $"Warning towards {userText} on {Extensions.FormatDateTime(warning.Date)} with the reason '{warning.Reason}' by staff member {Extensions.FormatUserName(staff)}. \n \n";
         if((builder.ToString() + warnText).Length > EmbedBuilder.MaxDescriptionLength)
         {
           texts.Add(builder.ToString());
@@ -90,7 +99,7 @@ namespace OnePlusBot.Base
           {
             remainingWarnings = db.Warnings.Where(w => w.WarnedUserID == user.Id && !w.Decayed).Count();
           }
-          var message = $"Your warning from {warning.Date} with the reason '{warning.Reason}' has been cleared. You have {remainingWarnings} warning(s) left.";
+          var message = $"Your warning from {Extensions.FormatDateTime(warning.Date)} with the reason '{warning.Reason}' has been cleared. You have {remainingWarnings} warning(s) left.";
           try 
           {
             await user.SendMessageAsync(message);

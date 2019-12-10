@@ -702,7 +702,8 @@ namespace OnePlusBot.Base
             profanity.Valid = false;
             profanity.ProfanityId = usedProfanity.ID;
             profanity.ChannelId = message.Channel.Id;
-            using(var db = new Database()){
+            using(var db = new Database())
+            {
                 var user = db.Users.Where(us => us.Id == message.Author.Id).FirstOrDefault();
                 if(user == null)
                 {

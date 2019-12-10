@@ -144,6 +144,10 @@ namespace OnePlusBot.Base
           {
             stringBuilder.Append($"`{target}` ");
           }
+          if(PostTarget.POST_TARGETS.Count() == 0)
+          {
+            stringBuilder.Append("no targets available");
+          }
           var builder = new EmbedBuilder();
           builder.WithTitle("Currently available post targets");
           builder.WithDescription(stringBuilder.ToString());

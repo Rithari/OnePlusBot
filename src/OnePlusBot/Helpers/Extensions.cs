@@ -301,7 +301,7 @@ namespace OnePlusBot.Helpers
         /// <returns>The formatted string</returns>
         public static string FormatDateTime(DateTime dateTime) 
         {
-          return dateTime.ToString("dd/MMM/yyyy, HH:mm", CultureInfo.CurrentCulture);
+          return dateTime.ToString("yyyy/MM/dd, HH:mm", CultureInfo.CurrentCulture);
         }
     }
 }

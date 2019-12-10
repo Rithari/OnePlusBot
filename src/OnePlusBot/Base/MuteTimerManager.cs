@@ -119,7 +119,7 @@ namespace OnePlusBot.Base
             noticeEmbed.AddField("Unmuted User", OnePlusBot.Helpers.Extensions.FormatUserName(user))
                         .AddField("Mute Id", muteId)
                         .AddField("Mute duration", Extensions.FormatTimeSpan(DateTime.Now - muteObj.MuteDate))
-                        .AddField("Muted since", $"{ Extensions.FormatDateTime(muteObj.MuteDate)}");
+                        .AddField("Muted since", Extensions.FormatDateTime(muteObj.MuteDate));
             await guild.GetTextChannel(Global.PostTargets[PostTarget.MUTE_LOG]).SendMessageAsync(embed: noticeEmbed.Build());
           }
         }

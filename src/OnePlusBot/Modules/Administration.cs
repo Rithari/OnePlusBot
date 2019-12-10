@@ -218,7 +218,7 @@ namespace OnePlusBot.Modules
             try
             {
                 const string muteMessage = "You were muted on r/OnePlus for the following reason: {0} until {1} {2}.";
-                await user.SendMessageAsync(string.Format(muteMessage, reason, targetTime, TimeZoneInfo.Local));
+                await user.SendMessageAsync(string.Format(muteMessage, reason, Extensions.FormatDateTime(targetTime), TimeZoneInfo.Local));
             } 
             catch(HttpException)
             {
