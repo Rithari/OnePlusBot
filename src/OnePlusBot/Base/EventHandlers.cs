@@ -194,8 +194,19 @@ namespace OnePlusBot.Base
 
         private async Task OnUserLeft(SocketGuildUser socketGuildUser)
         {
-            var leaveLog = socketGuildUser.Guild.GetTextChannel(Global.PostTargets[PostTarget.LEAVE_LOG]);
-            await leaveLog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + " left the guild");
+          var leaveLog = socketGuildUser.Guild.GetTextChannel(Global.PostTargets[PostTarget.LEAVE_LOG]);
+          var message = Extensions.FormatMentionDetailed(socketGuildUser) + " left the guild";
+          await leaveLog.SendMessageAsync(message);
+          using(var db = new Database())
+          {
+            var modmailThread = db.ModMailThreads.Where(th => th.UserId == socketGuildUser.Id && th.State != "CLOSED");
+            var modmailThreadExists = modmailThread.Any();
+            if(modmailThreadExists)
+            {
+              var embed = new EmbedBuilder().WithDescription(message).Build();
+              await socketGuildUser.Guild.GetTextChannel(modmailThread.First().ChannelId).SendMessageAsync(embed: embed);
+            }
+          }
         }
 
         /// <summary>
@@ -702,7 +713,8 @@ namespace OnePlusBot.Base
             profanity.Valid = false;
             profanity.ProfanityId = usedProfanity.ID;
             profanity.ChannelId = message.Channel.Id;
-            using(var db = new Database()){
+            using(var db = new Database())
+            {
                 var user = db.Users.Where(us => us.Id == message.Author.Id).FirstOrDefault();
                 if(user == null)
                 {
