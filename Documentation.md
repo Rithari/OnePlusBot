@@ -111,7 +111,9 @@ It is possible to know the number of false positive and correct profanities by u
 
 ### Illegal character checker
 
-Check username of users joining server so that it triggers a message in #modqueue when a user join with an illegal character at the first position. Illegal characters are in a regex stored in database. Changing that regex will require use of `;reloaddb` command for changes to be taken into account.
+Check username of users joining server so that it triggers a message in #modqueue when a user join with an illegal character at the first position. Bot will automatically react to that message with a :postbox: emoji. Clicking on it will open a modmail thread with that user.
+
+Illegal characters are in a regex stored in database. Changing that regex will require use of `;reloaddb` command for changes to be taken into account.
 
 ### Server suggestions
 
