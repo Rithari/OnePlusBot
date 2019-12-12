@@ -90,7 +90,7 @@ Warnings list can be queried by moderators by issuing `;warnings` command. If li
 A warning can be manually cleared by a moderator by using command `;clearwarn case_id` (case ID is given with list of warnings).\
 Note that however clearing warnings isn't logged in #mod-log channel unlike the automatic decay check and unlike when warns are given.
     
-Normal users can check their own warnings by using `;warnings` command, which will tell them how many active and total warnings they have. If they wish to get the reasons as well they need to ask moderators to check for them as it was decided that for "privacy" we won't let other users know why a user was warned.
+Normal users can check their own warnings by using `;warnings` command, which will tell them how many active and total warnings they have. If they wish to get the reasons as well they need to ask moderators to check for them as it was decided that for "privacy" we won't let other users know why a user was warned. They will automatically receive a message from bot when a warning they had will be decayed (except if they turned off ability to receive direct messages from server members).
 
 ### User info
 
