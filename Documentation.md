@@ -101,13 +101,13 @@ Also works with [user IDs](https://dis.gd/userid) `;userinfo user_id`
 ### Profanity checker
 
 Checks profane words based on regex present in a database and post a message in a #modqueue channel when use has been detected. This detection is triggered on both posts and edits.\
-This message contains the username, discrim and [user ID](https://dis.gd/userid) of user that triggered the filter as well as message content and a jump link to it. It will also tell which type of profanity was detected (they're defined by a label in database).\
+This message contains the username, discrim and [user ID](https://dis.gd/userid) of user that triggered the filter as well as message content and a jump link to it. It will also tell which type of profanity was detected (they're defined by a label in database). Mind that if message that contained profanity was already reported (which can happen in case of edits), there won't be any duplicated reports.
 
 Note: when regex is updated in database, it needs `;reloaddb` command to be executed to be taken into effect.
 
-Positive and negative triggers are tracked: when an item goes in #modqueue channel, the first person that click on "yes" or "no" reaction will tell that trigger was correct or a false positive. 
+Positive and negative triggers are tracked: when an item goes in #modqueue channel, staff members can click on "yes" and "no" reactions. Once a threshold defined in database is reached, message either counts as a profanity or get ignored in database.
 
-It is possible to know the number of false positive and correct profanities by using command `;profanities @Username#1234` (also works with [user IDs](https://dis.gd/userid)). That command is restricted to users with **Staff** role.
+It is possible to know the number of false positive and correct profanities by using command `;profanities @Username#1234` (also works with [user IDs](https://dis.gd/userid)). That command is restricted to users with **Staff** role. 
 
 ### Illegal character checker
 
