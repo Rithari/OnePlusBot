@@ -754,17 +754,6 @@ namespace OnePlusBot.Base
 
         private static bool ViolatesRule(SocketMessage message)
         {
-        /*    var guildUser = message.Author as IGuildUser;
-            if (message.Channel is SocketDMChannel)
-            {
-                if (guildUser.RoleIds.Contains(Global.Roles["staff"]))
-                {
-                    var guild = Global.Bot.GetGuild(Global.ServerID);
-                    var feedbackChannel = guild.GetTextChannel(Global.Channels["feedback"]);
-                    feedbackChannel.SendMessageAsync("Feedback!" + Environment.NewLine + message.Content);
-                }
-            }*/
-
             string messageText = message.Content;
             var channelObj = Global.FullChannels.Where(ch => ch.ChannelID == message.Channel.Id).FirstOrDefault();
             bool ignoredChannel = channelObj != null && channelObj.InviteCheckExempt();
@@ -884,20 +873,33 @@ namespace OnePlusBot.Base
             {
                 return;
             }
-            var modmailThread = ModMailThreadForUserExists(message.Author);
 
-            if(modmailThread && message.Channel is IDMChannel)
+                
+            if (message.Channel is SocketDMChannel)
             {
-                await new ModMailManager().HandleModMailUserReply(message);
+                var guild = Global.Bot.GetGuild(Global.ServerID);
+                var guildUser = guild.GetUser(message.Author.Id);
+                if (guildUser != null && guildUser.Roles.Where(ro => ro.Id == Global.Roles["staff"]).Any())
+                {
+                    var feedbackChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.FEEDBACK]);
+                    await feedbackChannel.SendMessageAsync("Feedback!" + Environment.NewLine + message.Content);
+                }
+                else
+                {
+                    var modmailThread = ModMailThreadForUserExists(message.Author);
+
+                    if(modmailThread && message.Channel is IDMChannel)
+                    {
+                        await new ModMailManager().HandleModMailUserReply(message);
+                    }
+                    else if(message.Channel is IDMChannel)
+                    {
+                        await new ModMailManager().CreateModmailThread(message);
+                    }
+                }
             }
-            else if(message.Channel is IDMChannel)
-            {
-                await new ModMailManager().CreateModmailThread(message);
-            }
 
-
-
-               
+         
             var channelId = message.Channel.Id;
 
             if (channelId == Global.Channels[Channel.SETUPS])
