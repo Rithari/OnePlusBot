@@ -222,7 +222,7 @@ namespace OnePlusBot.Modules
             } 
             catch(HttpException)
             {
-                Console.WriteLine("Seems like user disabled the DMs, cannot send message about the mute.");
+              await Context.Channel.SendMessageAsync("Seems like user disabled the DMs, cannot send message about the mute.");
             }    
 
             var muteData = new Mute
