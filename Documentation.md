@@ -46,7 +46,7 @@ Modmail for a specific user can be enabled again with `;enableModmail <user>`.
 
 Current implementation only supports one image attachment per message.
 
-Note: Users with **Staff** role can't open modmail threads when they DM bot. It will instead send a message to a channel (configurable in database) which is used to provide anonymous feedback to the admins.
+Note: Users with **Staff** role can't open modmail threads when they DM bot. It will instead send a message to a channel (configurable via `;setposttarget feedback` command) which is used to provide anonymous feedback to the admins.
     
 ### Ban
 
