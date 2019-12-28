@@ -16,13 +16,22 @@ namespace OnePlusBot.Base
 {
   public class ModMailManager 
   {
+
+    /// <summary>
+    /// Creates a modmail thread for a user. This is initiated by the user when the user sends the bot a DM.
+    /// This includes:
+    /// Creating the channel, creating the records in the db and pinging staff
+    /// </summary>
+    /// <param name="message">The <see cref="Discord.WebSocket.SocketMessage"> object containing the message send by the user to initiate this</param>
+    /// <returns>Task</returns>
     public async Task CreateModmailThread(SocketMessage message)
     {
         var userFromCache = Global.ModMailThreads.Where(th => th.UserId == message.Author.Id).FirstOrDefault();
         if(userFromCache != null &&  userFromCache.ThreadUser.ModMailMuted && userFromCache.ThreadUser.ModMailMutedUntil > DateTime.Now)
         {
-            if(!userFromCache.ThreadUser.ModMailMutedReminded) {
-                await message.Channel.SendMessageAsync($"You are unable to contact modmail until {userFromCache.ThreadUser.ModMailMutedUntil:dd.MM.yyyy HH:mm} {TimeZoneInfo.Local}.");
+            if(!userFromCache.ThreadUser.ModMailMutedReminded) 
+            {
+                await message.Channel.SendMessageAsync($"You are unable to contact modmail until {Extensions.FormatDateTime(userFromCache.ThreadUser.ModMailMutedUntil)}.");
                 using(var db = new Database())
                 {
                     db.Users.Where(us => us.Id == message.Author.Id).First().ModMailMutedReminded = true;
@@ -39,9 +48,7 @@ namespace OnePlusBot.Base
             var user = db.Users.Where(us => us.Id == message.Author.Id).FirstOrDefault();
             if(user == null)
             {
-                var newUser = new User();
-                newUser.Id = message.Author.Id;
-                newUser.ModMailMuted = false;
+                var newUser = new UserBuilder(message.Author.Id).Build();
                 db.Users.Add(newUser);
                 db.SaveChanges();
             }
@@ -57,15 +64,18 @@ namespace OnePlusBot.Base
         var channel = await CreateModMailThread(message.Author);
         var guild = Global.Bot.GetGuild(Global.ServerID);
         await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetUserInformation(pastThreads, message.Author));
-        var channelMessage = await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetReplyEmbed(message, "Initial message from user"));
-        AddModMailMessage(channel.Id, channelMessage, null, message.Author.Id);
-        await message.Author.SendMessageAsync(embed: ModMailEmbedHandler.GetInitialUserReply(message));
 
         ModMailThread modmailThread;
         using(var db = new Database())
         {
-            modmailThread = db.ModMailThreads.Where(th => th.ChannelId == channel.Id).First(); 
+          modmailThread = db.ModMailThreads.Where(th => th.ChannelId == channel.Id).First(); 
         }
+
+        await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetUserInfoHeader(modmailThread));
+        var channelMessage = await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetReplyEmbed(message, "Initial message from user"));
+        AddModMailMessage(channel.Id, channelMessage, null, message.Author.Id);
+        await message.Author.SendMessageAsync(embed: ModMailEmbedHandler.GetInitialUserReply(message));
+
 
         var modQueue = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_NOTIFICATION]);
         var staffRole = guild.GetRole(Global.Roles["staff"]);
@@ -392,11 +402,7 @@ namespace OnePlusBot.Base
         using(var db = new Database()){
             var userInDb = db.Users.Where(us => us.Id == user.Id).FirstOrDefault();
             if(userInDb == null){
-                var newUser = new User();
-                newUser.Id = user.Id;
-                newUser.ModMailMuted = true;
-                newUser.ModMailMutedReminded = false;
-                newUser.ModMailMutedUntil = until;
+                var newUser = new UserBuilder(user.Id).WithModmailConfig(true, false, until).Build();
                 db.Users.Add(newUser);
             } else {
                 userInDb.ModMailMuted = true;
@@ -446,10 +452,18 @@ namespace OnePlusBot.Base
     }
 
 
-    public async Task ContactUser(IGuildUser user, ISocketMessageChannel channel){
+    /// <summary>
+    /// Creates a modmail thread with the given user and responds in the given thread with a link to the newly created channel.
+    /// </summary>
+    /// <param name="user">The <see cref="Discord.IGuildUser"> to create the channel for</param>
+    /// <param name="channel">The <see cref="Discord.ISocketMessageChannel"> in which the response should be posted to</param>
+    /// <returns>Task</returns>
+    public async Task ContactUser(IGuildUser user, ISocketMessageChannel channel)
+    {
         using(var db = new Database()){
             var exists = db.ModMailThreads.Where(th => th.UserId == user.Id && th.State != "CLOSED");
-            if(exists.Count() > 0){
+            if(exists.Count() > 0)
+            {
                 await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetThreadAlreadyExistsEmbed(exists.First()));
                 return;
             }
@@ -457,9 +471,7 @@ namespace OnePlusBot.Base
             var existingUser = db.Users.Where(us => us.Id == user.Id).FirstOrDefault();
             if(existingUser == null)
             {
-                var newUser = new User();
-                newUser.Id = user.Id;
-                newUser.ModMailMuted = false;
+                var newUser = new UserBuilder(user.Id).Build();
                 db.Users.Add(newUser);
             }
             else 
@@ -476,6 +488,8 @@ namespace OnePlusBot.Base
         using(var db = new Database()){
             createdModMailThread = db.ModMailThreads.Where(th => th.ChannelId == createdChannel.Id).First();
         }
+
+        await createdChannel.SendMessageAsync(embed: ModMailEmbedHandler.GetUserInfoHeader(createdModMailThread));
         var embedContainingLink = ModMailEmbedHandler.GetThreadHasBeendCreatedEmbed(createdModMailThread);
         await channel.SendMessageAsync(embed: embedContainingLink);
     }

@@ -74,7 +74,7 @@ namespace OnePlusBot.Base
             }
             try 
             {
-                await bot.LoginAsync(TokenType.Bot, Global.TokenBeta);
+                await bot.LoginAsync(TokenType.Bot, Global.Token);
             }
             catch(Discord.Net.HttpException)
             {
@@ -122,6 +122,7 @@ namespace OnePlusBot.Base
             AddReactionActions.Add(new AddRoleReactionAction());
             AddReactionActions.Add(new StarboardAddedReactionAction());
             AddReactionActions.Add(new ProfanityReportReactionAdded());
+            AddReactionActions.Add(new UserNameReportReactionAction());
             RemoveReactionActions.Add(new RemoveRoleReactionAction());
             RemoveReactionActions.Add(new StarboardRemovedReactionAction());
         }

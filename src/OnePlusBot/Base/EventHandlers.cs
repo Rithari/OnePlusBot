@@ -187,13 +187,26 @@ namespace OnePlusBot.Base
         {
           var embed = GetUserNameNotificationEmbed(embedTitle, beforeText, afterText, user);
           var userlog = guild.GetTextChannel(Global.PostTargets[PostTarget.USERNAME_QUEUE]);
-          await userlog.SendMessageAsync(embed: embed);
+          var message = await userlog.SendMessageAsync(embed: embed);
+          await message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.OPEN_MODMAIL].GetAsEmote());
+          Global.UserNameNotifications.Add(message.Id, user.Id);
         }
 
         private async Task OnUserLeft(SocketGuildUser socketGuildUser)
         {
-            var leaveLog = socketGuildUser.Guild.GetTextChannel(Global.PostTargets[PostTarget.LEAVE_LOG]);
-            await leaveLog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + " left the guild");
+          var leaveLog = socketGuildUser.Guild.GetTextChannel(Global.PostTargets[PostTarget.LEAVE_LOG]);
+          var message = Extensions.FormatMentionDetailed(socketGuildUser) + " left the guild";
+          await leaveLog.SendMessageAsync(message);
+          using(var db = new Database())
+          {
+            var modmailThread = db.ModMailThreads.Where(th => th.UserId == socketGuildUser.Id && th.State != "CLOSED");
+            var modmailThreadExists = modmailThread.Any();
+            if(modmailThreadExists)
+            {
+              var embed = new EmbedBuilder().WithDescription(message).Build();
+              await socketGuildUser.Guild.GetTextChannel(modmailThread.First().ChannelId).SendMessageAsync(embed: embed);
+            }
+          }
         }
 
         /// <summary>
@@ -218,7 +231,9 @@ namespace OnePlusBot.Base
                 builder.Timestamp = DateTime.Now;
                 
                 builder.ThumbnailUrl = socketGuildUser.GetAvatarUrl();
-                await modQueue.SendMessageAsync(embed: builder.Build());
+                var message = await modQueue.SendMessageAsync(embed: builder.Build());
+                await message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.OPEN_MODMAIL].GetAsEmote());
+                Global.UserNameNotifications.Add(message.Id, socketGuildUser.Id);
             }
             await joinlog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + " joined the guild");
         }
@@ -527,11 +542,11 @@ namespace OnePlusBot.Base
                 case PreconditionResult conditionResult:
                     if (conditionResult.IsSuccess)
                     {
-                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.SUCCESS].GetAsEmote());
+                        await context.Message.AddReactionAsync(StoredEmote.GetEmote(Global.OnePlusEmote.SUCCESS));
                     }
                     else
                     {
-                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.FAIL].GetAsEmote());
+                        await context.Message.AddReactionAsync(StoredEmote.GetEmote(Global.OnePlusEmote.FAIL));
                         await context.Channel.SendMessageAsync(conditionResult.ErrorReason);
                     }
                     break;
@@ -542,11 +557,11 @@ namespace OnePlusBot.Base
                     }
                     if (customResult.IsSuccess)
                     {
-                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.SUCCESS].GetAsEmote());
+                        await context.Message.AddReactionAsync(StoredEmote.GetEmote(Global.OnePlusEmote.SUCCESS));
                     }
                     else
                     {
-                        await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.FAIL].GetAsEmote());
+                        await context.Message.AddReactionAsync(StoredEmote.GetEmote(Global.OnePlusEmote.FAIL));
                         await context.Channel.SendMessageAsync(customResult.Reason);
                     }
                     break;
@@ -558,7 +573,7 @@ namespace OnePlusBot.Base
                     if (result.ErrorReason == "Unknown command.")
                     return;
 
-                    await context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.FAIL].GetAsEmote());                 
+                    await context.Message.AddReactionAsync(StoredEmote.GetEmote(Global.OnePlusEmote.FAIL));                 
 
                     await context.Channel.SendMessageAsync(result.ErrorReason);
                     return;
@@ -648,8 +663,15 @@ namespace OnePlusBot.Base
             await message.DeleteAsync();
         }
 
-        private static async Task ReportProfanity(SocketMessage message, ProfanityCheck usedProfanity){
-
+        private static async Task ReportProfanity(SocketMessage message, ProfanityCheck usedProfanity)
+        {
+            using(var db = new Database())
+            {
+              if(db.Profanities.Where(p => p.MessageId == message.Id).Any())
+              {
+                return;
+              }  
+            }
             var guild = Global.Bot.GetGuild(Global.ServerID);
             var builder = new EmbedBuilder();
             builder.Title = "Profanity has been used!";
@@ -680,22 +702,23 @@ namespace OnePlusBot.Base
 
             await report.AddReactionsAsync(new IEmote[]
             {
-                Global.Emotes[Global.OnePlusEmote.OP_YES].GetAsEmote(), 
-                Global.Emotes[Global.OnePlusEmote.OP_NO].GetAsEmote()
+                StoredEmote.GetEmote(Global.OnePlusEmote.OP_YES), 
+                StoredEmote.GetEmote(Global.OnePlusEmote.OP_NO)
             });
 
             var profanity = new UsedProfanity();
-            profanity.MessageId = report.Id;
+            profanity.MessageId = message.Id;
+            profanity.ReportMessageId = report.Id;
             profanity.UserId = message.Author.Id;
             profanity.Valid = false;
             profanity.ProfanityId = usedProfanity.ID;
-            using(var db = new Database()){
+            profanity.ChannelId = message.Channel.Id;
+            using(var db = new Database())
+            {
                 var user = db.Users.Where(us => us.Id == message.Author.Id).FirstOrDefault();
                 if(user == null)
                 {
-                    var newUser = new User();
-                    newUser.Id = message.Author.Id;
-                    newUser.ModMailMuted = false;
+                    var newUser = new UserBuilder(message.Author.Id).Build();
                     db.Users.Add(newUser);
                 }
                
@@ -731,17 +754,6 @@ namespace OnePlusBot.Base
 
         private static bool ViolatesRule(SocketMessage message)
         {
-        /*    var guildUser = message.Author as IGuildUser;
-            if (message.Channel is SocketDMChannel)
-            {
-                if (guildUser.RoleIds.Contains(Global.Roles["staff"]))
-                {
-                    var guild = Global.Bot.GetGuild(Global.ServerID);
-                    var feedbackChannel = guild.GetTextChannel(Global.Channels["feedback"]);
-                    feedbackChannel.SendMessageAsync("Feedback!" + Environment.NewLine + message.Content);
-                }
-            }*/
-
             string messageText = message.Content;
             var channelObj = Global.FullChannels.Where(ch => ch.ChannelID == message.Channel.Id).FirstOrDefault();
             bool ignoredChannel = channelObj != null && channelObj.InviteCheckExempt();
@@ -815,7 +827,7 @@ namespace OnePlusBot.Base
                     {
                       messageContent = messageContent.Replace(match.Groups[1].Value, "");
                       var embedBuilder = Extensions.GetMessageAsEmbed(messageToEmbed);
-                      var fieldValue = message.Author.Mention + " in " + Extensions.GetMessageUrl(server.Id, messageToEmbed.Channel.Id, messageToEmbed.Id, server.GetTextChannel(messageToEmbed.Channel.Id).Name);
+                      var fieldValue = message.Author.Mention + " from " + Extensions.GetMessageUrl(server.Id, messageToEmbed.Channel.Id, messageToEmbed.Id, server.GetTextChannel(messageToEmbed.Channel.Id).Name);
                       embedBuilder.AddField("Quoted by", fieldValue);
                       await message.Channel.SendMessageAsync(embed: embedBuilder.Build());
                       await Task.Delay(500);
@@ -861,20 +873,33 @@ namespace OnePlusBot.Base
             {
                 return;
             }
-            var modmailThread = ModMailThreadForUserExists(message.Author);
 
-            if(modmailThread && message.Channel is IDMChannel)
+                
+            if (message.Channel is SocketDMChannel)
             {
-                await new ModMailManager().HandleModMailUserReply(message);
+                var guild = Global.Bot.GetGuild(Global.ServerID);
+                var guildUser = guild.GetUser(message.Author.Id);
+                if (guildUser != null && guildUser.Roles.Where(ro => ro.Id == Global.Roles["staff"]).Any())
+                {
+                    var feedbackChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.FEEDBACK]);
+                    await feedbackChannel.SendMessageAsync("Feedback!" + Environment.NewLine + message.Content);
+                }
+                else
+                {
+                    var modmailThread = ModMailThreadForUserExists(message.Author);
+
+                    if(modmailThread && message.Channel is IDMChannel)
+                    {
+                        await new ModMailManager().HandleModMailUserReply(message);
+                    }
+                    else if(message.Channel is IDMChannel)
+                    {
+                        await new ModMailManager().CreateModmailThread(message);
+                    }
+                }
             }
-            else if(message.Channel is IDMChannel)
-            {
-                await new ModMailManager().CreateModmailThread(message);
-            }
 
-
-
-               
+         
             var channelId = message.Channel.Id;
 
             if (channelId == Global.Channels[Channel.SETUPS])

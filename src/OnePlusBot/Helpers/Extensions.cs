@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Discord;
 using OnePlusBot.Base;
 using OnePlusBot.Data.Models;
-using System.Collections.ObjectModel;
+using Discord.WebSocket;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace OnePlusBot.Helpers
@@ -163,6 +164,35 @@ namespace OnePlusBot.Helpers
         {
             return Global.Bot.GetGuild(Global.ServerID).GetUser(userId); 
         }
+
+        public static bool UserHasRole(SocketGuildUser user, string[] AllowedRoles, ConcatenationMode mode = ConcatenationMode.OR){
+          bool allowed = mode == ConcatenationMode.AND;
+          var bot = Global.Bot;
+          var guild = bot.GetGuild(Global.ServerID);
+          var iGuildObj = (IGuild) guild;
+          foreach(string roleName in AllowedRoles)
+          {
+            var allowedroleObj =  iGuildObj.GetRole(Global.Roles[roleName]);
+            var hasRole = user.Roles.Where(role => role.Id == allowedroleObj.Id).Any();
+            if(mode == ConcatenationMode.AND)
+            {
+              if(!hasRole)
+              {
+                allowed = false;
+                break;
+              } 
+            }
+            else
+            {
+              if(hasRole)
+              {
+                allowed = true;
+                break;
+              }
+            }
+          }
+          return allowed;
+        }
         
 
         private static char[] timeFormats = {'m', 'h', 'd', 'w', 's'};
@@ -262,6 +292,16 @@ namespace OnePlusBot.Helpers
             TimeSpan timeSpanToDelay = (nextHour - sinceMidnight);
             int secondsToDelay = (int) timeSpanToDelay.TotalSeconds;
             await Task.Delay(secondsToDelay * 1000);
+        }
+
+        /// <summary>
+        /// Formates the given datetime in the global english culture
+        /// </summary>
+        /// <param name="dateTime"><see cref="System.DateTime"> object to format</param>
+        /// <returns>The formatted string</returns>
+        public static string FormatDateTime(DateTime dateTime) 
+        {
+          return dateTime.ToString("yyyy/MM/dd, HH:mm", CultureInfo.CurrentCulture) + TimeZoneInfo.Local.ToString();
         }
     }
 }

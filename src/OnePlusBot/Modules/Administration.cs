@@ -156,6 +156,12 @@ namespace OnePlusBot.Modules
         }
 
 
+        /// <summary>
+        /// Mutes the user for a certain timeperiod (effectively gives the user the two (!) configured roles denying the user the ability to send messages)
+        /// </summary>
+        /// <param name="user">The <see cref="Discord.IGuildUser"> user to mute</param>
+        /// <param name="arguments">Arguments for muting, including: the duration and the reason</param>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
             Command("mute", RunMode=RunMode.Async),
             Summary("Mutes a specified user for a set amount of time"),
@@ -211,12 +217,12 @@ namespace OnePlusBot.Modules
 
             try
             {
-                const string muteMessage = "You were muted on r/OnePlus for the following reason: {0} until {1} {2}.";
-                await user.SendMessageAsync(string.Format(muteMessage, reason, targetTime, TimeZoneInfo.Local));
+              const string muteMessage = "You were muted on r/OnePlus for the following reason: {0} until {1}.";
+              await user.SendMessageAsync(string.Format(muteMessage, reason, Extensions.FormatDateTime(targetTime)));
             } 
             catch(HttpException)
             {
-                Console.WriteLine("Seems like user disabled the DMs, cannot send message about the mute.");
+              await Context.Channel.SendMessageAsync("Seems like user disabled the DMs, cannot send message about the mute.");
             }    
 
             var muteData = new Mute
@@ -251,7 +257,7 @@ namespace OnePlusBot.Modules
                    .AddField("Location of the mute",
                         $"[#{Context.Message.Channel.Name}]({string.Format(discordUrl, Context.Guild.Id, Context.Channel.Id, Context.Message.Id)})")
                    .AddField("Reason", reason ?? "No reason was provided.")
-                   .AddField("Muted until", $"{ targetTime:dd.MM.yyyy HH:mm}")
+                   .AddField("Muted until", $"{ Extensions.FormatDateTime(targetTime)}")
                    .AddField("Mute id", muteData.ID);
                
             await guild.GetTextChannel(Global.PostTargets[PostTarget.MUTE_LOG]).SendMessageAsync(embed: builder.Build());
@@ -454,6 +460,11 @@ namespace OnePlusBot.Modules
             }
         }
 
+        /// <summary>
+        /// Creates the and posts the message containing the given warnings
+        /// </summary>
+        /// <param name="warns">The warnings to display</param>
+        /// <returns>The posted message in the current thread</returns>
         private async Task<IUserMessage> CreateWarnList(IEnumerable<WarnEntry> warns)
         {
             var embed = new EmbedBuilder();
@@ -478,7 +489,7 @@ namespace OnePlusBot.Modules
                         .WithName("Warning #" + counter + " (" + warning.ID + ")")
                         .WithValue($"**Reason**: {warning.Reason}\n" +
                                    $"**Warned by**: {warnedByUserSafe}\n" + 
-                                   $"*{warning.Date.ToString("dd/M/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture)}* \n" +
+                                   $"*{Extensions.FormatDateTime(warning.Date)}* \n" +
                                    $"{decayed} \n"
                                    ));
                 }
@@ -488,7 +499,7 @@ namespace OnePlusBot.Modules
                     var warnedSafe = Extensions.FormatMentionDetailed(warned);
                     var warnedBySafe = Extensions.FormatMentionDetailed(warnedBy);
                     embed.AddField(new EmbedFieldBuilder()
-                        .WithName($"Case #{warning.ID} - {warning.Date.ToString("dd/M/yyyy hh:mm:ss tt", CultureInfo.InvariantCulture)}")
+                        .WithName($"Case #{warning.ID} - {Extensions.FormatDateTime(warning.Date)}")
                         .WithValue($"**Warned user**: {warnedSafe}\n" +
                                    $"**Reason**: {warning.Reason} \n" +
                                    $"**Warned by**: {warnedBySafe} \n" +

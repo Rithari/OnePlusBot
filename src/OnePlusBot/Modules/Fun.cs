@@ -146,7 +146,7 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> SteampAsync([Remainder] string user)
         {
-            await Context.Message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.SUCCESS].GetAsEmote());
+            await Context.Message.AddReactionAsync(StoredEmote.GetEmote(Global.OnePlusEmote.SUCCESS));
 
             var request = (HttpWebRequest) WebRequest.Create(string.Format(BadgeUrl, user));
             
@@ -247,7 +247,7 @@ namespace OnePlusBot.Modules
                 stringBuilder.Append(" - ");
                 stringBuilder.Append(element.Value);
                 stringBuilder.Append(" ");
-                stringBuilder.Append(Global.Emotes[Global.OnePlusEmote.STAR].GetAsEmote());
+                stringBuilder.Append(StoredEmote.GetEmote(Global.OnePlusEmote.STAR));
                 stringBuilder.Append(" ");
                 stringBuilder.Append(userReference);
                 stringBuilder.Append(Environment.NewLine);
@@ -270,7 +270,7 @@ namespace OnePlusBot.Modules
                 stringBuilder.Append(" - ");
                 stringBuilder.Append(element.Starcount);
                 stringBuilder.Append(" ");
-                stringBuilder.Append(Global.Emotes[Global.OnePlusEmote.STAR].GetAsEmote());
+                stringBuilder.Append(StoredEmote.GetEmote(Global.OnePlusEmote.STAR));
                 stringBuilder.Append(" ");
                 stringBuilder.Append(Extensions.GetMessageUrl(Global.ServerID, starBoardChannelId, element.StarboardMessageId, "Jump!"));
                 stringBuilder.Append(Environment.NewLine);

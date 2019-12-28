@@ -38,7 +38,11 @@ namespace OnePlusBot.Data.Models
         public static readonly string WARN_LOG = "warnlog";
         public static readonly string LEAVE_LOG = "leavelog";
 
+        public static readonly string PROFANITY_PROMPT = "profanityprompt";
+
         public static readonly string INFO = "info";
+
+        public static readonly string FEEDBACK = "feedback";
 
         public static readonly List<string> POST_TARGETS = 
                               new List<string> { 
@@ -48,7 +52,7 @@ namespace OnePlusBot.Data.Models
                                 MUTE_LOG, NEWS, PROFANITY_QUEUE, 
                                 STARBOARD, UNBAN_LOG, SUGGESTIONS, 
                                 USERNAME_QUEUE, WARN_LOG, LEAVE_LOG,
-                                INFO
+                                INFO, PROFANITY_PROMPT, FEEDBACK
                               };
       
     }

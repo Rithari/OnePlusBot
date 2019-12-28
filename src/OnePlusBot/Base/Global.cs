@@ -60,6 +60,11 @@ namespace OnePlusBot.Base
         public static int XPGainRangeMin { get; set; }
 
         public static int XPGainRangeMax { get; set; }
+
+        public static Dictionary<ulong, ulong> UserNameNotifications { get; set; }
+
+        public static int ProfanityVoteThreshold { get; set; }
+
         
         public static string Token
         {
@@ -110,6 +115,7 @@ namespace OnePlusBot.Base
             RuntimeExp = new ConcurrentDictionary<long, List<ulong>>();
             Emotes = new Dictionary<string, StoredEmote>();
             Commands = new  List<Command>();
+            UserNameNotifications = new Dictionary<ulong, ulong>();
             LoadGlobal();
         }
 
@@ -152,41 +158,25 @@ namespace OnePlusBot.Base
                     foreach (var role in db.Roles)
                         Roles.Add(role.Name, role.RoleID);
 
-                ServerID = db.PersistentData
-                    .First(x => x.Name == "server_id")
-                    .Value;
+                ServerID = PersistentData.GetConfiguredInt("server_id", db);
                 
-                InfoRoleManagerMessageId = db.PersistentData
-                    .First(x => x.Name == "rolemanager_message_id")
-                    .Value;
+                InfoRoleManagerMessageId = PersistentData.GetConfiguredInt("rolemanager_message_id", db);
 
-                StarboardStars = db.PersistentData
-                    .First(entry => entry.Name == "starboard_stars")
-                    .Value;
+                StarboardStars = PersistentData.GetConfiguredInt("starboard_stars", db);
 
-                Level2Stars = db.PersistentData
-                    .First(entry => entry.Name == "level_2_stars")
-                    .Value;
+                Level2Stars = PersistentData.GetConfiguredInt("level_2_stars", db);
 
-                Level3Stars = db.PersistentData
-                    .First(entry => entry.Name == "level_3_stars")
-                    .Value;
+                Level3Stars = PersistentData.GetConfiguredInt("level_3_stars", db);
 
-                Level4Stars = db.PersistentData
-                    .First(entry => entry.Name == "level_4_stars")
-                    .Value;
+                Level4Stars = PersistentData.GetConfiguredInt("level_4_stars", db);
                 
-                DecayDays = db.PersistentData
-                    .First(entry => entry.Name == "decay_days")
-                    .Value;
+                DecayDays = PersistentData.GetConfiguredInt("decay_days", db);
 
-                IllegalUserNameRegex = new Regex(db.PersistentData
-                    .First(entry => entry.Name == "illegal_user_name_regex")
-                    .StringValue, RegexOptions.Singleline | RegexOptions.Compiled);
+                IllegalUserNameRegex = new Regex(PersistentData.GetConfiguredString("illegal_user_name_regex", db), RegexOptions.Singleline | RegexOptions.Compiled);
 
-                XPGainDisabled = db.PersistentData
-                    .First(entry => entry.Name == "xp_disabled")
-                    .Value == 1;
+                XPGainDisabled = PersistentData.GetConfiguredInt("xp_disabled", db) == 1;
+                  
+                ProfanityVoteThreshold = (int) PersistentData.GetConfiguredInt("profanity_votes_threshold", db);
 
                 InviteLinks.Clear();
                 foreach(var link in db.InviteLinks)
@@ -194,17 +184,11 @@ namespace OnePlusBot.Base
                     InviteLinks.Add(link);
                 }
 
-                ModmailCategoryId = db.PersistentData
-                    .First(entry => entry.Name == "modmail_category_id")
-                    .Value;
+                ModmailCategoryId = PersistentData.GetConfiguredInt("modmail_category_id", db);
 
-                XPGainRangeMin = (int) db.PersistentData
-                    .First(entry => entry.Name == "xp_gain_range_min")
-                    .Value;
+                XPGainRangeMin = (int) PersistentData.GetConfiguredInt("xp_gain_range_min", db);
 
-                XPGainRangeMax = (int) db.PersistentData
-                    .First(entry => entry.Name == "xp_gain_range_max")
-                    .Value;
+                XPGainRangeMax = (int) PersistentData.GetConfiguredInt("xp_gain_range_max", db);
 
                 Emotes.Clear();
                 if(db.Emotes.Any())
@@ -272,6 +256,8 @@ namespace OnePlusBot.Base
             public static string LVL_3_STAR = "LVL_3_STAR";
 
             public static string LVL_4_STAR = "LVL_4_STAR";
+
+            public static string OPEN_MODMAIL = "OPEN_MODMAIL";
 
         }
 

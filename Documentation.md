@@ -45,6 +45,8 @@ Modmail can be disabled for a specific user via `;disableModmail <user>`. After 
 Modmail for a specific user can be enabled again with `;enableModmail <user>`. 
 
 Current implementation only supports one image attachment per message.
+
+Note: Users with **Staff** role can't open modmail threads when they DM bot. It will instead send a message to a channel (configurable in database) which is used to provide anonymous feedback to the admins.
     
 ### Ban
 
@@ -90,28 +92,30 @@ Warnings list can be queried by moderators by issuing `;warnings` command. If li
 A warning can be manually cleared by a moderator by using command `;clearwarn case_id` (case ID is given with list of warnings).\
 Note that however clearing warnings isn't logged in #mod-log channel unlike the automatic decay check and unlike when warns are given.
     
-Normal users can check their own warnings by using `;warnings` command, which will tell them how many active and total warnings they have. If they wish to get the reasons as well they need to ask moderators to check for them as it was decided that for "privacy" we won't let other users know why a user was warned.
+Normal users can check their own warnings by using `;warnings` command, which will tell them how many active and total warnings they have. If they wish to get the reasons as well they need to ask moderators to check for them as it was decided that for "privacy" we won't let other users know why a user was warned. They will automatically receive a message from bot when a warning they had will be decayed (except if they turned off ability to receive direct messages from server members).
 
 ### User info
 
-Display user information: status (offline/DND/idle/online), activity (Rich Presence state), Discord account registration date, join server date.\
+Display user information: status (offline/DND/idle/online), activity (Rich Presence state), Discord account registration date, join server date and their nickname.\
 Syntax is `;userinfo @Username#1234`.\
 Also works with [user IDs](https://dis.gd/userid) `;userinfo user_id`
 
 ### Profanity checker
 
 Checks profane words based on regex present in a database and post a message in a #modqueue channel when use has been detected. This detection is triggered on both posts and edits.\
-This message contains the username, discrim and [user ID](https://dis.gd/userid) of user that triggered the filter as well as message content and a jump link to it. It will also tell which type of profanity was detected (they're defined by a label in database).\
+This message contains the username, discrim and [user ID](https://dis.gd/userid) of user that triggered the filter as well as message content and a jump link to it. It will also tell which type of profanity was detected (they're defined by a label in database). Mind that if message that contained profanity was already reported (which can happen in case of edits), there won't be any duplicated reports.
 
 Note: when regex is updated in database, it needs `;reloaddb` command to be executed to be taken into effect.
 
-Positive and negative triggers are tracked: when an item goes in #modqueue channel, the first person that click on "yes" or "no" reaction will tell that trigger was correct or a false positive. 
+Positive and negative triggers are tracked: when an item goes in #modqueue channel, staff members can click on "yes" and "no" reactions. Once a threshold defined in database is reached, message either counts as a profanity or get ignored in database.
 
-It is possible to know the number of false positive and correct profanities by using command `;profanities @Username#1234` (also works with [user IDs](https://dis.gd/userid)). That command is restricted to users with **Staff** role.
+It is possible to know the number of false positive and correct profanities by using command `;profanities @Username#1234` (also works with [user IDs](https://dis.gd/userid)). That command is restricted to users with **Staff** role. 
 
 ### Illegal character checker
 
-Check username of users joining server so that it triggers a message in #modqueue when a user join with an illegal character at the first position. Illegal characters are in a regex stored in database. Changing that regex will require use of `;reloaddb` command for changes to be taken into account.
+Check username of users joining server so that it triggers a message in #modqueue when a user join with an illegal character at the first position. Bot will automatically react to that message with a :postbox: emoji. Clicking on it will open a modmail thread with that user.
+
+Illegal characters are in a regex stored in database. Changing that regex will require use of `;reloaddb` command for changes to be taken into account.
 
 ### Server suggestions
 
@@ -244,3 +248,6 @@ Syntax is `;remind lenght your_text` with lenght being days, hours, minutes and 
 Eg `;remind 2d1h3m write documentation`\
 After executing the remind command, the bot will ping you and inform you of the id this reminder has.\
 You can cancel the reminder by using `;unremind remind_ID`
+
+Users can check their active reminders by using command `;reminders`.\
+It will list them, give their ID, tell their content, when they are due and add a jump link towards the original reminders.

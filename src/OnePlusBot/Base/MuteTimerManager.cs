@@ -77,6 +77,12 @@ namespace OnePlusBot.Base
       await UnMuteUser(userId, muteId);
     }
 
+    /// <summary>
+    /// Unmutes the user (removes the two mute roles), updates the state in the database and posts a message in modlog
+    /// </summary>
+    /// <param name="userId">The id of the user to unmute</param>
+    /// <param name="muteId">The id of the mute instance</param>
+    /// <returns></returns>
     public static async Task<CustomResult> UnMuteUser(ulong userId, ulong muteId)
     {
       var bot = Global.Bot;
@@ -113,7 +119,7 @@ namespace OnePlusBot.Base
             noticeEmbed.AddField("Unmuted User", OnePlusBot.Helpers.Extensions.FormatUserName(user))
                         .AddField("Mute Id", muteId)
                         .AddField("Mute duration", Extensions.FormatTimeSpan(DateTime.Now - muteObj.MuteDate))
-                        .AddField("Muted since", $"{ muteObj.MuteDate:dd.MM.yyyy HH:mm}");
+                        .AddField("Muted since", Extensions.FormatDateTime(muteObj.MuteDate));
             await guild.GetTextChannel(Global.PostTargets[PostTarget.MUTE_LOG]).SendMessageAsync(embed: noticeEmbed.Build());
           }
         }
