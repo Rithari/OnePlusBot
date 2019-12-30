@@ -46,7 +46,7 @@ Modmail for a specific user can be enabled again with `;enableModmail <user>`.
 
 Current implementation only supports one image attachment per message.
 
-Note: Users with **Staff** role can't open modmail threads when they DM bot. It will instead send a message to a channel (configurable via `;setposttarget feedback` command) which is used to provide anonymous feedback to the admins.
+Note: Users with **Staff** role can't open modmail threads when they DM bot. It will instead send a message to a channel which is used to provide anonymous feedback to the admins.
     
 ### Ban
 
@@ -251,3 +251,31 @@ You can cancel the reminder by using `;unremind remind_ID`
 
 Users can check their active reminders by using command `;reminders`.\
 It will list them, give their ID, tell their content, when they are due and add a jump link towards the original reminders.
+
+# Configuration
+
+## Post target
+
+Instead of using hardcoded elements, the bot uses configurable targets so that configuration can be changed on the go without requiring a restart but rather only a database reload.\
+It can be done by using `;setposttarget target channel_mention` command.
+
+| Name                	| Description                                                                        	|
+|---------------------	|------------------------------------------------------------------------------------	|
+| joinlog             	| Channel where join logs are posted towards                                         	|
+| banlog              	| Channel where ban logs are posted towards                                          	|
+| decaylog            	| Channel where decayed warnings are posted towards                                  	|
+| deletelog           	| Channel where deleted messages are posted towards                                  	|
+| editlog             	| Channel where edited messages are posted towards                                   	|
+| modmaillog          	| Channel where closed modmail threads are posted towards                            	|
+| modmailnotification 	| Channel where Staff role is pinged when there is a new modmail thread              	|
+| mutelog             	| Channel where mute logs are posted towards                                         	|
+| news                	| Channel where news items are sent                                                  	|
+| profanityqueue      	| Channel where detected profanities are queued                                      	|
+| starboard           	| Channel where starred messages are posted towards                                  	|
+| unbanlog            	| Channel where unban logs are posted towards                                        	|
+| suggestions         	| Channel where suggestions are sent                                                 	|
+| usernamequeue       	| Channel where illegal usernames are reported                                       	|
+| warnlog             	| Channel where new warnings are posted towards                                      	|
+| leavelog            	| Channel where leaving logs are posted towards                                      	|
+| info                	| Channel where info post is sent                                                    	|
+| feedback            	| Channel where administrators receive anonymous feedback from users with Staff role 	|
