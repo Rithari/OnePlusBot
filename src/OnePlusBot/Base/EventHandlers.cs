@@ -607,7 +607,7 @@ namespace OnePlusBot.Base
                 }
             }
 
-            var matches = Regex.Matches(message.Content, @"https?:\/\/(?:www\.)?oneplus\.com[^\s]*invite(?:\#([^\s]+)|.+\=([^\s\&]+))", RegexOptions.IgnoreCase);
+            var matches = Regex.Matches(message.Content, @"https?:\/\/(?:www\.)?oneplus\.(?:[a-z]{1,63})[^\s]*invite(?:\#([^\s]+)|.+\=([^\s\&]+))", RegexOptions.IgnoreCase);
 
             if (matches.Count > 2)
             {
