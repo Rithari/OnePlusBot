@@ -109,7 +109,7 @@ namespace OnePlusBot.Base
         private Embed GetStarboardEmbed(IUserMessage message)
         {
             var builder = Extensions.GetMessageAsEmbed(message);
-            builder.AddField("Original", OnePlusBot.Helpers.Extensions.GetMessageUrl(Global.ServerID, message.Channel.Id, message.Id, "Jump!"));
+            builder.AddField("Original", OnePlusBot.Helpers.Extensions.FormatLinkWithDisplay("Jump!", message.GetJumpUrl()));
             return builder.Build();
         }
 
