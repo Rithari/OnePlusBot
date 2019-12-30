@@ -370,7 +370,7 @@ namespace OnePlusBot.Base
 
         /// <summary>
         /// Reports deleted messages to the 'DELETE_LOG' post target. If the message was in the starboard channel, it marks the post 
-        /// as tdeleted for the starboard mechanism
+        /// as deleted for the starboard mechanism
         /// </summary>
         /// <param name="cacheable">Cacheable which was deleted</param>
         /// <param name="socketChannel">The channel in which the message was deleted</param>
