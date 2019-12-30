@@ -134,6 +134,13 @@ Set a new nickname for a user. Reset nickname if parameter is empty. It can only
 Syntax is `;setnickame @Username#1234 nickname`.\
 It also works with [user IDs](https://dis.gd/userid).
 
+### Slowmode
+
+Allow users with **Staff** role to set [slowmode](https://support.discordapp.com/hc/en-us/articles/360016150952) for the current channel for a maximum of 6 hours.\
+Syntax is `;slowmode 5h2m3s` to set a slowmode of 5 hours 2 minutes and 3 secondes.
+
+It can be turned off by using command `;slowmode off`
+
 ## Specific to server
 
 ### Role ping to send news
@@ -166,7 +173,7 @@ Users can post their smartphone and headphones referral links they obtained [fro
 
 ### Role attribution
 
-Users can assign themselves roles by reacting to the corresponding emote in a message posted in #info channel. They will lose the role if they remove their reaction. As of writing list of assignable roles (devices, Helper and News) is hardcoded at https://github.com/Rithari/OnePlusBot/blob/master/src/OnePlusBot/Base/RoleReactionAction.cs .\
+Users can assign themselves roles by reacting to the corresponding emote in a message posted in #info channel. They will lose the role if they remove their reaction. As of writing list of assignable roles (devices, Helper and News) is hardcoded at https://github.com/Rithari/OnePlusBot/blob/master/src/OnePlusBot/Base/RoleReactionAction.cs .
 
 ID of message mentioned previously is stored in database for the purpose of being able to edit message whenever needed instead of deleting it and reposting it. Changing it will require `;reloaddb` command to be issued.
 
