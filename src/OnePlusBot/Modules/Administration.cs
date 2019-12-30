@@ -545,8 +545,10 @@ namespace OnePlusBot.Modules
                 {
                     individualWarnings = db.Warnings.Where(x => x.WarnedUserID == requestee.Id && !x.Decayed);
                     var totalWarnings = db.Warnings.Where(x => x.WarnedUserID == requestee.Id);
-
-                    await ReplyAsync($"You have {individualWarnings.Count()} active out of {totalWarnings.Count()} total warnings.");
+                    var builder = new EmbedBuilder();
+                    builder.WithAuthor(new EmbedAuthorBuilder().WithIconUrl(requestee.GetAvatarUrl()).WithName(requestee.Username + '#' + requestee.Discriminator));
+                    builder.WithDescription($"{requestee.Username + '#' + requestee.Discriminator} has {individualWarnings.Count()} active out of {totalWarnings.Count()} total warnings.");
+                    await ReplyAsync(embed: builder.Build());
 
                     return;
                 }
