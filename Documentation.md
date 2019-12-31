@@ -94,6 +94,34 @@ Note that however clearing warnings isn't logged in #mod-log channel unlike the 
     
 Normal users can check their own warnings by using `;warnings` command, which will tell them how many active and total warnings they have. If they wish to get the reasons as well they need to ask moderators to check for them as it was decided that for "privacy" we won't let other users know why a user was warned. They will automatically receive a message from bot when a warning they had will be decayed (except if they turned off ability to receive direct messages from server members).
 
+### Update database
+
+In order to reload the cached info from the database, you will have to use `;reloaddb`. Only users with **Staff** role can succesfully execute this command.
+
+### Update XP requirement for role levels
+
+Sets the level at which a role is given. If no parameters are given, it shows the current role configuration. This command is reserved to users with **Admin** or **Founder** role.\
+Eg: `;updatelevels [level = ] [roleId = ]`. 
+
+### Update levels
+
+Re-evaluates the experience, levels and assigns the roles to the users (takes a long time, use with care). This action requires the **Admin** or **Founder** role.
+
+### XP gain control
+
+Allow to enable/disable xp gain for a user.  Only users with **Admin** or **Founder** role can succesfully execute this command.\
+Eg: `;disablexpgain <user> <newValue>`.
+
+### Setup info post
+
+Sets up the info post used for [self attribution of roles](#Documentation/role-attribution). This command is reserved to users with **Admin** or **Founder** role.\
+Syntax is `;setupinfopost`.
+
+### Disable commands
+
+Disables command in a specified channel group so certain roles can't use them anymore. This command is reserved to users with **Admin** or **Founder** role.
+Eg: `;disablecommand <commandName> <channelGroupName> <newValue>`. 
+
 ### User info
 
 Display user information: status (offline/DND/idle/online), activity (Rich Presence state), Discord account registration date, join server date and their nickname.\
@@ -157,7 +185,7 @@ Elements can be added/edited/removed by using `;configurefaq` command (command c
 FAQ answers can be embeds, textposts, include images (need to provide an URL) and have an authorship attached to them following choices made at configuration.\
 Answers are configurable on a per channel basis.
 If embeds are chosen during configuration it is possible to set a custom color for them.\
-Once changes are made FAQ database need to be reloaded by using `;reloaddb` command (again staff only command).
+Once changes are made FAQ database need to be reloaded by using `;reloaddb` command (again **Staff** only command).
     
 Normal users can use `;faq module` to display answer related to the module.
     
