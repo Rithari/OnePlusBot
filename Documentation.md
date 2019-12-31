@@ -114,7 +114,7 @@ Eg: `;disablexpgain <user> <newValue>`.
 
 ### Setup info post
 
-Sets up the info post used for [self attribution of roles](#Documentation/role-attribution). This command is reserved to users with **Admin** or **Founder** role.\
+Sets up the info post used for [self attribution of roles](#role-attribution). This command is reserved to users with **Admin** or **Founder** role.\
 Syntax is `;setupinfopost`.
 
 ### Disable commands
