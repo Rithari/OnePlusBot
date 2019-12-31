@@ -85,7 +85,7 @@ Allow moderators (users with **Staff** role) to warn users.\
 A warning can be given by using command `;warn @Username#1234 reason` (reason field is optional). Also works with [user IDs](https://dis.gd/userid).\
 When someone is warned their warning is named as "active": three active warnings will lead to a server ban (as of writing banning command has to be issued by a moderator).\
 Every 90 days (delay configurable in database and taken into account after use of `;reloaddb` command) warnings are decayed so that we can actually keep track of persons infractions.\
-The check for that action happens everyday at 00:00 UTC.\
+The check for that action happens everyday at 00:00 UTC.
 
 Warnings list can be queried by moderators by issuing `;warnings` command. If list takes more than one embed it is possible to navigate using the arrows reaction. Warning of a specific user can be queried by using command `;warnings @Username#1234` which also works with [user IDs](https://dis.gd/userid). Active warnings and decayed warnings will be showed. Clicking on wastebasket reaction will delete the embed, otherwise the embed will delete by itself after two minutes without interaction with embed by user that requested list of warnings. 
 
@@ -286,6 +286,11 @@ You can cancel the reminder by using `;unremind remind_ID`
 
 Users can check their active reminders by using command `;reminders`.\
 It will list them, give their ID, tell their content, when they are due and add a jump link towards the original reminders.
+
+### XP
+
+Users can see the XP they accuumulated by speaking in guild and XP of others by using `;rank` command (which can work with both mentions and [user IDs](https://dis.gd/userid)).\
+A leaderboard can be seen by using `;leaderboard` command.
 
 # Configuration
 
