@@ -358,6 +358,11 @@ namespace OnePlusBot.Modules
 
             var monitor = Context.Message.Author;
 
+            if(reason == null)
+            {
+                reason = "No reason provided.";
+            }
+
             var entry = new WarnEntry
             {
                 WarnedUser = user.Username + '#' + user.Discriminator,
