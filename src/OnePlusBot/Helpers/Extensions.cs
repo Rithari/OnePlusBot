@@ -142,18 +142,53 @@ namespace OnePlusBot.Helpers
         private static string DiscordChannelUrl = "https://discordapp.com/channels/{0}/{1}";
 
         private static string DiscordMessageUrl = DiscordChannelUrl + "/{2}";
+
+        /// <summary>
+        /// Returns a link towards the given channel in the given server with the given display text in markdown
+        /// </summary>
+        /// <param name="serverId">ServerID of the channel</param>
+        /// <param name="channelId">ChannelID of the channel</param>
+        /// <param name="displayName">value which should be used as the display text</param>
+        /// <returns>The absolute link towards the given channel in the given server in markdown with the given display text</returns>
         public static string GetChannelUrl(ulong serverId, ulong channelId, string displayName)
         {
-            return $"[{ displayName }]({string.Format(DiscordChannelUrl, serverId, channelId)})";
+            return FormatLinkWithDisplay(displayName, string.Format(DiscordChannelUrl, serverId, channelId));
         }
 
+        /// <summary>
+        /// Returns a link towards the given message in the given channel of the given server with the given display text in markdown
+        /// </summary>
+        /// <param name="serverId">ServerID of the channel</param>
+        /// <param name="channelId">ChannelID of the channel</param>
+        /// <param name="messageId">MessageID for the message</param>
+        /// <param name="displayName">value which should be used as the display text</param>
+        /// <returns>The absolute link towards the given message in the given channel of the given server in markdown with the given display text</returns>
         public static string GetMessageUrl(ulong serverId, ulong channelId, ulong messageId, string displayName)
         {
-            return $"[{ displayName }]({GetSimpleMessageUrl(serverId, channelId, messageId)})";
+            return FormatLinkWithDisplay(displayName, GetSimpleMessageUrl(serverId, channelId, messageId));
         }
 
-        public static string GetSimpleMessageUrl(ulong serverId, ulong channelId, ulong messageId){
+        /// <summary>
+        /// Returns an URL towards the given message in the given channel of the given server
+        /// </summary>
+        /// <param name="serverId">ServerID of the channel</param>
+        /// <param name="channelId">ChannelID of the channel</param>
+        /// <param name="messageId">MessageID for the message</param>
+        /// <returns>The absolute URL towards the given message in the given channel of the given server</returns>
+        public static string GetSimpleMessageUrl(ulong serverId, ulong channelId, ulong messageId)
+        {
             return $"{string.Format(DiscordMessageUrl, serverId, channelId, messageId)}";
+        }
+
+        /// <summary>
+        /// Formats the given URL with the given display text in markdown
+        /// </summary>
+        /// <param name="displayText">The text the url should have as display text</param>
+        /// <param name="url">The URL where the link leads towards</param>
+        /// <returns>The URL formatted in markdown with the given display text</returns>
+        public static string FormatLinkWithDisplay(string displayText, string url) 
+        {
+          return $"[{ displayText }]({url})";
         }
 
         public static string MakeLinkNotEmbedded(string link){

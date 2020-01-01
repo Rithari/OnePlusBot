@@ -355,32 +355,26 @@ namespace OnePlusBot.Base
 
                 var channel = (SocketTextChannel)socketChannel;
 
-                var embed = new EmbedBuilder
-                {
-                    Color = Color.Blue,
-                    Description = $":bulb: Message from '{author.Username}' edited in {channel.Mention}",
-                    Fields = {
-                        new EmbedFieldBuilder()
-                        {
-                            IsInline = false,
-                            Name = $"Original message: ",
-                            Value = before.Content
-                        },
-                        new EmbedFieldBuilder()
-                        {
-                            IsInline = false,
-                            Name = $"New message: ",
-                            Value = message.Content
-                        }
-                    },
-                    ThumbnailUrl = author.GetAvatarUrl(),
-                    Timestamp = DateTime.Now
-                };
+                var embed = new EmbedBuilder();
+                embed.WithDescription($":bulb: Message from '{author.Username}' edited in {channel.Mention}");
+                embed.WithColor(Color.Blue);
+                embed.WithThumbnailUrl(author.GetAvatarUrl());
+                embed.WithTimestamp(DateTime.Now);
+                embed.AddField("Original message:", before.Content);
+                embed.AddField("New message", message.Content);
+                embed.AddField("Jump link", Extensions.FormatLinkWithDisplay("Jump!", message.GetJumpUrl()));
 
                 await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.EDIT_LOG]).SendMessageAsync(embed: embed.Build());
             }
         }
 
+        /// <summary>
+        /// Reports deleted messages to the 'DELETE_LOG' post target. If the message was in the starboard channel, it marks the post 
+        /// as deleted for the starboard mechanism
+        /// </summary>
+        /// <param name="cacheable">Cacheable which was deleted</param>
+        /// <param name="socketChannel">The channel in which the message was deleted</param>
+        /// <returns>Task</returns>
         private async Task OnMessageRemoved(Cacheable<IMessage, ulong> cacheable, ISocketMessageChannel socketChannel)
         {
 
@@ -427,7 +421,12 @@ namespace OnePlusBot.Base
             {
                 originalMessage = cacheable.Value.Content;
             }
-            fields.Add(new EmbedFieldBuilder() { IsInline = false, Name = $":x: Original message: ", Value = originalMessage });
+            fields.Add(new EmbedFieldBuilder() { Name = ":x: Original message: ", Value = originalMessage });
+            if(deletedMessage != null) 
+            {
+              fields.Add(new EmbedFieldBuilder() { Name = "Link", Value=Extensions.FormatLinkWithDisplay("Jump!", deletedMessage.GetJumpUrl())});
+            }
+           
             if(deletedMessage != null && deletedMessage.Attachments != null){
                     // you can upload multiple attachments at once on mobile
                 var attachments = deletedMessage.Attachments.ToList();
@@ -607,7 +606,7 @@ namespace OnePlusBot.Base
                 }
             }
 
-            var matches = Regex.Matches(message.Content, @"https?:\/\/(?:www\.)?oneplus\.com[^\s]*invite(?:\#([^\s]+)|.+\=([^\s\&]+))", RegexOptions.IgnoreCase);
+            var matches = Regex.Matches(message.Content, @"https?:\/\/(?:www\.)?oneplus\.(?:[a-z]{1,63})[^\s]*invite(?:\#([^\s]+)|.+\=([^\s\&]+))", RegexOptions.IgnoreCase);
 
             if (matches.Count > 2)
             {
@@ -684,7 +683,7 @@ namespace OnePlusBot.Base
             builder.AddField("User in question ", Extensions.FormatMentionDetailed(message.Author))
                 .AddField(f => {
                     f.Name = "Location of the profane message";
-                    f.Value = Extensions.GetMessageUrl(Global.ServerID, message.Channel.Id, message.Id, message.Channel.Name);
+                    f.Value = Extensions.FormatLinkWithDisplay(message.Channel.Name, message.GetJumpUrl());
                     f.IsInline = true;
                     })
                 .AddField(f => {
