@@ -18,6 +18,12 @@ namespace OnePlusBot.Modules
 {
     public class Administration : ModuleBase<SocketCommandContext>
     {
+        /// <summary>
+        /// Bans the user by the given id with an optional reason.
+        /// </summary>
+        /// <param name="name">Id of the user to be banned</param>
+        /// <param name="reason">Reason for the ban (optional)</param>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
             Command("banid", RunMode = RunMode.Async),
             Summary("Bans specified user."),
@@ -41,20 +47,10 @@ namespace OnePlusBot.Modules
             var banMessage = new EmbedBuilder()
             .WithColor(9896005)
             .WithTitle("⛔️ Banned User")
-            .AddField(efb => efb
-                .WithName("UserId")
-                .WithValue(name)
-                .WithIsInline(true))
-            .AddField(efb => efb
-                .WithName("By")
-                .WithValue(Extensions.FormatUserName(Context.User))
-                .WithIsInline(true))
-            .AddField(efb => efb
-                .WithName("Reason")
-                .WithValue(reason))
-            .AddField(efb => efb
-                .WithName("Link")
-                .WithValue(Extensions.GetMessageUrl(Global.ServerID, Context.Channel.Id, Context.Message.Id, "Jump!")));
+            .AddField("UserId", name, true)
+            .AddField("By", Extensions.FormatUserName(Context.User) , true)
+            .AddField("Reason", reason)
+            .AddField("Link", Extensions.FormatLinkWithDisplay("Jump!", Context.Message.GetJumpUrl()));
 
             await banLogChannel.SendMessageAsync(embed: banMessage.Build());
 
@@ -62,6 +58,12 @@ namespace OnePlusBot.Modules
         }
     
 
+        /// <summary>
+        /// Bans the given user with the given reason (default text if none provided). Also sends a direct message to the user containing the reason and the mail used for appeals
+        /// </summary>
+        /// <param name="user"><see ref="Discord.IGuildUser"> object of the user to be banned</param>
+        /// <param name="reason">Optional reason for the ban</param>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
             Command("ban", RunMode = RunMode.Async),
             Summary("Bans specified user."),
@@ -106,20 +108,10 @@ namespace OnePlusBot.Modules
                 var banlog = new EmbedBuilder()
                 .WithColor(9896005)
                 .WithTitle("⛔️ Banned User")
-                .AddField(efb => efb
-                    .WithName("User")
-                    .WithValue(Extensions.FormatUserNameDetailed(user))
-                    .WithIsInline(true))
-                .AddField(efb => efb
-                    .WithName("By")
-                    .WithValue(Extensions.FormatUserName(Context.User))
-                    .WithIsInline(true))
-                .AddField(efb => efb
-                    .WithName("Reason")
-                    .WithValue(reason))
-                .AddField(efb => efb
-                    .WithName("Link")
-                    .WithValue(Extensions.GetMessageUrl(Global.ServerID, Context.Channel.Id, Context.Message.Id, "Jump!")));
+                .AddField("User", Extensions.FormatUserNameDetailed(user), true)
+                .AddField("By", Extensions.FormatUserName(Context.User), true)
+                .AddField("Reason", reason)
+                .AddField("Link", Extensions.FormatLinkWithDisplay("Jump!", Context.Message.GetJumpUrl()));
 
                 await banLogChannel.SendMessageAsync(embed: banlog.Build());
 
