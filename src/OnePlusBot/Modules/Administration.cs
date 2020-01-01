@@ -62,6 +62,13 @@ namespace OnePlusBot.Modules
         }
     
 
+        /// <summary>
+        /// Bans the passed user with the given reason. The user receives a DM containing the reason of the ban and the email at which an appeal is possible.
+        /// The ban will also be logged in the ban log post target
+        /// </summary>
+        /// <param name="user">The <see cref="Discord.IGuildUser"> user to be banned</param>
+        /// <param name="reason">The reason for the ban</param>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
             Command("ban", RunMode = RunMode.Async),
             Summary("Bans specified user."),
@@ -95,7 +102,7 @@ namespace OnePlusBot.Modules
                                           "If you believe this to be a mistake, please send an appeal e-mail with all the details to oneplus.appeals@pm.me";
                     await user.SendMessageAsync(string.Format(banDMMessage, reason));
                 } catch (HttpException){
-                    Console.WriteLine("User disabled DMs, unable to send message about ban.");
+                  await Context.Channel.SendMessageAsync("Seems like user disabled DMs, cannot send message about the ban.");
                 }
                
                 await Context.Guild.AddBanAsync(user, 0, reason);
@@ -158,6 +165,7 @@ namespace OnePlusBot.Modules
 
         /// <summary>
         /// Mutes the user for a certain timeperiod (effectively gives the user the two (!) configured roles denying the user the ability to send messages)
+        /// The user receives a message with the reason and the date at which the mute is lifted automatically. The mute is logged in the mutelog posttarget.
         /// </summary>
         /// <param name="user">The <see cref="Discord.IGuildUser"> user to mute</param>
         /// <param name="arguments">Arguments for muting, including: the duration and the reason</param>
@@ -222,7 +230,7 @@ namespace OnePlusBot.Modules
             } 
             catch(HttpException)
             {
-              await Context.Channel.SendMessageAsync("Seems like user disabled the DMs, cannot send message about the mute.");
+              await Context.Channel.SendMessageAsync("Seems like user disabled DMs, cannot send message about the mute.");
             }    
 
             var muteData = new Mute
@@ -330,6 +338,13 @@ namespace OnePlusBot.Modules
             return CustomResult.FromIgnored(); 
         }
 
+        /// <summary>
+        /// Warns the passed user with the given reason. The warning is logged in the database and will get decayed. The user receives a DM
+        /// containing the reason of the warning. The warning will also be logged in the warn log post target
+        /// </summary>
+        /// <param name="user">The <see cref="Discord.IGuildUser"> user to be warned</param>
+        /// <param name="reason">The reason for the warn</param>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
             Command("warn"),
             Summary("Warn someone."),
@@ -357,6 +372,16 @@ namespace OnePlusBot.Modules
             {
                 db.Warnings.Add(entry);
                 db.SaveChanges();
+            }
+
+            try
+            {
+              const string muteMessage = "You were warned on r/OnePlus for the following reason: {0}.";
+              await user.SendMessageAsync(string.Format(muteMessage, reason));
+            }
+            catch(HttpException)
+            {
+              await Context.Channel.SendMessageAsync("Seems like user disabled DMs, cannot send message about the warn.");
             }
 
             var builder = new EmbedBuilder();
@@ -700,7 +725,7 @@ namespace OnePlusBot.Modules
         /// <summary>
         /// Creates the post in info responsible for managing the roles
         /// </summary>
-        /// <returns>Task</returns>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
             Command("setupInfoPost"),
             Summary("Sets up the info post to let user self assign the roles"),
