@@ -46,7 +46,7 @@ Modmail for a specific user can be enabled again with `;enableModmail <user>`.
 
 Current implementation only supports one image attachment per message.
 
-Note: Users with **Staff** role can't open modmail threads when they DM bot. It will instead send a message to a channel which is used to provide anonymous feedback to the admins.
+Note: Users with **Staff** role can't open modmail threads when they DM bot. It will instead send a message to a channel (configurable in database) which is used to provide anonymous feedback to the admins.
     
 ### Ban
 
@@ -85,7 +85,7 @@ Allow moderators (users with **Staff** role) to warn users.\
 A warning can be given by using command `;warn @Username#1234 reason` (reason field is optional). Also works with [user IDs](https://dis.gd/userid).\
 When someone is warned their warning is named as "active": three active warnings will lead to a server ban (as of writing banning command has to be issued by a moderator).\
 Every 90 days (delay configurable in database and taken into account after use of `;reloaddb` command) warnings are decayed so that we can actually keep track of persons infractions.\
-The check for that action happens everyday at 00:00 UTC.
+The check for that action happens everyday at 00:00 UTC.\
 
 Warnings list can be queried by moderators by issuing `;warnings` command. If list takes more than one embed it is possible to navigate using the arrows reaction. Warning of a specific user can be queried by using command `;warnings @Username#1234` which also works with [user IDs](https://dis.gd/userid). Active warnings and decayed warnings will be showed. Clicking on wastebasket reaction will delete the embed, otherwise the embed will delete by itself after two minutes without interaction with embed by user that requested list of warnings. 
 
@@ -93,34 +93,6 @@ A warning can be manually cleared by a moderator by using command `;clearwarn ca
 Note that however clearing warnings isn't logged in #mod-log channel unlike the automatic decay check and unlike when warns are given.
     
 Normal users can check their own warnings by using `;warnings` command, which will tell them how many active and total warnings they have. If they wish to get the reasons as well they need to ask moderators to check for them as it was decided that for "privacy" we won't let other users know why a user was warned. They will automatically receive a message from bot when a warning they had will be decayed (except if they turned off ability to receive direct messages from server members).
-
-### Update database
-
-In order to reload the cached info from the database, you will have to use `;reloaddb`. Only users with **Staff** role can succesfully execute this command.
-
-### Update XP requirement for role levels
-
-Sets the level at which a role is given. If no parameters are given, it shows the current role configuration. This command is reserved to users with **Admin** or **Founder** role.\
-Eg: `;updatelevels [level = ] [roleId = ]`. 
-
-### Update levels
-
-Re-evaluates the experience, levels and assigns the roles to the users (takes a long time, use with care). This action requires the **Admin** or **Founder** role.
-
-### XP gain control
-
-Allow to enable/disable xp gain for a user.  Only users with **Admin** or **Founder** role can succesfully execute this command.\
-Eg: `;disablexpgain <user> <newValue>`.
-
-### Setup info post
-
-Sets up the info post used for [self attribution of roles](#role-attribution). This command is reserved to users with **Admin** or **Founder** role.\
-Syntax is `;setupinfopost`.
-
-### Disable commands
-
-Disables command in a specified channel group so certain roles can't use them anymore. This command is reserved to users with **Admin** or **Founder** role.
-Eg: `;disablecommand <commandName> <channelGroupName> <newValue>`. 
 
 ### User info
 
@@ -162,13 +134,6 @@ Set a new nickname for a user. Reset nickname if parameter is empty. It can only
 Syntax is `;setnickame @Username#1234 nickname`.\
 It also works with [user IDs](https://dis.gd/userid).
 
-### Slowmode
-
-Allow users with **Staff** role to set [slowmode](https://support.discordapp.com/hc/en-us/articles/360016150952) for the current channel for a maximum of 6 hours.\
-Syntax is `;slowmode 5h2m3s` to set a slowmode of 5 hours 2 minutes and 3 secondes.
-
-It can be turned off by using command `;slowmode off`
-
 ## Specific to server
 
 ### Role ping to send news
@@ -185,7 +150,7 @@ Elements can be added/edited/removed by using `;configurefaq` command (command c
 FAQ answers can be embeds, textposts, include images (need to provide an URL) and have an authorship attached to them following choices made at configuration.\
 Answers are configurable on a per channel basis.
 If embeds are chosen during configuration it is possible to set a custom color for them.\
-Once changes are made FAQ database need to be reloaded by using `;reloaddb` command (again **Staff** only command).
+Once changes are made FAQ database need to be reloaded by using `;reloaddb` command (again staff only command).
     
 Normal users can use `;faq module` to display answer related to the module.
     
@@ -201,7 +166,7 @@ Users can post their smartphone and headphones referral links they obtained [fro
 
 ### Role attribution
 
-Users can assign themselves roles by reacting to the corresponding emote in a message posted in #info channel. They will lose the role if they remove their reaction. As of writing list of assignable roles (devices, Helper and News) is hardcoded at https://github.com/Rithari/OnePlusBot/blob/master/src/OnePlusBot/Base/RoleReactionAction.cs .
+Users can assign themselves roles by reacting to the corresponding emote in a message posted in #info channel. They will lose the role if they remove their reaction. As of writing list of assignable roles (devices, Helper and News) is hardcoded at https://github.com/Rithari/OnePlusBot/blob/master/src/OnePlusBot/Base/RoleReactionAction.cs .\
 
 ID of message mentioned previously is stored in database for the purpose of being able to edit message whenever needed instead of deleting it and reposting it. Changing it will require `;reloaddb` command to be issued.
 
@@ -286,36 +251,3 @@ You can cancel the reminder by using `;unremind remind_ID`
 
 Users can check their active reminders by using command `;reminders`.\
 It will list them, give their ID, tell their content, when they are due and add a jump link towards the original reminders.
-
-### XP
-
-Users can see the XP they accuumulated by speaking in guild and XP of others by using `;rank` command (which can work with both mentions and [user IDs](https://dis.gd/userid)).\
-A leaderboard can be seen by using `;leaderboard` command.
-
-# Configuration
-
-## Post target
-
-Instead of using hardcoded elements, the bot uses configurable targets so that configuration can be changed on the go without requiring a restart but rather only a database reload.\
-It can be done by using `;setposttarget target channel_mention` command.
-
-| Name                	| Description                                                                        	|
-|---------------------	|------------------------------------------------------------------------------------	|
-| joinlog             	| Channel where join logs are posted towards                                         	|
-| banlog              	| Channel where ban logs are posted towards                                          	|
-| decaylog            	| Channel where decayed warnings are posted towards                                  	|
-| deletelog           	| Channel where deleted messages are posted towards                                  	|
-| editlog             	| Channel where edited messages are posted towards                                   	|
-| modmaillog          	| Channel where closed modmail threads are posted towards                            	|
-| modmailnotification 	| Channel where Staff role is pinged when there is a new modmail thread              	|
-| mutelog             	| Channel where mute logs are posted towards                                         	|
-| news                	| Channel where news items are sent                                                  	|
-| profanityqueue      	| Channel where detected profanities are queued                                      	|
-| starboard           	| Channel where starred messages are posted towards                                  	|
-| unbanlog            	| Channel where unban logs are posted towards                                        	|
-| suggestions         	| Channel where suggestions are sent                                                 	|
-| usernamequeue       	| Channel where illegal usernames are reported                                       	|
-| warnlog             	| Channel where new warnings are posted towards                                      	|
-| leavelog            	| Channel where leaving logs are posted towards                                      	|
-| info                	| Channel where info post is sent                                                    	|
-| feedback            	| Channel where administrators receive anonymous feedback from users with Staff role 	|
