@@ -781,6 +781,36 @@ namespace OnePlusBot.Modules
           return CustomResult.FromSuccess();
         }
 
+        /// <summary>
+        /// Changes the slow mode of the current channel to the given interval, 'off' for disabling slowmode
+        /// </summary>
+        /// <param name="slowModeConfig">Time format with the format 'd', 's', 'm', 'h', 'w'</param>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
+        [
+            Command("slowmode"),
+            Summary("Changes the slowmode configuration of the current channel, 'off' to turn off slowmode"),
+            RequireRole("staff"),
+            CommandDisabledCheck
+        ]
+        public async Task<RuntimeResult> SetSlowModeTo(string slowModeConfig)
+        {
+          var channelObj = Context.Guild.GetTextChannel(Context.Channel.Id);
+          if(slowModeConfig == "off")
+          {
+            await channelObj.ModifyAsync(pro => pro.SlowModeInterval = 0);
+          }
+          else
+          {
+            var span = Extensions.GetTimeSpanFromString(slowModeConfig);
+            if(span > TimeSpan.FromHours(6))
+            {
+              return CustomResult.FromError("Only values between 1 second and 6 hours allowed.");
+            }
+            await channelObj.ModifyAsync(pro => pro.SlowModeInterval = (int) span.TotalSeconds);
+          }
+          return CustomResult.FromSuccess();
+        }
+
         
     }
 }
