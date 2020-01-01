@@ -43,7 +43,6 @@ namespace OnePlusBot.Modules
                 reason = "No reason provided.";
             }
 
-            var modlog = Context.Guild.GetTextChannel(Global.Channels["banlog"]);
             var banMessage = new EmbedBuilder()
             .WithColor(9896005)
             .WithTitle("⛔️ Banned User")
