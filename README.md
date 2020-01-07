@@ -1,5 +1,7 @@
 # OnePlusBot
-OnePlus bot for the /r/OnePlus discord.
+OnePlus bot for the [/r/OnePlus Discord](https://discord.gg/oneplus). 
+
+![Azure DevOps builds](https://img.shields.io/azure-devops/build/rithari/044dda56-4057-4abc-b061-e442d1177f99/1)
 
 # Getting started
 Create a new application [here](https://discordapp.com/developers/applications) and create a bot for that application.
