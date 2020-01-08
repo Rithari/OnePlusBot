@@ -790,7 +790,7 @@ namespace OnePlusBot.Modules
             RequireRole("staff"),
             CommandDisabledCheck
         ]
-        public async Task<RuntimeResult> SetNicknameTo(IGuildUser user, [Optional]string newNickname)
+        public async Task<RuntimeResult> SetNicknameTo(IGuildUser user, [Remainder]string newNickname)
         {
           await user.ModifyAsync((user) => user.Nickname = newNickname);
           return CustomResult.FromSuccess();
