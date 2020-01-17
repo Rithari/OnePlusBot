@@ -11,6 +11,7 @@ services:
     volumes:
       - ./sql_scripts/ddl.sql:/docker-entrypoint-initdb.d/1-schema.sql
       - ./sql_scripts/seed_data.sql:/docker-entrypoint-initdb.d/2-data.sql
+      - ./sql_scripts/mysql.cnf:/etc/mysql/conf.d/custom.cnf
     ports:
       - '3307:3306'
     expose:

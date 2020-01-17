@@ -312,14 +312,15 @@ CREATE TABLE `ThreadMessage` (
 
 DROP TABLE IF EXISTS `ChannelGroups`;
 CREATE TABLE `ChannelGroups` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+ `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profanity_check_exempt` tinyint(4) NOT NULL,
-  `invite_check_exempt` tinyint(4) NOT NULL,
-  `exp_gain_exempt` tinyint(4) NOT NULL,
-  `disabled` tinyint(4) NOT NULL,
+ `profanity_check_exempt` tinyint(4) NOT NULL,
+ `invite_check_exempt` tinyint(4) NOT NULL,
+ `exp_gain_exempt` tinyint(4) NOT NULL,
+ `disabled` tinyint(4) NOT NULL,
+ `channel_group_type` text COLLATE utf8mb4_unicode_ci NOT NULL,
  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Table structure for table `ChannelInGroup`
@@ -383,7 +384,7 @@ CREATE TABLE `CommandInChannelGroup` (
  KEY `fk_channel_group_reference` (`channel_group_id`),
  CONSTRAINT `fk_channel_group_reference` FOREIGN KEY (`channel_group_id`) REFERENCES `ChannelGroups` (`id`),
  CONSTRAINT `fk_command_reference` FOREIGN KEY (`command_id`) REFERENCES `Commands` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Table structure for table `ExperienceRoles`
@@ -402,7 +403,7 @@ CREATE TABLE `ExperienceRoles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Table structure for table `ExperienceRoles`
+-- Table structure for table `ExperienceLevels`
 --
 
 DROP TABLE IF EXISTS `ExperienceLevels`;
