@@ -35,6 +35,6 @@ INSERT INTO `Emotes` (`id`, `name`, `emote_key`, `animated`, `emote_id`, `custom
 (5, '⭐', 'STAR', 0, 0, 0),
 (6, '🌟', 'LVL_2_STAR', 0, 0, 0),
 (7, '💫', 'LVL_3_STAR', 0, 0, 0),
-(8, '💫', 'LVL_4_STAR', 0, 0, 0),
+(8, 'star4', 'LVL_4_STAR', 1, 0, 1),
 (9, '⚠️', 'FAIL', 0, 0, 0),
 (10, '📫', 'OPEN_MODMAIL', 0, 0, 0);
