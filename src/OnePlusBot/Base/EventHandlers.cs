@@ -356,7 +356,7 @@ namespace OnePlusBot.Base
                 var channel = (SocketTextChannel)socketChannel;
 
                 var embed = new EmbedBuilder();
-                embed.WithDescription($":bulb: Message from '{author.Username}' edited in {channel.Mention}");
+                embed.WithDescription($":bulb: Message from '{Extensions.FormatUserNameDetailed(author)}' edited in {channel.Mention}");
                 embed.WithColor(Color.Blue);
                 embed.WithThumbnailUrl(author.GetAvatarUrl());
                 embed.WithTimestamp(DateTime.Now);
@@ -438,7 +438,7 @@ namespace OnePlusBot.Base
                 var embed = new EmbedBuilder
                 {
                     Color = Color.Blue,
-                    Description = $":bulb: Message from '{cacheable.Value.Author.Username}' removed in {channel.Mention}",
+                    Description = $":bulb: Message from '{Extensions.FormatUserNameDetailed(cacheable.Value.Author)}' removed in {channel.Mention}",
                     Fields = fields,
                     ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
                     Timestamp = DateTime.Now

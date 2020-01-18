@@ -47,7 +47,7 @@ namespace OnePlusBot.Modules
             .WithColor(9896005)
             .WithTitle("⛔️ Banned User")
             .AddField("UserId", name, true)
-            .AddField("By", Extensions.FormatUserName(Context.User) , true)
+            .AddField("By", Extensions.FormatUserNameDetailed(Context.User), true)
             .AddField("Reason", reason)
             .AddField("Link", Extensions.FormatLinkWithDisplay("Jump!", Context.Message.GetJumpUrl()));
 
@@ -109,7 +109,7 @@ namespace OnePlusBot.Modules
                 .WithColor(9896005)
                 .WithTitle("⛔️ Banned User")
                 .AddField("User", Extensions.FormatUserNameDetailed(user), true)
-                .AddField("By", Extensions.FormatUserName(Context.User), true)
+                .AddField("By", Extensions.FormatUserNameDetailed(Context.User), true)
                 .AddField("Reason", reason)
                 .AddField("Link", Extensions.FormatLinkWithDisplay("Jump!", Context.Message.GetJumpUrl()));
 
@@ -245,8 +245,8 @@ namespace OnePlusBot.Modules
             builder.ThumbnailUrl = user.GetAvatarUrl();
             
             const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
-            builder.AddField("Muted User", Extensions.FormatUserName(user))
-                   .AddField("Muted by", Extensions.FormatUserName(author))
+            builder.AddField("Muted User", Extensions.FormatUserNameDetailed(user))
+                   .AddField("Muted by", Extensions.FormatUserNameDetailed(author))
                    .AddField("Location of the mute",
                         $"[#{Context.Message.Channel.Name}]({string.Format(discordUrl, Context.Guild.Id, Context.Channel.Id, Context.Message.Id)})")
                    .AddField("Reason", reason ?? "No reason was provided.")
