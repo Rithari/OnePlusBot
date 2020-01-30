@@ -61,6 +61,8 @@ namespace OnePlusBot.Data
         public DbSet<CommandModule> Modules { get; set; }
 
         public DbSet<CommandInChannelGroup> CommandInChannelGroups { get; set; }
+
+        public DbSet<ResponseTemplate> ResponseTemplate { get; set; }
         
         // TODO needs to be replaced with proper dependency injection
         [Obsolete]

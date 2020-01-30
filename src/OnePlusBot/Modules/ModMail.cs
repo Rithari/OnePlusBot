@@ -147,11 +147,11 @@ namespace OnePlusBot.Modules
           }
           ulong messageId = (ulong) Convert.ToUInt64(parameters[0]);
           string newText = "";
-          
+
           string[] reasons = new string[parameters.Length -1];
           Array.Copy(parameters, 1, reasons, 0, parameters.Length - 1);
           newText = string.Join(" ", reasons);
-          
+
           await new  ModMailManager().EditMessage(newText, messageId , Context.Channel, Context.User);
           await Context.Message.DeleteAsync();
           return CustomResult.FromIgnored();
@@ -173,8 +173,8 @@ namespace OnePlusBot.Modules
             string[] noteParts = new string[arguments.Length -1];
             Array.Copy(arguments, 1, noteParts, 0, arguments.Length - 1);
             note = string.Join(" ", noteParts);
-          } 
-          else 
+          }
+          else
           {
             return CustomResult.FromError("You need to provide a note.");
           }
@@ -183,7 +183,7 @@ namespace OnePlusBot.Modules
           var manager = new ModMailManager();
           await manager.LogForDisablingAction(Context.Channel, note, until);
           manager.DisableModMailForUserWithExistingThread(Context.Channel, until);
-          
+
           return CustomResult.FromIgnored();
         }
 
@@ -233,12 +233,12 @@ namespace OnePlusBot.Modules
           return CustomResult.FromSuccess();
         }
 
-         [
-          Command("delete"),
-          Summary("Deletes your message within a modmail thread"),
-          RequireRole("staff"),
-          RequireBotPermission(GuildPermission.ManageMessages),
-          RequireModMailContext
+        [
+            Command("delete"),
+            Summary("Deletes your message within a modmail thread"),
+            RequireRole("staff"),
+            RequireBotPermission(GuildPermission.ManageMessages),
+            RequireModMailContext
         ]
         public async Task<RuntimeResult> DeleteMessage(params string[] parameters)
         {
@@ -249,6 +249,21 @@ namespace OnePlusBot.Modules
           await new  ModMailManager().DeleteMessage(messageId, Context.Channel, Context.User);
           return CustomResult.FromSuccess();
         }
-    
+
+        [
+          Command("nicknameRequest"),
+          Summary("Responds in a modmail thread with a defined response and start a timer for a defined duration."),
+          RequireRole("staff"),
+          RequireModMailContext,
+          Alias("nickRe")
+        ]
+        public async Task<RuntimeResult> PostNicknameResponse() {
+
+          await new ModMailManager().RespondWithUsernameTemplateAndSetReminder(Context.Channel, Context.User, Context.Message);
+
+          return CustomResult.FromIgnored();
+        }
+
+
     }
 }
