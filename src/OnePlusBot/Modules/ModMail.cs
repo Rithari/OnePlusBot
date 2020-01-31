@@ -147,11 +147,11 @@ namespace OnePlusBot.Modules
           }
           ulong messageId = (ulong) Convert.ToUInt64(parameters[0]);
           string newText = "";
-          
+
           string[] reasons = new string[parameters.Length -1];
           Array.Copy(parameters, 1, reasons, 0, parameters.Length - 1);
           newText = string.Join(" ", reasons);
-          
+
           await new  ModMailManager().EditMessage(newText, messageId , Context.Channel, Context.User);
           await Context.Message.DeleteAsync();
           return CustomResult.FromIgnored();
@@ -173,8 +173,8 @@ namespace OnePlusBot.Modules
             string[] noteParts = new string[arguments.Length -1];
             Array.Copy(arguments, 1, noteParts, 0, arguments.Length - 1);
             note = string.Join(" ", noteParts);
-          } 
-          else 
+          }
+          else
           {
             return CustomResult.FromError("You need to provide a note.");
           }
@@ -183,7 +183,7 @@ namespace OnePlusBot.Modules
           var manager = new ModMailManager();
           await manager.LogForDisablingAction(Context.Channel, note, until);
           manager.DisableModMailForUserWithExistingThread(Context.Channel, until);
-          
+
           return CustomResult.FromIgnored();
         }
 
@@ -220,6 +220,11 @@ namespace OnePlusBot.Modules
           return CustomResult.FromSuccess();
         }
 
+        /// <summary>
+        /// Opens a modmail thread for the given user if it doesnt exist. Posts a message linking to the existing one, if it already exists
+        /// </summary>
+        /// <param name="user">The <see cref="Discord.IGuildUser"> object to create the modmail thread for</param>
+        /// <returns>Result whether or not the closing was succesful</returns>
         [
           Command("contact"),
           Summary("Opens a thread with the specified user"),
@@ -229,7 +234,15 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> ContactUser(IGuildUser user)
         {
-          await new  ModMailManager().ContactUser(user, Context.Channel);
+          var existing = ModMailManager.GetOpenModmailForUser(user);
+          if(existing != null)
+          {
+            await Context.Channel.SendMessageAsync(embed: ModMailEmbedHandler.GetThreadAlreadyExistsEmbed(existing));
+          }
+          else
+          {
+            await ModMailManager.ContactUser(user, Context.Channel, true);
+          }
           return CustomResult.FromSuccess();
         }
 
