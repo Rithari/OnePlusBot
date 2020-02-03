@@ -13,6 +13,9 @@ using MySql.Data.MySqlClient;
 
 namespace OnePlusBot.Modules
 {
+    [
+      Summary("Commands to manage the bot. Exclusive to the owner of the bot.")
+    ]
     public class Owner : InteractiveBase<SocketCommandContext>
     {
 

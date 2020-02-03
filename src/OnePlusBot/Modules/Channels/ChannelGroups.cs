@@ -9,12 +9,11 @@ using Discord.WebSocket;
 using System.Runtime.InteropServices;
 using Discord.Addons.Interactive;
 
-namespace OnePlusBot.Modules
+namespace OnePlusBot.Modules.Channels
 {
-    public class Channels : InteractiveBase<SocketCommandContext>
+    public partial class Channels : InteractiveBase<SocketCommandContext>
     {
-
-        /// <summary>
+       /// <summary>
         /// Command responsibel for creating a channel group
         /// </summary>
         /// <param name="groupName">The name of the channel group to create</param>
@@ -124,28 +123,6 @@ namespace OnePlusBot.Modules
             return CustomResult.FromSuccess();
         }
 
-
-        [
-            Command("setPostTarget"),
-            Summary("Sets the target of a certain post"),
-            RequireRole("staff"),
-            Alias("setTarget"),
-            CommandDisabledCheck
-        ]
-        public async Task<RuntimeResult> SetPostTarget([Optional] string channelName, [Optional] ISocketMessageChannel channel)
-        {
-            if(channelName == null || channel == null)
-            {
-              await new ChannelManager().PostExistingPostTargets(Context.Channel);
-            }
-            else
-            {
-              new ChannelManager().SetPostTarget(channelName, channel);
-            }
-            await Task.CompletedTask;
-            return CustomResult.FromSuccess();
-        }
-
         [
             Command("renameChannelGroup"),
             Summary("Sets the target of a certain post"),
@@ -159,7 +136,6 @@ namespace OnePlusBot.Modules
             await Task.CompletedTask;
             return CustomResult.FromSuccess();
         }
-
 
         [
             Command("listChannelGroups", RunMode=RunMode.Async),
@@ -211,7 +187,6 @@ namespace OnePlusBot.Modules
             return CustomResult.FromSuccess();
         }
 
-
         /// <summary>
         /// Command used to display the groups of type COMMANDS, and the respective commands configured to be in this group
         /// </summary>
@@ -228,7 +203,6 @@ namespace OnePlusBot.Modules
             await new ChannelManager().ListGroupsWithCommands(Context.Channel);
             return CustomResult.FromSuccess();
         }
-
 
         /// <summary>
         /// Command used to change the type of a channel group

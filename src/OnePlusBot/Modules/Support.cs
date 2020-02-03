@@ -11,253 +11,167 @@ using System.Runtime.InteropServices;
 
 namespace OnePlusBot.Modules
 {
+    [
+      Summary("Module containing the commands for help and faq commands")
+    ]
     public class Support : ModuleBase<SocketCommandContext>
     {
-        private readonly CommandService _commands;
-        private readonly IServiceProvider _services;
+      private readonly CommandService _commands;
+      private readonly IServiceProvider _services;
 
-        public Support(IServiceProvider services, CommandService commands)
+      public Support(IServiceProvider services, CommandService commands)
+      {
+        _commands = commands;
+        _services = services;
+      }
+
+      [
+        Command("help"),
+        Summary("Lists commands with their respective user facing documentation")
+      ]
+      public async Task<RuntimeResult> PrintHelp([Optional] string commandOrModule)
+      {
+        StringBuilder sb = new StringBuilder();
+        string footerText;
+        if(commandOrModule == null) 
         {
-            _commands = commands;
-            _services = services;
-        }
-
-        [
-            Command("help"),
-            Summary("Lists all available commands."),
-            CommandDisabledCheck
-        ]
-        public async Task Help(string path = "")
+          foreach (var mod in _commands.Modules.Where(m => m.Parent == null))
+          {
+            sb.Append(HelpBuilder.BuildGeneralModuleDescription(mod));
+            sb.Append(Environment.NewLine);
+          }
+          footerText = "Use 'help <module name>' for a list of commands of this module (case insensitive).";
+        } 
+        else 
         {
-            int r = Global.Random.Next(256);
-            int g = Global.Random.Next(256);
-            int b = Global.Random.Next(256);
-
-
-            var output = new EmbedBuilder();
-            if (path == string.Empty)
+          commandOrModule = commandOrModule.ToLower();
+          var probableModule = _commands.Modules.Where(m => m.Name.ToLower().Equals(commandOrModule));
+          if(probableModule.Any()) 
+          {
+            sb.Append(HelpBuilder.BuildDetailedModuleDescription(probableModule.First(), Context, _services));
+            footerText = "Use 'help <command name>' for a detailed description of the command.";
+          }
+          else
+          {
+            var probableCommand = _commands.Commands.Where(c => c.Name.ToLower().Equals(commandOrModule));
+            if(probableCommand.Any()) 
             {
-                output.Title = "OnePlusBot - help";
-                output.WithColor(r, g, b);
-
-                foreach (var mod in _commands.Modules.Where(m => m.Parent == null))
-                {
-                    AddHelp(mod, ref output);
-                }
-
-                output.WithFooter("Use 'help <module>' to get help with a module.");
+              var command = probableCommand.First();
+              sb.Append(HelpBuilder.BuildDetailedCommandDescription(command));
             }
             else
             {
-                var mod = _commands.Modules.FirstOrDefault(m => string.Equals(m.Name.Replace("Module", ""), path, StringComparison.OrdinalIgnoreCase));
-                if (mod == null)
-                {
-                    await ReplyAsync("No module could be found with that name."); 
-                    return;
-                }
-                output.Title = mod.Name;
-                output.Description = $"{mod.Summary}\n" +
-                    (!string.IsNullOrEmpty(mod.Remarks) ? $"({mod.Remarks})\n" : "") +
-                    (mod.Aliases.Any() ? $"Prefix(es): {string.Join(",", mod.Aliases)}\n" : "") +
-                    (mod.Submodules.Any() ? $"Submodules: {mod.Submodules.Select(m => m.Name)}\n" : "") + " ";
-                AddCommands(mod, ref output);
+              sb.Append("No module/command found for that name.");
             }
-
-            await ReplyAsync("", embed: output.Build());
+            footerText = "";
+          }
         }
+        var builder = new EmbedBuilder();
+        builder.WithDescription(sb.ToString());
+        builder.WithFooter(new EmbedFooterBuilder().WithText(footerText));
+        builder.WithTitle("OneplusBot - Help");
+        await Context.Channel.SendMessageAsync(embed: builder.Build());
+        return CustomResult.FromIgnored();
+      }
 
-        public void AddHelp(ModuleInfo module, ref EmbedBuilder builder)
+      [
+        Command("faq"),
+        Summary("Answers frequently asked questions with a predetermined response."),
+        CommandDisabledCheck
+      ]
+      public async Task FAQAsync([Optional] [Remainder] string parameter)
+      {
+        var contextChannel = Context.Channel;
+        if(parameter == null || parameter == string.Empty)
         {
-            foreach (var sub in module.Submodules) AddHelp(sub, ref builder);
-            builder.AddField(f =>
+            await PrintAvailableCommands(contextChannel);
+            return;
+        }
+        var commands = Global.FAQCommands;
+        parameter = parameter.Trim();
+        var appropriateCommand = commands.Where(m => 
+        {
+            bool usingAlias = Array.Exists(m.IndividualAliases(), alias => alias.Equals(parameter));
+            return (m.Name == parameter || usingAlias);
+        });
+        if(appropriateCommand.Any())
+        {
+          var matchingCommand = appropriateCommand.First();
+          if(matchingCommand.CommandChannels != null) 
+          {
+            var commandChannels = matchingCommand.CommandChannels.Where(cha => cha.ChannelGroupReference.Channels.Where(grp => grp.ChannelId == contextChannel.Id).FirstOrDefault() != null);
+            if(commandChannels.Any())
             {
-                f.Name = $"**{module.Name}**";
-                f.Value = $"Submodules: {string.Join(", ", module.Submodules.Select(m => m.Name))}" +
-                $"\n" +
-                $"Commands: {string.Join(", ", module.Commands.Select(x => $"`{x.Name}`"))}";
-            });
-        }
-
-        public void AddCommands(ModuleInfo module, ref EmbedBuilder builder)
-        {
-            foreach (var command in module.Commands)
-            {
-                command.CheckPreconditionsAsync(Context, _services).GetAwaiter().GetResult();
-                AddCommand(command, ref builder);
-            }
-
-        }
-
-        public void AddCommand(CommandInfo command, ref EmbedBuilder builder)
-        {
-           StringBuilder preconditions = new StringBuilder("");
-            foreach(var pre in command.Preconditions){
-              if(pre is RequireRole)
+              if(commandChannels.Count() > 1)
               {
-                RequireRole casted = pre as RequireRole;
-                preconditions.Append("Required role: ");
-                if(casted.AllowedRoles.Length > 1)
+                await Context.Channel.SendMessageAsync("Warning command have different responses for this channel");
+              }
+              foreach(var commandChannel in commandChannels){
+                var entries = commandChannels.First().CommandChannelEntries.OrderBy(entry => entry.Position);
+                if(entries.Any())
                 {
-                  string roleConcatenation = casted.mode == ConcatenationMode.AND ? " AND " : " OR ";
-                  preconditions.Append(string.Join(roleConcatenation, casted.AllowedRoles));
-                }
+                  foreach(var entry in entries)
+                  {
+                    if(!entry.IsEmbed)
+                    {
+                      await Context.Channel.SendMessageAsync(entry.Text);
+                    }
+                    else 
+                    {
+                      var embed = Extensions.FaqCommandEntryToBuilder(entry);
+                      await Context.Channel.SendMessageAsync(embed: embed.Build());
+                    }
+                    await Task.Delay(200);
+                  }
+                } 
                 else
                 {
-                  preconditions.Append(casted.AllowedRoles[0]);
+                  await Context.Channel.SendMessageAsync($"Channel has no posts configured for command {appropriateCommand.First().Name}.");
                 }
-                
-              } 
+              }
             }
-            if(preconditions.ToString() != string.Empty)
+            else
             {
-              preconditions.Append("\n");
+              await PrintAvailableCommands(contextChannel);
             }
-            builder.AddField(f =>
-            {
-                f.Name = $"**{command.Name}**";
-                f.Value = $"{command.Summary}\n" +
-                (!string.IsNullOrEmpty(command.Remarks) ? $"({command.Remarks})\n" : "") +
-                preconditions.ToString() +
-                (command.Aliases.Any() ? $"**Aliases:** {string.Join(", ", command.Aliases.Select(x => $"`{x}`"))}\n" : "") +
-                $"**Usage:** `{GetPrefix(command)} {GetAliases(command)}`";
-            });
+          }
+          else 
+          {
+            await Context.Channel.SendMessageAsync($"Channel has no entry configured for command {appropriateCommand.First().Name}.");
+          }
         }
-
-        private static string GetAliases(CommandInfo command)
+        else 
         {
-            if (!command.Parameters.Any()) 
-                return string.Empty;
-            
-            var output = new StringBuilder();
-            foreach (var param in command.Parameters)
-            {
-                if (param.IsOptional)
-                    output.AppendFormat("[{0} = {1}] ", param.Name, param.DefaultValue);
-                else if (param.IsMultiple)
-                    output.AppendFormat("|{0}| ", param.Name);
-                else if (param.IsRemainder)
-                    output.AppendFormat("...{0} ", param.Name);
-                else
-                    output.AppendFormat("<{0}> ", param.Name);
-            }
-            return output.ToString();
+          await PrintAvailableCommands(contextChannel);
         }
-
-        private static string GetPrefix(CommandInfo command)
+      }
+      public async Task PrintAvailableCommands(ISocketMessageChannel contextChannel)
+      {
+        var commandsAvailable = Global.FAQCommandChannels.
+        Where(ch => ch.ChannelGroupReference.Channels.
+            Where(grp => grp.ChannelId == contextChannel.Id).
+            FirstOrDefault() != null)
+        .ToList();
+        if(commandsAvailable.Count() == 0)
         {
-            var output = GetPrefix(command.Module);
-            output += $"{command.Aliases.FirstOrDefault()} ";
-            return output;
-        }
-
-        private static string GetPrefix(ModuleInfo module)
+            await Context.Channel.SendMessageAsync("No entry available.");
+        } 
+        else
         {
-            string output = "";
-            if (module.Parent != null) 
-                output = $"{GetPrefix(module.Parent)}";
-            
-            if (module.Aliases.Any())
-                output += string.Concat(module.Aliases.FirstOrDefault(), " ");
-            return output;
+          var stringBuilder = new StringBuilder(" ");
+          for(var index = 0; index < commandsAvailable.Count; index++)
+          {
+            var command = commandsAvailable[index];
+            stringBuilder.Append($"`{command.Command.Name}`");
+            if(index < commandsAvailable.Count -1 )
+            {
+                stringBuilder.Append(", ");
+            }
+          }
+          var embedBuilder = new EmbedBuilder().WithTitle("Available entries in this channel").WithDescription(stringBuilder.ToString());
+          
+          await Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
         }
-
-        [
-          Command("faq"),
-          Summary("Answers frequently asked questions with a predetermined response."),
-          CommandDisabledCheck
-        ]
-        public async Task FAQAsync([Optional] [Remainder] string parameter)
-        {
-            var contextChannel = Context.Channel;
-            if(parameter == null || parameter == string.Empty)
-            {
-                await PrintAvailableCommands(contextChannel);
-                return;
-            }
-            var commands = Global.FAQCommands;
-            parameter = parameter.Trim();
-            var appropriateCommand = commands.Where(m => 
-            {
-                bool usingAlias = Array.Exists(m.IndividualAliases(), alias => alias.Equals(parameter));
-                return (m.Name == parameter || usingAlias);
-            });
-            if(appropriateCommand.Any())
-            {
-                var matchingCommand = appropriateCommand.First();
-                if(matchingCommand.CommandChannels != null) 
-                {
-                    var commandChannels = matchingCommand.CommandChannels.Where(cha => cha.ChannelGroupReference.Channels.Where(grp => grp.ChannelId == contextChannel.Id).FirstOrDefault() != null);
-                    if(commandChannels.Any())
-                    {
-                        if(commandChannels.Count() > 1)
-                        {
-                          await Context.Channel.SendMessageAsync("Warning command have different responses for this channel");
-                        }
-                        foreach(var commandChannel in commandChannels){
-                          var entries = commandChannels.First().CommandChannelEntries.OrderBy(entry => entry.Position);
-                          if(entries.Any())
-                          {
-                              foreach(var entry in entries)
-                              {
-                                  if(!entry.IsEmbed)
-                                  {
-                                      await Context.Channel.SendMessageAsync(entry.Text);
-                                  }
-                                  else 
-                                  {
-                                      var embed = Extensions.FaqCommandEntryToBuilder(entry);
-                                      await Context.Channel.SendMessageAsync(embed: embed.Build());
-                                  }
-                                  await Task.Delay(200);
-                              }
-                          } 
-                          else
-                          {
-                              await Context.Channel.SendMessageAsync($"Channel has no posts configured for command {appropriateCommand.First().Name}.");
-                          }
-                        }
-                    }
-                    else
-                    {
-                        await PrintAvailableCommands(contextChannel);
-                    }
-                }
-                else 
-                {
-                    await Context.Channel.SendMessageAsync($"Channel has no entry configured for command {appropriateCommand.First().Name}.");
-                }
-                
-            }
-            else 
-            {
-                 await PrintAvailableCommands(contextChannel);
-            }
-        }
-         public async Task PrintAvailableCommands(ISocketMessageChannel contextChannel){
-            var commandsAvailable = Global.FAQCommandChannels.
-            Where(ch => ch.ChannelGroupReference.Channels.
-                Where(grp => grp.ChannelId == contextChannel.Id).
-                FirstOrDefault() != null)
-            .ToList();
-            if(commandsAvailable.Count() == 0){
-                await Context.Channel.SendMessageAsync("No entry available.");
-            } else {
-               var stringBuilder = new StringBuilder(" ");
-                for(var index = 0; index < commandsAvailable.Count; index++)
-                {
-                    var command = commandsAvailable[index];
-                    stringBuilder.Append($"`{command.Command.Name}`");
-                    if(index < commandsAvailable.Count -1 ){
-                        stringBuilder.Append(", ");
-                    }
-                }
-                var embedBuilder = new EmbedBuilder().WithTitle("Available entries in this channel").WithDescription(stringBuilder.ToString());
-                
-                await Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
-            }
-           
-        }
-    }
-
-   
+      }
+  }   
 }
