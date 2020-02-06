@@ -18,6 +18,9 @@ using OnePlusBot.Data.Models;
 
 namespace OnePlusBot.Modules
 {
+    [
+      Summary("Module containing some entertainment commands.")
+    ]
     public class Fun : ModuleBase<SocketCommandContext>
     {
         [

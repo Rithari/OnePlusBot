@@ -16,6 +16,9 @@ using System.Collections.Generic;
 
 namespace OnePlusBot.Modules
 {
+    [
+      Summary("Module containing the command to configure the faq commands.")
+    ]
     public class FAQConfiguration : InteractiveBase<SocketCommandContext>
     {
 
