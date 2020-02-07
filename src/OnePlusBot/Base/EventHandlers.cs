@@ -106,7 +106,7 @@ namespace OnePlusBot.Base
             var modmailThreadExists = modmailThread.Any();
 
             var embed = GetUserNameNotificationEmbed(embedTitle, beforeText, afterText, user, false);
-            if(modmailThreadExists && existingModmailThread != null)
+            if(existingModmailThread != null)
             {
               if(existingModmailThread is RestTextChannel)
               {
@@ -117,7 +117,7 @@ namespace OnePlusBot.Base
                 await (existingModmailThread as SocketTextChannel).SendMessageAsync(embed: embed);
               }
             }
-            else
+            else if(modmailThreadExists)
             {
               await guild.GetTextChannel(modmailThread.First().ChannelId).SendMessageAsync(embed: embed);
             }
