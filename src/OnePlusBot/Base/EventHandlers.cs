@@ -277,7 +277,7 @@ namespace OnePlusBot.Base
         /// <returns>True in case the string matches with the username regex.</returns>
         private bool IllegalUserName(string userName)
         {
-          return Global.IllegalUserNameRegex.Match(userName.ToLower()[0] + "").Success;
+          return !Global.LegalUserNameRegex.Match(userName.ToLower()).Success;
         }
 
         private async Task OnUserJoinedMuteCheck(SocketGuildUser user)

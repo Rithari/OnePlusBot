@@ -192,20 +192,32 @@ namespace OnePlusBot.Base
       
     }
 
+    /// <summary>
+    /// Closes the modmail thread which is present in the given channel
+    /// </summary>
+    /// <param name="channel">The <see cref="Discord.WebSocket.ISocketMessageChannel"> channel object in which the modmail thread is handled</param>
+    /// <returns>The <see cref="OnePlusBot.Data.Models.ModMailThread"> being closed</returns>
     private ModMailThread CloseThreadInDb(ISocketMessageChannel channel){
-        ModMailThread threadObj;
-        using(var db = new Database())
+      ModMailThread threadObj;
+      using(var db = new Database())
+      {
+        threadObj = db.ModMailThreads.Where(ch => ch.ChannelId == channel.Id).FirstOrDefault();
+        if(threadObj != null)
         {
-            threadObj = db.ModMailThreads.Where(ch => ch.ChannelId == channel.Id).FirstOrDefault();
-            if(threadObj != null)
-            {
-                threadObj.ClosedDate = DateTime.Now;
-                threadObj.State = "CLOSED";
-            }
-            db.SaveChanges();
-            Global.ReloadModmailThreads();
+          if(threadObj.State == "CLOSING") {
+            throw new Exception("Thread is already being closed");
+          }
+          threadObj.ClosedDate = DateTime.Now;
+          threadObj.State = "CLOSING";
         }
-        return threadObj;
+        else
+        {
+          throw new Exception("Thread not found in the database.");
+        }
+        db.SaveChanges();
+        Global.ReloadModmailThreads();
+      }
+      return threadObj;
     }
 
     /// <summary>
@@ -267,6 +279,17 @@ namespace OnePlusBot.Base
 
       await LogModMailThreadMessagesToModmailLog(closedThread, messagesToLog, modMailLogChannel);
       await (channel as SocketTextChannel).DeleteAsync();
+      using(var db = new Database())
+      {
+        var threadObj = db.ModMailThreads.Where(ch => ch.ChannelId == channel.Id).FirstOrDefault();
+        if(threadObj != null)
+        {
+          threadObj.ClosedDate = DateTime.Now;
+          threadObj.State = "CLOSED";
+        }
+        db.SaveChanges();
+        Global.ReloadModmailThreads();
+      }
       return messagesToLog.Count();
     }
 
