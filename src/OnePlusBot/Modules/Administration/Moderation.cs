@@ -676,6 +676,7 @@ namespace OnePlusBot.Modules.Administration
       [
         Command("usernote"),
         Summary("Adds a usernote to a user"),
+        RequireRole("staff"),
         CommandDisabledCheck
       ]
       public async Task<RuntimeResult> AddUserNote(IGuildUser user, String text)
@@ -702,6 +703,7 @@ namespace OnePlusBot.Modules.Administration
       [
         Command("deleteNote"),
         Summary("Delete a usernote"),
+        RequireRole("staff"),
         CommandDisabledCheck
       ]
       public async Task<RuntimeResult> RemoveUserNote(ulong id)
@@ -730,6 +732,7 @@ namespace OnePlusBot.Modules.Administration
       [
         Command("usernotes"),
         Summary("Lists the currently stored usernotes of a user"),
+        RequireRole("staff"),
         CommandDisabledCheck
       ]
       public async Task<RuntimeResult> RemoveUserNote(IGuildUser user)
