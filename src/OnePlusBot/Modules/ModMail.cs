@@ -220,6 +220,11 @@ namespace OnePlusBot.Modules
           return CustomResult.FromSuccess();
         }
 
+        /// <summary>
+        /// Opens a modmail thread for the given user if it doesnt exist. Posts a message linking to the existing one, if it already exists
+        /// </summary>
+        /// <param name="user">The <see cref="Discord.IGuildUser"> object to create the modmail thread for</param>
+        /// <returns>Result whether or not the closing was succesful</returns>
         [
           Command("contact"),
           Summary("Opens a thread with the specified user"),
@@ -229,7 +234,15 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> ContactUser(IGuildUser user)
         {
-          await new  ModMailManager().ContactUser(user, Context.Channel);
+          var existing = ModMailManager.GetOpenModmailForUser(user);
+          if(existing != null)
+          {
+            await Context.Channel.SendMessageAsync(embed: ModMailEmbedHandler.GetThreadAlreadyExistsEmbed(existing));
+          }
+          else
+          {
+            await ModMailManager.ContactUser(user, Context.Channel, true);
+          }
           return CustomResult.FromSuccess();
         }
 

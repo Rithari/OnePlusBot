@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Net;
 using System.Collections.Generic;
+using Discord.Rest;
 
 namespace OnePlusBot.Base
 {
@@ -71,18 +72,18 @@ namespace OnePlusBot.Base
           bool nicknameSet = userInGuild.Nickname != null;
           string beforeText = before.Username ?? "No username?";
           string afterText = after.Username ?? "No username?";
+          IChannel modmailChannel = null;
           if(userNameChanged && !nicknameSet)
           {
             if(IllegalUserName(after.Username))
             {
               string embedTitle = "User changed username to an illegal username";
-             
-              await NotifyAboutIllegalUserName(embedTitle, beforeText, afterText, after, guild);
+              modmailChannel = await NotifyAboutIllegalUserName(embedTitle, beforeText, afterText, after, guild);
             }
           }
           if(userNameChanged && !nicknameSet)
           {
-            await HandleNameChangesForModmail(after, guild, "User Changed username", beforeText, afterText);
+            await HandleNameChangesForModmail(after, guild, "User Changed username", beforeText, afterText, modmailChannel);
           }
         }
 
@@ -95,18 +96,31 @@ namespace OnePlusBot.Base
         /// <param name="embedTitle">Title of the embed</param>
         /// <param name="beforeText">Text for the field 'Before'</param>
         /// <param name="afterText">Text for the field 'After'</param>
+        /// <param name="existingModmailThread">The <see cref="Discord.IChannel"> already exsting/created modmail channel</param>
         /// <returns>Task</returns>
-        private async Task HandleNameChangesForModmail(IUser user, SocketGuild guild, string embedTitle, string beforeText, string afterText)
+        private async Task HandleNameChangesForModmail(IUser user, SocketGuild guild, string embedTitle, string beforeText, string afterText, IChannel existingModmailThread)
         {
           using(var db = new Database())
           {
             var modmailThread = db.ModMailThreads.Where(th => th.UserId == user.Id && th.State != "CLOSED");
             var modmailThreadExists = modmailThread.Any();
-            if(modmailThreadExists)
+
+            var embed = GetUserNameNotificationEmbed(embedTitle, beforeText, afterText, user, false);
+            if(existingModmailThread != null)
             {
-              var embed = GetUserNameNotificationEmbed(embedTitle, beforeText, afterText, user);
+              if(existingModmailThread is RestTextChannel)
+              {
+                await (existingModmailThread as RestTextChannel).SendMessageAsync(embed: embed);
+              }
+              else if(existingModmailThread is SocketTextChannel)
+              {
+                await (existingModmailThread as SocketTextChannel).SendMessageAsync(embed: embed);
+              }
+            }
+            else if(modmailThreadExists)
+            {
               await guild.GetTextChannel(modmailThread.First().ChannelId).SendMessageAsync(embed: embed);
-            }  
+            }
           }
         }
 
@@ -117,14 +131,20 @@ namespace OnePlusBot.Base
         /// <param name="beforeText">The text of the field 'Before' for the embed</param>
         /// <param name="afterText">The text of the field 'After' for the embed</param>
         /// <param name="user">The <see cref"Discord.IUser"/> object to take the avatar as thumbnail</param>
+        /// <param name="containLink">Boolean to define whether or not the notification should contain a link to the modmail thread</param>
         /// <returns>Embed containing build after the given parameters</returns>
-        private Embed GetUserNameNotificationEmbed(string embedTitle, string beforeText, string afterText, IUser user)
+        private Embed GetUserNameNotificationEmbed(string embedTitle, string beforeText, string afterText, IUser user, bool containLink)
         {
           EmbedBuilder builder = new EmbedBuilder();
           builder.Title = embedTitle;
           builder.AddField("User", user.Mention);
           builder.AddField("Before", beforeText);
           builder.AddField("After", afterText);
+          var modmailThread = ModMailManager.GetOpenModmailForUser(user);
+          if(modmailThread != null && containLink)
+          {
+            builder.AddField("Link", Extensions.GetChannelUrl(Global.ServerID, modmailThread.ChannelId, "Thread"));
+          }
           builder.Color = Color.DarkBlue;
           builder.Timestamp = DateTime.Now;
           builder.WithFooter(new EmbedFooterBuilder().WithIconUrl(user.GetAvatarUrl()).WithText("ID: " + user.Id));
@@ -147,13 +167,14 @@ namespace OnePlusBot.Base
           string beforeText = before.Nickname ?? "No nickname";
           string afterText = after.Nickname ?? "No nickname";
           string embedTitle = "User changed nickname";
+          IChannel createdModmailThread = null;
           if(nickNameChanged && nicknameSet) 
           {
             if(IllegalUserName(after.Nickname))
             {
               embedTitle = "User changed nickname to an illegal nickname";
             
-              await NotifyAboutIllegalUserName(embedTitle, beforeText, afterText, after, after.Guild);
+              createdModmailThread = await NotifyAboutIllegalUserName(embedTitle, beforeText, afterText, after, after.Guild);
             }
           } 
           else if(nickNameChanged && !nicknameSet)
@@ -164,12 +185,12 @@ namespace OnePlusBot.Base
               embedTitle = "User removed nickname, and username is illegal";
               beforeText = before.Nickname;
               afterText = after.Username ?? "No username?";
-              await NotifyAboutIllegalUserName(embedTitle, beforeText, afterText, after, after.Guild);
+              createdModmailThread = await NotifyAboutIllegalUserName(embedTitle, beforeText, afterText, after, after.Guild);
             }
           }
           if(nickNameChanged)
           {
-            await HandleNameChangesForModmail(after, after.Guild, embedTitle, beforeText, afterText);
+            await HandleNameChangesForModmail(after, after.Guild, embedTitle, beforeText, afterText, createdModmailThread);
           }
         }
 
@@ -182,14 +203,23 @@ namespace OnePlusBot.Base
         /// <param name="afterText">Text of the embed to be used for the 'After' field</param>
         /// <param name="user">User with the invalid username, used for the avatar in the embed.</param>
         /// <param name="guild">The <see cref"Discord.WebSocket.SocketGuild"/> guild where this is posted towards in the 'UserNameQueue' post target</param>
-        /// <returns></returns>
-        private async Task NotifyAboutIllegalUserName(string embedTitle, string beforeText, string afterText, IUser user, SocketGuild guild)
+        /// <returns>The <see cref="Discord.IChannel"> channel which was just created or the already existing one</returns>
+        private async Task<IChannel> NotifyAboutIllegalUserName(string embedTitle, string beforeText, string afterText, IUser user, SocketGuild guild)
         {
-          var embed = GetUserNameNotificationEmbed(embedTitle, beforeText, afterText, user);
           var userlog = guild.GetTextChannel(Global.PostTargets[PostTarget.USERNAME_QUEUE]);
-          var message = await userlog.SendMessageAsync(embed: embed);
-          await message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.OPEN_MODMAIL].GetAsEmote());
-          Global.UserNameNotifications.Add(message.Id, user.Id);
+          var openModmailThread = ModMailManager.GetOpenModmailForUser(user);
+          IChannel modmailThread = null;
+          if(openModmailThread == null)
+          {
+            modmailThread = await ModMailManager.ContactUser(user, userlog, false);
+          }
+          else
+          {
+            modmailThread = guild.GetTextChannel(openModmailThread.ChannelId);
+          }
+          var embed = GetUserNameNotificationEmbed(embedTitle, beforeText, afterText, user, true);
+          await userlog.SendMessageAsync(embed: embed);
+          return modmailThread;
         }
 
         private async Task OnUserLeft(SocketGuildUser socketGuildUser)
@@ -231,9 +261,11 @@ namespace OnePlusBot.Base
                 builder.Timestamp = DateTime.Now;
                 
                 builder.ThumbnailUrl = socketGuildUser.GetAvatarUrl();
-                var message = await modQueue.SendMessageAsync(embed: builder.Build());
-                await message.AddReactionAsync(Global.Emotes[Global.OnePlusEmote.OPEN_MODMAIL].GetAsEmote());
-                Global.UserNameNotifications.Add(message.Id, socketGuildUser.Id);
+                await modQueue.SendMessageAsync(embed: builder.Build());
+                if(ModMailManager.GetOpenModmailForUser(socketGuildUser) == null)
+                {
+                  await ModMailManager.ContactUser(socketGuildUser, modQueue, false);
+                }
             }
             await joinlog.SendMessageAsync(Extensions.FormatMentionDetailed(socketGuildUser) + " joined the guild");
         }
@@ -245,7 +277,7 @@ namespace OnePlusBot.Base
         /// <returns>True in case the string matches with the username regex.</returns>
         private bool IllegalUserName(string userName)
         {
-          return Global.IllegalUserNameRegex.Match(userName.ToLower()[0] + "").Success;
+          return !Global.LegalUserNameRegex.Match(userName.ToLower()).Success;
         }
 
         private async Task OnUserJoinedMuteCheck(SocketGuildUser user)

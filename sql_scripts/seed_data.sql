@@ -8,11 +8,10 @@ INSERT INTO `PersistentData` VALUES
 (7,'level_4_stars',3, ''),
 (8,'decay_days', 90, ''),
 (9, 'modmail_category_id', 0, ''),
-(10, 'user_name_illegal_characters', 0, ''),
 (11, 'xp_disabled', 1, ''),
 (12, 'xp_gain_range_min', 10, ''),
 (13, 'xp_gain_range_max', 25, ''),
-(14, 'illegal_user_name_regex', 0, '');
+(14, 'legal_user_name_regex', 0, '');
 
 INSERT INTO `AuthTokens` VALUES 
 (1,'stable','REPLACE WITH TOKEN'),

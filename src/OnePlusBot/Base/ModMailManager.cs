@@ -92,7 +92,13 @@ namespace OnePlusBot.Base
       
     }
 
-    private async Task<RestTextChannel> CreateModMailThread(IUser targetUser){
+    /// <summary>
+    /// Creates the channel containing the modmail thread and creates the thread in the database
+    /// </summary>
+    /// <param name="targetUser">The <see cref="Discord.IUser"> user to create the modmail thread for</param>
+    /// <returns>The <see chref="Discord.Rest.RestTextChannel"> newly created channel</returns>
+    private static async Task<RestTextChannel> CreateModMailThread(IUser targetUser)
+    {
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
         var modmailCategory = guild.GetCategoryChannel(Global.ModmailCategoryId);
@@ -113,19 +119,16 @@ namespace OnePlusBot.Base
         return channel;
     }
 
+    /// <summary>
+    /// Handles the user reply: updates the state in the db, posts the message to the modmail thread and mentions subscribers
+    /// </summary>
+    /// <param name="message">The <see chref="Discord.WebSocket.SocketMessage"> message object coming from the user</param>
+    /// <returns></returns>
     public async Task HandleModMailUserReply(SocketMessage message)
     {
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
-        ModMailThread modMailThread;
-        using(var db = new Database())
-        {
-            modMailThread = db.ModMailThreads
-                    .Include(sub => sub.Subscriber)
-                    .Where(th => th.UserId == message.Author.Id && th.State != "CLOSED")
-                    .FirstOrDefault();
-        }
-        
+        var modMailThread = ModMailManager.GetOpenModmailForUser(message.Author);
         if(modMailThread != null)
         {
             UpdateModThreadUpdatedField(modMailThread.ChannelId, "USER_REPLIED");
@@ -200,20 +203,32 @@ namespace OnePlusBot.Base
       
     }
 
+    /// <summary>
+    /// Closes the modmail thread which is present in the given channel
+    /// </summary>
+    /// <param name="channel">The <see cref="Discord.WebSocket.ISocketMessageChannel"> channel object in which the modmail thread is handled</param>
+    /// <returns>The <see cref="OnePlusBot.Data.Models.ModMailThread"> being closed</returns>
     private ModMailThread CloseThreadInDb(ISocketMessageChannel channel){
-        ModMailThread threadObj;
-        using(var db = new Database())
+      ModMailThread threadObj;
+      using(var db = new Database())
+      {
+        threadObj = db.ModMailThreads.Where(ch => ch.ChannelId == channel.Id).FirstOrDefault();
+        if(threadObj != null)
         {
-            threadObj = db.ModMailThreads.Where(ch => ch.ChannelId == channel.Id).FirstOrDefault();
-            if(threadObj != null)
-            {
-                threadObj.ClosedDate = DateTime.Now;
-                threadObj.State = "CLOSED";
-            }
-            db.SaveChanges();
-            Global.ReloadModmailThreads();
+          if(threadObj.State == "CLOSING") {
+            throw new Exception("Thread is already being closed");
+          }
+          threadObj.ClosedDate = DateTime.Now;
+          threadObj.State = "CLOSING";
         }
-        return threadObj;
+        else
+        {
+          throw new Exception("Thread not found in the database.");
+        }
+        db.SaveChanges();
+        Global.ReloadModmailThreads();
+      }
+      return threadObj;
     }
 
     /// <summary>
@@ -275,6 +290,17 @@ namespace OnePlusBot.Base
 
       await LogModMailThreadMessagesToModmailLog(closedThread, messagesToLog, modMailLogChannel);
       await (channel as SocketTextChannel).DeleteAsync();
+      using(var db = new Database())
+      {
+        var threadObj = db.ModMailThreads.Where(ch => ch.ChannelId == channel.Id).FirstOrDefault();
+        if(threadObj != null)
+        {
+          threadObj.ClosedDate = DateTime.Now;
+          threadObj.State = "CLOSED";
+        }
+        db.SaveChanges();
+        Global.ReloadModmailThreads();
+      }
       return messagesToLog.Count();
     }
 
@@ -476,19 +502,13 @@ namespace OnePlusBot.Base
     /// <summary>
     /// Creates a modmail thread with the given user and responds in the given thread with a link to the newly created channel.
     /// </summary>
-    /// <param name="user">The <see cref="Discord.IGuildUser"> to create the channel for</param>
+    /// <param name="user">The <see cref="Discord.IUser"> to create the channel for</param>
     /// <param name="channel">The <see cref="Discord.ISocketMessageChannel"> in which the response should be posted to</param>
-    /// <returns>Task</returns>
-    public async Task ContactUser(IGuildUser user, ISocketMessageChannel channel)
+    /// <returns>The <see cref="Discord.Rest.RestChannel"> newly created channel</returns>
+    public static async Task<RestTextChannel> ContactUser(IUser user, ISocketMessageChannel channel, bool createNote)
     {
-        using(var db = new Database()){
-            var exists = db.ModMailThreads.Where(th => th.UserId == user.Id && th.State != "CLOSED");
-            if(exists.Count() > 0)
-            {
-                await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetThreadAlreadyExistsEmbed(exists.First()));
-                return;
-            }
-
+        using(var db = new Database())
+        {
             var existingUser = db.Users.Where(us => us.Id == user.Id).FirstOrDefault();
             if(existingUser == null)
             {
@@ -499,20 +519,24 @@ namespace OnePlusBot.Base
             {
                 existingUser.ModMailMuted = false;
             }
-
-           
             db.SaveChanges();
-        
         }
         var createdChannel = await CreateModMailThread(user);
         ModMailThread createdModMailThread;
-        using(var db = new Database()){
-            createdModMailThread = db.ModMailThreads.Where(th => th.ChannelId == createdChannel.Id).First();
+        using(var db = new Database())
+        {
+          createdModMailThread = db.ModMailThreads.Where(th => th.ChannelId == createdChannel.Id).First();
         }
 
         await createdChannel.SendMessageAsync(embed: ModMailEmbedHandler.GetUserInfoHeader(createdModMailThread));
-        var embedContainingLink = ModMailEmbedHandler.GetThreadHasBeendCreatedEmbed(createdModMailThread);
-        await channel.SendMessageAsync(embed: embedContainingLink);
+        if(createNote)
+        {
+          var embedContainingLink = ModMailEmbedHandler.GetThreadHasBeendCreatedEmbed(createdModMailThread);
+          await channel.SendMessageAsync(embed: embedContainingLink);
+        }
+        // we need to return the channel, because we *directly* need the channel after wards, and loading the channel by id again
+        // resulted in null
+        return createdChannel;
     }
 
     public async Task DeleteMessage(ulong messageId, ISocketMessageChannel channel, SocketUser personDeleting){
@@ -587,11 +611,20 @@ namespace OnePlusBot.Base
     /// <param name="channelId">The channelId to search the modmail thread for</param>
     /// <returns>The <see chref="OnePlusBot.Data.Models.ModMailThread"> object found or null if none found</returns>
     private ModMailThread GetModMailThread(ulong channelId) {
+      
+    /// Finds the currently open modmail thread (if it exists) or return null else
+    /// </summary>
+    /// <param name="user">The <see cref="Discord.IUser"> user to find the modmail thread for</param>
+    /// <returns>The <see cref="OnePlusBot.Data.Models.ModMailThread"> object if it exists for the user, null instead</returns>
+    public static ModMailThread GetOpenModmailForUser(IUser user)
+    {
         using(var db = new Database())
         {
             return db.ModMailThreads
                     .Include(sub => sub.Subscriber)
+
                     .Where(th => th.ChannelId == channelId)
+                    .Where(th => th.UserId == user.Id && th.State != "CLOSED")
                     .FirstOrDefault();
         }
     }
@@ -642,7 +675,6 @@ namespace OnePlusBot.Base
         db.SaveChanges();
       }
     }
-
    
 
     

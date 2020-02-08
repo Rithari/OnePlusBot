@@ -49,7 +49,7 @@ namespace OnePlusBot.Base
 
         public static List<StarboardMessage> StarboardPosts { get; set; }
 
-        public static Regex IllegalUserNameRegex { get; set; }
+        public static Regex LegalUserNameRegex { get; set; }
 
         public static ConcurrentDictionary<long, List<ulong>> RuntimeExp { get; set; }
 
@@ -172,7 +172,7 @@ namespace OnePlusBot.Base
                 
                 DecayDays = PersistentData.GetConfiguredInt("decay_days", db);
 
-                IllegalUserNameRegex = new Regex(PersistentData.GetConfiguredString("illegal_user_name_regex", db), RegexOptions.Singleline | RegexOptions.Compiled);
+                LegalUserNameRegex = new Regex(PersistentData.GetConfiguredString("legal_user_name_regex", db), RegexOptions.Singleline | RegexOptions.Compiled);
 
                 XPGainDisabled = PersistentData.GetConfiguredInt("xp_disabled", db) == 1;
                   
