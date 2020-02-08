@@ -246,12 +246,12 @@ namespace OnePlusBot.Modules
           return CustomResult.FromSuccess();
         }
 
-         [
-          Command("delete"),
-          Summary("Deletes your message within a modmail thread"),
-          RequireRole("staff"),
-          RequireBotPermission(GuildPermission.ManageMessages),
-          RequireModMailContext
+        [
+            Command("delete"),
+            Summary("Deletes your message within a modmail thread"),
+            RequireRole("staff"),
+            RequireBotPermission(GuildPermission.ManageMessages),
+            RequireModMailContext
         ]
         public async Task<RuntimeResult> DeleteMessage(params string[] parameters)
         {
@@ -262,6 +262,21 @@ namespace OnePlusBot.Modules
           await new  ModMailManager().DeleteMessage(messageId, Context.Channel, Context.User);
           return CustomResult.FromSuccess();
         }
-    
+
+        [
+          Command("nicknameRequest"),
+          Summary("Responds in a modmail thread with a defined response and start a timer for a defined duration."),
+          RequireRole("staff"),
+          RequireModMailContext,
+          Alias("nickRe")
+        ]
+        public async Task<RuntimeResult> PostNicknameResponse() {
+
+          await new ModMailManager().RespondWithUsernameTemplateAndSetReminder(Context.Channel, Context.User, Context.Message);
+
+          return CustomResult.FromIgnored();
+        }
+
+
     }
 }

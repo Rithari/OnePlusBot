@@ -6,6 +6,8 @@ using Discord;
 using OnePlusBot.Base;
 using OnePlusBot.Data.Models;
 using Discord.WebSocket;
+using OnePlusBot.Data;
+using OnePlusBot.Base.Errors;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -337,6 +339,21 @@ namespace OnePlusBot.Helpers
         public static string FormatDateTime(DateTime dateTime) 
         {
           return dateTime.ToString("yyyy/MM/dd, HH:mm", CultureInfo.CurrentCulture) + TimeZoneInfo.Local.ToString();
+        }
+
+        public static String GetTemplatedString(string key, object[] parameters) 
+        {
+          using(var db = new Database()) {
+            var template = db.ResponseTemplate.Where(te => te.Key == key);
+            if(template.Any()) 
+            {
+              return String.Format(template.First().TemplateText, parameters);
+            }
+            else 
+            {
+              throw new NotFoundException($"Template with key {key} not found.");
+            }
+          }
         }
     }
 }

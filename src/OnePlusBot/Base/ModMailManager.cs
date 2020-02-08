@@ -1,3 +1,4 @@
+using System.Security.AccessControl;
 using System.Text;
 using System;
 using System.Collections.Generic;
@@ -173,7 +174,16 @@ namespace OnePlusBot.Base
         }
     }
 
-    public async Task CreateModeratorReply(SocketMessage message, ISocketMessageChannel channel, SocketUser moderatorUser, string clearMessage, bool anonymous)
+    /// <summary>
+    /// Posts the given message towards the user, sends the message in the modmail thread and updates the state field in the modmail thread in the db.
+    /// </summary>
+    /// <param name="message">The <see chref="Discord.WebSocket.SocketMessage"> message object used as a response.</param>
+    /// <param name="channel">The <see chref="Discord.ISocketMessageChannel"> channel object representing the modmail thread.</param>
+    /// <param name="moderatorUser">The <see chref="Discord.WebSocket.SocketUser"> user object representing the staff member resonding.</param>
+    /// <param name="clearMessage">String containing a cleaned version of the response</param>
+    /// <param name="anonymous">Boolean to define whether or not the response should be anonymous</param>
+    /// <returns>The <see chref="Discord.Rest.RestUserMessage"> message object which was logged in the modmail thread</returns>
+    public async Task<RestUserMessage> CreateModeratorReply(SocketMessage message, ISocketMessageChannel channel, SocketUser moderatorUser, string clearMessage, bool anonymous)
     {
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
@@ -183,11 +193,12 @@ namespace OnePlusBot.Base
         if(threadUser != null)
         {
             var replyEmbed = ModMailEmbedHandler.GetModeratorReplyEmbed(clearMessage, "Moderator posted", message, anonymous ? null : moderatorUser);
-            await AnswerUserAndLogEmbed(threadUser, channel, replyEmbed, message, anonymous);
+            var responseInModmailThread = await AnswerUserAndLogEmbed(threadUser, channel, replyEmbed, message, anonymous);
+            return responseInModmailThread;
         }
         else
         {
-            await channel.SendMessageAsync("User left the server. The bot message will not reach.");
+          throw new Exception("User left the server. The bot message will not reach.");
         }
       
     }
@@ -328,12 +339,22 @@ namespace OnePlusBot.Base
 
     
 
-    private async Task AnswerUserAndLogEmbed(SocketUser messageTarget, ISocketMessageChannel channel, Embed embed, SocketMessage message, bool anonymous=false)
+    /// <summary>
+    /// Sends the given message to the user and the modmail thread. Additionally logs the message id to the database
+    /// </summary>
+    /// <param name="messageTarget">The <see chref="Discord.WebSocket.SocketUser"> user object to send the message to</param>
+    /// <param name="channel">The <see chref="Discord.ISocketMessageChannel"> channel object in which the message is being logged to (the modmail thread)</param>
+    /// <param name="embed">The <see chref="Discord.Embed"> embed to be sent</param>
+    /// <param name="message">The <see chref="Discord.WebSocket.SocketMessage"> message causing this reply</param>
+    /// <param name="anonymous">Boolean to define whether or not the message should be sent anonymous</param>
+    /// <returns>The <see chref="Discord.Rest.RestUserMessage"> message object which was logged to the modmail thread</returns>
+    private async Task<RestUserMessage> AnswerUserAndLogEmbed(SocketUser messageTarget, ISocketMessageChannel channel, Embed embed, SocketMessage message, bool anonymous=false)
     {
         var userMsg = await messageTarget.SendMessageAsync(embed: embed);
         await message.DeleteAsync();
         var channelMsg = await channel.SendMessageAsync(embed: embed);
         AddModMailMessage(channel.Id, channelMsg, userMsg, message.Author.Id, anonymous);
+        return channelMsg;
     }
 
     public async Task EditMessage(string newText, ulong messageId, ISocketMessageChannel channel, SocketUser personEditing)
@@ -585,6 +606,12 @@ namespace OnePlusBot.Base
     }
 
     /// <summary>
+    /// Finds the modmail referenced by the given channel
+    /// </summary>
+    /// <param name="channelId">The channelId to search the modmail thread for</param>
+    /// <returns>The <see chref="OnePlusBot.Data.Models.ModMailThread"> object found or null if none found</returns>
+    private ModMailThread GetModMailThread(ulong channelId) {
+      
     /// Finds the currently open modmail thread (if it exists) or return null else
     /// </summary>
     /// <param name="user">The <see cref="Discord.IUser"> user to find the modmail thread for</param>
@@ -595,11 +622,59 @@ namespace OnePlusBot.Base
         {
             return db.ModMailThreads
                     .Include(sub => sub.Subscriber)
+
+                    .Where(th => th.ChannelId == channelId)
                     .Where(th => th.UserId == user.Id && th.State != "CLOSED")
                     .FirstOrDefault();
         }
     }
 
+    /// <summary>
+    /// Responds to the user with a predefined template and starts a reminder with a templated reminder text for a configurable duration.
+    /// </summary>
+    /// <param name="channel"><see ref="Discord.ISocketMessageChannel"> Channel of the modmail thread</param>
+    /// <param name="moderatorUser"><see ref="Discord.WebSocket.SocketUser"> Moderator triggering command and target of the reminder</param>
+    /// <param name="message"><see ref="Discord.WebSocket.SocketMessage"> Message triggering the command.</param>
+    /// <returns></returns>
+    public async Task RespondWithUsernameTemplateAndSetReminder(ISocketMessageChannel channel, SocketUser moderatorUser, SocketMessage message) {
+      var text = Extensions.GetTemplatedString(ResponseTemplate.ILLEGAL_NAME_RESPONSE, new object[0]);
+
+      var thread = GetModMailThread(channel.Id);
+      var user = Global.Bot.GetUser(thread.UserId);
+
+      var reminderText = Extensions.GetTemplatedString(ResponseTemplate.ILLEGAL_NAME_REMINDER, new object[1] { Extensions.FormatUserName(user)});
+      var reponseMessageInModmailThread = await new ModMailManager().CreateModeratorReply(message, channel, moderatorUser, text, false);
+
+      ulong seconds = 0;
+      using (var db = new Database())
+      {
+        var point = db.PersistentData.First(entry => entry.Name == "username_reminder_duration");
+        seconds = point.Value;
+        db.SaveChanges();
+
+        var targetTime = DateTime.Now.AddSeconds(seconds);
+
+        // TODO move to builder
+        var reminder = new Reminder();
+        reminder.RemindText = Extensions.RemoveIllegalPings(reminderText);
+        reminder.RemindedUserId = moderatorUser.Id;
+        reminder.TargetDate = targetTime;
+        reminder.ReminderDate = DateTime.Now;
+        reminder.ChannelId = channel.Id;
+        reminder.MessageId = reponseMessageInModmailThread.Id;
+    
+        db.Reminders.Add(reminder);
+        db.SaveChanges();
+        if(targetTime <= DateTime.Now.AddMinutes(60))
+        {
+            var difference = targetTime - DateTime.Now;
+            ReminderTimerManger.RemindUserIn(moderatorUser.Id, difference, reminder.ID);
+            reminder.ReminderScheduled = true;
+        }
+          
+        db.SaveChanges();
+      }
+    }
    
 
     
