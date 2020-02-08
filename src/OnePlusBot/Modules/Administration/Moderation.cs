@@ -1,7 +1,9 @@
+using System.Text;
 using System;
 using System.Threading.Tasks;
 using Discord.Commands;
 using Discord;
+using System.Collections.ObjectModel;
 using OnePlusBot.Base;
 using OnePlusBot.Data;
 using OnePlusBot.Helpers;
@@ -664,5 +666,108 @@ namespace OnePlusBot.Modules.Administration
           });
         }
       }
+
+      /// <summary>
+      /// Creats and stores a usernote objet in the database
+      /// </summary>
+      /// <param name="user">The <see cref="Discord.IGuildUser"> user to create the note for</param>
+      /// <param name="text">The text of the note</param>
+      /// <returns></returns>
+      [
+        Command("usernote"),
+        Summary("Adds a usernote to a user"),
+        CommandDisabledCheck
+      ]
+      public async Task<RuntimeResult> AddUserNote(IGuildUser user, String text)
+      {
+        using(var db = new Database())
+        {
+          var note = new UserNote()
+          {
+            UserId = user.Id,
+            NoteText = text,
+            CreatedDate = DateTime.Now
+          };
+          db.UserNotes.Add(note);
+          db.SaveChanges();
+        }
+        return CustomResult.FromSuccess();
+      }
+
+      /// <summary>
+      /// Deletes the note by the given id
+      /// </summary>
+      /// <param name="id">The globally unique id of the note to be deleted. Will not get re-used.</param>
+      /// <returns></returns>
+      [
+        Command("deleteNote"),
+        Summary("Delete a usernote"),
+        CommandDisabledCheck
+      ]
+      public async Task<RuntimeResult> RemoveUserNote(ulong id)
+      {
+        using(var db = new Database())
+        {
+          var note = db.UserNotes.Where(u => u.ID == id);
+          if(note.Any())
+          {
+            db.UserNotes.Remove(note.First());
+          }
+          else
+          {
+            throw new Exception($"Note with id {id} not found.");
+          }
+          db.SaveChanges();
+        }
+        return CustomResult.FromSuccess();
+      }
+
+      /// <summary>
+      /// Lists all usernotes of the given user as embeds. If the text of the embeds are not within the limit, multiple embeds will be posted.
+      /// </summary>
+      /// <param name="user">The <see cref="Discord.IGuildUser"> user to list the notes for</param>
+      /// <returns></returns>
+      [
+        Command("usernotes"),
+        Summary("Lists the currently stored usernotes of a user"),
+        CommandDisabledCheck
+      ]
+      public async Task<RuntimeResult> RemoveUserNote(IGuildUser user)
+      {
+        StringBuilder currentBuilder = new StringBuilder("");
+        var texts = new Collection<string>();
+        using(var db = new Database())
+        {
+          var notes = db.UserNotes.Where(u => u.UserId == user.Id);
+          if(notes.Any()) 
+          {
+            foreach(var note in notes) 
+            {
+              var noteText = $"Note *{note.ID}* on {Extensions.FormatDateTime(note.CreatedDate)}: {note.NoteText}";
+              if((currentBuilder.ToString().Length + noteText.Length) > EmbedBuilder.MaxDescriptionLength)
+              {
+                texts.Add(currentBuilder.ToString());
+                currentBuilder = new StringBuilder();
+              }
+              currentBuilder.Append(noteText);
+            }
+          }
+          else
+          {
+            currentBuilder.Append("User does not have notes.");
+          }
+          texts.Add(currentBuilder.ToString());
+          db.SaveChanges();
+        }
+        foreach(var text in texts)
+        {
+          var embedBuilder = new EmbedBuilder();
+          embedBuilder.WithDescription(text);
+          await ReplyAsync(embed: embedBuilder.Build());
+          await Task.Delay(200);
+        }
+        return CustomResult.FromIgnored();
+      }
+
     }
 }
