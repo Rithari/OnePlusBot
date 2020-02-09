@@ -39,6 +39,11 @@ namespace OnePlusBot.Modules.Utility
         return CustomResult.FromError("You need to provide a text.");
       }
 
+      if(reminderText.Length > 1000) 
+      {
+        return CustomResult.FromError("Maximum length of reminder text is 1000 characters");
+      }
+
       var author = Context.Message.Author;
 
       var guild = Context.Guild;
@@ -114,8 +119,8 @@ namespace OnePlusBot.Modules.Utility
           var count = 0;
           foreach(var reminder in activeReminders)
           {
-            var reminderLink = Extensions.GetMessageUrl(Global.ServerID, reminder.ChannelId, reminder.MessageId, $"**{Extensions.FormatDateTime(reminder.ReminderDate)}**");
-            currentEmbedBuilder.AddField($"Reminder {reminder.ID}", reminderLink + " with: " + reminder.RemindText, true);
+            var reminderLink = Extensions.GetMessageUrl(Global.ServerID, reminder.ChannelId, reminder.MessageId, $"**Reminder**");
+            currentEmbedBuilder.AddField($"Reminder {reminder.ID}", $"{reminderLink} set on {Extensions.FormatDateTime(reminder.ReminderDate)} and due on {Extensions.FormatDateTime(reminder.TargetDate)} with text: " + reminder.RemindText, true);
             count++;
             if(((count % EmbedBuilder.MaxFieldCount) == 0) && reminder != activeReminders.Last())
             {

@@ -250,6 +250,7 @@ namespace OnePlusBot.Modules.Administration
                   .AddField("Location of the mute",
                       $"[#{Context.Message.Channel.Name}]({string.Format(discordUrl, Context.Guild.Id, Context.Channel.Id, Context.Message.Id)})")
                   .AddField("Reason", reason ?? "No reason was provided.")
+                  .AddField("Mute duration", Extensions.FormatTimeSpan(span))
                   .AddField("Muted until", $"{ Extensions.FormatDateTime(targetTime)}")
                   .AddField("Mute id", muteData.ID);
               
@@ -668,7 +669,7 @@ namespace OnePlusBot.Modules.Administration
       }
 
       /// <summary>
-      /// Creats and stores a usernote objet in the database
+      /// Creates and stores a usernote objet in the database
       /// </summary>
       /// <param name="user">The <see cref="Discord.IGuildUser"> user to create the note for</param>
       /// <param name="text">The text of the note</param>
@@ -746,7 +747,7 @@ namespace OnePlusBot.Modules.Administration
           {
             foreach(var note in notes) 
             {
-              var noteText = $"Note *{note.ID}* on {Extensions.FormatDateTime(note.CreatedDate)}: {note.NoteText}";
+              var noteText = $"Note *{note.ID}* on {Extensions.FormatDateTime(note.CreatedDate)}: {note.NoteText}" + Environment.NewLine;
               if((currentBuilder.ToString().Length + noteText.Length) > EmbedBuilder.MaxDescriptionLength)
               {
                 texts.Add(currentBuilder.ToString());
