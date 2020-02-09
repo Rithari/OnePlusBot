@@ -605,14 +605,7 @@ namespace OnePlusBot.Base
         return false;
     }
 
-    /// <summary>
-    /// Finds the modmail referenced by the given channel
-    /// </summary>
-    /// <param name="channelId">The channelId to search the modmail thread for</param>
-    /// <returns>The <see chref="OnePlusBot.Data.Models.ModMailThread"> object found or null if none found</returns>
-    private ModMailThread GetModMailThread(ulong channelId) {
-      
-    /// Finds the currently open modmail thread (if it exists) or return null else
+    /// Finds the currently open modmail thread (if it exists) for a user or return null else
     /// </summary>
     /// <param name="user">The <see cref="Discord.IUser"> user to find the modmail thread for</param>
     /// <returns>The <see cref="OnePlusBot.Data.Models.ModMailThread"> object if it exists for the user, null instead</returns>
@@ -622,9 +615,23 @@ namespace OnePlusBot.Base
         {
             return db.ModMailThreads
                     .Include(sub => sub.Subscriber)
-
-                    .Where(th => th.ChannelId == channelId)
                     .Where(th => th.UserId == user.Id && th.State != "CLOSED")
+                    .FirstOrDefault();
+        }
+    }
+
+
+    /// Finds the currently open modmail thread (if it exists) for a channel or return null else
+    /// </summary>
+    /// <param name="user">The <see cref="Discord.IChannel"> channel in which the modmail thread happens</param>
+    /// <returns>The <see cref="OnePlusBot.Data.Models.ModMailThread"> object if it exists for the channel, null instead</returns>
+    public static ModMailThread GetOpenModmail(IChannel channel)
+    {
+        using(var db = new Database())
+        {
+            return db.ModMailThreads
+                    .Include(sub => sub.Subscriber)
+                    .Where(th => th.ChannelId == channel.Id && th.State != "CLOSED")
                     .FirstOrDefault();
         }
     }
@@ -639,7 +646,7 @@ namespace OnePlusBot.Base
     public async Task RespondWithUsernameTemplateAndSetReminder(ISocketMessageChannel channel, SocketUser moderatorUser, SocketMessage message) {
       var text = Extensions.GetTemplatedString(ResponseTemplate.ILLEGAL_NAME_RESPONSE, new object[0]);
 
-      var thread = GetModMailThread(channel.Id);
+      var thread = ModMailManager.GetOpenModmail(channel);
       var user = Global.Bot.GetUser(thread.UserId);
 
       var reminderText = Extensions.GetTemplatedString(ResponseTemplate.ILLEGAL_NAME_REMINDER, new object[1] { Extensions.FormatUserName(user)});
@@ -650,7 +657,6 @@ namespace OnePlusBot.Base
       {
         var point = db.PersistentData.First(entry => entry.Name == "username_reminder_duration");
         seconds = point.Value;
-        db.SaveChanges();
 
         var targetTime = DateTime.Now.AddSeconds(seconds);
 
