@@ -76,11 +76,12 @@ namespace OnePlusBot.Modules.Utility
       embedBuilder.WithColor(9896005);
       embedBuilder.WithAuthor(x =>
       {
-          x.Name = user.Username;
+        x.Name = user.Username + "#" + user.Discriminator;
       });
 
       embedBuilder.ThumbnailUrl = user.GetAvatarUrl();
 
+      embedBuilder.AddField("User id", user.Id, true);
       embedBuilder.AddField("Status", user.Status.ToString(), true);
 
       if(user.Nickname != null)
@@ -90,7 +91,7 @@ namespace OnePlusBot.Modules.Utility
       
       embedBuilder.AddField("Activity", user.Activity?.Name ?? "Nothing", true);
 
-      if (user.JoinedAt.HasValue)
+      if(user.JoinedAt.HasValue)
       {
         embedBuilder.AddField("Joined", Extensions.FormatDateTime(user.JoinedAt.Value.DateTime), true);
       }

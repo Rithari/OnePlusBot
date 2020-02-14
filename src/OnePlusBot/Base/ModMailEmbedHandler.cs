@@ -40,7 +40,7 @@ namespace OnePlusBot
         {
             var builder = GetBaseEmbed();
             builder.WithDescription(message.Content);
-            builder.WithAuthor(new EmbedAuthorBuilder().WithIconUrl(message.Author.GetAvatarUrl()).WithName(message.Author.Username));
+            builder.WithAuthor(ModMailEmbedHandler.GetUserAuthor(message.Author));
             builder.WithTitle(title);
             if(message.Attachments.Count > 0)
             {
@@ -61,7 +61,7 @@ namespace OnePlusBot
 
         public static EmbedAuthorBuilder GetUserAuthor(SocketUser user)
         {
-            return new EmbedAuthorBuilder().WithIconUrl(user.GetAvatarUrl()).WithName(user.Username);
+            return new EmbedAuthorBuilder().WithIconUrl(user.GetAvatarUrl()).WithName(user.Username + "#" + user.Discriminator);
         }
 
         public static Embed GetInitialUserReply(SocketMessage message)

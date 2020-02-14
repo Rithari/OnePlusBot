@@ -25,7 +25,7 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> ReplyToModMail([Remainder] string message)
         {
-          await new ModMailManager().CreateModeratorReply(Context.Message, Context.Channel, Context.User, message, false);
+          await new ModMailManager().CreateModeratorReply(Context.Message, Context.Channel, Context.User, message, false, true);
           return CustomResult.FromIgnored();
         }
 
@@ -37,7 +37,7 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> ReplyToModMailAnonymously([Remainder] string message)
         {
-          await new ModMailManager().CreateModeratorReply(Context.Message, Context.Channel, Context.User, message, true);
+          await new ModMailManager().CreateModeratorReply(Context.Message, Context.Channel, Context.User, message, true, true);
           return CustomResult.FromIgnored();
         }
 
@@ -273,8 +273,7 @@ namespace OnePlusBot.Modules
         public async Task<RuntimeResult> PostNicknameResponse() {
 
           await new ModMailManager().RespondWithUsernameTemplateAndSetReminder(Context.Channel, Context.User, Context.Message);
-
-          return CustomResult.FromIgnored();
+          return CustomResult.FromSuccess();
         }
 
 
