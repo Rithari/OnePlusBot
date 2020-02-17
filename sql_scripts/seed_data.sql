@@ -11,8 +11,8 @@ INSERT INTO `PersistentData` VALUES
 (11, 'xp_disabled', 1, ''),
 (12, 'xp_gain_range_min', 10, ''),
 (13, 'xp_gain_range_max', 25, ''),
-(15, 'profanity_votes_threshold', 4, '');
-(14, 'legal_user_name_regex', 0, '');
+(14, 'profanity_votes_threshold', 4, ''),
+(15, 'legal_user_name_regex', 0, '');
 
 INSERT INTO `AuthTokens` VALUES 
 (1,'stable','REPLACE WITH TOKEN'),
@@ -28,7 +28,7 @@ INSERT INTO  `Roles` (`name`, `role_id` ) VALUES
 ('staff', 0);
 
 INSERT INTO `Emotes` (`id`, `name`, `emote_key`, `animated`, `emote_id`, `custom`) VALUES
-(1, 'success', 'SUCCESS', 0, , 1),
+(1, 'success', 'SUCCESS', 0, 0, 1),
 (2, 'OpYes', 'OP_YES', 0, 0, 1),
 (3, 'OpNo', 'OP_NO', 0, 0, 1),
 (4, '🗞️', 'newspaper', 0, 0, 0),
@@ -38,3 +38,5 @@ INSERT INTO `Emotes` (`id`, `name`, `emote_key`, `animated`, `emote_id`, `custom
 (8, 'star4', 'LVL_4_STAR', 1, 0, 1),
 (9, '⚠️', 'FAIL', 0, 0, 0),
 (10, '📫', 'OPEN_MODMAIL', 0, 0, 0);
+
+INSERT INTO `ResponseTemplate` (`template_key`, `template_text`) VALUES ('ILLEGAL_NAME_MODMAIL', 'example response'), ('ILLEGAL_NAME_REMINDER_TEXT', 'Rename {0} and close.');

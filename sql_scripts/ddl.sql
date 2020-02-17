@@ -443,5 +443,29 @@ CREATE TABLE `ReactionRoles` (
  CONSTRAINT `fk_emote_role_ref` FOREIGN KEY (`role_id`) REFERENCES `Roles` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `UserNote`
+--
+
+CREATE TABLE `UserNote` (
+ `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+ `user_id` bigint(20) unsigned NOT NULL,
+ `note_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+ `created_date` datetime NOT NULL,
+ PRIMARY KEY (`id`),
+ KEY `fk_user_note` (`user_id`),
+ CONSTRAINT `fk_user_note` FOREIGN KEY (`user_id`) REFERENCES `User` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `ResponseTemplate`
+--
+
+CREATE TABLE `ResponseTemplate` (
+ `template_key` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+ `template_text` varchar(1024) COLLATE utf8mb4_unicode_ci NOT NULL,
+ PRIMARY KEY (`template_key`),
+ UNIQUE KEY `template_key` (`template_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS=1;
