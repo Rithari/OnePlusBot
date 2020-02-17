@@ -312,14 +312,15 @@ CREATE TABLE `ThreadMessage` (
 
 DROP TABLE IF EXISTS `ChannelGroups`;
 CREATE TABLE `ChannelGroups` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+ `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `profanity_check_exempt` tinyint(4) NOT NULL,
-  `invite_check_exempt` tinyint(4) NOT NULL,
-  `exp_gain_exempt` tinyint(4) NOT NULL,
-  `disabled` tinyint(4) NOT NULL,
+ `profanity_check_exempt` tinyint(4) NOT NULL,
+ `invite_check_exempt` tinyint(4) NOT NULL,
+ `exp_gain_exempt` tinyint(4) NOT NULL,
+ `disabled` tinyint(4) NOT NULL,
+ `channel_group_type` text COLLATE utf8mb4_unicode_ci NOT NULL,
  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Table structure for table `ChannelInGroup`
@@ -383,7 +384,7 @@ CREATE TABLE `CommandInChannelGroup` (
  KEY `fk_channel_group_reference` (`channel_group_id`),
  CONSTRAINT `fk_channel_group_reference` FOREIGN KEY (`channel_group_id`) REFERENCES `ChannelGroups` (`id`),
  CONSTRAINT `fk_command_reference` FOREIGN KEY (`command_id`) REFERENCES `Commands` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Table structure for table `ExperienceRoles`
@@ -402,7 +403,7 @@ CREATE TABLE `ExperienceRoles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Table structure for table `ExperienceRoles`
+-- Table structure for table `ExperienceLevels`
 --
 
 DROP TABLE IF EXISTS `ExperienceLevels`;
@@ -442,5 +443,31 @@ CREATE TABLE `ReactionRoles` (
  CONSTRAINT `fk_emote_role_ref` FOREIGN KEY (`role_id`) REFERENCES `Roles` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `UserNote`
+--
+
+DROP TABLE IF EXISTS `UserNote`;
+CREATE TABLE `UserNote` (
+ `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+ `user_id` bigint(20) unsigned NOT NULL,
+ `note_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+ `created_date` datetime NOT NULL,
+ PRIMARY KEY (`id`),
+ KEY `fk_user_note` (`user_id`),
+ CONSTRAINT `fk_user_note` FOREIGN KEY (`user_id`) REFERENCES `User` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `ResponseTemplate`
+--
+
+DROP TABLE IF EXISTS `ResponseTemplate`;
+CREATE TABLE `ResponseTemplate` (
+ `template_key` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+ `template_text` varchar(1024) COLLATE utf8mb4_unicode_ci NOT NULL,
+ PRIMARY KEY (`template_key`),
+ UNIQUE KEY `template_key` (`template_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS=1;
