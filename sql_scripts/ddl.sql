@@ -447,6 +447,7 @@ CREATE TABLE `ReactionRoles` (
 -- Table structure for table `UserNote`
 --
 
+DROP TABLE IF EXISTS `UserNote`;
 CREATE TABLE `UserNote` (
  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
  `user_id` bigint(20) unsigned NOT NULL,
@@ -461,6 +462,7 @@ CREATE TABLE `UserNote` (
 -- Table structure for table `ResponseTemplate`
 --
 
+DROP TABLE IF EXISTS `ResponseTemplate`;
 CREATE TABLE `ResponseTemplate` (
  `template_key` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
  `template_text` varchar(1024) COLLATE utf8mb4_unicode_ci NOT NULL,
