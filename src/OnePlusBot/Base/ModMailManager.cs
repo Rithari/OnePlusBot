@@ -183,7 +183,7 @@ namespace OnePlusBot.Base
     /// <param name="clearMessage">String containing a cleaned version of the response</param>
     /// <param name="anonymous">Boolean to define whether or not the response should be anonymous</param>
     /// <returns>The <see chref="Discord.Rest.RestUserMessage"> message object which was logged in the modmail thread</returns>
-    public async Task<RestUserMessage> CreateModeratorReply(SocketMessage message, ISocketMessageChannel channel, SocketUser moderatorUser, string clearMessage, bool anonymous)
+    public async Task<RestUserMessage> CreateModeratorReply(SocketMessage message, ISocketMessageChannel channel, SocketUser moderatorUser, string clearMessage, bool anonymous, bool delete)
     {
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
@@ -193,7 +193,7 @@ namespace OnePlusBot.Base
         if(threadUser != null)
         {
             var replyEmbed = ModMailEmbedHandler.GetModeratorReplyEmbed(clearMessage, "Moderator posted", message, anonymous ? null : moderatorUser);
-            var responseInModmailThread = await AnswerUserAndLogEmbed(threadUser, channel, replyEmbed, message, anonymous);
+            var responseInModmailThread = await AnswerUserAndLogEmbed(threadUser, channel, replyEmbed, message, anonymous, delete);
             return responseInModmailThread;
         }
         else
@@ -348,10 +348,12 @@ namespace OnePlusBot.Base
     /// <param name="message">The <see chref="Discord.WebSocket.SocketMessage"> message causing this reply</param>
     /// <param name="anonymous">Boolean to define whether or not the message should be sent anonymous</param>
     /// <returns>The <see chref="Discord.Rest.RestUserMessage"> message object which was logged to the modmail thread</returns>
-    private async Task<RestUserMessage> AnswerUserAndLogEmbed(SocketUser messageTarget, ISocketMessageChannel channel, Embed embed, SocketMessage message, bool anonymous=false)
+    private async Task<RestUserMessage> AnswerUserAndLogEmbed(SocketUser messageTarget, ISocketMessageChannel channel, Embed embed, SocketMessage message, bool anonymous=false, bool delete=true)
     {
         var userMsg = await messageTarget.SendMessageAsync(embed: embed);
-        await message.DeleteAsync();
+        if(delete) {
+          await message.DeleteAsync();
+        }
         var channelMsg = await channel.SendMessageAsync(embed: embed);
         AddModMailMessage(channel.Id, channelMsg, userMsg, message.Author.Id, anonymous);
         return channelMsg;
@@ -650,7 +652,7 @@ namespace OnePlusBot.Base
       var user = Global.Bot.GetUser(thread.UserId);
 
       var reminderText = Extensions.GetTemplatedString(ResponseTemplate.ILLEGAL_NAME_REMINDER, new object[1] { Extensions.FormatUserName(user)});
-      var reponseMessageInModmailThread = await new ModMailManager().CreateModeratorReply(message, channel, moderatorUser, text, false);
+      var reponseMessageInModmailThread = await new ModMailManager().CreateModeratorReply(message, channel, moderatorUser, text, false, false);
 
       ulong seconds = 0;
       using (var db = new Database())
