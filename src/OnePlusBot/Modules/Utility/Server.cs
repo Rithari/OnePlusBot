@@ -70,7 +70,6 @@ namespace OnePlusBot.Modules.Utility
 
             IMessage posted;
             var messageToPost = news + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author;
-            try {
                 if(needsAttachments)
                 {
                     var attachment = Context.Message.Attachments.First();
@@ -83,8 +82,7 @@ namespace OnePlusBot.Modules.Utility
                 {
                     posted = await newsChannel.SendMessageAsync(messageToPost);
                 }
-            }
-
+                
             Global.NewsPosts[Context.Message.Id] = posted.Id;
 
             return CustomResult.FromSuccess();
