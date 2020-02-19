@@ -68,7 +68,6 @@ namespace OnePlusBot.Modules.Utility
             if (news.Contains("@everyone") || news.Contains("@here") || news.Contains("@news")) 
                 return CustomResult.FromError("Your news article contained one or more illegal pings!");
 
-            await newsRole.ModifyAsync(x => x.Mentionable = true);
             IMessage posted;
             var messageToPost = news + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author;
             try {
@@ -85,12 +84,6 @@ namespace OnePlusBot.Modules.Utility
                     posted = await newsChannel.SendMessageAsync(messageToPost);
                 }
             }
-            finally 
-            {
-                await newsRole.ModifyAsync(x => x.Mentionable = false);
-            }
-            
-           
 
             Global.NewsPosts[Context.Message.Id] = posted.Id;
 
