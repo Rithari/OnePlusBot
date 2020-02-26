@@ -412,138 +412,93 @@ namespace OnePlusBot.Base
         /// <returns>Task</returns>
         private async Task OnMessageRemoved(Cacheable<IMessage, ulong> cacheable, ISocketMessageChannel socketChannel)
         {
+          var channel = (SocketTextChannel)socketChannel;
+          IMessage deletedMessage = null;
+          // this happened sometimes
+          try
+          {
+            deletedMessage = await cacheable.GetOrDownloadAsync();
+          }
+          catch(NullReferenceException)
+          {
+            return;
+          }
+          // it was sometimes null
+          if(deletedMessage == null)
+          {
+            return;
+          }
 
-            var channel = (SocketTextChannel)socketChannel;
-            IMessage deletedMessage = null;
-            // this happened sometimes
-            try 
+          if(channel.Id == Global.Channels[Channel.STARBOARD])
+          {
+            var starPost = Global.StarboardPosts.Where(po => po.StarboardMessageId == deletedMessage.Id).DefaultIfEmpty(null).First();
+            if(starPost != null)
             {
-                deletedMessage = await cacheable.GetOrDownloadAsync();
+              using(var db = new Database())
+              {
+                var existingPost = db.StarboardMessages.Where(po => po.StarboardMessageId == starPost.StarboardMessageId).First();
+                existingPost.Ignored = true;
+                db.SaveChanges();
+              }
             }
-            catch(NullReferenceException)
+          }
+
+          List<EmbedFieldBuilder> fields = new List<EmbedFieldBuilder>();
+          var originalMessage = "";
+          // I distinctly remember having a null value once, couldnt find the situation again for that tho
+          // the check should not be too bad, it should short circuit anyway
+          if(cacheable.Value == null || cacheable.Value.Content == "" || cacheable.Value.Content == null)
+          {
+            originalMessage = "none";
+          }
+          else
+          {
+            originalMessage = cacheable.Value.Content;
+          }
+          fields.Add(new EmbedFieldBuilder() { Name = ":x: Original message: ", Value = originalMessage });
+          if(deletedMessage != null)
+          {
+            fields.Add(new EmbedFieldBuilder() { Name = "Link", Value=Extensions.FormatLinkWithDisplay("Jump!", deletedMessage.GetJumpUrl())});
+          }
+
+          if(deletedMessage != null && deletedMessage.Attachments != null){
+            // you can upload multiple attachments at once on mobile
+            var attachments = deletedMessage.Attachments.ToList();
+            if(attachments.Count > 0)
             {
-                return;
-            }
-            // it was sometimes null
-            if(deletedMessage == null)
-            {
-                return;
+              fields.Add(new EmbedFieldBuilder() { IsInline = false, Name = $":frame_photo: Amount of attachments: ", Value = attachments.Count });
             }
 
-            if(channel.Id == Global.Channels[Channel.STARBOARD])
+            var embed = new EmbedBuilder
             {
-                var starPost = Global.StarboardPosts.Where(po => po.StarboardMessageId == deletedMessage.Id).DefaultIfEmpty(null).First();
-                if(starPost != null)
-                {
-                    using(var db = new Database())
-                    {
-                        var existingPost = db.StarboardMessages.Where(po => po.StarboardMessageId == starPost.StarboardMessageId).First();
-                        existingPost.Ignored = true;
-                        db.SaveChanges();
-                    }
-                }
-            }
+              Color = Color.Blue,
+              Description = $":bulb: Message from '{Extensions.FormatUserNameDetailed(cacheable.Value.Author)}' removed in {channel.Mention}",
+              Fields = fields,
+              ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
+              Timestamp = DateTime.Now
+            };
+            await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.DELETE_LOG]).SendMessageAsync(embed: embed.Build());
 
-            List<EmbedFieldBuilder> fields = new List<EmbedFieldBuilder>();
-            var originalMessage = "";
-            // I distinctly remember having a null value once, couldnt find the situation again for that tho
-            // the check should not be too bad, it should short circuit anyway
-            if(cacheable.Value == null || cacheable.Value.Content == "" || cacheable.Value.Content == null)
+            for(int index = 0; index < attachments.Count; index++)
             {
-                originalMessage = "none";
-            } 
-            else 
-            {
-                originalMessage = cacheable.Value.Content;
-            }
-            fields.Add(new EmbedFieldBuilder() { Name = ":x: Original message: ", Value = originalMessage });
-            if(deletedMessage != null) 
-            {
-              fields.Add(new EmbedFieldBuilder() { Name = "Link", Value=Extensions.FormatLinkWithDisplay("Jump!", deletedMessage.GetJumpUrl())});
-            }
-           
-            if(deletedMessage != null && deletedMessage.Attachments != null){
-                    // you can upload multiple attachments at once on mobile
-                var attachments = deletedMessage.Attachments.ToList();
-                if(attachments.Count > 0)
+              var oneBasedIndex = index + 1;
+              var targetFileName = attachments.ElementAt(index).Filename;
+              var url = attachments.ElementAt(index).ProxyUrl;
+              await Task.Delay(500);
+              var upperFileName = targetFileName.ToUpper();
+              var attachmentDescription = "Attachment #" + oneBasedIndex;
+              if(upperFileName.EndsWith("JPG") || upperFileName.EndsWith("PNG") || upperFileName.EndsWith("GIF"))
+              {
+                var pictureEmbed = new EmbedBuilder()
                 {
-                    fields.Add(new EmbedFieldBuilder() { IsInline = false, Name = $":frame_photo: Amount of attachments: ", Value = attachments.Count });
-                }
-                
-                var embed = new EmbedBuilder
-                {
-                    Color = Color.Blue,
-                    Description = $":bulb: Message from '{Extensions.FormatUserNameDetailed(cacheable.Value.Author)}' removed in {channel.Mention}",
-                    Fields = fields,
-                    ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
-                    Timestamp = DateTime.Now
+                  Color = Color.Blue,
+                  Footer = new EmbedFooterBuilder() { Text =  attachmentDescription},
+                  ImageUrl = url,
                 };
-                await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.DELETE_LOG]).SendMessageAsync(embed: embed.Build());
-
-                WebClient client = new WebClient();
-                for(int index = 0; index < attachments.Count; index++)
-                {
-                    var oneBasedIndex = index + 1;
-                    var targetFileName = attachments.ElementAt(index).Filename;
-                    var url = attachments.ElementAt(index).Url;
-                    try 
-                    {
-                        await Task.Delay(500);
-                        client.DownloadFile(url, targetFileName);
-                        var upperFileName = targetFileName.ToUpper();
-                        var attachmentDescription = "Attachment #" + oneBasedIndex;
-                        if(upperFileName.EndsWith("JPG") || upperFileName.EndsWith("PNG") || upperFileName.EndsWith("GIF"))
-                        {
-                            var attachmentString = $"attachment://{targetFileName}";
-                            var pictureEmbed = new EmbedBuilder()
-                            {
-                                Color = Color.Blue,
-                                Footer = new EmbedFooterBuilder() { Text =  attachmentDescription},
-                                ImageUrl = attachmentString,
-                            };
-                            await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.DELETE_LOG]).SendFileAsync(targetFileName, "", embed: pictureEmbed.Build());
-                        } 
-                        else 
-                        {
-                            await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.DELETE_LOG]).SendFileAsync(targetFileName, attachmentDescription);
-                        }
-                    }
-                    catch(WebException webEx)
-                    {
-                        if (webEx.Status == WebExceptionStatus.ProtocolError)
-                        {
-                            var response = webEx.Response as HttpWebResponse;
-                            if (response != null)
-                            {
-                                var exceptionEmbed = new EmbedBuilder    
-                                {
-                                    Color = Color.Red,
-                                    Description = $"Discord did not let us download attachment #" + oneBasedIndex,
-                                    Fields = {new EmbedFieldBuilder() { IsInline = false, Name = $":x: It returned ", Value = (int)response.StatusCode }},
-                                    ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
-                                };
-                                await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.DELETE_LOG]).SendMessageAsync(embed: exceptionEmbed.Build());
-                            }
-                            else
-                            {
-                                SendExceptionEmbed(cacheable, webEx, channel);
-                            }
-                        }
-                        else
-                        {
-                            SendExceptionEmbed(cacheable, webEx, channel);
-                        }
-                    }
-                    catch(Exception ex)
-                    {
-                        SendExceptionEmbed(cacheable, ex, channel);
-                    }
-                    finally 
-                    {
-                        File.Delete(targetFileName);  
-                    }     
-                }
+                await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.DELETE_LOG]).SendMessageAsync("", embed: pictureEmbed.Build());
+              }
             }
+          }
         }
 
         private static async void SendExceptionEmbed(Cacheable<IMessage, ulong> cacheable, Exception exception, SocketTextChannel channel)

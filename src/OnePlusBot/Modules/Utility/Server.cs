@@ -60,7 +60,7 @@ namespace OnePlusBot.Modules.Utility
 
           var user = (SocketGuildUser)Context.Message.Author;
           
-          var newsChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.NEWS]) as SocketTextChannel;
+          var newsChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.NEWS]) as SocketNewsChannel;
           var newsRole = guild.GetRole(Global.Roles["news"]);
 
           if (news.Contains("@everyone") || news.Contains("@here") || news.Contains("@news")) {
