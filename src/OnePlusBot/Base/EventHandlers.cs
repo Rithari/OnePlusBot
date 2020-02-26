@@ -501,22 +501,6 @@ namespace OnePlusBot.Base
           }
         }
 
-        private static async void SendExceptionEmbed(Cacheable<IMessage, ulong> cacheable, Exception exception, SocketTextChannel channel)
-        {
-            var exceptionEmbed = new EmbedBuilder    
-            {
-                Color = Color.Red,
-                Description = $"Error when downloading or posting the attachment.",
-                Fields = {
-                    new EmbedFieldBuilder() { IsInline = false, Name = $":x: Exception type ", Value = exception.GetType().FullName },
-                    new EmbedFieldBuilder() { IsInline = false, Name = $" Exception message", Value = exception.Message }
-                },
-                ThumbnailUrl = cacheable.Value.Author.GetAvatarUrl(),
-                Timestamp = DateTime.Now
-            };
-            await channel.Guild.GetTextChannel(Global.PostTargets[PostTarget.DELETE_LOG]).SendMessageAsync(embed: exceptionEmbed.Build());
-        }
-
         /// <summary>
         /// Gets executed after a command has been completed. Reacts with either success reaction, a warn symbole accompanid with an error message or nothing, if the result is ignored.
         /// </summary>
