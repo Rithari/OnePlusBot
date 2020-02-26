@@ -116,14 +116,14 @@ namespace OnePlusBot.Modules
                     {
                       await Context.Channel.SendMessageAsync(entry.Text);
                     }
-                    else 
+                    else
                     {
                       var embed = Extensions.FaqCommandEntryToBuilder(entry);
                       await Context.Channel.SendMessageAsync(embed: embed.Build());
                     }
                     await Task.Delay(200);
                   }
-                } 
+                }
                 else
                 {
                   await Context.Channel.SendMessageAsync($"Channel has no posts configured for command {appropriateCommand.First().Name}.");
@@ -135,12 +135,12 @@ namespace OnePlusBot.Modules
               await PrintAvailableCommands(contextChannel);
             }
           }
-          else 
+          else
           {
             await Context.Channel.SendMessageAsync($"Channel has no entry configured for command {appropriateCommand.First().Name}.");
           }
         }
-        else 
+        else
         {
           await PrintAvailableCommands(contextChannel);
         }
@@ -155,7 +155,7 @@ namespace OnePlusBot.Modules
         if(commandsAvailable.Count() == 0)
         {
             await Context.Channel.SendMessageAsync("No entry available.");
-        } 
+        }
         else
         {
           var stringBuilder = new StringBuilder(" ");
