@@ -664,7 +664,7 @@ namespace OnePlusBot.Base
 
         // TODO move to builder
         var reminder = new Reminder();
-        reminder.RemindText = Extensions.RemoveIllegalPings(reminderText);
+        reminder.RemindText = Extensions.SanitizeIllegalPings(reminderText);
         reminder.RemindedUserId = moderatorUser.Id;
         reminder.TargetDate = targetTime;
         reminder.ReminderDate = DateTime.Now;

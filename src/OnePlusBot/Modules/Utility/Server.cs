@@ -67,15 +67,22 @@ namespace OnePlusBot.Modules.Utility
             return CustomResult.FromError("Your news article contained one or more illegal pings!");
           }
 
+          await newsRole.ModifyAsync(x => x.Mentionable = true);
           IMessage posted;
           var messageToPost = newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author;
-          var builder = new EmbedBuilder().WithDescription(news);
-          if( Context.Message.Attachments.Any())
-          {
-            var attachment = Context.Message.Attachments.First();
-            builder.WithImageUrl(attachment.ProxyUrl).Build();
+          try {
+            var builder = new EmbedBuilder().WithDescription(news);
+            if( Context.Message.Attachments.Any())
+            {
+              var attachment = Context.Message.Attachments.First();
+              builder.WithImageUrl(attachment.ProxyUrl).Build();
+            }
+            posted = await newsChannel.SendMessageAsync(messageToPost, embed: builder.Build());
           }
-          posted = await newsChannel.SendMessageAsync(messageToPost, embed: builder.Build());
+          finally
+          {
+           await newsRole.ModifyAsync(x => x.Mentionable = false);
+          }
               
           Global.NewsPosts[Context.Message.Id] = posted.Id;
 
