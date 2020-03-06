@@ -48,7 +48,7 @@ namespace OnePlusBot.Modules.Utility
             await Context.Message.DeleteAsync();
         }
 
-          [
+        [
             Command("news"),
             Summary("Posts a News article to the server."),
             RequireRole("journalist"),
@@ -56,43 +56,37 @@ namespace OnePlusBot.Modules.Utility
         ]
         public async Task<RuntimeResult> NewsAsync([Remainder] string news)
         {
-            var guild = Context.Guild;
+          var guild = Context.Guild;
 
-            var user = (SocketGuildUser)Context.Message.Author;
-            
-            var needsAttachments = Context.Message.Attachments.Count() > 0;
-            
-            var newsChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.NEWS]) as SocketNewsChannel;
-            var newsRole = guild.GetRole(Global.Roles["news"]);
+          var user = (SocketGuildUser)Context.Message.Author;
+          
+          var newsChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.NEWS]) as SocketNewsChannel;
+          var newsRole = guild.GetRole(Global.Roles["news"]);
 
-            if (news.Contains("@everyone") || news.Contains("@here") || news.Contains("@news")) 
-                return CustomResult.FromError("Your news article contained one or more illegal pings!");
+          if (news.Contains("@everyone") || news.Contains("@here") || news.Contains("@news")) {
+            return CustomResult.FromError("Your news article contained one or more illegal pings!");
+          }
 
-            await newsRole.ModifyAsync(x => x.Mentionable = true);
-            IMessage posted;
-            var messageToPost = news + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author;
-            try {
-                if(needsAttachments)
-                {
-                    var attachment = Context.Message.Attachments.First();
-                    WebClient client = new WebClient();
-                    client.DownloadFile(attachment.Url, attachment.Filename);
-                    posted = await newsChannel.SendFileAsync(attachment.Filename, messageToPost);
-                    File.Delete(attachment.Filename);  
-                }
-                else
-                {
-                    posted = await newsChannel.SendMessageAsync(messageToPost);
-                }
-            }
-            finally
+          await newsRole.ModifyAsync(x => x.Mentionable = true);
+          IMessage posted;
+          var messageToPost = newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author;
+          try {
+            var builder = new EmbedBuilder().WithDescription(news);
+            if( Context.Message.Attachments.Any())
             {
-              await newsRole.ModifyAsync(x => x.Mentionable = false);
+              var attachment = Context.Message.Attachments.First();
+              builder.WithImageUrl(attachment.ProxyUrl).Build();
             }
-                
-            Global.NewsPosts[Context.Message.Id] = posted.Id;
+            posted = await newsChannel.SendMessageAsync(messageToPost, embed: builder.Build());
+          }
+          finally
+          {
+           await newsRole.ModifyAsync(x => x.Mentionable = false);
+          }
+              
+          Global.NewsPosts[Context.Message.Id] = posted.Id;
 
-            return CustomResult.FromSuccess();
+          return CustomResult.FromSuccess();
         }
 
 
