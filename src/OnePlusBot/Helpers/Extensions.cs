@@ -290,9 +290,9 @@ namespace OnePlusBot.Helpers
             return targetTime - timeAtStart;
         }
 
-        public static string RemoveIllegalPings(string text){
-            text = text.Replace("@everyone", "");
-            text = text.Replace("@here", "");
+        public static string SanitizeIllegalPings(string text){
+            text = text.Replace("@everyone", "<illegalping>");
+            text = text.Replace("@here", "<illegalping>");
             return text;
         }
 

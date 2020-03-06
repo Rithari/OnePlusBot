@@ -49,7 +49,7 @@ namespace OnePlusBot.Modules.Utility
       var guild = Context.Guild;
 
       var reminder = new Reminder();
-      reminder.RemindText = Extensions.RemoveIllegalPings(reminderText);
+      reminder.RemindText = Extensions.SanitizeIllegalPings(reminderText);
       reminder.RemindedUserId = author.Id;
       reminder.TargetDate = targetTime;
       reminder.ReminderDate = DateTime.Now;
