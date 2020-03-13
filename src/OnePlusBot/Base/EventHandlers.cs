@@ -378,13 +378,7 @@ namespace OnePlusBot.Base
                     var newsChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.NEWS]);
                     var rawMessage = await newsChannel.GetMessageAsync(Global.NewsPosts[message.Id]);
                     var existingMessage = rawMessage as SocketUserMessage;
-                    var builder = new EmbedBuilder().WithDescription(split[1]);
-                    if(message.Attachments.Any())
-                    {
-                      var attachment = message.Attachments.First();
-                      builder.WithImageUrl(attachment.ProxyUrl).Build();
-                    }
-                    await existingMessage.ModifyAsync(x => x.Embed = builder.Build());
+                    await existingMessage.ModifyAsync(x => x.Content = split[1]);
                   }
                 }
 

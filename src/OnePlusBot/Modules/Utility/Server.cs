@@ -69,15 +69,20 @@ namespace OnePlusBot.Modules.Utility
 
           await newsRole.ModifyAsync(x => x.Mentionable = true);
           IMessage posted;
-          var messageToPost = newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author;
+          var messageToPost = news + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + Context.Message.Author;
+
           try {
-            var builder = new EmbedBuilder().WithDescription(news);
-            if( Context.Message.Attachments.Any())
-            {
-              var attachment = Context.Message.Attachments.First();
-              builder.WithImageUrl(attachment.ProxyUrl).Build();
+            if(Context.Message.Attachments.Any()) {
+              var builder = new EmbedBuilder();
+              if( Context.Message.Attachments.Any())
+              {
+                var attachment = Context.Message.Attachments.First();
+                builder.WithImageUrl(attachment.ProxyUrl).Build();
+              }
+              posted = await newsChannel.SendMessageAsync(messageToPost, embed: builder.Build());
+            } else {
+              posted = await newsChannel.SendMessageAsync(messageToPost);
             }
-            posted = await newsChannel.SendMessageAsync(messageToPost, embed: builder.Build());
           }
           finally
           {
