@@ -429,9 +429,7 @@ namespace OnePlusBot.Modules.Administration
 
         var entry = new WarnEntry
         {
-          WarnedUser = user.Username + '#' + user.Discriminator,
           WarnedUserID = user.Id,
-          WarnedBy = monitor.Username + '#' + monitor.Discriminator,
           WarnedByID = monitor.Id,
           Reason = reason,
           Date = Context.Message.Timestamp.DateTime,

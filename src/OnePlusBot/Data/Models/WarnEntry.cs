@@ -11,15 +11,9 @@ namespace OnePlusBot.Data.Models
         [Column("id")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public uint ID { get; set; }
-
-        [Column("warned_user")]
-        public string WarnedUser { get; set; }
         
         [Column("warned_user_id")]
         public ulong WarnedUserID { get; set; }
-        
-        [Column("warned_by")]
-        public string WarnedBy { get; set; }
         
         [Column("warned_by_id")]
         public ulong WarnedByID { get; set; }
