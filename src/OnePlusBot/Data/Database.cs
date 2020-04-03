@@ -15,6 +15,8 @@ namespace OnePlusBot.Data
         public DbSet<AuthToken> AuthTokens { get; set; }
         public DbSet<PersistentData> PersistentData { get; set; }
 
+        public DbSet<EmoteHeatMap> EmoteHeatMap { get; set; }
+
         public DbSet<ProfanityCheck> ProfanityChecks { get; set; }
         public DbSet<ReferralCode> ReferralCodes { get; set; }
 

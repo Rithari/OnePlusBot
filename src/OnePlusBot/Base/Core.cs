@@ -61,10 +61,19 @@ namespace OnePlusBot.Base
                 return Task.CompletedTask;
             };
 
+            Func<Task> emotePersister = null;
+            emotePersister = () => 
+            {
+                new EmoteHeatMapManager().SetupTimers().ContinueWith(t => Console.WriteLine(t.Exception), TaskContinuationOptions.OnlyOnFaulted);
+                bot.Ready -= emotePersister;
+                return Task.CompletedTask;
+            };
+
             bot.Ready += remindTimer;
             bot.Ready += muteTimer;
             bot.Ready += warnDecayTimer;
             bot.Ready += expPersister;
+            bot.Ready += emotePersister;
            
 
             if(Global.Token == string.Empty)

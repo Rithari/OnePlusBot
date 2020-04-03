@@ -5,6 +5,7 @@ using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
 using System.Linq;
 using OnePlusBot.Base.Errors;
+using Discord;
 
 namespace OnePlusBot.Modules.Administration
 {
@@ -113,6 +114,51 @@ namespace OnePlusBot.Modules.Administration
         {
             await new SelfAssignabeRolesManager().SetupInfoPost();
             return CustomResult.FromSuccess();
+        }
+
+        /// <summary>
+        /// Creates the emote in the database, only if it does not exist with the given parameter. Does nothing if the same emote already exists.
+        /// </summary>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
+        [
+            Command("setEmote"),
+            Summary("Creats the emote in the database."),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> CreateEmoteInDatabase(string name, [Remainder] string _)
+        {
+          var emoteTags = Context.Message.Tags.Where(t => t.Type == TagType.Emoji);
+          if(!emoteTags.Any()) 
+          {
+            return CustomResult.FromError("No emote found.");
+          }
+          var uncastedEmote = emoteTags.Select(t => (Emote)t.Value).First();
+          if(uncastedEmote is Emote) {
+            var emote = uncastedEmote as Emote;
+            using(var db = new Database())
+            {
+              var sameKey = db.Emotes.Where(e => e.Key == name);
+              StoredEmote emoteToChange;
+              if(sameKey.Any()) 
+              {
+                emoteToChange = sameKey.First();
+              }
+              else
+              {
+                emoteToChange = new StoredEmote();
+                db.Emotes.Add(emoteToChange);
+              }
+              emoteToChange.Amimated = emote.Animated;
+              emoteToChange.EmoteId = emote.Id;
+              emoteToChange.Name = emote.Name;
+              emoteToChange.Key = name;
+              emoteToChange.Custom = true;
+              db.SaveChanges();
+            }
+          }
+         
+          await Task.CompletedTask;
+          return CustomResult.FromSuccess();
         }
        
 
