@@ -470,4 +470,18 @@ CREATE TABLE `ResponseTemplate` (
  UNIQUE KEY `template_key` (`template_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `EmoteHeatMap`
+--
+
+CREATE TABLE `EmoteHeatMap` (
+ `id` int(8) unsigned NOT NULL AUTO_INCREMENT,
+ `emote_id` int(10) unsigned NOT NULL,
+ `usage_date` datetime DEFAULT CURRENT_TIMESTAMP,
+ `usage_count` int(8) unsigned NOT NULL,
+ PRIMARY KEY (`id`),
+ KEY `fk_emote_fk` (`emote_id`),
+ CONSTRAINT `fk_emote_fk` FOREIGN KEY (`emote_id`) REFERENCES `Emotes` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS=1;
