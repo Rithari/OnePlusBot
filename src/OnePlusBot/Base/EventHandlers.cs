@@ -781,7 +781,11 @@ namespace OnePlusBot.Base
           {
             return;
           }
+          var minute = (long) DateTime.Now.Subtract(DateTime.MinValue).TotalMinutes;
           var emoteList = emoteTags.Select(t => (Emote)t.Value);
+          var exists = Global.RuntimeEmotes.ContainsKey(minute);
+          List<KeyValuePair<uint, uint>> usedEmotes = new List<KeyValuePair<uint, uint>>();
+          Global.RuntimeEmotes.TryGetValue(minute, out usedEmotes);
           foreach(var uncastEmote in emoteList) 
           {
             if(uncastEmote is Emote) 
@@ -791,18 +795,16 @@ namespace OnePlusBot.Base
               if(emotesFromServer.Any()) 
               {
                 var dbEmote = emotesFromServer.First();
-                var minute = (long) DateTime.Now.Subtract(DateTime.MinValue).TotalMinutes;
-                var exists = Global.RuntimeEmotes.ContainsKey(minute);
                 if(!exists)
                 {
                   var element = new List<KeyValuePair<uint, uint>>();
                   element.Add(new KeyValuePair<uint, uint>(dbEmote.Value.ID, 1));
                   Global.RuntimeEmotes.TryAdd(minute, element);
+                  exists = true;
+                  usedEmotes = element;
                 }
                 else
                 {
-                  List<KeyValuePair<uint, uint>> usedEmotes = new List<KeyValuePair<uint, uint>>();
-                  Global.RuntimeEmotes.TryGetValue(minute, out usedEmotes);
                   var existingEmoteLinq = usedEmotes.Where(tp => tp.Key == dbEmote.Value.ID);
                   if(existingEmoteLinq.Any()) 
                   {
