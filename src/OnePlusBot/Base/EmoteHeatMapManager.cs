@@ -52,7 +52,7 @@ namespace OnePlusBot.Base
       {
         var minuteToPersist = (long) DateTime.Now.Subtract(DateTime.MinValue).TotalMinutes - 1;
         Console.WriteLine($"Persisting emotes for minute {minuteToPersist} + {DateTime.Now}");
-        // if for some reason the elements were not persistet in the past rounds
+        // if for some reason the elements were not persisted in the past rounds
         // they will in the future, and because they are removed afterwards, this means that there *should* not be anything done twice
         var minutesInThePast = Global.RuntimeEmotes.Keys.Where(minute => minute <= minuteToPersist);
         List<long> toRemove = new List<long>();
