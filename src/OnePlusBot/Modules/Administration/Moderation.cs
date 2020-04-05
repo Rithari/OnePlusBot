@@ -810,7 +810,7 @@ namespace OnePlusBot.Modules.Administration
             {
               count++;
               var emoteUsed = emoteUsedQuery.First();
-              currentEmbedBuilder.AddField(emoteUsed.GetAsEmote().ToString(), emoteStat.SUM);
+              currentEmbedBuilder.AddField(emoteUsed.GetAsEmote().ToString(), emoteStat.SUM, true);
               if(((count % EmbedBuilder.MaxFieldCount) == 0) && emoteStat != emoteStats.Last())
               {
                 embedsToPost.Add(currentEmbedBuilder.Build());
