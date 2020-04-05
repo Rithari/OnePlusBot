@@ -791,7 +791,7 @@ namespace OnePlusBot.Base
             if(uncastEmote is Emote) 
             {
               Emote emote = uncastEmote as Emote;
-              var emotesFromServer = Global.Emotes.Where(e => e.Value.EmoteId == emote.Id);
+              var emotesFromServer = Global.TrackedEmotes.Where(e => e.Value.EmoteId == emote.Id);
               if(emotesFromServer.Any()) 
               {
                 var dbEmote = emotesFromServer.First();

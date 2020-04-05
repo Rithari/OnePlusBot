@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Discord.Commands;
 using OnePlusBot.Base;
@@ -122,7 +123,7 @@ namespace OnePlusBot.Modules.Administration
         /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
             Command("setEmote"),
-            Summary("Creats the emote in the database."),
+            Summary("Creates the emote in the database."),
             RequireRole("staff")
         ]
         public async Task<RuntimeResult> CreateEmoteInDatabase(string name, [Remainder] string _)
@@ -161,6 +162,33 @@ namespace OnePlusBot.Modules.Administration
           return CustomResult.FromSuccess();
         }
        
+       /// <summary>
+        /// Sets the tracking status of the emote in the database.
+        /// </summary>
+        /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
+        [
+            Command("trackEmote"),
+            Summary("Sets the emote tracking status."),
+            RequireRole("staff")
+        ]
+        public async Task<RuntimeResult> SetTrackingStatus(string name, Boolean value)
+        {
+            using(var db = new Database())
+            {
+              var sameKey = db.Emotes.Where(e => e.Key == name);
+              if(sameKey.Any()) 
+              {
+                StoredEmote emoteToChange = sameKey.First();
+                emoteToChange.TrackingDisabled = value;
+                db.SaveChanges();
+                return CustomResult.FromSuccess();
+              }
+              else
+              {
+                return CustomResult.FromError("Emote not found.");
+              }
+          }
+        }
 
     }
 }
