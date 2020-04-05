@@ -53,7 +53,10 @@ namespace OnePlusBot.Base
 
         public static ConcurrentDictionary<long, List<ulong>> RuntimeExp { get; set; }
 
+        public static ConcurrentDictionary<long, List<KeyValuePair<uint, uint>>> RuntimeEmotes { get; set; }
+
         public static Dictionary<string, StoredEmote> Emotes { get; set; }
+        public static Dictionary<string, StoredEmote> TrackedEmotes { get; set; }
 
         public static bool XPGainDisabled { get; set; }
 
@@ -113,7 +116,9 @@ namespace OnePlusBot.Base
             ModMailThreads = new List<ModMailThread>();
             ReportedProfanities = new List<UsedProfanity>();
             RuntimeExp = new ConcurrentDictionary<long, List<ulong>>();
+            RuntimeEmotes = new ConcurrentDictionary<long, List<KeyValuePair<uint, uint>>>();
             Emotes = new Dictionary<string, StoredEmote>();
+            TrackedEmotes = new Dictionary<string, StoredEmote>();
             Commands = new  List<Command>();
             UserNameNotifications = new Dictionary<ulong, ulong>();
             LoadGlobal();
@@ -196,6 +201,15 @@ namespace OnePlusBot.Base
                     foreach(var post in db.Emotes)
                     {
                       Emotes.Add(post.Key, post);
+                    }
+                }
+
+                TrackedEmotes.Clear();
+                if(db.Emotes.Any())
+                {
+                    foreach(var post in db.Emotes.Where(e => !e.TrackingDisabled))
+                    {
+                      TrackedEmotes.Add(post.Key, post);
                     }
                 }
 

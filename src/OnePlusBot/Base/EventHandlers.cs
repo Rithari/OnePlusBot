@@ -40,6 +40,7 @@ namespace OnePlusBot.Base
             _bot.UserLeft += OnUserLeft;
             _bot.MessageReceived += OnCommandReceived;
             _bot.MessageReceived += OnMessageReceived;
+            _bot.MessageReceived += OnMessageEmoteCheck;
             _bot.MessageReceived += OnMessageReceivedEmbed;
             _bot.MessageReceived += HandleExpGain;
             _bot.MessageDeleted += OnMessageRemoved;
@@ -771,6 +772,55 @@ namespace OnePlusBot.Base
                 }
             }
             await Task.CompletedTask;
+        }
+
+        private static async Task OnMessageEmoteCheck(SocketMessage message) 
+        {
+          var emoteTags = message.Tags.Where(t => t.Type == TagType.Emoji);
+          if(!emoteTags.Any()) 
+          {
+            return;
+          }
+          var minute = (long) DateTime.Now.Subtract(DateTime.MinValue).TotalMinutes;
+          var emoteList = emoteTags.Select(t => (Emote)t.Value);
+          var exists = Global.RuntimeEmotes.ContainsKey(minute);
+          List<KeyValuePair<uint, uint>> usedEmotes = new List<KeyValuePair<uint, uint>>();
+          Global.RuntimeEmotes.TryGetValue(minute, out usedEmotes);
+          foreach(var uncastEmote in emoteList) 
+          {
+            if(uncastEmote is Emote) 
+            {
+              Emote emote = uncastEmote as Emote;
+              var emotesFromServer = Global.TrackedEmotes.Where(e => e.Value.EmoteId == emote.Id);
+              if(emotesFromServer.Any()) 
+              {
+                var dbEmote = emotesFromServer.First();
+                if(!exists)
+                {
+                  var element = new List<KeyValuePair<uint, uint>>();
+                  element.Add(new KeyValuePair<uint, uint>(dbEmote.Value.ID, 1));
+                  Global.RuntimeEmotes.TryAdd(minute, element);
+                  exists = true;
+                  usedEmotes = element;
+                }
+                else
+                {
+                  var existingEmoteLinq = usedEmotes.Where(tp => tp.Key == dbEmote.Value.ID);
+                  if(existingEmoteLinq.Any()) 
+                  {
+                    KeyValuePair<uint, uint> existingEmote = existingEmoteLinq.First();
+                    var index = usedEmotes.IndexOf(existingEmote);
+                    usedEmotes[index] = new KeyValuePair<uint, uint>(existingEmote.Key, existingEmote.Value + 1);
+                  }
+                  else
+                  {
+                    usedEmotes.Add(new KeyValuePair<uint, uint>(dbEmote.Value.ID, 1));
+                  }
+                }
+              }
+            }
+          }
+          
         }
 
         /// <summary>

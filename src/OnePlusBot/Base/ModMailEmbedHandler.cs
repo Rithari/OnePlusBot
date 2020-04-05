@@ -56,7 +56,7 @@ namespace OnePlusBot
         /// <returns><see cref="Discord.EmbedAuthorBuilder"> object representing the oneplus discord author</returns>
         public static EmbedAuthorBuilder GetOneplusAuthor()
         {
-            return new EmbedAuthorBuilder().WithIconUrl("https://a.kyot.me/ab-y.png").WithName("r/Oneplus Discord");
+            return new EmbedAuthorBuilder().WithIconUrl("https://a.kyot.me/ab-y.png").WithName("r/OnePlus Discord");
         }
 
         public static EmbedAuthorBuilder GetUserAuthor(SocketUser user)

@@ -13,7 +13,6 @@ using System.Linq;
 using Discord.WebSocket;
 using Discord.Net;
 using System.Collections.Generic;
-using OnePlusBot.Base.Errors;
 
 namespace OnePlusBot.Modules.Administration
 {
@@ -769,6 +768,66 @@ namespace OnePlusBot.Modules.Administration
           await Task.Delay(200);
         }
         return CustomResult.FromIgnored();
+      }
+
+      [
+        Command("emoteStats"),
+        Summary("Returns the tracked emote statistics. If no parameter is given, everything is returned."),
+        RequireRole("staff")
+      ]
+      public async Task<RuntimeResult> ShowEmoteStats([Optional] string range)
+      {
+        TimeSpan fromWhere;
+        DateTime startDate;
+        if(range != null)
+        {
+          fromWhere = Extensions.GetTimeSpanFromString(range);
+          startDate = DateTime.Now - fromWhere;
+        }
+        else
+        {
+          startDate = DateTime.MinValue;
+        }
+
+        var currentEmbedBuilder = new EmbedBuilder();
+        var embedsToPost = new List<Embed>();
+        using(var db = new Database())
+        {
+          var emoteStats = db.EmoteHeatMap
+          .Where(e => e.UpdateDate.Date > startDate.Date)
+          .GroupBy(e => e.Emote)
+          .Select(g => new
+                    {
+                      g.Key,
+                      SUM = g.Sum(s => s.UsageCount)
+                    })
+          .OrderByDescending(e => e.SUM);
+          var count = 0;
+          foreach(var emoteStat in emoteStats)
+          {
+            var emoteUsedQuery = db.Emotes.Where(e => e.ID == emoteStat.Key);
+            if(emoteUsedQuery.Any())
+            {
+              count++;
+              var emoteUsed = emoteUsedQuery.First();
+              currentEmbedBuilder.AddField(emoteUsed.GetAsEmote().ToString(), emoteStat.SUM, true);
+              if(((count % EmbedBuilder.MaxFieldCount) == 0) && emoteStat != emoteStats.Last())
+              {
+                embedsToPost.Add(currentEmbedBuilder.Build());
+                currentEmbedBuilder = new EmbedBuilder();
+                var currentPage = count / EmbedBuilder.MaxFieldCount + 1;
+                currentEmbedBuilder.WithFooter(new EmbedFooterBuilder().WithText($"Page {currentPage}"));
+              }
+            }
+          }
+        }
+        embedsToPost.Add(currentEmbedBuilder.Build());
+        foreach(var embed in embedsToPost)
+        {
+          await Context.Channel.SendMessageAsync(embed: embed);
+          await Task.Delay(500);
+        }
+        return CustomResult.FromSuccess();
       }
 
     }

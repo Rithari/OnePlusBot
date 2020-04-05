@@ -425,8 +425,9 @@ CREATE TABLE `Emotes` (
  `animated` tinyint(4) NOT NULL DEFAULT '0',
  `emote_id` bigint(20) unsigned NOT NULL DEFAULT '0',
  `custom` tinyint(4) NOT NULL DEFAULT '1',
+ `tracking_disabled` tinyint(4) NOT NULL DEFAULT '1',
  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Table structure for table `ReactionRoles`
@@ -469,5 +470,19 @@ CREATE TABLE `ResponseTemplate` (
  PRIMARY KEY (`template_key`),
  UNIQUE KEY `template_key` (`template_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `EmoteHeatMap`
+--
+
+CREATE TABLE `EmoteHeatMap` (
+ `id` int(8) unsigned NOT NULL AUTO_INCREMENT,
+ `emote_id` int(10) unsigned NOT NULL,
+ `usage_date` datetime DEFAULT CURRENT_TIMESTAMP,
+ `usage_count` int(8) unsigned NOT NULL,
+ PRIMARY KEY (`id`),
+ KEY `fk_emote_fk` (`emote_id`),
+ CONSTRAINT `fk_emote_fk` FOREIGN KEY (`emote_id`) REFERENCES `Emotes` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS=1;

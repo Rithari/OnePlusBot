@@ -32,6 +32,9 @@ namespace OnePlusBot.Data.Models
         [Column("custom")]
         public bool Custom { get; set; }
 
+        [Column("tracking_disabled")]
+        public bool TrackingDisabled { get; set; }
+
         public virtual ICollection<ReactionRole> EmoteReaction { get; set; }
 
         public IEmote GetAsEmote()
