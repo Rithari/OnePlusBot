@@ -45,7 +45,7 @@ namespace OnePlusBot.Modules.Utility
     ]
     public Task EchoAsync([Remainder] string text)
     {
-      return ReplyAsync(text);
+      return ReplyAsync(text + "hello world");
     }
 
     [
