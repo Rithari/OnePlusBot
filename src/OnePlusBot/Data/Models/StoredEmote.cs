@@ -27,7 +27,7 @@ namespace OnePlusBot.Data.Models
         public ulong EmoteId { get; set; }
 
         [Column("animated")]
-        public bool Amimated { get; set; }
+        public bool Animated { get; set; }
 
         [Column("custom")]
         public bool Custom { get; set; }
@@ -41,7 +41,7 @@ namespace OnePlusBot.Data.Models
         {
           if(Custom)
           {
-             var animatedPart = this.Amimated ? "a" : "";
+             var animatedPart = this.Animated ? "a" : "";
             return Emote.Parse($"<{animatedPart}:{Name}:{EmoteId}>");
           }
           else

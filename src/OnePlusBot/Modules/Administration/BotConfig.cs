@@ -149,7 +149,7 @@ namespace OnePlusBot.Modules.Administration
                 emoteToChange = new StoredEmote();
                 db.Emotes.Add(emoteToChange);
               }
-              emoteToChange.Amimated = emote.Animated;
+              emoteToChange.Animated = emote.Animated;
               emoteToChange.EmoteId = emote.Id;
               emoteToChange.Name = emote.Name;
               emoteToChange.Key = name;
