@@ -857,7 +857,15 @@ namespace OnePlusBot.Modules.Administration
               }
             }
           }
-          currentEmbedBuilder.WithDescription(currentStringBuilder.ToString());
+          if(emoteStats.Count() == 0)
+          {
+            currentEmbedBuilder.WithDescription("No data.");
+          }
+          else
+          {
+            currentEmbedBuilder.WithDescription(currentStringBuilder.ToString());
+          }
+
           embedsToAddTo.Add(currentEmbedBuilder.Build());
         }
       }
