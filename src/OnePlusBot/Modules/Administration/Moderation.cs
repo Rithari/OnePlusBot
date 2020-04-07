@@ -789,39 +789,10 @@ namespace OnePlusBot.Modules.Administration
           startDate = DateTime.MinValue;
         }
 
-        var currentEmbedBuilder = new EmbedBuilder();
         var embedsToPost = new List<Embed>();
-        using(var db = new Database())
-        {
-          var emoteStats = db.EmoteHeatMap
-          .Where(e => e.UpdateDate.Date > startDate.Date)
-          .GroupBy(e => e.Emote)
-          .Select(g => new
-                    {
-                      g.Key,
-                      SUM = g.Sum(s => s.UsageCount)
-                    })
-          .OrderByDescending(e => e.SUM);
-          var count = 0;
-          foreach(var emoteStat in emoteStats)
-          {
-            var emoteUsedQuery = db.Emotes.Where(e => e.ID == emoteStat.Key);
-            if(emoteUsedQuery.Any())
-            {
-              count++;
-              var emoteUsed = emoteUsedQuery.First();
-              currentEmbedBuilder.AddField(emoteUsed.GetAsEmote().ToString(), emoteStat.SUM, true);
-              if(((count % EmbedBuilder.MaxFieldCount) == 0) && emoteStat != emoteStats.Last())
-              {
-                embedsToPost.Add(currentEmbedBuilder.Build());
-                currentEmbedBuilder = new EmbedBuilder();
-                var currentPage = count / EmbedBuilder.MaxFieldCount + 1;
-                currentEmbedBuilder.WithFooter(new EmbedFooterBuilder().WithText($"Page {currentPage}"));
-              }
-            }
-          }
-        }
-        embedsToPost.Add(currentEmbedBuilder.Build());
+        AddEmbedsOfEmotes(embedsToPost, startDate, false, "Static emotes");
+        AddEmbedsOfEmotes(embedsToPost, startDate, true, "Animated emotes");
+
         foreach(var embed in embedsToPost)
         {
           await Context.Channel.SendMessageAsync(embed: embed);
@@ -830,5 +801,75 @@ namespace OnePlusBot.Modules.Administration
         return CustomResult.FromSuccess();
       }
 
+      /// <summary>
+      /// Creates the embed necessary to display the emotes from the given start date and the given type.
+      /// </summary>
+      /// <param name="embedsToAddTo">List of embeds where the created embeds should be added to</param>
+      /// <param name="startDate">Startdate from which the stats should be created from</param>
+      /// <param name="animated">Whether or not the emotes considered should be animated</param>
+      /// <param name="title">The title of the first embed</param>
+       private void AddEmbedsOfEmotes(List<Embed> embedsToAddTo, DateTime startDate, Boolean animated, string title) 
+      {
+        using(var db = new Database())
+        {
+          var unfiltered = db.EmoteHeatMap
+          .Where(e => e.UpdateDate.Date >= startDate.Date);
+          IQueryable<EmoteHeatMap> filtered;
+          if(animated)
+          {
+            filtered = unfiltered.Where(e => e.EmoteReference.Animated);
+          }
+          else
+          {
+            filtered = unfiltered.Where(e => !e.EmoteReference.Animated);
+          }
+          var emoteStats = filtered
+          .GroupBy(e => e.Emote)
+          .Select(g => new
+                    {
+                      g.Key,
+                      SUM = g.Sum(s => s.UsageCount)
+                    })
+          .OrderByDescending(e => e.SUM);
+          var currentStringBuilder = new StringBuilder();
+          var currentEmbedBuilder = new EmbedBuilder();
+          currentEmbedBuilder.WithTitle(title);
+          var count = 0;
+          foreach(var emoteStat in emoteStats)
+          {
+            var emoteUsedQuery = db.Emotes.Where(e => e.ID == emoteStat.Key);
+            if(emoteUsedQuery.Any())
+            {
+              var emoteUsed = emoteUsedQuery.First();
+              var currentEntry = emoteStat.SUM + "x" + emoteUsed.GetAsEmote().ToString() + "  ";
+              if((currentStringBuilder.ToString() + currentEntry).Length > EmbedBuilder.MaxDescriptionLength)
+              {
+                count++;
+                currentEmbedBuilder.WithDescription(currentStringBuilder.ToString());
+                embedsToAddTo.Add(currentEmbedBuilder.Build());
+                currentEmbedBuilder = new EmbedBuilder();
+                currentStringBuilder = new StringBuilder();
+                currentEmbedBuilder.WithFooter(new EmbedFooterBuilder().WithText($"Page {count}"));
+              }
+              else
+              {
+                currentStringBuilder.Append(currentEntry);
+              }
+            }
+          }
+          if(emoteStats.Count() == 0)
+          {
+            currentEmbedBuilder.WithDescription("No data.");
+          }
+          else
+          {
+            currentEmbedBuilder.WithDescription(currentStringBuilder.ToString());
+          }
+
+          embedsToAddTo.Add(currentEmbedBuilder.Build());
+        }
+      }
+
+   
     }
 }

@@ -104,7 +104,7 @@ namespace OnePlusBot.Modules
             {
               if(commandChannels.Count() > 1)
               {
-                await Context.Channel.SendMessageAsync("Warning command have different responses for this channel");
+                await Context.Channel.SendMessageAsync("Warning: command has multiple responses for this channel");
               }
               foreach(var commandChannel in commandChannels){
                 var entries = commandChannels.First().CommandChannelEntries.OrderBy(entry => entry.Position);
@@ -169,7 +169,7 @@ namespace OnePlusBot.Modules
             }
           }
           var embedBuilder = new EmbedBuilder().WithTitle("Available entries in this channel").WithDescription(stringBuilder.ToString());
-          
+          embedBuilder.WithFooter("You can access them by typing 'faq <entryName>'.");
           await Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
         }
       }
