@@ -23,7 +23,7 @@ namespace OnePlusBot.Base
         private readonly CommandService _commands;
         private readonly IServiceProvider _services;
 
-        private static Regex messageRegex = new Regex("(https://(?:(?:canary|ptb).)?discordapp.com/channels/(\\d+)/(\\d+)/(\\d+))+", RegexOptions.Singleline | RegexOptions.Compiled);
+        private static Regex messageRegex = new Regex("(https://(?:(?:canary|ptb).)?(?:discord|discordapp).com/channels/(\\d+)/(\\d+)/(\\d+))+", RegexOptions.Singleline | RegexOptions.Compiled);
 
         public CommandHandler(DiscordSocketClient bot, CommandService commands, IServiceProvider services)
         {
