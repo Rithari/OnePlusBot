@@ -217,7 +217,7 @@ namespace OnePlusBot.Modules
                 .WithValue(BuildStringForMessage(mostStarredMessages, badges));
 
                 var secondPostField = new EmbedFieldBuilder()
-                .WithName("Top star reciever")
+                .WithName("Top star receiver")
                 .WithValue(BuildStringForPoster(mostStarRecieverUser, badges));
 
                 var thirdPostField = new EmbedFieldBuilder()

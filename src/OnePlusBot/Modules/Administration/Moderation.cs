@@ -834,7 +834,7 @@ namespace OnePlusBot.Modules.Administration
           var currentStringBuilder = new StringBuilder();
           var currentEmbedBuilder = new EmbedBuilder();
           currentEmbedBuilder.WithTitle(title);
-          var count = 0;
+          var count = 1;
           foreach(var emoteStat in emoteStats)
           {
             var emoteUsedQuery = db.Emotes.Where(e => e.ID == emoteStat.Key);
