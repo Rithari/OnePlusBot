@@ -677,7 +677,7 @@ namespace OnePlusBot.Modules.Administration
         RequireRole("staff"),
         CommandDisabledCheck
       ]
-      public async Task<RuntimeResult> AddUserNote(IGuildUser user, String text)
+      public async Task<RuntimeResult> AddUserNote(IGuildUser user, [Remainder] String text)
       {
         using(var db = new Database())
         {
