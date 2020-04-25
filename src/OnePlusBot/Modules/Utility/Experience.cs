@@ -42,7 +42,7 @@ namespace OnePlusBot.Modules.Utility
         {
           var rank = db.Users.OrderByDescending(us => us.XP).ToList().IndexOf(userInDb) + 1;
           var nextLevel = db.ExperienceLevels.Where(lv => lv.Level == userInDb.Level + 1).FirstOrDefault();
-          embedBuilder.WithAuthor(new EmbedAuthorBuilder().WithIconUrl(userToUse.GetAvatarUrl()).WithName(userToUse.Username + userToUse.Discriminator));
+          embedBuilder.WithAuthor(new EmbedAuthorBuilder().WithIconUrl(userToUse.GetAvatarUrl()).WithName(Extensions.FormatUserName(userToUse)));
           embedBuilder.AddField("XP", userInDb.XP, true);
           embedBuilder.AddField("Level", userInDb.Level, true);
           embedBuilder.AddField("Messages", userInDb.MessageCount, true);

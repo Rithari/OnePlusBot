@@ -423,7 +423,7 @@ namespace OnePlusBot.Modules.Administration
 
         if(reason == null)
         {
-          reason = "No reason provided.";
+          reason = "No reason provided";
         }
 
         var entry = new WarnEntry
@@ -442,7 +442,7 @@ namespace OnePlusBot.Modules.Administration
 
         try
         {
-          const string muteMessage = "You were warned on r/OnePlus for the following reason: {0}.";
+          const string muteMessage = "You were warned on r/OnePlus for the following reason: {0}";
           await user.SendMessageAsync(string.Format(muteMessage, reason));
         }
         catch(HttpException)
@@ -677,7 +677,7 @@ namespace OnePlusBot.Modules.Administration
         RequireRole("staff"),
         CommandDisabledCheck
       ]
-      public async Task<RuntimeResult> AddUserNote(IGuildUser user, String text)
+      public async Task<RuntimeResult> AddUserNote(IGuildUser user, [Remainder] String text)
       {
         using(var db = new Database())
         {
@@ -834,7 +834,7 @@ namespace OnePlusBot.Modules.Administration
           var currentStringBuilder = new StringBuilder();
           var currentEmbedBuilder = new EmbedBuilder();
           currentEmbedBuilder.WithTitle(title);
-          var count = 0;
+          var count = 1;
           foreach(var emoteStat in emoteStats)
           {
             var emoteUsedQuery = db.Emotes.Where(e => e.ID == emoteStat.Key);
