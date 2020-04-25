@@ -423,7 +423,7 @@ namespace OnePlusBot.Modules.Administration
 
         if(reason == null)
         {
-          reason = "No reason provided.";
+          reason = "No reason provided";
         }
 
         var entry = new WarnEntry
@@ -442,7 +442,7 @@ namespace OnePlusBot.Modules.Administration
 
         try
         {
-          const string muteMessage = "You were warned on r/OnePlus for the following reason: {0}.";
+          const string muteMessage = "You were warned on r/OnePlus for the following reason: {0}";
           await user.SendMessageAsync(string.Format(muteMessage, reason));
         }
         catch(HttpException)
