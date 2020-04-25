@@ -119,21 +119,33 @@ namespace OnePlusBot.Helpers
             foreach(var embed in message.Embeds)
             {
               // only support rich emebds for now
-              if(embed.Type != EmbedType.Rich) 
+              if(embed.Type == EmbedType.Rich)
               {
-                continue; 
+                stringBuilder.Append($" Embed \n");
+                if(embed.Title != string.Empty && embed.Title != null)
+                {
+                  stringBuilder.Append($"**{embed.Title}** \n");
+                }
+                stringBuilder.Append($"{embed.Description} \n");
+                foreach(var field in embed.Fields)
+                {
+                  stringBuilder.Append($" *{field.Name}*: {field.Value} \n");
+                }
               }
 
-              stringBuilder.Append($" Embed \n");
-              if(embed.Title != string.Empty && embed.Title != null)
-              {
-                stringBuilder.Append($"**{embed.Title}** \n");
-              }
-              stringBuilder.Append($"{embed.Description} \n");
-              foreach(var field in embed.Fields)
-              {
-                stringBuilder.Append($" *{field.Name}*: {field.Value} \n");
-              }
+            }
+          }
+          var potentialImageEmbed = message.Embeds.Where(e => e.Type == EmbedType.Image);
+          if(potentialImageEmbed.Any())
+          {
+            builder.WithImageUrl(potentialImageEmbed.First().Url);
+            if(message.Attachments.Count() > 0)
+            {
+              builder.WithThumbnailUrl(message.Attachments.First().ProxyUrl);
+            }
+            if(potentialImageEmbed.Count() > 1)
+            {
+              builder.AddField("Additional pictures", potentialImageEmbed.Count() -1);
             }
           }
           builder.WithDescription(stringBuilder.ToString());
