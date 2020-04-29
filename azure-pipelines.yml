@@ -13,18 +13,20 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: DotNetCoreInstaller@0
+- task: UseDotNet@2
+  displayName: 'dotnet build $(buildConfiguration)'
   inputs:
-    version: '3.x'
+    packageType: 'sdk'
+    version: 3.1.100
 - script: dotnet publish -c $(buildConfiguration) -o out-linux -r linux-x64
   displayName: 'dotnet build $(buildConfiguration)'
+
 - task: DotNetCoreCLI@0
   displayName: build
   inputs:
     command: build
     projects: '**/*.csproj'
     arguments: '-c $(buildConfiguration) -o out-linux -r linux-x64'
-
 - task: CopyFiles@2
   inputs:
     SourceFolder: '$(system.DefaultWorkingDirectory)'
