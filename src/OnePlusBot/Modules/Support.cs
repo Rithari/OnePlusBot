@@ -79,9 +79,9 @@ namespace OnePlusBot.Modules
         Summary("Answers frequently asked questions with a predetermined response."),
         CommandDisabledCheck
       ]
-      public async Task FAQAsync([Optional] [Remainder] string parameter)
+      public async Task FAQAsync([Optional] string parameter, [Optional] ISocketMessageChannel channel)
       {
-        var contextChannel = Context.Channel;
+        var contextChannel = channel ?? Context.Channel;
         if(parameter == null || parameter == string.Empty)
         {
             await PrintAvailableCommands(contextChannel);
