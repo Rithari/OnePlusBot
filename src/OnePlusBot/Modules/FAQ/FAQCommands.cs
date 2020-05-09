@@ -1,16 +1,16 @@
-using System;
-using System.Text;
-using Discord.Commands;
 using Discord;
+using Discord.Commands;
+using OnePlusBot.Base;
+using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Discord.Addons.Interactive;
-using OnePlusBot.Base;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using OnePlusBot.Data;
 using OnePlusBot.Data.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;    
-using System.Collections.ObjectModel;
 
 
 namespace OnePlusBot.Modules.FAQ
@@ -65,8 +65,17 @@ namespace OnePlusBot.Modules.FAQ
             return "no groups";
           }
           StringBuilder stringRepresentation = new StringBuilder();
-          stringRepresentation.Append("Groups:");
-          stringRepresentation.Append(string.Join(", ", channelGroups.Select(g => g.ChannelGroupReference.Name)));
+          foreach(FAQCommandChannel fch in channelGroups)
+          {
+            stringRepresentation.Append($"Group: {fch.ChannelGroupReference.Name} {Environment.NewLine}Channels: ");
+            foreach(ChannelInGroup ch in fch.ChannelGroupReference.Channels) {
+              stringRepresentation.Append($"<#{ch.ChannelId}> ");
+            }
+            if(fch.ChannelGroupReference.Channels.Count == 0) {
+              stringRepresentation.Append(" no channels.");
+            }
+            stringRepresentation.Append(Environment.NewLine);
+          }
 
           return stringRepresentation.ToString() != string.Empty ? stringRepresentation.ToString() : "no groups.";
         }
