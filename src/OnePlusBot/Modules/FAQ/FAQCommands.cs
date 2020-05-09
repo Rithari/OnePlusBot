@@ -62,20 +62,11 @@ namespace OnePlusBot.Modules.FAQ
         private string getChannelsAsMentions(ICollection<FAQCommandChannel> channelGroups)
         {
           if(channelGroups == null) {
-            return "no channels";
+            return "no groups";
           }
           StringBuilder stringRepresentation = new StringBuilder();
-          foreach(FAQCommandChannel fch in channelGroups)
-          {
-            stringRepresentation.Append($"Group: {fch.ChannelGroupReference.Name} {Environment.NewLine}Channels: ");
-            foreach(ChannelInGroup ch in fch.ChannelGroupReference.Channels) {
-              stringRepresentation.Append($"<#{ch.ChannelId}> ");
-            }
-            if(fch.ChannelGroupReference.Channels.Count == 0) {
-              stringRepresentation.Append(" no channels.");
-            }
-            stringRepresentation.Append(Environment.NewLine);
-          }
+          stringRepresentation.Append("Groups:");
+          stringRepresentation.Append(string.Join(", ", channelGroups.Select(g => g.ChannelGroupReference.Name)));
 
           return stringRepresentation.ToString() != string.Empty ? stringRepresentation.ToString() : "no groups.";
         }
