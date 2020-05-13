@@ -1,5 +1,4 @@
 using System.Text;
-using System.Reflection.Metadata;
 using System;
 using Discord.Commands;
 using Discord;
@@ -14,12 +13,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;    
 
 
-namespace OnePlusBot.Modules
+namespace OnePlusBot.Modules.FAQ
 {
-    [
-      Summary("Module containing the command to configure the faq commands.")
-    ]
-    public class FAQConfiguration : InteractiveBase<SocketCommandContext>
+    public partial class FAQ : InteractiveBase<SocketCommandContext>
     {
 
         [

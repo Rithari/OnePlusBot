@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System;
 using System.Threading.Tasks;
 using Discord.Commands;
 using OnePlusBot.Base;

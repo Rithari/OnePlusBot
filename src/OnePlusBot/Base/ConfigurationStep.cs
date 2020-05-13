@@ -42,11 +42,13 @@ namespace OnePlusBot.Base {
 
         public Func<ConfigurationStep, Task> beforeTextPosted { get; set; }
 
+        private bool deleteMessages = true;
+
 
         // the text to post to end the step
         public static string EXIT_TEXT = "exit";
 
-        public ConfigurationStep(string description, InteractiveService interactive, SocketCommandContext context, StepType type, ConfigurationStep parent)
+        public ConfigurationStep(string description, InteractiveService interactive, SocketCommandContext context, StepType type, ConfigurationStep parent, bool deleteMessages=false)
         {
             this.Interactive = interactive;
             this.description = description;
@@ -64,6 +66,7 @@ namespace OnePlusBot.Base {
                 };
                 this.Actions.Add(abortAction);
             }
+            this.deleteMessages = deleteMessages;
         }
         private string description { get; set; }
 
@@ -71,109 +74,115 @@ namespace OnePlusBot.Base {
 
         public async Task SetupMessage()
         {
-            PostedMessages = new Collection<IMessage>();
-            Interactive.ClearReactionCallbacks();
-            if(this.beforeTextPosted != null)
+          PostedMessages = new Collection<IMessage>();
+          Interactive.ClearReactionCallbacks();
+          if(this.beforeTextPosted != null)
+          {
+            await this.beforeTextPosted(this);
+          }
+          if(additionalPosts.Count > 0)
+          {
+            var additionalPostsString = new StringBuilder();
+            foreach(var text in additionalPosts)
             {
-                await this.beforeTextPosted(this);
+              additionalPostsString.Append(text + Environment.NewLine);
             }
-            if(additionalPosts.Count > 0)
+            var value = additionalPostsString.ToString();
+            if(value != string.Empty)
             {
-                var additionalPostsString = new StringBuilder();
-                foreach(var text in additionalPosts)
-                {
-                    additionalPostsString.Append(text + Environment.NewLine);
-                }
-                var value = additionalPostsString.ToString();
-                if(value != string.Empty)
-                {
-                    var message = await Context.Channel.SendMessageAsync(value);
-                    PostedMessages.Add(message);
-                }
+              var message = await Context.Channel.SendMessageAsync(value);
+              PostedMessages.Add(message);
             }
+          }
            
-            this.Message = await Context.Channel.SendMessageAsync(description);
-            PostedMessages.Add(this.Message);
-            if(type == StepType.Reaction)
+          this.Message = await Context.Channel.SendMessageAsync(description);
+          PostedMessages.Add(this.Message);
+          if(type == StepType.Reaction)
+          {
+            var emotes = new Collection<IEmote>();
+            foreach(var action in Actions)
             {
-                var emotes = new Collection<IEmote>();
-                foreach(var action in Actions)
-                {
-                    emotes.Add(action.Emote);
-                }
-                await Message.AddReactionsAsync(emotes.ToArray());
-                Interactive.AddReactionCallback(this.Message, this);
+                emotes.Add(action.Emote);
             }
-            else 
-            {
-                var response = await Interactive.NextMessageAsync(Context, true, true, TimeSpan.FromMinutes(2));
-                Result = response.Content;
-                await response.DeleteAsync();
-                await RemoveMessagesOnNextProgression();
-                reactBasedOnResult();
+            await Message.AddReactionsAsync(emotes.ToArray());
+            Interactive.AddReactionCallback(this.Message, this);
+          }
+          else
+          {
+            var response = await Interactive.NextMessageAsync(Context, true, true, TimeSpan.FromMinutes(2));
+            Result = response.Content;
+            if(this.deleteMessages) {
+              await response.DeleteAsync();
             }
+            reactBasedOnResult();
+          }
 
-            if (Timeout.HasValue && Timeout.Value != null)
+          if (Timeout.HasValue && Timeout.Value != null)
+          {
+            _ = Task.Delay(Timeout.Value).ContinueWith(async _ =>
             {
-                _ = Task.Delay(Timeout.Value).ContinueWith(async _ =>
+              if(Message != null)
+              {
+                  Interactive.RemoveReactionCallback(Message);
+              }
+              if(this.deleteMessages) {
+                foreach(var message in PostedMessages)
                 {
-                    if(Message != null)
-                    {
-                        Interactive.RemoveReactionCallback(Message);
-                    }
-                    
-                    foreach(var message in PostedMessages)
-                    {
-                        await message.DeleteAsync();
-                    }  
-                    
-                });
-            }
+                  await message.DeleteAsync();
+                }
+              }
+            });
+          }
             
             
         }
 
         private async Task RemoveMessagesOnNextProgression()
         {
+          if(this.deleteMessages) {
             foreach(var message in MessagesToRemoveOnNextProgression)
             {
-                await message.DeleteAsync();
+              await message.DeleteAsync();
             }
-            MessagesToRemoveOnNextProgression.Clear();
+          }
+          MessagesToRemoveOnNextProgression.Clear();
         }
 
         private async Task reactBasedOnResult()
         {
+          if(this.deleteMessages) {
             foreach(var message in PostedMessages)
             {
-                await Context.Channel.DeleteMessageAsync(message);
+              await Context.Channel.DeleteMessageAsync(message);
             }
-            PostedMessages.Clear();
-            if(Result != null)
+          }
+
+          PostedMessages.Clear();
+          if(Result != null)
+          {
+            if(Result is ConfigurationStep)
             {
-                if(Result is ConfigurationStep)
-                {
-                    var casted = Result as ConfigurationStep;
-                    await casted.SetupMessage();
-                }
-                else if(Result is string)
-                {
-                    if(Result as string == EXIT_TEXT)
-                    {
-                        return;
-                    }
-                    this.TextCallback(Result as string, this);
-                    if(this.Result != null && this.Result is ConfigurationStep)
-                    {
-                        // text posts can now also return a configuration step, so we do not always go back to the parent
-                        await (this.Result as ConfigurationStep).SetupMessage();
-                    }
-                    else
-                    {
-                        await this.parent.SetupMessage();
-                    }
-                }
+              var casted = Result as ConfigurationStep;
+              await casted.SetupMessage();
             }
+            else if(Result is string)
+            {
+              if(Result as string == EXIT_TEXT)
+              {
+                return;
+              }
+              this.TextCallback(Result as string, this);
+              if(this.Result != null && this.Result is ConfigurationStep)
+              {
+                // text posts can now also return a configuration step, so we do not always go back to the parent
+                await (this.Result as ConfigurationStep).SetupMessage();
+              }
+              else
+              {
+                await this.parent.SetupMessage();
+              }
+            }
+          }
            
         }
 
