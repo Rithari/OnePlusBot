@@ -612,8 +612,28 @@ namespace OnePlusBot.Modules.Administration
       }
 
       [
+        Command("myWarnings"),
+        Summary("Displays your warnings"),
+        CommandDisabledCheck
+      ]
+      public async Task<RuntimeResult> DisplayMyWarnings() {
+        var requestee = Context.User as SocketGuildUser;
+        using (var db = new Database())
+        {
+          IQueryable<WarnEntry> individualWarnings = db.Warnings.Where(x => x.WarnedUserID == requestee.Id && !x.Decayed);
+          var totalWarnings = db.Warnings.Where(x => x.WarnedUserID == requestee.Id);
+          var builder = new EmbedBuilder();
+          builder.WithAuthor(new EmbedAuthorBuilder().WithIconUrl(requestee.GetAvatarUrl()).WithName(requestee.Username + '#' + requestee.Discriminator));
+          builder.WithDescription($"{requestee.Username + '#' + requestee.Discriminator} has {individualWarnings.Count()} active out of {totalWarnings.Count()} total warnings.");
+          await ReplyAsync(embed: builder.Build());
+        }
+        return CustomResult.FromSuccess();
+      }
+
+      [
         Command("warnings"),
         Summary("Gets all warnings of given user"),
+        RequireRole("staff"),
         CommandDisabledCheck
       ]
       public async Task GetWarnings([Optional] IGuildUser user)
@@ -632,18 +652,6 @@ namespace OnePlusBot.Modules.Administration
           }
 
           _total = warnings.Count();
-
-          if (!requestee.Roles.Any(x => x.Name == "Staff"))
-          {
-            individualWarnings = db.Warnings.Where(x => x.WarnedUserID == requestee.Id && !x.Decayed);
-            var totalWarnings = db.Warnings.Where(x => x.WarnedUserID == requestee.Id);
-            var builder = new EmbedBuilder();
-            builder.WithAuthor(new EmbedAuthorBuilder().WithIconUrl(requestee.GetAvatarUrl()).WithName(requestee.Username + '#' + requestee.Discriminator));
-            builder.WithDescription($"{requestee.Username + '#' + requestee.Discriminator} has {individualWarnings.Count()} active out of {totalWarnings.Count()} total warnings.");
-            await ReplyAsync(embed: builder.Build());
-
-            return;
-          }
 
           if (_total == 0)
           {
