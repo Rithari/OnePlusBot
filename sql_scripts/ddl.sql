@@ -485,4 +485,16 @@ CREATE TABLE `EmoteHeatMap` (
  CONSTRAINT `fk_emote_fk` FOREIGN KEY (`emote_id`) REFERENCES `Emotes` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `FilteredUDWord`
+--
+
+CREATE TABLE `FilteredUDWord` (
+ `entry_id` int(11) NOT NULL AUTO_INCREMENT,
+ `word` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+ PRIMARY KEY (`entry_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS=1;
+
+

@@ -126,17 +126,24 @@ namespace OnePlusBot.Modules
 
                 string json = await _clients.GetStringAsync("http://api.urbandictionary.com/v0/define?term=" + searchquery);
                 var response = Response.FromJson(json);
-                await definition.ModifyAsync(x => x.Content = response.List.FirstOrDefault()?.Definition ?? "No definition found");
+                var text = response.List.FirstOrDefault()?.Definition ?? "No definition found";
+                foreach(var filtered in Global.FilteredUdWords)
+                {
+                  var index = text.IndexOf(filtered.Text.ToLower(), StringComparison.CurrentCultureIgnoreCase);
+                  if(index != -1)
+                  {
+                    var stringBuilderForModifying = new StringBuilder(text);
+                    stringBuilderForModifying.Remove(index, filtered.Text.ToLower().Length);
+                    stringBuilderForModifying.Insert(index, "**redacted**");
+                    text = stringBuilderForModifying.ToString();
+                  }
+                }
+                await definition.ModifyAsync(x => x.Content = text);
             }
             catch (Exception ex)
             {
                 await ReplyAsync(ex.Message);
             }
-            /*   await definition.ModifyAsync(x =>
-                {
-                   // x.Embed
-                    x.Content = ":notebook_with_decorative_cover:" + "`[Urban Dictionary]`" + Regex.Replace(url, @"&#39;|\<.*?\>|&quot;|&amp;|â€™|â€œ|!â€", "\0");
-               }); */
         }
 
 
