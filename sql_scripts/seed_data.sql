@@ -12,7 +12,9 @@ INSERT INTO `PersistentData` VALUES
 (12, 'xp_gain_range_min', 10, ''),
 (13, 'xp_gain_range_max', 25, ''),
 (14, 'profanity_votes_threshold', 4, ''),
-(15, 'legal_user_name_regex', 0, '');
+(15, 'legal_user_name_regex', 0, ''),
+(16, 'auto_mute_max_level', 0, ''),
+(17, 'auto_mute_ping_count', 0, '');
 
 INSERT INTO `AuthTokens` VALUES 
 (1,'stable','REPLACE WITH TOKEN'),
