@@ -38,18 +38,23 @@ namespace OnePlusBot.Modules.FAQ
             .ToList();
             
             var count = 0;
+            var pageCount = 1;
             foreach(var command in commmands)
             {
               count++;
               var channelMentions = getChannelsAsMentions(command.CommandChannels);
-              currentEmbedBuilder.AddField(command.Name, channelMentions, true);
-              if(((count % EmbedBuilder.MaxFieldCount) == 0) && command != commmands.Last())
-              {
-                embedsToPost.Add(currentEmbedBuilder.Build());
-                currentEmbedBuilder = new EmbedBuilder();
-                var currentPage = count / EmbedBuilder.MaxFieldCount + 1;
-                currentEmbedBuilder.WithFooter(new EmbedFooterBuilder().WithText($"Page {currentPage}"));
-              }  
+              foreach(string channelMention in channelMentions) {
+              if(((count % EmbedBuilder.MaxFieldCount) == 0) && command != commmands.Last() || 
+                ((currentEmbedBuilder.Length + channelMention.Length + command.Name.Length) > EmbedBuilder.MaxEmbedLength))
+                {
+                  embedsToPost.Add(currentEmbedBuilder.Build());
+                  currentEmbedBuilder = new EmbedBuilder();
+                  pageCount += 1;
+                  currentEmbedBuilder.WithFooter(new EmbedFooterBuilder().WithText($"Page {pageCount}"));
+                }
+                currentEmbedBuilder.AddField(command.Name, channelMention, true);
+              }
+
             }
             embedsToPost.Add(currentEmbedBuilder.Build());
           }
@@ -59,25 +64,43 @@ namespace OnePlusBot.Modules.FAQ
           }
         }
 
-        private string getChannelsAsMentions(ICollection<FAQCommandChannel> channelGroups)
+        private List<string> getChannelsAsMentions(ICollection<FAQCommandChannel> channelGroups)
         {
           if(channelGroups == null) {
-            return "no groups";
+            return new List<string>()
+            {
+              "no groups",
+            };
           }
-          StringBuilder stringRepresentation = new StringBuilder();
+          var groups = new List<string>();
           foreach(FAQCommandChannel fch in channelGroups)
           {
-            stringRepresentation.Append($"Group: {fch.ChannelGroupReference.Name} {Environment.NewLine}Channels: ");
+            extendIfNecessary(groups, $"Group: {fch.ChannelGroupReference.Name} {Environment.NewLine}Channels: ");
             foreach(ChannelInGroup ch in fch.ChannelGroupReference.Channels) {
-              stringRepresentation.Append($"<#{ch.ChannelId}> ");
+              extendIfNecessary(groups, $"<#{ch.ChannelId}> ");
             }
             if(fch.ChannelGroupReference.Channels.Count == 0) {
-              stringRepresentation.Append(" no channels.");
+              extendIfNecessary(groups, " no channels.");
             }
-            stringRepresentation.Append(Environment.NewLine);
+            extendIfNecessary(groups, Environment.NewLine);
           }
+          var defaultList = new List<string>()
+          {
+            "no groups",
+          };
+          return groups.Count() != 0 ? groups : defaultList;
+        }
 
-          return stringRepresentation.ToString() != string.Empty ? stringRepresentation.ToString() : "no groups.";
+        private void extendIfNecessary(List<string> list, string toAdd)
+        {
+          if(list.Count() == 0 || (list.Last().Length + toAdd.Length) > 1024)
+          {
+            list.Add(toAdd);
+          }
+          else
+          {
+            list[list.Count() - 1] = list[list.Count() - 1] + toAdd;
+          }
         }
     }
 }

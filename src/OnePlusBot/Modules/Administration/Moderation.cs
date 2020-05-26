@@ -152,39 +152,30 @@ namespace OnePlusBot.Modules.Administration
       /// The user receives a message with the reason and the date at which the mute is lifted automatically. The mute is logged in the mutelog posttarget.
       /// </summary>
       /// <param name="user">The <see cref="Discord.IGuildUser"> user to mute</param>
-      /// <param name="arguments">Arguments for muting, including: the duration and the reason</param>
+      /// <param name="duration">The duration of the mute</param>
+      /// <param name="reason">The reason for the mute</param>
       /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
       [
           Command("mute", RunMode=RunMode.Async),
-          Summary("Mutes a specified user for a set amount of time"),
+          Summary("Mutes a specified user for a set amount of time. Example: `mute @Username#1234 5d2h1m3s mute reason`"),
           RequireRole("staff"),
           RequireBotPermission(GuildPermission.ManageRoles),
           CommandDisabledCheck
       ]
-      public async Task<RuntimeResult> MuteUser(IGuildUser user,params string[] arguments)
+      public async Task<RuntimeResult> MuteUser(IGuildUser user, string duration, [Optional] String reason)
       {
           if (user.IsBot)
               return CustomResult.FromError("You can't mute bots.");
 
           if (user.GuildPermissions.PrioritySpeaker)
               return CustomResult.FromError("You can't mute staff.");
-          
-          if(arguments.Length < 1)
-              return CustomResult.FromError("The correct usage is `;mute <duration> <reason>`");
 
-          string durationStr = arguments[0];
-          TimeSpan span = Extensions.GetTimeSpanFromString(durationStr);
+
+          TimeSpan span = Extensions.GetTimeSpanFromString(duration);
           var now = DateTime.Now;
           DateTime targetTime = now.Add(span);
 
-          string reason;
-          if(arguments.Length > 1)
-          {
-              string[] reasons = new string[arguments.Length -1];
-              Array.Copy(arguments, 1, reasons, 0, arguments.Length - 1);
-              reason = string.Join(" ", reasons);
-          } 
-          else 
+          if(reason is null)
           {
               return CustomResult.FromError("You need to provide a reason.");
           }
