@@ -14,7 +14,7 @@ namespace OnePlusBot.Modules.Utility
   public partial class Utility {
     [
       Command("remind"),
-      Summary("Reminds you of a text after a defined time period."),
+      Summary("Reminds you of a text after a defined time period. Example: `remind 5d2h1m3s remind text`"),
       CommandDisabledCheck
     ]
     public async Task<RuntimeResult> HandleRemindInput(params string[] arguments)
