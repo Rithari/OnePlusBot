@@ -14,6 +14,8 @@ namespace OnePlusBot.Base
     internal static class Global
     {
         public static ulong InfoRoleManagerMessageId;
+        public static ulong AutoMuteMaxLevel;
+        public static ulong AutoMutePingCount;
 
         public static Random Random { get; }
 
@@ -166,6 +168,9 @@ namespace OnePlusBot.Base
                 ServerID = PersistentData.GetConfiguredInt("server_id", db);
                 
                 InfoRoleManagerMessageId = PersistentData.GetConfiguredInt("rolemanager_message_id", db);
+
+                AutoMuteMaxLevel = PersistentData.GetConfiguredInt("auto_mute_max_level", db);
+                AutoMutePingCount = PersistentData.GetConfiguredInt("auto_mute_ping_count", db);
 
                 StarboardStars = PersistentData.GetConfiguredInt("starboard_stars", db);
 

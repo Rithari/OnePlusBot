@@ -11,9 +11,9 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using System.Net;
 using System.Collections.Generic;
 using Discord.Rest;
+using Discord.Net;
 
 namespace OnePlusBot.Base
 {
@@ -42,6 +42,7 @@ namespace OnePlusBot.Base
             _bot.MessageReceived += OnMessageReceived;
             _bot.MessageReceived += OnMessageEmoteCheck;
             _bot.MessageReceived += OnMessageReceivedEmbed;
+            _bot.MessageReceived += OnMessageMassPingCheck;
             _bot.MessageReceived += HandleExpGain;
             _bot.MessageDeleted += OnMessageRemoved;
             _bot.MessageUpdated += OnMessageUpdated;
@@ -821,6 +822,55 @@ namespace OnePlusBot.Base
             }
           }
           
+        }
+
+        private static async Task OnMessageMassPingCheck(SocketMessage message)
+        {
+          if(message.Channel is SocketGuildChannel)
+          {
+            if(Convert.ToUInt64(message.MentionedUsers.Count + message.MentionedRoles.Count) > Global.AutoMutePingCount)
+            {
+              using(var db = new Database())
+              {
+                var userQuery = db.Users.Where(us => us.Id == message.Author.Id);
+                if(userQuery.Any())
+                {
+                  var foundUser = userQuery.First();
+                  if(foundUser.Level > Global.AutoMuteMaxLevel)
+                  {
+                    return;
+                  }
+                }
+              }
+              SocketGuildChannel guildChannel = (SocketGuildChannel) message.Channel;
+              var guild = Global.Bot.GetGuild(guildChannel.Guild.Id);
+              var guildUser = guild.GetUser(message.Author.Id);
+              await Extensions.MuteUser(guildUser);
+              var builder = new EmbedBuilder();
+              builder.Title = "A user has been muted for mass pinging!";
+              builder.Color = Color.Red;
+
+              builder.Timestamp = message.Timestamp;
+
+              builder.ThumbnailUrl = message.Author.GetAvatarUrl();
+
+              const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
+              builder.AddField("Muted User", Extensions.FormatUserNameDetailed(guildUser))
+                      .AddField("Location of the mute",
+                          $"[#{message.Channel.Name}]({string.Format(discordUrl, guildChannel.Guild.Id, guildChannel.Id, message.Id)})");
+
+              await guild.GetTextChannel(Global.PostTargets[PostTarget.MUTE_LOG]).SendMessageAsync(embed: builder.Build());
+
+              try
+              {
+                await message.Author.SendMessageAsync("You were muted on r/OnePlus for mass pinging. If you think that is a mistake contact the moderators.");
+              }
+              catch(HttpException)
+              {
+
+              }
+            }
+          }
         }
 
         /// <summary>
