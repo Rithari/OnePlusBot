@@ -58,6 +58,8 @@ namespace OnePlusBot.Base
         public static Dictionary<string, StoredEmote> Emotes { get; set; }
         public static Dictionary<string, StoredEmote> TrackedEmotes { get; set; }
 
+        public static List<FilteredUDWord> FilteredUdWords { get; set; }
+
         public static bool XPGainDisabled { get; set; }
 
         public static int XPGainRangeMin { get; set; }
@@ -121,6 +123,7 @@ namespace OnePlusBot.Base
             TrackedEmotes = new Dictionary<string, StoredEmote>();
             Commands = new  List<Command>();
             UserNameNotifications = new Dictionary<ulong, ulong>();
+            FilteredUdWords = new List<FilteredUDWord>();
             LoadGlobal();
         }
 
@@ -194,6 +197,9 @@ namespace OnePlusBot.Base
                 XPGainRangeMin = (int) PersistentData.GetConfiguredInt("xp_gain_range_min", db);
 
                 XPGainRangeMax = (int) PersistentData.GetConfiguredInt("xp_gain_range_max", db);
+
+                FilteredUdWords.Clear();
+                FilteredUdWords.AddRange(db.FilteredUDWords);
 
                 Emotes.Clear();
                 if(db.Emotes.Any())

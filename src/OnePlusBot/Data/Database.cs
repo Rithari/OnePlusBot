@@ -23,6 +23,8 @@ namespace OnePlusBot.Data
         public DbSet<FAQCommand> FAQCommands { get; set;}
         public DbSet<FAQCommandChannel> FAQCommandChannels { get; set;}
 
+        public DbSet<FilteredUDWord> FilteredUDWords { get; set; }
+
         public DbSet<FAQCommandChannelEntry> FAQCommandChannelEntries { get; set; }
         public DbSet<WarnEntry> Warnings { get; set; }
 
