@@ -52,7 +52,7 @@ namespace OnePlusBot.Modules.FAQ
                   pageCount += 1;
                   currentEmbedBuilder.WithFooter(new EmbedFooterBuilder().WithText($"Page {pageCount}"));
                 }
-                currentEmbedBuilder.AddField(command.Name, channelMention, true);
+                currentEmbedBuilder.AddField($"**{command.Name}**", channelMention, true);
               }
 
             }

@@ -117,7 +117,7 @@ namespace OnePlusBot.Base
             var channel = guild.GetTextChannel(reminderObj.ChannelId);
             if(channel != null)
             {
-              await channel.SendMessageAsync(user.Mention, embed: embed).ConfigureAwait(false);
+              await channel.SendMessageAsync("🔔" + user.Mention, embed: embed).ConfigureAwait(false);
             } 
             
         }
