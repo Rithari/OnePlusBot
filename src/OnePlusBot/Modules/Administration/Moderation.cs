@@ -162,7 +162,7 @@ namespace OnePlusBot.Modules.Administration
           RequireBotPermission(GuildPermission.ManageRoles),
           CommandDisabledCheck
       ]
-      public async Task<RuntimeResult> MuteUser(IGuildUser user, string duration, [Optional] String reason)
+      public async Task<RuntimeResult> MuteUser(IGuildUser user, string duration, [Optional] [Remainder] string reason)
       {
           if (user.IsBot)
               return CustomResult.FromError("You can't mute bots.");
