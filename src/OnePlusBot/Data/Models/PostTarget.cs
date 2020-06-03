@@ -32,6 +32,7 @@ namespace OnePlusBot.Data.Models
         public static readonly string NEWS = "news";
         public static readonly string PROFANITY_QUEUE = "profanityqueue";
         public static readonly string STARBOARD = "starboard";
+        public static readonly string STARBOARD_LOG = "starboardLog";
         public static readonly string UNBAN_LOG = "unbanlog";
         public static readonly string SUGGESTIONS = "suggestions";
         public static readonly string USERNAME_QUEUE = "usernamequeue";

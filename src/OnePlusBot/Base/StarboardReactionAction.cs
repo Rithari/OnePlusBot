@@ -102,6 +102,28 @@ namespace OnePlusBot.Base
         }
 
         /// <summary>
+        /// Sends the notitificatoin about a reached threshold to the starboard log post target.
+        /// The notification containsn the user causing the change and a link to the starred message.
+        /// </summary>
+        /// <param name="text">The text of the notification</param>
+        /// <param name="user">The <see cref="Discord.IUser"> adding/removing the reaction</param>
+        /// <param name="message">The starred <see cref="Discord.IUserMessage"> for which the reaction was added/removed</param>
+        /// <returns></returns>
+        protected async Task SendNotification(string text, IUser user, IUserMessage message)
+        {
+          var notificationBuilder = new EmbedBuilder();
+          var userFormatted = Extensions.FormatUserNameDetailed(user);
+          var messageLink =  $"[Here]({message.GetJumpUrl()})";
+          notificationBuilder.WithDescription(text);
+          notificationBuilder.AddField("User", userFormatted);
+          notificationBuilder.AddField("Link", messageLink);
+          notificationBuilder.WithThumbnailUrl(user.GetAvatarUrl());
+          var guild = Global.Bot.GetGuild(Global.ServerID);
+          var target = guild.GetTextChannel(Global.PostTargets[PostTarget.STARBOARD_LOG]);
+          await target.SendMessageAsync(embed: notificationBuilder.Build());
+        }
+
+        /// <summary>
         /// Creates an embed containing the starred message and a field containing al link to the starred message
         /// </summary>
         /// <param name="message">The <see cref="Discord.IUserMessage"> object containing the message which is getting starred.</param>
@@ -186,6 +208,11 @@ namespace OnePlusBot.Base
                         }
                     });
                     
+                    if(reaction.User.IsSpecified)
+                    {
+                      var notificationMessage = "User caused a starboard post to reach the threshold.";
+                      await base.SendNotification(notificationMessage, reaction.User.Value, message);
+                    }
                 }
                 else if(this.RelationAdded)
                 {
@@ -213,6 +240,11 @@ namespace OnePlusBot.Base
                     db.StarboardPostRelations.Remove(existing);
                 }
                 db.SaveChanges();
+                if(this.TriggeredThreshold && reaction.User.IsSpecified)
+                {
+                  var notificationMessage = "User caused a starboard post to fall under the threshold.";
+                  await base.SendNotification(notificationMessage, reaction.User.Value, message);
+                }
             }
          }
     }
