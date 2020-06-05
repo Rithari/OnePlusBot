@@ -714,7 +714,7 @@ namespace OnePlusBot.Base
 
         private static bool ContainsIllegalInvite(string message)
         {
-            MatchCollection groups =  Regex.Matches(message, @"discord(\.gg|app\.com/invite)/[\w\-]+");
+            MatchCollection groups =  Regex.Matches(message, @"discord(?:app)?(?:.gg|.com/invite)/[\w-]+");
             foreach(Group gr in groups){
                 CaptureCollection captures =  gr.Captures;
 
