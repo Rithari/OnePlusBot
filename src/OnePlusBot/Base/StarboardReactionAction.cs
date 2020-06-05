@@ -59,18 +59,20 @@ namespace OnePlusBot.Base
                     if(starboardChannelPost != null) {
                         await starboardChannelPost.DeleteAsync();
                     }
-                    
-                    Global.StarboardPosts.Remove(existingPost);
-                    using(var db = new Database())
+                    if(!existingPost.Ignored)
                     {
-                        var relationPosts = db.StarboardPostRelations.Where(post => post.MessageId == message.Id);
-                        db.StarboardPostRelations.RemoveRange(relationPosts);
-                        db.SaveChanges();
-                        var starboardMessage = db.StarboardMessages.Where(post => post.MessageId == message.Id).First();
-                        db.StarboardMessages.Remove(starboardMessage);
-                        db.SaveChanges();
+                      Global.StarboardPosts.Remove(existingPost);
+                      using(var db = new Database())
+                      {
+                          var relationPosts = db.StarboardPostRelations.Where(post => post.MessageId == message.Id);
+                          db.StarboardPostRelations.RemoveRange(relationPosts);
+                          db.SaveChanges();
+                          var starboardMessage = db.StarboardMessages.Where(post => post.MessageId == message.Id).First();
+                          db.StarboardMessages.Remove(starboardMessage);
+                          db.SaveChanges();
+                      }
+                      this.TriggeredThreshold = true;
                     }
-                    this.TriggeredThreshold = true;
                 }
             }
             else
