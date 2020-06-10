@@ -52,7 +52,7 @@ namespace OnePlusBot.Modules
           var bot = Global.Bot;
           using(var db = new Database())
           {
-            var existing = db.ThreadSubscribers.Where(sub => sub.ModMailThreadId == Context.Channel.Id && sub.UserId == Context.User.Id);
+            var existing = db.ThreadSubscribers.AsQueryable().Where(sub => sub.ModMailThreadId == Context.Channel.Id && sub.UserId == Context.User.Id);
             if(existing.Count() > 0)
             {
                 return CustomResult.FromError("You are already subscribed!");
@@ -81,7 +81,7 @@ namespace OnePlusBot.Modules
           var bot = Global.Bot;
           using(var db = new Database())
           {
-            var existing = db.ThreadSubscribers.Where(sub => sub.ModMailThreadId == Context.Channel.Id && sub.UserId == Context.User.Id);
+            var existing = db.ThreadSubscribers.AsQueryable().Where(sub => sub.ModMailThreadId == Context.Channel.Id && sub.UserId == Context.User.Id);
             if(existing.Count() == 0)
             {
               return CustomResult.FromError("You are not subscribed!");
@@ -89,7 +89,7 @@ namespace OnePlusBot.Modules
           }
           using(var db = new Database())
           {
-            var existing = db.ThreadSubscribers.Where(sub => sub.ModMailThreadId == Context.Channel.Id && sub.UserId == Context.User.Id).First();
+            var existing = db.ThreadSubscribers.AsQueryable().Where(sub => sub.ModMailThreadId == Context.Channel.Id && sub.UserId == Context.User.Id).First();
             db.ThreadSubscribers.Remove(existing);
             db.SaveChanges();
           }

@@ -85,7 +85,7 @@ namespace OnePlusBot.Modules.Utility
       await Task.CompletedTask;
       using(var db = new Database())
       {
-          var reminder = db.Reminders.Where(re => re.ID == reminderId && re.RemindedUserId == Context.User.Id).FirstOrDefault();
+          var reminder = db.Reminders.AsQueryable().Where(re => re.ID == reminderId && re.RemindedUserId == Context.User.Id).FirstOrDefault();
           if(reminder != null)
           {
             reminder.Reminded = true;
@@ -110,7 +110,7 @@ namespace OnePlusBot.Modules.Utility
     {
       using(var db = new Database())
       {
-        var activeReminders = db.Reminders.Where(r => !r.Reminded && r.RemindedUserId == Context.User.Id);
+        var activeReminders = db.Reminders.AsQueryable().Where(r => !r.Reminded && r.RemindedUserId == Context.User.Id);
         var currentEmbedBuilder = new EmbedBuilder();
         var embedsToPost = new List<Embed>();
         currentEmbedBuilder.WithTitle("Active reminders");

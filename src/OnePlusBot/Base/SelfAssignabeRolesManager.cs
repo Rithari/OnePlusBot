@@ -47,7 +47,7 @@ namespace OnePlusBot.Base
         var message = await infoChannel.SendMessageAsync(embed: embedBuilder.Build());
         Global.InfoRoleManagerMessageId = message.Id;
         // TODO refactor
-        db.PersistentData.Where(dt => dt.Name == "rolemanager_message_id").First().Value = message.Id;
+        db.PersistentData.AsQueryable().Where(dt => dt.Name == "rolemanager_message_id").First().Value = message.Id;
         await message.AddReactionsAsync(reactions.ToArray());
         db.SaveChanges();
       }

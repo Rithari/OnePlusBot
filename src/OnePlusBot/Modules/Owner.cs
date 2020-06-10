@@ -141,7 +141,7 @@ namespace OnePlusBot.Modules
                     additions++;
                 }
 
-                var textChannels = db.Channels.Where(x => x.ChannelType == ChannelType.Text);
+                var textChannels = db.Channels.AsQueryable().Where(x => x.ChannelType == ChannelType.Text);
                 if (textChannels.Any())
                 {
                     foreach (var channel in textChannels)

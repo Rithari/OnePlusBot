@@ -65,17 +65,17 @@ namespace OnePlusBot.Modules.Administration
         {
             using(var db = new Database())
             {
-              var commandInChannelGroup = db.CommandInChannelGroups.Where(co => co.ChannelGroupReference.Name == channelGroupName && co.CommandReference.Name == commandName);
+              var commandInChannelGroup = db.CommandInChannelGroups.AsQueryable().Where(co => co.ChannelGroupReference.Name == channelGroupName && co.CommandReference.Name == commandName);
               if(commandInChannelGroup.Any())
               {
                 commandInChannelGroup.First().Disabled = newValue;
               }
               else 
               {
-                var command = db.Commands.Where(co => co.Name == commandName);
+                var command = db.Commands.AsQueryable().Where(co => co.Name == commandName);
                 if(command.Any())
                 {
-                  var channelGroup = db.ChannelGroups.Where(chgrp => chgrp.Name == channelGroupName);
+                  var channelGroup = db.ChannelGroups.AsQueryable().Where(chgrp => chgrp.Name == channelGroupName);
                   if(channelGroup.Any())
                   {
                     var newCommandInChannelGroup = new CommandInChannelGroup();
@@ -138,7 +138,7 @@ namespace OnePlusBot.Modules.Administration
             var emote = uncastedEmote as Emote;
             using(var db = new Database())
             {
-              var sameKey = db.Emotes.Where(e => e.Key == name);
+              var sameKey = db.Emotes.AsQueryable().Where(e => e.Key == name);
               StoredEmote emoteToChange;
               if(sameKey.Any()) 
               {
@@ -175,7 +175,7 @@ namespace OnePlusBot.Modules.Administration
         {
             using(var db = new Database())
             {
-              var sameKey = db.Emotes.Where(e => e.Key == name);
+              var sameKey = db.Emotes.AsQueryable().Where(e => e.Key == name);
               if(sameKey.Any()) 
               {
                 StoredEmote emoteToChange = sameKey.First();

@@ -182,7 +182,7 @@ namespace OnePlusBot.Modules.FAQ
                     var groupNames = text.Split(' ');
                     bool foundAnyMatchingGroup = false;
                     foreach(var groupName in groupNames){
-                        var channelGroup = db.ChannelGroups.Where(ch => ch.Name == groupName && ch.ChannelGroupType == ChannelGroupType.FAQ).FirstOrDefault();
+                        var channelGroup = db.ChannelGroups.AsQueryable().Where(ch => ch.Name == groupName && ch.ChannelGroupType == ChannelGroupType.FAQ).FirstOrDefault();
 
                         if(channelGroup != null)
                         {

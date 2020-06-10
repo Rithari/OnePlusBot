@@ -39,7 +39,7 @@ namespace OnePlusBot.Base
             var yesEmote = StoredEmote.GetEmote(Global.OnePlusEmote.OP_YES);
             using(var db = new Database())
             {
-                var profanityLq = db.Profanities.Where(prof => prof.ReportMessageId == message.Id);
+                var profanityLq = db.Profanities.AsQueryable().Where(prof => prof.ReportMessageId == message.Id);
                 if(profanityLq.Any())
                 {
                     if(reaction.Emote.Name == noEmote.Name || reaction.Emote.Name == yesEmote.Name)

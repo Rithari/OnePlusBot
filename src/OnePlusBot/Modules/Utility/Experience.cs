@@ -37,11 +37,11 @@ namespace OnePlusBot.Modules.Utility
       var embedBuilder = new EmbedBuilder();
       using(var db = new Database())
       {
-        var userInDb = db.Users.Where(us => us.Id == userToUse.Id).FirstOrDefault();
+        var userInDb = db.Users.AsQueryable().Where(us => us.Id == userToUse.Id).FirstOrDefault();
         if(userInDb != null)
         {
-          var rank = db.Users.OrderByDescending(us => us.XP).ToList().IndexOf(userInDb) + 1;
-          var nextLevel = db.ExperienceLevels.Where(lv => lv.Level == userInDb.Level + 1).FirstOrDefault();
+          var rank = db.Users.AsQueryable().OrderByDescending(us => us.XP).ToList().IndexOf(userInDb) + 1;
+          var nextLevel = db.ExperienceLevels.AsQueryable().Where(lv => lv.Level == userInDb.Level + 1).FirstOrDefault();
           embedBuilder.WithAuthor(new EmbedAuthorBuilder().WithIconUrl(userToUse.GetAvatarUrl()).WithName(Extensions.FormatUserName(userToUse)));
           embedBuilder.AddField("XP", userInDb.XP, true);
           embedBuilder.AddField("Level", userInDb.Level, true);
@@ -71,8 +71,8 @@ namespace OnePlusBot.Modules.Utility
       var embedBuilder = new EmbedBuilder();
       using(var db = new Database())
       {
-        var allUsers = db.Users.OrderByDescending(us => us.XP).ToList();
-        var usersInLeaderboard = db.Users.OrderByDescending(us => us.XP);
+        var allUsers = db.Users.AsQueryable().OrderByDescending(us => us.XP).ToList();
+        var usersInLeaderboard = db.Users.AsQueryable().OrderByDescending(us => us.XP);
         System.Collections.Generic.List<User> usersToDisplay;
         if(page > 1)
         {
@@ -103,7 +103,7 @@ namespace OnePlusBot.Modules.Utility
         }
         
         description.Append("Your placement: \n");
-        var caller = db.Users.Where(us => us.Id == Context.Message.Author.Id).FirstOrDefault();
+        var caller = db.Users.AsQueryable().Where(us => us.Id == Context.Message.Author.Id).FirstOrDefault();
         if(caller != null)
         {
           var callRank = allUsers.IndexOf(caller) + 1;

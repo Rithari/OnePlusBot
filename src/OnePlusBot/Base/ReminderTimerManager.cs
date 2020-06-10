@@ -51,11 +51,11 @@ namespace OnePlusBot.Base
         List<Reminder> remindersInFuture;
         if(initialStartup)
         {
-          remindersInFuture =  db.Reminders.Where(x => x.TargetDate < maxDate && !x.Reminded).ToList(); 
+          remindersInFuture =  db.Reminders.AsQueryable().Where(x => x.TargetDate < maxDate && !x.Reminded).ToList(); 
         } 
         else 
         {
-          remindersInFuture = db.Reminders.Where(x => x.TargetDate < maxDate && !x.Reminded && !x.ReminderScheduled).ToList(); 
+          remindersInFuture = db.Reminders.AsQueryable().Where(x => x.TargetDate < maxDate && !x.Reminded && !x.ReminderScheduled).ToList(); 
         }
         if(remindersInFuture.Any())
         {
@@ -99,7 +99,7 @@ namespace OnePlusBot.Base
       }
       using (var db = new Database())
       {
-        var reminderObj = db.Reminders.Where(x => x.ID == reminderId).ToList().First();
+        var reminderObj = db.Reminders.AsQueryable().Where(x => x.ID == reminderId).ToList().First();
         if(!reminderObj.Reminded)
         {
             var link = Extensions.GetSimpleMessageUrl(guild.Id, reminderObj.ChannelId, reminderObj.MessageId);
@@ -128,7 +128,7 @@ namespace OnePlusBot.Base
 
     public static void SetRemindersToReminded(ulong userId, Database db)
     {
-      var reminderObjs = db.Reminders.Where(x => x.RemindedUserId == userId).ToList();
+      var reminderObjs = db.Reminders.AsQueryable().Where(x => x.RemindedUserId == userId).ToList();
       foreach(var reminderEl in reminderObjs)
       {
         reminderEl.Reminded = true;

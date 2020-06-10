@@ -35,7 +35,7 @@ namespace OnePlusBot.Base
                 await message.Channel.SendMessageAsync($"You are unable to contact modmail until {Extensions.FormatDateTime(userFromCache.ThreadUser.ModMailMutedUntil)}.");
                 using(var db = new Database())
                 {
-                    db.Users.Where(us => us.Id == message.Author.Id).First().ModMailMutedReminded = true;
+                    db.Users.AsQueryable().Where(us => us.Id == message.Author.Id).First().ModMailMutedReminded = true;
                     db.SaveChanges();
                 }
 
@@ -46,7 +46,7 @@ namespace OnePlusBot.Base
 
         using(var db = new Database())
         {
-            var user = db.Users.Where(us => us.Id == message.Author.Id).FirstOrDefault();
+            var user = db.Users.AsQueryable().Where(us => us.Id == message.Author.Id).FirstOrDefault();
             if(user == null)
             {
                 var newUser = new UserBuilder(message.Author.Id).Build();
@@ -57,7 +57,7 @@ namespace OnePlusBot.Base
         int pastThreads = 0;
         using(var db = new Database())
         {
-            pastThreads =  db.ModMailThreads.Where(ch => ch.UserId == message.Author.Id).Count();
+            pastThreads =  db.ModMailThreads.AsQueryable().Where(ch => ch.UserId == message.Author.Id).Count();
         }
         // when I tried to load the channel via getTextChannel, I got null in return, my only guess is that the channel
         // did not get peristent completely, so it did not find it
@@ -69,7 +69,7 @@ namespace OnePlusBot.Base
         ModMailThread modmailThread;
         using(var db = new Database())
         {
-          modmailThread = db.ModMailThreads.Where(th => th.ChannelId == channel.Id).First(); 
+          modmailThread = db.ModMailThreads.AsQueryable().Where(th => th.ChannelId == channel.Id).First(); 
         }
 
         await channel.SendMessageAsync(embed: ModMailEmbedHandler.GetUserInfoHeader(modmailThread));
@@ -164,7 +164,7 @@ namespace OnePlusBot.Base
     {
         using(var db = new Database())
         {
-            var threadObj = db.ModMailThreads.Where(ch => ch.ChannelId == channelId).FirstOrDefault();
+            var threadObj = db.ModMailThreads.AsQueryable().Where(ch => ch.ChannelId == channelId).FirstOrDefault();
             if(threadObj != null)
             {
                 threadObj.UpdateDate = DateTime.Now;
@@ -212,7 +212,7 @@ namespace OnePlusBot.Base
       ModMailThread threadObj;
       using(var db = new Database())
       {
-        threadObj = db.ModMailThreads.Where(ch => ch.ChannelId == channel.Id).FirstOrDefault();
+        threadObj = db.ModMailThreads.AsQueryable().Where(ch => ch.ChannelId == channel.Id).FirstOrDefault();
         if(threadObj != null)
         {
           if(threadObj.State == "CLOSING") {
@@ -283,7 +283,7 @@ namespace OnePlusBot.Base
       List<ThreadMessage> messagesToLog;
       using(var db = new Database())
       {
-          messagesToLog = db.ThreadMessages.Where(ch => ch.ChannelId == closedThread.ChannelId).ToList();
+          messagesToLog = db.ThreadMessages.AsQueryable().Where(ch => ch.ChannelId == closedThread.ChannelId).ToList();
       }
       var modMailLogChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_LOG]);
       await LogClosingHeader(closedThread, messagesToLog.Count(), note, modMailLogChannel, userObj);
@@ -292,7 +292,7 @@ namespace OnePlusBot.Base
       await (channel as SocketTextChannel).DeleteAsync();
       using(var db = new Database())
       {
-        var threadObj = db.ModMailThreads.Where(ch => ch.ChannelId == channel.Id).FirstOrDefault();
+        var threadObj = db.ModMailThreads.AsQueryable().Where(ch => ch.ChannelId == channel.Id).FirstOrDefault();
         if(threadObj != null)
         {
           threadObj.ClosedDate = DateTime.Now;
@@ -365,8 +365,8 @@ namespace OnePlusBot.Base
         ModMailThread thread;
         using(var db = new Database())
         {
-            messageToEdit =  db.ThreadMessages.Where(msg => msg.ChannelId == channel.Id && msg.UserId == personEditing.Id && msg.ChannelMessageId == messageId).FirstOrDefault();
-            thread = db.ModMailThreads.Where(th => th.ChannelId == channel.Id).First();
+            messageToEdit =  db.ThreadMessages.AsQueryable().Where(msg => msg.ChannelId == channel.Id && msg.UserId == personEditing.Id && msg.ChannelMessageId == messageId).FirstOrDefault();
+            thread = db.ModMailThreads.AsQueryable().Where(th => th.ChannelId == channel.Id).First();
         }
         if(messageToEdit == null)
         {
@@ -434,8 +434,8 @@ namespace OnePlusBot.Base
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
         using(var db = new Database()){
-            var thread = db.ModMailThreads.Where(ch => ch.ChannelId == channel.Id).First();
-            var user = db.Users.Where(us => us.Id == thread.UserId).First();
+            var thread = db.ModMailThreads.AsQueryable().Where(ch => ch.ChannelId == channel.Id).First();
+            var user = db.Users.AsQueryable().Where(us => us.Id == thread.UserId).First();
             user.ModMailMuted = true;
             user.ModMailMutedReminded = false;
             user.ModMailMutedUntil = until;
@@ -449,7 +449,7 @@ namespace OnePlusBot.Base
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
         using(var db = new Database()){
-            var userInDb = db.Users.Where(us => us.Id == user.Id).FirstOrDefault();
+            var userInDb = db.Users.AsQueryable().Where(us => us.Id == user.Id).FirstOrDefault();
             if(userInDb == null){
                 var newUser = new UserBuilder(user.Id).WithModmailConfig(true, false, until).Build();
                 db.Users.Add(newUser);
@@ -475,7 +475,7 @@ namespace OnePlusBot.Base
         List<ThreadMessage> messagesToLog;
         using(var db = new Database())
         {
-            messagesToLog = db.ThreadMessages.Where(ch => ch.ChannelId == closedthread.ChannelId).ToList();
+            messagesToLog = db.ThreadMessages.AsQueryable().Where(ch => ch.ChannelId == closedthread.ChannelId).ToList();
         }
         var modMailLogChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_LOG]);
         await LogDisablingHeader(closedthread, messagesToLog.Count(), note, modMailLogChannel, userObj, until);
@@ -493,7 +493,7 @@ namespace OnePlusBot.Base
     {
         using(var db = new Database())
         {
-            var userInDb = db.Users.Where(us => us.Id == user.Id).First();
+            var userInDb = db.Users.AsQueryable().Where(us => us.Id == user.Id).First();
             userInDb.ModMailMuted = false;
             db.SaveChanges();
         }
@@ -511,7 +511,7 @@ namespace OnePlusBot.Base
     {
         using(var db = new Database())
         {
-            var existingUser = db.Users.Where(us => us.Id == user.Id).FirstOrDefault();
+            var existingUser = db.Users.AsQueryable().Where(us => us.Id == user.Id).FirstOrDefault();
             if(existingUser == null)
             {
                 var newUser = new UserBuilder(user.Id).Build();
@@ -527,7 +527,7 @@ namespace OnePlusBot.Base
         ModMailThread createdModMailThread;
         using(var db = new Database())
         {
-          createdModMailThread = db.ModMailThreads.Where(th => th.ChannelId == createdChannel.Id).First();
+          createdModMailThread = db.ModMailThreads.AsQueryable().Where(th => th.ChannelId == createdChannel.Id).First();
         }
 
         await createdChannel.SendMessageAsync(embed: ModMailEmbedHandler.GetUserInfoHeader(createdModMailThread));
@@ -546,8 +546,8 @@ namespace OnePlusBot.Base
         ModMailThread thread;
         using(var db = new Database())
         {
-            messageToRemove =  db.ThreadMessages.Where(msg => msg.ChannelId == channel.Id && msg.UserId == personDeleting.Id && msg.ChannelMessageId == messageId).FirstOrDefault();
-            thread = db.ModMailThreads.Where(th => th.ChannelId == channel.Id).First();
+            messageToRemove =  db.ThreadMessages.AsQueryable().Where(msg => msg.ChannelId == channel.Id && msg.UserId == personDeleting.Id && msg.ChannelMessageId == messageId).FirstOrDefault();
+            thread = db.ModMailThreads.AsQueryable().Where(th => th.ChannelId == channel.Id).First();
         }
         if(messageToRemove == null)
         {
@@ -592,8 +592,8 @@ namespace OnePlusBot.Base
         ModMailThread thread;
         using(var db = new Database())
         {
-            messageToRemove =  db.ThreadMessages.Where(msg => msg.ChannelId == channelId && msg.ChannelMessageId == messageId).OrderByDescending(msg => msg.UserMessageId).FirstOrDefault();
-            thread = db.ModMailThreads.Where(th => th.ChannelId == channelId).First();
+            messageToRemove =  db.ThreadMessages.AsQueryable().Where(msg => msg.ChannelId == channelId && msg.ChannelMessageId == messageId).OrderByDescending(msg => msg.UserMessageId).FirstOrDefault();
+            thread = db.ModMailThreads.AsQueryable().Where(th => th.ChannelId == channelId).First();
         }
         if(messageToRemove != null && messageToRemove.UserMessageId != 0)
         {

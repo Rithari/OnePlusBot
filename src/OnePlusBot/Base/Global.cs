@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Discord.WebSocket;
 using System.Text.RegularExpressions;
 using System.Collections.Concurrent;
+using OnePlusBot.Helpers;
 
 namespace OnePlusBot.Base
 {
@@ -218,7 +219,7 @@ namespace OnePlusBot.Base
                 TrackedEmotes.Clear();
                 if(db.Emotes.Any())
                 {
-                    foreach(var post in db.Emotes.Where(e => !e.TrackingDisabled))
+                    foreach(var post in db.Emotes.AsQueryable().Where(e => !e.TrackingDisabled))
                     {
                       TrackedEmotes.Add(post.Key, post);
                     }

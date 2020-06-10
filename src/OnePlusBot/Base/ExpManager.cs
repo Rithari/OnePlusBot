@@ -128,12 +128,12 @@ namespace OnePlusBot.Base
      
     public ExperienceLevel GetAppropriateLevelForExp(ulong xp, Database db)
     {
-      return db.ExperienceLevels.Where(lv => lv.NeededExperience <= xp).OrderByDescending(lv => lv.Level).FirstOrDefault();
+      return db.ExperienceLevels.AsQueryable().Where(lv => lv.NeededExperience <= xp).OrderByDescending(lv => lv.Level).FirstOrDefault();
     }
 
     public ExperienceRole GetAppropriateRoleForLevel(ExperienceLevel level, Database db)
     {
-      return db.ExperienceRoles.Where( ro => ro.Level <= level.Level).Include(ro => ro.RoleReference).OrderByDescending(ro => ro.Level).FirstOrDefault();
+      return db.ExperienceRoles.AsQueryable().Where( ro => ro.Level <= level.Level).Include(ro => ro.RoleReference).OrderByDescending(ro => ro.Level).FirstOrDefault();
     }
 
     public void UpdateExperienceForMinute(List<ulong> userToUpdate, Database db, HashSet<User> peopleToUpdate, Random r)
@@ -141,7 +141,7 @@ namespace OnePlusBot.Base
       var updateDate = DateTime.Now;
       foreach(var userId in userToUpdate)
       {
-        var exp = db.Users.Where(e => e.Id == userId).Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).FirstOrDefault();
+        var exp = db.Users.AsQueryable().Where(e => e.Id == userId).Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).FirstOrDefault();
         var gainedExp = (ulong) r.Next(Global.XPGainRangeMin, Global.XPGainRangeMax);
         if(exp != null)
         {
@@ -169,7 +169,7 @@ namespace OnePlusBot.Base
         var guild = Global.Bot.GetGuild(Global.ServerID);
         using(var db = new Database())
         {
-          User userToUpdate = db.Users.Where(us => us.Id == user.Id).Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).FirstOrDefault();
+          User userToUpdate = db.Users.AsQueryable().Where(us => us.Id == user.Id).Include(u => u.ExperienceRoleReference).ThenInclude(u => u.RoleReference).FirstOrDefault();
           List<ExperienceRole> rolesUsedInExperience = db.ExperienceRoles.Include(ro => ro.RoleReference).ToList();
           List<ExperienceLevel> levelConfiguration = db.ExperienceLevels.ToList();
           List<SocketRole> experienceRolesInGuild = new List<SocketRole>();
@@ -288,10 +288,10 @@ namespace OnePlusBot.Base
     {
       using(var db = new Database())
       {
-        var existingLevel = db.ExperienceRoles.Where(ro => ro.Level == level).FirstOrDefault();
+        var existingLevel = db.ExperienceRoles.AsQueryable().Where(ro => ro.Level == level).FirstOrDefault();
 
-        var existingRole = db.ExperienceRoles.Where(ro => ro.ExperienceRoleId == roleId).FirstOrDefault();
-        var role = db.Roles.Where(r => r.RoleID == roleId).FirstOrDefault();
+        var existingRole = db.ExperienceRoles.AsQueryable().Where(ro => ro.ExperienceRoleId == roleId).FirstOrDefault();
+        var role = db.Roles.AsQueryable().Where(r => r.RoleID == roleId).FirstOrDefault();
         if(role == null || !role.XPRole)
         {
           throw new ConfigurationException("Role does not exist or not usable for the xp tracking sytem.");
@@ -322,7 +322,7 @@ namespace OnePlusBot.Base
         var guild = Global.Bot.GetGuild(Global.ServerID);
         var currentEmbedBuilder = new EmbedBuilder().WithTitle("Role level configuration");
         var embeds = new List<Embed>();
-        var roles = db.ExperienceRoles.OrderBy(ro => ro.Level).Include(ro => ro.RoleReference).ToList();
+        var roles = db.ExperienceRoles.AsQueryable().OrderBy(ro => ro.Level).Include(ro => ro.RoleReference).ToList();
         var count = 0;
         foreach(var role in roles)
         {
@@ -351,7 +351,7 @@ namespace OnePlusBot.Base
     public void SetXPDisabledTo(IGuildUser user, bool newValue){
       using(var db = new Database())
       {
-        var userDB = db.Users.Where(us => us.Id == user.Id).FirstOrDefault();
+        var userDB = db.Users.AsQueryable().Where(us => us.Id == user.Id).FirstOrDefault();
         if(userDB == null)
         {
           throw new NotFoundException("User not found");

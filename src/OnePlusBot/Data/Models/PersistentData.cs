@@ -32,7 +32,7 @@ namespace OnePlusBot.Data.Models
 
         public static ulong GetConfiguredInt(string name, Database db)
         {
-          var value = db.PersistentData.Where(p => p.Name == name);
+          var value = db.PersistentData.AsQueryable().Where(p => p.Name == name);
           if(value.Any())
           {
             return value.First().Value;
@@ -53,7 +53,7 @@ namespace OnePlusBot.Data.Models
 
         public static string GetConfiguredString(string name, Database db)
         {
-          var value = db.PersistentData.Where(p => p.Name == name);
+          var value = db.PersistentData.AsQueryable().Where(p => p.Name == name);
           if(value.Any())
           {
             return value.First().StringValue;

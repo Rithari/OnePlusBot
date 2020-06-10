@@ -82,7 +82,7 @@ namespace OnePlusBot.Base
       var updateDate = DateTime.Now;
       foreach(var emotePair in emotesToUpdate)
       {
-        var emote = db.EmoteHeatMap.Where(e => e.EmoteReference.ID == emotePair.Key && e.UpdateDate.Date == updateDate.Date);
+        var emote = db.EmoteHeatMap.AsQueryable().Where(e => e.EmoteReference.ID == emotePair.Key && e.UpdateDate.Date == updateDate.Date);
         if(emote.Any())
         {
           var emoteToChange = emote.First();

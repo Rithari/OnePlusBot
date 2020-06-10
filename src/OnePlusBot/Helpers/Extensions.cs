@@ -10,11 +10,27 @@ using OnePlusBot.Data;
 using OnePlusBot.Base.Errors;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace OnePlusBot.Helpers
 {
     public static class Extensions
     {
+
+        public static IAsyncEnumerable<T> AsAsyncEnumerable<T>(this DbSet<T> dbSet)
+            where T : class
+        {
+            return dbSet;
+        }
+
+        public static IQueryable<T> AsQueryable<T>(this DbSet<T> dbSet, object p)
+            where T : class
+        {
+            return dbSet;
+        }
+
+
         public static Task<IUserMessage> EmbedAsync(this IMessageChannel ch, EmbedBuilder embed, string msg = "")
         {
             return ch.SendMessageAsync(msg,
@@ -24,7 +40,6 @@ namespace OnePlusBot.Helpers
                     RetryMode = RetryMode.AlwaysRetry
                 });
         }
-
         public static Uri RealAvatarUrl(this IUser usr, ushort size = 0)
         {
             if (usr.AvatarId == null)
@@ -356,7 +371,7 @@ namespace OnePlusBot.Helpers
         public static String GetTemplatedString(string key, object[] parameters) 
         {
           using(var db = new Database()) {
-            var template = db.ResponseTemplate.Where(te => te.Key == key);
+            var template = db.ResponseTemplate.AsQueryable().Where(te => te.Key == key);
             if(template.Any()) 
             {
               return String.Format(template.First().TemplateText, parameters);
