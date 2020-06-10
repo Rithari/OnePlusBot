@@ -43,7 +43,7 @@ namespace OnePlusBot.Base
       {
         var now = DateTime.Now;
         var maxDate = now.AddDays(-(double)Global.DecayDays);
-        var warningsToDecay = db.Warnings.Where(x => x.Date < maxDate && !x.Decayed).ToList();
+        var warningsToDecay = db.Warnings.AsQueryable().Where(x => x.Date < maxDate && !x.Decayed).ToList();
         if(warningsToDecay.Any())
         {
           foreach (var warning in warningsToDecay)
@@ -97,7 +97,7 @@ namespace OnePlusBot.Base
           var remainingWarnings = 0;
           using(var db = new Database())
           {
-            remainingWarnings = db.Warnings.Where(w => w.WarnedUserID == user.Id && !w.Decayed).Count();
+            remainingWarnings = db.Warnings.AsQueryable().Where(w => w.WarnedUserID == user.Id && !w.Decayed).Count();
           }
           var message = $"Your warning from {Extensions.FormatDateTime(warning.Date)} with the reason '{warning.Reason}' has been cleared. You have {remainingWarnings} warning(s) left.";
           try 

@@ -27,7 +27,7 @@ namespace OnePlusBot.Base
         {
             using(var db = new Database())
             {
-                var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
+                var existingGroup = db.ChannelGroups.AsQueryable().Where(grp => grp.Name == name).FirstOrDefault();
                 if(existingGroup != null)
                 {
                     throw new ConfigurationException("Channel group with name already exists.");
@@ -45,12 +45,12 @@ namespace OnePlusBot.Base
         {
             using(var db = new Database())
             {
-                var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
+                var existingGroup = db.ChannelGroups.AsQueryable().Where(grp => grp.Name == name).FirstOrDefault();
                 if(existingGroup != null)
                 {
                     foreach(var channel in message.MentionedChannels)
                     {
-                        var doesChannelGroupEntryAlreadyExist = db.ChannelGroupMembers.Where(mem => mem.ChannelGroupId == existingGroup.Id && mem.ChannelId == channel.Id).Count() != 0;
+                        var doesChannelGroupEntryAlreadyExist = db.ChannelGroupMembers.AsQueryable().Where(mem => mem.ChannelGroupId == existingGroup.Id && mem.ChannelId == channel.Id).Count() != 0;
                         if(!doesChannelGroupEntryAlreadyExist)
                         {
                             var channelGroupMember = new ChannelInGroup();
@@ -74,12 +74,12 @@ namespace OnePlusBot.Base
         {
             using(var db = new Database())
             {
-                var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
+                var existingGroup = db.ChannelGroups.AsQueryable().Where(grp => grp.Name == name).FirstOrDefault();
                 if(existingGroup != null)
                 {
                     foreach(var channel in message.MentionedChannels)
                     {
-                        var existingChannelEntry = db.ChannelGroupMembers.Where(mem => mem.ChannelGroupId == existingGroup.Id && mem.ChannelId == channel.Id).FirstOrDefault();
+                        var existingChannelEntry = db.ChannelGroupMembers.AsQueryable().Where(mem => mem.ChannelGroupId == existingGroup.Id && mem.ChannelId == channel.Id).FirstOrDefault();
                         if(existingChannelEntry != null)
                         {
                             db.ChannelGroupMembers.Remove(existingChannelEntry);
@@ -98,7 +98,7 @@ namespace OnePlusBot.Base
         {
             using(var db = new Database())
             {
-                var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
+                var existingGroup = db.ChannelGroups.AsQueryable().Where(grp => grp.Name == name).FirstOrDefault();
                 if(existingGroup != null)
                 {
                     existingGroup.ExperienceGainExempt = newVal;
@@ -123,7 +123,7 @@ namespace OnePlusBot.Base
         {
             using(var db = new Database())
             {
-                var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
+                var existingGroup = db.ChannelGroups.AsQueryable().Where(grp => grp.Name == name).FirstOrDefault();
                 if(existingGroup != null)
                 {
                     existingGroup.Disabled = newVal;
@@ -158,10 +158,10 @@ namespace OnePlusBot.Base
         {
           using(var db = new Database())
           {
-            var existingGroup = db.ChannelGroups.Where(grp => grp.Name == oldName).FirstOrDefault();
+            var existingGroup = db.ChannelGroups.AsQueryable().Where(grp => grp.Name == oldName).FirstOrDefault();
             if(existingGroup != null)
             {
-              var newNameIsused = db.ChannelGroups.Where(grp => grp.Name == newName).Any();
+              var newNameIsused = db.ChannelGroups.AsQueryable().Where(grp => grp.Name == newName).Any();
               if(newNameIsused)
               {
                 throw new ConfigurationException("New name is already used by another group.");
@@ -186,7 +186,7 @@ namespace OnePlusBot.Base
         {
             using(var db = new Database())
             {
-                var existingTarget = db.PostTargets.Where(pt => pt.Name == name);
+                var existingTarget = db.PostTargets.AsQueryable().Where(pt => pt.Name == name);
                 PostTarget newPostTarget;
                 if(existingTarget.Any())
                 {
@@ -224,7 +224,7 @@ namespace OnePlusBot.Base
                 List<ChannelGroup> channelGroups;
                 if(type != null)
                 {
-                   channelGroups = db.ChannelGroups.Where(grp => grp.ChannelGroupType == type).Include(ch => ch.Channels).ToList();
+                   channelGroups = db.ChannelGroups.AsQueryable().Where(grp => grp.ChannelGroupType == type).Include(ch => ch.Channels).ToList();
                 }
                 else
                 {
@@ -306,10 +306,10 @@ namespace OnePlusBot.Base
         {
             using(var db = new Database())
             {
-                var existingGroup = db.ChannelGroups.Where(grp => grp.Name == name).FirstOrDefault();
+                var existingGroup = db.ChannelGroups.AsQueryable().Where(grp => grp.Name == name).FirstOrDefault();
                 if(existingGroup != null)
                 {
-                  var existingChannelEntry = db.ChannelGroupMembers.Where(mem => mem.ChannelGroupId == existingGroup.Id).FirstOrDefault();
+                  var existingChannelEntry = db.ChannelGroupMembers.AsQueryable().Where(mem => mem.ChannelGroupId == existingGroup.Id).FirstOrDefault();
                   if(existingChannelEntry != null)
                   {
                       throw new ConfigurationException("Channel group has configured channels. Remove them before deleting the channel group.");
@@ -339,7 +339,7 @@ namespace OnePlusBot.Base
           }
           using(var db = new Database())
           {
-            var channelGroup = db.ChannelGroups.Where(grp => grp.Name == groupName);
+            var channelGroup = db.ChannelGroups.AsQueryable().Where(grp => grp.Name == groupName);
             if(!channelGroup.Any())
             {
               throw new NotFoundException("Channel group not found");

@@ -41,11 +41,11 @@ namespace OnePlusBot.Base
         List<Mute> mutesInFuture;
         if(initialStartup)
         {
-          mutesInFuture = db.Mutes.Where(x => x.UnmuteDate < maxDate && !x.MuteEnded).ToList();
+          mutesInFuture = db.Mutes.AsQueryable().Where(x => x.UnmuteDate < maxDate && !x.MuteEnded).ToList();
         } 
         else
         {
-          mutesInFuture = db.Mutes.Where(x => x.UnmuteDate < maxDate && !x.MuteEnded && !x.UnmuteScheduled).ToList();
+          mutesInFuture = db.Mutes.AsQueryable().Where(x => x.UnmuteDate < maxDate && !x.MuteEnded && !x.UnmuteScheduled).ToList();
         }
         if(mutesInFuture.Any())
         {
@@ -107,7 +107,7 @@ namespace OnePlusBot.Base
         }
         else 
         {
-          var muteObj = db.Mutes.Where(x => x.ID == muteId).ToList().First();
+          var muteObj = db.Mutes.AsQueryable().Where(x => x.ID == muteId).ToList().First();
           if(!muteObj.MuteEnded)
           {
             muteObj.MuteEnded = true;
@@ -130,7 +130,7 @@ namespace OnePlusBot.Base
 
     public static void UnMuteUserCompletely(ulong userId, Database db)
     {
-      var mutedObjs = db.Mutes.Where(x => x.MutedUserID == userId).ToList();
+      var mutedObjs = db.Mutes.AsQueryable().Where(x => x.MutedUserID == userId).ToList();
       foreach(var mutedEl in mutedObjs)
       {
         mutedEl.MuteEnded = true;

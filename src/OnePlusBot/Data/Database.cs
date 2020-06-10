@@ -69,14 +69,14 @@ namespace OnePlusBot.Data
         public DbSet<ResponseTemplate> ResponseTemplate { get; set; }
         public DbSet<UserNote> UserNotes { get; set; }
         
-        // TODO needs to be replaced with proper dependency injection
+      /*  // TODO needs to be replaced with proper dependency injection
         [Obsolete]
         public static readonly LoggerFactory LoggerFactory
             = new LoggerFactory(new[] {
                   new ConsoleLoggerProvider((category, level) =>
                     category == DbLoggerCategory.Database.Command.Name &&
                     level == LogLevel.Information, true)
-                });
+                });*/
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -98,7 +98,7 @@ namespace OnePlusBot.Data
             
 
             optionsBuilder.UseMySql(connStr.ToString());
-            optionsBuilder.UseLoggerFactory(LoggerFactory);
+           // optionsBuilder.UseLoggerFactory(LoggerFactory);
             optionsBuilder.EnableDetailedErrors();
         }
 

@@ -252,7 +252,7 @@ namespace OnePlusBot.Modules.Administration
               MuteTimerManager.UnmuteUserIn(user.Id, difference, muteData.ID);
               using (var db = new Database())
               {
-                  db.Mutes.Where(m => m.ID == muteData.ID).First().UnmuteScheduled = true;
+                  db.Mutes.AsQueryable().Where(m => m.ID == muteData.ID).First().UnmuteScheduled = true;
                   db.SaveChanges();
               }    
           }
@@ -370,9 +370,9 @@ namespace OnePlusBot.Modules.Administration
       public async Task<RuntimeResult> ShowProfanities(IGuildUser user)
       {
         using(var db = new Database()){
-          var allProfanities = db.Profanities.Where(pro => pro.UserId == user.Id);
-          var actualProfanities = allProfanities.Where(pro => pro.Valid == true).Count();
-          var falseProfanities = allProfanities.Where(pro =>pro.Valid == false).Count();
+          var allProfanities = db.Profanities.AsQueryable().Where(pro => pro.UserId == user.Id);
+          var actualProfanities = allProfanities.AsQueryable().Where(pro => pro.Valid == true).Count();
+          var falseProfanities = allProfanities.AsQueryable().Where(pro =>pro.Valid == false).Count();
           var builder = new EmbedBuilder();
           builder.AddField(f => {
               f.Name = "Actual";
@@ -536,7 +536,7 @@ namespace OnePlusBot.Modules.Administration
         {
           IQueryable<WarnEntry> warnings = db.Warnings;
           if (_user != null)
-              warnings = warnings.Where(x => x.WarnedUserID == _user.Id);
+              warnings = warnings.AsQueryable().Where(x => x.WarnedUserID == _user.Id);
           warnings = warnings.Skip(skip).Take(TakeAmount);
           _message = await CreateWarnList(warnings.ToArray());
         }
@@ -611,8 +611,8 @@ namespace OnePlusBot.Modules.Administration
         var requestee = Context.User as SocketGuildUser;
         using (var db = new Database())
         {
-          IQueryable<WarnEntry> individualWarnings = db.Warnings.Where(x => x.WarnedUserID == requestee.Id && !x.Decayed);
-          var totalWarnings = db.Warnings.Where(x => x.WarnedUserID == requestee.Id);
+          IQueryable<WarnEntry> individualWarnings = db.Warnings.AsQueryable().Where(x => x.WarnedUserID == requestee.Id && !x.Decayed);
+          var totalWarnings = db.Warnings.AsQueryable().Where(x => x.WarnedUserID == requestee.Id);
           var builder = new EmbedBuilder();
           builder.WithAuthor(new EmbedAuthorBuilder().WithIconUrl(requestee.GetAvatarUrl()).WithName(requestee.Username + '#' + requestee.Discriminator));
           builder.WithDescription($"{requestee.Username + '#' + requestee.Discriminator} has {individualWarnings.Count()} active out of {totalWarnings.Count()} total warnings.");
@@ -639,7 +639,7 @@ namespace OnePlusBot.Modules.Administration
           IQueryable<WarnEntry> individualWarnings;
           
           if (user != null) {
-            warnings = warnings.Where(x => x.WarnedUserID == user.Id);
+            warnings = warnings.AsQueryable().Where(x => x.WarnedUserID == user.Id);
           }
 
           _total = warnings.Count();
@@ -707,7 +707,7 @@ namespace OnePlusBot.Modules.Administration
       {
         using(var db = new Database())
         {
-          var note = db.UserNotes.Where(u => u.ID == id);
+          var note = db.UserNotes.AsQueryable().Where(u => u.ID == id);
           if(note.Any())
           {
             db.UserNotes.Remove(note.First());
@@ -738,7 +738,7 @@ namespace OnePlusBot.Modules.Administration
         var texts = new Collection<string>();
         using(var db = new Database())
         {
-          var notes = db.UserNotes.Where(u => u.UserId == user.Id);
+          var notes = db.UserNotes.AsQueryable().Where(u => u.UserId == user.Id);
           if(notes.Any()) 
           {
             foreach(var note in notes) 
@@ -812,7 +812,7 @@ namespace OnePlusBot.Modules.Administration
         using(var db = new Database())
         {
           var unfiltered = db.EmoteHeatMap
-          .Where(e => e.UpdateDate.Date >= startDate.Date);
+          .AsQueryable().Where(e => e.UpdateDate.Date >= startDate.Date);
           IQueryable<EmoteHeatMap> filtered;
           if(animated)
           {
@@ -836,7 +836,7 @@ namespace OnePlusBot.Modules.Administration
           var count = 1;
           foreach(var emoteStat in emoteStats)
           {
-            var emoteUsedQuery = db.Emotes.Where(e => e.ID == emoteStat.Key);
+            var emoteUsedQuery = db.Emotes.AsQueryable().Where(e => e.ID == emoteStat.Key);
             if(emoteUsedQuery.Any())
             {
               var emoteUsed = emoteUsedQuery.First();

@@ -83,7 +83,7 @@ namespace OnePlusBot.Base
             }
             try 
             {
-                await bot.LoginAsync(TokenType.Bot, Global.Token);
+                await bot.LoginAsync(TokenType.Bot, Global.TokenBeta);
             }
             catch(Discord.Net.HttpException)
             {
@@ -146,7 +146,7 @@ namespace OnePlusBot.Base
             var modules = commandHandler.Modules;
             foreach(var module in modules)
             {
-              var moduleQuery = db.Modules.Where(mo => mo.Name == module.Name);
+              var moduleQuery = db.Modules.AsQueryable().Where(mo => mo.Name == module.Name);
               CommandModule moduleToUse;
               if(!moduleQuery.Any())
               {
@@ -163,7 +163,7 @@ namespace OnePlusBot.Base
               
               foreach(var command in module.Commands)
               {
-                if(!db.Commands.Where(com => com.Name == command.Name).Any())
+                if(!db.Commands.AsQueryable().Where(com => com.Name == command.Name).Any())
                 {
                   var commandToCreate = new Command();
                   commandToCreate.Name = command.Name;
@@ -187,7 +187,7 @@ namespace OnePlusBot.Base
                 foreach(var toDelete in commandsToDelete)
                 {
                   // also delete the channel group configuration for this commands, else the foreign keys fail
-                  db.CommandInChannelGroups.RemoveRange(db.CommandInChannelGroups.Where(co => co.CommandID == toDelete.ID));
+                  db.CommandInChannelGroups.RemoveRange(db.CommandInChannelGroups.AsQueryable().Where(co => co.CommandID == toDelete.ID));
                   commandsInDb.Commands.Remove(toDelete);
                 }
               }

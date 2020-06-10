@@ -16,7 +16,7 @@ namespace OnePlusBot.Base
         protected ulong StarboardPostId;
         protected bool TriggeredThreshold = false;
         protected bool RelationAdded = false;
-        public Boolean ActionApplies(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction)
+        public bool ActionApplies(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction)
         {
             return reaction.Emote.Equals(StoredEmote.GetEmote(Global.OnePlusEmote.STAR)) && message.Author.Id != reaction.UserId;
         }
@@ -40,7 +40,7 @@ namespace OnePlusBot.Base
                 existingPost.Starcount = (uint) starCount;
                 using(var db = new Database())
                 {
-                    var post = db.StarboardMessages.Where(p => p.MessageId == message.Id).First();
+                    var post = db.StarboardMessages.AsQueryable().Where(p => p.MessageId == message.Id).First();
                     if(post.Ignored)
                     {
                         return;
@@ -64,10 +64,10 @@ namespace OnePlusBot.Base
                       Global.StarboardPosts.Remove(existingPost);
                       using(var db = new Database())
                       {
-                          var relationPosts = db.StarboardPostRelations.Where(post => post.MessageId == message.Id);
+                          var relationPosts = db.StarboardPostRelations.AsQueryable().Where(post => post.MessageId == message.Id);
                           db.StarboardPostRelations.RemoveRange(relationPosts);
                           db.SaveChanges();
-                          var starboardMessage = db.StarboardMessages.Where(post => post.MessageId == message.Id).First();
+                          var starboardMessage = db.StarboardMessages.AsQueryable().Where(post => post.MessageId == message.Id).First();
                           db.StarboardMessages.Remove(starboardMessage);
                           db.SaveChanges();
                       }
@@ -235,7 +235,7 @@ namespace OnePlusBot.Base
             await base.Execute(message, channel, reaction);
             using (var db = new Database())
             {
-                var existing = db.StarboardPostRelations.Where(rel => rel.MessageId == message.Id && rel.UserId == reaction.UserId)
+                var existing = db.StarboardPostRelations.AsQueryable().Where(rel => rel.MessageId == message.Id && rel.UserId == reaction.UserId)
                 .DefaultIfEmpty(null).First();
                 if(existing != null)
                 {

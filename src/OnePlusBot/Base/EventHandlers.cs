@@ -104,7 +104,7 @@ namespace OnePlusBot.Base
         {
           using(var db = new Database())
           {
-            var modmailThread = db.ModMailThreads.Where(th => th.UserId == user.Id && th.State != "CLOSED");
+            var modmailThread = db.ModMailThreads.AsQueryable().Where(th => th.UserId == user.Id && th.State != "CLOSED");
             var modmailThreadExists = modmailThread.Any();
 
             var embed = GetUserNameNotificationEmbed(embedTitle, beforeText, afterText, user, false);
@@ -231,7 +231,7 @@ namespace OnePlusBot.Base
           await leaveLog.SendMessageAsync(message);
           using(var db = new Database())
           {
-            var modmailThread = db.ModMailThreads.Where(th => th.UserId == socketGuildUser.Id && th.State != "CLOSED");
+            var modmailThread = db.ModMailThreads.AsQueryable().Where(th => th.UserId == socketGuildUser.Id && th.State != "CLOSED");
             var modmailThreadExists = modmailThread.Any();
             if(modmailThreadExists)
             {
@@ -286,7 +286,7 @@ namespace OnePlusBot.Base
         {
             using (var db = new Database())
             {
-                if(db.Mutes.Where(us => us.MutedUserID == user.Id && !us.MuteEnded).Any())
+                if(db.Mutes.AsQueryable().Where(us => us.MutedUserID == user.Id && !us.MuteEnded).Any())
                 {
                     await Extensions.MuteUser(user);
                 }
@@ -297,7 +297,7 @@ namespace OnePlusBot.Base
         {
             using (var db = new Database())
             {
-                var dbUser = db.Users.Where(us => us.Id == user.Id).Include(us => us.ExperienceRoleReference).FirstOrDefault();
+                var dbUser = db.Users.AsQueryable().Where(us => us.Id == user.Id).Include(us => us.ExperienceRoleReference).FirstOrDefault();
                 if(dbUser != null)
                 {
                     if(dbUser.ExperienceRoleReference != null){
@@ -441,7 +441,7 @@ namespace OnePlusBot.Base
             {
               using(var db = new Database())
               {
-                var existingPost = db.StarboardMessages.Where(po => po.StarboardMessageId == starPost.StarboardMessageId).First();
+                var existingPost = db.StarboardMessages.AsQueryable().Where(po => po.StarboardMessageId == starPost.StarboardMessageId).First();
                 existingPost.Ignored = true;
                 db.SaveChanges();
               }
@@ -645,7 +645,7 @@ namespace OnePlusBot.Base
         {
             using(var db = new Database())
             {
-              if(db.Profanities.Where(p => p.MessageId == message.Id).Any())
+              if(db.Profanities.AsQueryable().Where(p => p.MessageId == message.Id).Any())
               {
                 return;
               }  
@@ -693,7 +693,7 @@ namespace OnePlusBot.Base
             profanity.ChannelId = message.Channel.Id;
             using(var db = new Database())
             {
-                var user = db.Users.Where(us => us.Id == message.Author.Id).FirstOrDefault();
+                var user = db.Users.AsQueryable().Where(us => us.Id == message.Author.Id).FirstOrDefault();
                 if(user == null)
                 {
                     var newUser = new UserBuilder(message.Author.Id).Build();
@@ -832,7 +832,7 @@ namespace OnePlusBot.Base
             {
               using(var db = new Database())
               {
-                var userQuery = db.Users.Where(us => us.Id == message.Author.Id);
+                var userQuery = db.Users.AsQueryable().Where(us => us.Id == message.Author.Id);
                 if(userQuery.Any())
                 {
                   var foundUser = userQuery.First();
