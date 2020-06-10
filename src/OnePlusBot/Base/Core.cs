@@ -83,7 +83,7 @@ namespace OnePlusBot.Base
             }
             try 
             {
-                await bot.LoginAsync(TokenType.Bot, Global.TokenBeta);
+                await bot.LoginAsync(TokenType.Bot, Global.Token);
             }
             catch(Discord.Net.HttpException)
             {
