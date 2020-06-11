@@ -574,7 +574,7 @@ namespace OnePlusBot.Base
         {
             using (var db = new Database())
             {
-                if (db.ReferralCodes.Any(x => (DateTime.UtcNow - x.Date).Days < 14 && 
+                if (db.ReferralCodes.AsQueryable().Any(x => (DateTime.UtcNow - x.Date).Days < 14 && 
                                               x.Sender == message.Author.Id))
                 {
                     var msg = await message.Channel.SendMessageAsync($"{message.Author.Mention} You already have sent a referral in the last 2 weeks");
