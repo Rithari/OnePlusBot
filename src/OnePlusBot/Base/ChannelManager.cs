@@ -361,7 +361,7 @@ namespace OnePlusBot.Base
           builder.WithTitle("Command channel group overview");
           StringBuilder sb = new StringBuilder();
           using(var db = new Database()){
-            var commandGroups = db.ChannelGroups.Include(grp => grp.Commands).ThenInclude(ch => ch.CommandReference);
+            var commandGroups = db.ChannelGroups.Include(grp => grp.Commands).ThenInclude(ch => ch.CommandReference).ToList();
             foreach(var grp in commandGroups)
             {
               var disabledPart = grp.Disabled ? "(Disabled)" : "";

@@ -185,7 +185,7 @@ namespace OnePlusBot.Modules
 
                 if (db.Roles.Any())
                 {
-                    foreach (var role in db.Roles)
+                    foreach (var role in db.Roles.ToList())
                     {
                         if (guild.Roles.Any(x => x.Id == role.RoleID))
                             continue;
