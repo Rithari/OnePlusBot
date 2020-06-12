@@ -636,7 +636,6 @@ namespace OnePlusBot.Modules.Administration
         using (var db = new Database())
         {
           IQueryable<WarnEntry> warnings = db.Warnings;
-          IQueryable<WarnEntry> individualWarnings;
           
           if (user != null) {
             warnings = warnings.AsQueryable().Where(x => x.WarnedUserID == user.Id);
@@ -738,7 +737,7 @@ namespace OnePlusBot.Modules.Administration
         var texts = new Collection<string>();
         using(var db = new Database())
         {
-          var notes = db.UserNotes.AsQueryable().Where(u => u.UserId == user.Id);
+          var notes = db.UserNotes.AsQueryable().Where(u => u.UserId == user.Id).ToList();
           if(notes.Any()) 
           {
             foreach(var note in notes) 
@@ -829,7 +828,7 @@ namespace OnePlusBot.Modules.Administration
                       g.Key,
                       SUM = g.Sum(s => s.UsageCount)
                     })
-          .OrderByDescending(e => e.SUM);
+          .OrderByDescending(e => e.SUM).ToList();
           var currentStringBuilder = new StringBuilder();
           var currentEmbedBuilder = new EmbedBuilder();
           currentEmbedBuilder.WithTitle(title);

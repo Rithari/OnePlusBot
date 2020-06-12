@@ -149,7 +149,7 @@ namespace OnePlusBot.Base
                 FullChannels.Clear();
                 if (db.Channels.Any()) 
                 {
-                    var channelObjects = db.Channels.Include(ch => ch.GroupsChannelIsIn).ThenInclude(groupMembers => groupMembers.Group);
+                    var channelObjects = db.Channels.Include(ch => ch.GroupsChannelIsIn).ThenInclude(groupMembers => groupMembers.Group).ToList();
                     foreach (var groupMember in channelObjects)
                     {
                         Channels.Add(groupMember.Name, groupMember.ChannelID);
@@ -158,7 +158,7 @@ namespace OnePlusBot.Base
                 }
 
                 PostTargets.Clear();
-                foreach(var target in db.PostTargets)
+                foreach(var target in db.PostTargets.ToList())
                 {
                     PostTargets.Add(target.Name, target.ChannelId);
                 }
@@ -166,7 +166,7 @@ namespace OnePlusBot.Base
                        
                 Roles.Clear();
                 if (db.Roles.Any())
-                    foreach (var role in db.Roles)
+                    foreach (var role in db.Roles.ToList())
                         Roles.Add(role.Name, role.RoleID);
 
                 ServerID = PersistentData.GetConfiguredInt("server_id", db);
@@ -193,7 +193,7 @@ namespace OnePlusBot.Base
                 ProfanityVoteThreshold = (int) PersistentData.GetConfiguredInt("profanity_votes_threshold", db);
 
                 InviteLinks.Clear();
-                foreach(var link in db.InviteLinks)
+                foreach(var link in db.InviteLinks.ToList())
                 {
                     InviteLinks.Add(link);
                 }
@@ -210,7 +210,7 @@ namespace OnePlusBot.Base
                 Emotes.Clear();
                 if(db.Emotes.Any())
                 {
-                    foreach(var post in db.Emotes)
+                    foreach(var post in db.Emotes.ToList())
                     {
                       Emotes.Add(post.Key, post);
                     }
@@ -219,7 +219,7 @@ namespace OnePlusBot.Base
                 TrackedEmotes.Clear();
                 if(db.Emotes.Any())
                 {
-                    foreach(var post in db.Emotes.AsQueryable().Where(e => !e.TrackingDisabled))
+                    foreach(var post in db.Emotes.AsQueryable().Where(e => !e.TrackingDisabled).ToList())
                     {
                       TrackedEmotes.Add(post.Key, post);
                     }
@@ -228,7 +228,7 @@ namespace OnePlusBot.Base
                 StarboardPosts.Clear();
                 if(db.StarboardMessages.Any())
                 {
-                    foreach(var post in db.StarboardMessages)
+                    foreach(var post in db.StarboardMessages.ToList())
                     {
                         StarboardPosts.Add(post);
                     }
@@ -237,7 +237,7 @@ namespace OnePlusBot.Base
                 ProfanityChecks.Clear();
                 if(db.ProfanityChecks.Any())
                 {
-                    foreach(var word in db.ProfanityChecks)
+                    foreach(var word in db.ProfanityChecks.ToList())
                     {
                         word.RegexObj = new Regex(word.Word, RegexOptions.Singleline | RegexOptions.Compiled);
                         ProfanityChecks.Add(word);

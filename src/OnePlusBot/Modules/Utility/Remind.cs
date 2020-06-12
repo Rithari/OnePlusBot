@@ -110,7 +110,7 @@ namespace OnePlusBot.Modules.Utility
     {
       using(var db = new Database())
       {
-        var activeReminders = db.Reminders.AsQueryable().Where(r => !r.Reminded && r.RemindedUserId == Context.User.Id);
+        var activeReminders = db.Reminders.AsQueryable().Where(r => !r.Reminded && r.RemindedUserId == Context.User.Id).ToList();
         var currentEmbedBuilder = new EmbedBuilder();
         var embedsToPost = new List<Embed>();
         currentEmbedBuilder.WithTitle("Active reminders");

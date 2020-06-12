@@ -99,7 +99,7 @@ namespace OnePlusBot.Modules
           var matchingCommand = appropriateCommand.First();
           if(matchingCommand.CommandChannels != null) 
           {
-            var commandChannels = matchingCommand.CommandChannels.Where(cha => cha.ChannelGroupReference.Channels.Where(grp => grp.ChannelId == contextChannel.Id).FirstOrDefault() != null);
+            var commandChannels = matchingCommand.CommandChannels.Where(cha => cha.ChannelGroupReference.Channels.Where(grp => grp.ChannelId == contextChannel.Id).FirstOrDefault() != null).ToList();
             if(commandChannels.Any())
             {
               if(commandChannels.Count() > 1)
@@ -107,7 +107,7 @@ namespace OnePlusBot.Modules
                 await Context.Channel.SendMessageAsync("Warning: command has multiple responses for this channel");
               }
               foreach(var commandChannel in commandChannels){
-                var entries = commandChannels.First().CommandChannelEntries.OrderBy(entry => entry.Position);
+                var entries = commandChannels.First().CommandChannelEntries.OrderBy(entry => entry.Position).ToList();
                 if(entries.Any())
                 {
                   foreach(var entry in entries)

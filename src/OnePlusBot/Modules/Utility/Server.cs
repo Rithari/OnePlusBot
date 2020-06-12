@@ -192,7 +192,7 @@ namespace OnePlusBot.Modules.Utility
           using(var db = new Database())
           {
             var modules = db.Modules;
-            foreach(var module in modules){
+            foreach(var module in modules.ToList()){
               var commandsInModule = db.Commands.Include(c => c.GroupsCommandIsIn)
               .ThenInclude(grp => grp.ChannelGroupReference)
               .ThenInclude(grp => grp.Channels)
