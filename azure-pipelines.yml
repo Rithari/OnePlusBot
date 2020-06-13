@@ -40,3 +40,30 @@ steps:
     ArtifactName: 'drop'
     publishLocation: 'Container'
   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master')) 
+
+- task: ado-discord-webhook@1
+  inputs:
+    channelId: '$(webHookChannelId)'
+    webhookKey: '$(webHookKey)'
+    messageType: 'embeds'
+    embeds: |
+      {
+        "embeds": [
+          {
+            "description": "Build [$(Build.BuildId)]($(Build.BuildUri)) succeeded",
+            "color": 631111,
+          "fields": [
+            {
+              "name": "Requested by",
+              "value": "$(Build.RequestedFor)",
+              "inline": true
+            },
+            {
+              "name": "Build pipeline",
+              "value": "$(Build.DefinitionName)",
+              "inline": true
+            }
+          ]
+          }
+        ]
+      }
