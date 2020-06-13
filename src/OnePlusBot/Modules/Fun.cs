@@ -15,6 +15,7 @@ using System.IO;
 using OnePlusBot.Data;
 using Microsoft.EntityFrameworkCore;
 using OnePlusBot.Data.Models;
+using Discord.WebSocket;
 
 namespace OnePlusBot.Modules
 {
@@ -23,6 +24,25 @@ namespace OnePlusBot.Modules
     ]
     public class Fun : ModuleBase<SocketCommandContext>
     {
+        [
+            Command("choose"),
+            Summary("Choose between two or more things!"),
+            CommandDisabledCheck
+        ]
+        public async Task ChooseAsync(params string[] argArray)
+        {
+            var answer = argArray[Global.Random.Next(argArray.Length)];
+
+            if (answer.Contains("@everyone") || answer.Contains("@here"))
+            {
+                await ReplyAsync("Your command contained one or more illegal pings!");
+                return;
+                
+            }
+
+            await Context.Channel.SendMessageAsync($"I've chosen {answer}");
+        }
+
         [
             Command("8ball"),
             Summary("Magic 8Ball for Discord!"),
