@@ -56,10 +56,7 @@ namespace OnePlusBot.Modules.Utility
     public async Task PingAsync()
     {
       const string reply = "Pong....\nWithin {0} ms";
-      
-      await Context.Channel.EmbedAsync(new EmbedBuilder()
-        .WithColor(9896005)
-        .WithDescription(string.Format(reply, Context.Client.Latency)));
+      await ReplyAsync(string.Format(reply, Context.Client.Latency));
     }
   }
 }

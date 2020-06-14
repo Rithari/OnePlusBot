@@ -15,6 +15,7 @@ using System.IO;
 using OnePlusBot.Data;
 using Microsoft.EntityFrameworkCore;
 using OnePlusBot.Data.Models;
+using Discord.WebSocket;
 
 namespace OnePlusBot.Modules
 {
@@ -24,25 +25,64 @@ namespace OnePlusBot.Modules
     public class Fun : ModuleBase<SocketCommandContext>
     {
         [
+            Command("choose"),
+            Summary("Choose between two or more things!"),
+            CommandDisabledCheck
+        ]
+        public async Task ChooseAsync(params string[] argArray)
+        {
+            var answer = argArray[Global.Random.Next(argArray.Length)];
+
+            if (answer.Contains("@everyone") || answer.Contains("@here"))
+            {
+                await ReplyAsync("Your command contained one or more illegal pings!");
+                return;
+                
+            }
+
+            await Context.Channel.SendMessageAsync($"I've chosen {answer}");
+        }
+
+        [
             Command("8ball"),
             Summary("Magic 8Ball for Discord!"),
             CommandDisabledCheck
         ]
         public async Task MagicBallAsync([Remainder] string search)
         {
-            var answers = GetAnswers();
+            var answers = Get8BallAnswers();
             var answer = answers[Global.Random.Next(answers.Length)];
 
-            await Context.Channel.EmbedAsync(new EmbedBuilder()
-                .WithColor(9896005)
-                .AddField(efb =>
-                {
-                    efb.Name = "🎱 The 8 Ball Says:";
-                    efb.Value = answer;
-                }));
+            await ReplyAsync($"🎱 The 8 Ball Says: {answer}");
         }
-        
-        private static string[] GetAnswers()
+       
+
+        [
+            Command("flip"),
+            Summary("Flip a coin!"),
+            CommandDisabledCheck
+        ]
+        public async Task CoinFlip()
+        {
+            var answers = GetCoinFlip();
+            var answer = answers[Global.Random.Next(answers.Length)];
+
+            await ReplyAsync($"📣 You got {answer}!");
+        }
+
+        [
+            Command("roll"),
+            Summary("Roll a dice!"),
+            CommandDisabledCheck
+        ]
+        public async Task DiceRoll()
+        {
+            var number = Global.Random.Next(1, 7);
+
+            await ReplyAsync($"🎲 You rolled {number}!");
+        }
+
+        private static string[] Get8BallAnswers()
         {
             return new[]
             {
@@ -55,6 +95,14 @@ namespace OnePlusBot.Modules
             };
         }
 
+        private static string[] GetCoinFlip()
+        {
+            return new[]
+            {
+                "Heads", "Tails"
+            };
+        }
+
         [
             Command("lovecalc"),
             Summary("lovecalc search for Discord!"),
@@ -62,8 +110,7 @@ namespace OnePlusBot.Modules
         ]
         public async Task LoveCalcAsync(string subjectA, [Remainder] string subjectB)
         {
-            Random loveChance = new Random();
-            int rand = loveChance.Next(0, 101);
+            int rand = Global.Random.Next(0, 101);
             await ReplyAsync($":cupid: Love Chance between {subjectA} and {subjectB} is {rand}%.");
         }
 
@@ -144,40 +191,6 @@ namespace OnePlusBot.Modules
             {
                 await ReplyAsync(ex.Message);
             }
-        }
-
-
-         private const string BadgeUrl = "https://badges.steamprofile.com/profile/default/steam/{0}.png";
-        
-        [
-            Command("steamp"),
-            Summary("Steam profile banner for Discord!"),
-            CommandDisabledCheck
-        ]
-        public async Task<RuntimeResult> SteampAsync([Remainder] string user)
-        {
-            await Context.Message.AddReactionAsync(StoredEmote.GetEmote(Global.OnePlusEmote.SUCCESS));
-
-            var request = (HttpWebRequest) WebRequest.Create(string.Format(BadgeUrl, user));
-            
-            using (var response = await request.GetResponseAsync())
-            using (var stream = response.GetResponseStream())
-            {
-                if (stream == null)
-                {
-                    return CustomResult.FromError("Could not establish a connection to the Steam API");
-                }
-                
-                using (var fs = File.Open("output.png", FileMode.Create, FileAccess.Write, FileShare.Read))
-                {
-                    await stream.CopyToAsync(fs);
-                }
-                
-                await Context.Channel.SendFileAsync("output.png");
-            }
-
-            File.Delete("output.png");
-            return CustomResult.FromSuccess();
         }
 
         [
