@@ -9,6 +9,7 @@ using Discord.WebSocket;
 using System.Text.RegularExpressions;
 using System.Collections.Concurrent;
 using OnePlusBot.Helpers;
+using System.Diagnostics;
 
 namespace OnePlusBot.Base
 {
@@ -19,7 +20,7 @@ namespace OnePlusBot.Base
         public static ulong AutoMutePingCount;
 
         public static Random Random { get; }
-
+        public static Stopwatch stopwatch { get; } = Stopwatch.StartNew();
         public static ulong ServerID { get; set; }
         public static Dictionary<string, ulong> Roles { get; }
         public static Dictionary<string, ulong> Channels { get; }

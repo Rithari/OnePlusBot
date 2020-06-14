@@ -1,19 +1,29 @@
-using Microsoft.EntityFrameworkCore;
-using System.Text;
-using System.Threading.Tasks;
-using Discord;
+﻿using Discord;
 using Discord.Commands;
-using System.Linq;
 using OnePlusBot.Base;
-using OnePlusBot.Helpers;
-using System.Globalization;
-using System.Runtime.InteropServices;
 using OnePlusBot.Data.Models;
+using OnePlusBot.Helpers;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+
 namespace OnePlusBot.Modules.Utility
 {
 
-  public partial class Utility : ModuleBase<SocketCommandContext>
+    public partial class Utility : ModuleBase<SocketCommandContext>
   {
+
+    [
+        Command("uptime"),
+        Summary("Shows the uptime of the bot."),
+        CommandDisabledCheck
+        
+    ]
+    public async Task UptimeAsync()
+        {
+            var ts = Global.stopwatch.Elapsed;
+            string elapsedTime = string.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds,ts.Milliseconds / 10);
+            await ReplyAsync($"⚙️ The bot's been running for {elapsedTime}!");
+        }
     [
         Command("showavatar"),
         Summary("Shows avatar of a user."),
