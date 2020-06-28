@@ -109,13 +109,13 @@ namespace OnePlusBot.Base
               {
                 var user = (IGuildUser) reaction.User.Value;
                 var roleToGive = appropriateRole.First();
-                if(roleToGive.MininumLevel > 0)
+                if(roleToGive.MinLevel > 0)
                 {
                   var userInDb = db.Users.Include(u => u.CurrentLevel).AsQueryable().Where(dbU => dbU.Id == user.Id);
                   if(userInDb.Any())
                   {
                     var userFromDB = userInDb.FirstOrDefault();
-                    if(userFromDB == null || userFromDB.CurrentLevel == null || userFromDB.CurrentLevel.Level < roleToGive.MininumLevel)
+                    if(userFromDB == null || userFromDB.CurrentLevel == null || userFromDB.CurrentLevel.Level < roleToGive.MinLevel)
                     {
                       return;
                     }
