@@ -117,6 +117,7 @@ namespace OnePlusBot.Base
                     var userFromDB = userInDb.FirstOrDefault();
                     if(userFromDB == null || userFromDB.CurrentLevel == null || userFromDB.CurrentLevel.Level < roleToGive.MinLevel)
                     {
+                      await message.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
                       return;
                     }
                   }
