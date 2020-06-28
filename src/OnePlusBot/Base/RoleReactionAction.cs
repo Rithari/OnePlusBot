@@ -108,7 +108,20 @@ namespace OnePlusBot.Base
               if(appropriateRole.Any())
               {
                 var user = (IGuildUser) reaction.User.Value;
-                var role = guildChannel.Guild.GetRole(appropriateRole.First().RoleID);
+                var roleToGive = appropriateRole.First();
+                if(roleToGive.MininumLevel > 0)
+                {
+                  var userInDb = db.Users.Include(u => u.CurrentLevel).AsQueryable().Where(dbU => dbU.Id == user.Id);
+                  if(userInDb.Any())
+                  {
+                    var userFromDB = userInDb.FirstOrDefault();
+                    if(userFromDB == null || userFromDB.CurrentLevel == null || userFromDB.CurrentLevel.Level < roleToGive.MininumLevel)
+                    {
+                      return;
+                    }
+                  }
+                }
+                var role = guildChannel.Guild.GetRole(roleToGive.RoleID);
                 await user.AddRoleAsync(role);
               }
             }
