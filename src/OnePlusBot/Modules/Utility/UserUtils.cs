@@ -21,7 +21,7 @@ namespace OnePlusBot.Modules.Utility
     public async Task UptimeAsync()
         {
             var ts = Global.stopwatch.Elapsed;
-            string elapsedTime = string.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds,ts.Milliseconds / 10);
+            string elapsedTime = string.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.TotalHours, ts.Minutes, ts.Seconds,ts.Milliseconds / 10);
             await ReplyAsync($"⚙️ The bot's been running for {elapsedTime}!");
         }
     [
