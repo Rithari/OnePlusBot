@@ -635,11 +635,18 @@ namespace OnePlusBot.Base
                 }
 
                 string name;
-                // Cheap way to check without having a command
                 if (match.Groups[1].Length < 20) 
-                    name = "Smartphone";
+                {
+                  name = "Smartphone";
+                }
                 else
-                    name = "Wireless Bullets 2";
+                {
+                  name = "Accessories";
+                  if(match.Groups[0].Value.Contains(".in"))
+                  {
+                    name = "Smartphone (India)";
+                  }
+                }
                 embed.AddField(new EmbedFieldBuilder()
                     .WithName(name)
                     .WithValue($"Referral: [#{match.Groups[1].Value}]({match.Value})"));

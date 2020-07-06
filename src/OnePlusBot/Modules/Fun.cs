@@ -35,10 +35,9 @@ namespace OnePlusBot.Modules
 
             var answer = argArray[Global.Random.Next(argArray.Length)];
 
-            if (answer.Contains("@everyone") || answer.Contains("@here"))
+            if (answer.Contains("@everyone") || answer.Contains("@here") || Context.Message.MentionedRoles.Count > 0)
             {
                 return CustomResult.FromError("Your command contained one or more illegal pings!");
-                
             }
 
             await Context.Channel.SendMessageAsync($"I've chosen {answer}");
