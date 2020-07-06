@@ -1,21 +1,18 @@
-using System.Text;
-using System.Threading;
-using System.Collections.Generic;
-using System;
-using System.Threading.Tasks;
-using Discord.Commands;
 using Discord;
+using Discord.Commands;
+using Microsoft.EntityFrameworkCore;
 using OnePlusBot.Base;
+using OnePlusBot.Data;
+using OnePlusBot.Data.Models;
 using OnePlusBot.Helpers;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Net.Http;
-using System.IO;
-using OnePlusBot.Data;
-using Microsoft.EntityFrameworkCore;
-using OnePlusBot.Data.Models;
-using Discord.WebSocket;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace OnePlusBot.Modules
 {
@@ -29,18 +26,23 @@ namespace OnePlusBot.Modules
             Summary("Choose between two or more things!"),
             CommandDisabledCheck
         ]
-        public async Task ChooseAsync(params string[] argArray)
+        public async Task<RuntimeResult> ChooseAsync(params string[] argArray)
         {
+            if (argArray == null || argArray.Length == 0)
+            {
+                return CustomResult.FromError("I can't choose nothingness.");
+            }
+
             var answer = argArray[Global.Random.Next(argArray.Length)];
 
             if (answer.Contains("@everyone") || answer.Contains("@here"))
             {
-                await ReplyAsync("Your command contained one or more illegal pings!");
-                return;
+                return CustomResult.FromError("Your command contained one or more illegal pings!");
                 
             }
 
             await Context.Channel.SendMessageAsync($"I've chosen {answer}");
+            return CustomResult.FromSuccess();
         }
 
         [
