@@ -430,6 +430,11 @@ namespace OnePlusBot.Base
         }
     }
 
+    /// <summary>
+    /// Disables a thread defined by the given channel object and until the defined datetime.
+    /// </summary>
+    /// <param name="channel">The channel which hosts the modmail thread to be didsabled</param>
+    /// <param name="until">The date time until which the thread should be disabled until</param>
     public void DisableModMailForUserWithExistingThread(ISocketMessageChannel channel, DateTime until){
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
@@ -439,6 +444,7 @@ namespace OnePlusBot.Base
             user.ModMailMuted = true;
             user.ModMailMutedReminded = false;
             user.ModMailMutedUntil = until;
+            thread.State = "CLOSED";
             db.SaveChanges();
         }
         Global.ReloadModmailThreads();
@@ -463,7 +469,16 @@ namespace OnePlusBot.Base
         Global.ReloadModmailThreads();
     }
 
-    public async Task LogForDisablingAction(ISocketMessageChannel channel, string note, DateTime until)
+    /// <summary>
+    /// Handles the logic for closing and logging a modmail thread in case the user is getting muted from modmail, because this logic works a bit differently.
+    /// The differences are: different header, different message to user and sending a notification about the fact that modmail is disabled for a user
+    /// </summary>
+    /// <param name="channel">The channel hosting the modmail thread</param>
+    /// <param name="note">The note (might be null) with which the thread was disabled with</param>
+    /// <param name="until">The date time until the user is unable to contact modmail until</param>
+    /// <param name="disablingUser">The user which executes the disabling command</param>
+    /// <returns></returns>
+    public async Task LogForDisablingAction(ISocketMessageChannel channel, string note, DateTime until, IUser disablingUser)
     {
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
@@ -487,6 +502,7 @@ namespace OnePlusBot.Base
         {
             await userObj.SendMessageAsync(embed: ModMailEmbedHandler.GetDisablingEmbed(until));
         }
+        await new ModMailManager().SendModmailMuteNofication(userObj, disablingUser, until);
     }
 
     public void EnableModmailForUser(IGuildUser user)
@@ -683,8 +699,27 @@ namespace OnePlusBot.Base
         db.SaveChanges();
       }
     }
-   
 
+    /// <summary>
+    /// Sends a notification to show that modmail has been disabled for a user. This notification includes the date time until
+    /// modmail has been disabled.
+    /// </summary>
+    /// <param name="disabledUser">The user for which modmail has been disabled for</param>
+    /// <param name="disablingUser">The user which executes the disabling command</param>
+    /// <param name="until">The datetime until the user is unable to contact modmail</param>
+    /// <returns></returns>
+    public async Task SendModmailMuteNofication(IUser disabledUser, IUser disablingUser, DateTime until) {
+        var bot = Global.Bot;
+        var guild = bot.GetGuild(Global.ServerID);
+
+        var muteLogChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_MUTE_LOG]);
+        var muteNotificationBuilder = new EmbedBuilder();
+        muteNotificationBuilder.WithTitle("Modmail has been disabled for user!");
+        muteNotificationBuilder.AddField("User", Extensions.FormatMentionDetailed(disabledUser));
+        muteNotificationBuilder.AddField("Disabled by", Extensions.FormatMentionDetailed(disablingUser));
+        muteNotificationBuilder.AddField("Disabled until", Extensions.FormatDateTime(until));
+        await muteLogChannel.SendMessageAsync(embed: muteNotificationBuilder.Build());
+    }
     
   }
 }
