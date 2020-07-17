@@ -547,17 +547,10 @@ namespace OnePlusBot.Base
                 default:
                  if (!string.IsNullOrEmpty(result?.ErrorReason))
                  {
-                        if (result.ErrorReason == "Uknown command.")
+                        if (result.ErrorReason == "Unknown command.")
                             return;
 
                         await context.Message.AddReactionAsync(StoredEmote.GetEmote(Global.OnePlusEmote.FAIL));
-
-                        if (result.ErrorReason == "Index was outside the bounds of the array.")
-                        {
-                            string newError = "You have specified too few parameters for the command. Use `;help {command}` to check how it works.";
-                            await context.Channel.SendMessageAsync(newError);
-                            return;
-                        }
 
                         await context.Channel.SendMessageAsync(result.ErrorReason);
                         return;
