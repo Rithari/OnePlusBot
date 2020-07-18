@@ -215,6 +215,7 @@ namespace OnePlusBot.Modules
         public async Task<RuntimeResult> EnableModmailForUser(IGuildUser user)
         {
           new  ModMailManager().EnableModmailForUser(user);
+          await new ModMailManager().SendModmailUnmutedNotification(user, Context.User);
           await Task.CompletedTask;
           return CustomResult.FromSuccess();
         }

@@ -720,6 +720,24 @@ namespace OnePlusBot.Base
         muteNotificationBuilder.AddField("Disabled until", Extensions.FormatDateTime(until));
         await muteLogChannel.SendMessageAsync(embed: muteNotificationBuilder.Build());
     }
+
+    /// <summary>
+    /// Sends a notification to show that modmail has been enabled again for a user.
+    /// </summary>
+    /// <param name="enabledUser">The user for which modmail has been enabled again</param>
+    /// <param name="enablingUser">The user which executes the enabling command</param>
+    /// <returns></returns>
+    public async Task SendModmailUnmutedNotification(IUser enabledUser, IUser enablingUser) {
+        var bot = Global.Bot;
+        var guild = bot.GetGuild(Global.ServerID);
+
+        var muteLogChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_MUTE_LOG]);
+        var muteNotificationBuilder = new EmbedBuilder();
+        muteNotificationBuilder.WithTitle("Modmail has been enabled for user!");
+        muteNotificationBuilder.AddField("User", Extensions.FormatMentionDetailed(enabledUser));
+        muteNotificationBuilder.AddField("Enabled by", Extensions.FormatMentionDetailed(enablingUser));
+        await muteLogChannel.SendMessageAsync(embed: muteNotificationBuilder.Build());
+    }
     
   }
 }
