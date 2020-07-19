@@ -27,7 +27,7 @@ namespace OnePlusBot.Base
 
       using(var db = new Database())
       {
-        var roles = db.ReactionRoles.Include(ro => ro.EmoteReference).Include(ro => ro.RoleReference).Where(ro => ro.Area == "info").ToList();
+        var roles = db.ReactionRoles.Include(ro => ro.EmoteReference).Include(ro => ro.RoleReference).Where(ro => ro.Area == "info").OrderBy(ro => ro.Position).ToList();
         var reactions = new List<IEmote>();
         foreach(var role in roles)
         {
