@@ -68,7 +68,7 @@ namespace OnePlusBot
         {
             var builder = GetBaseEmbed();
             builder.WithAuthor(GetOneplusAuthor());
-            builder.WithDescription("Thank you for your inquiry. A moderator will come back to you.");
+            builder.WithDescription("Thank you for your inquiry. A moderator will respond soon.");
             return builder.Build();
         }
 
@@ -92,7 +92,7 @@ namespace OnePlusBot
         public static Embed GetDisablingEmbed(DateTime date)
         {
           var embed = GetBaseEmbed();
-          embed.WithDescription($"Your inquiry has been closed. You will be able to contact modmail again at {Extensions.FormatDateTime(date)}.");
+          embed.WithDescription($"Your inquiry has been closed. You will be able to contact modmail again on {Extensions.FormatDateTime(date)}.");
           return embed.Build();
         }
 
@@ -117,7 +117,7 @@ namespace OnePlusBot
         public static Embed GetClosingSummaryEmbed(ModMailThread thread, int messageCount, SocketUser user, string note)
         {
             var embed = GetBaseEmbed();
-            embed.WithTitle("Modmail thread has been closed");
+            embed.WithTitle("Modmail thread has been closed.");
             embed.WithDescription(GetClosingHeader(thread, messageCount, user, note).ToString());
             return embed.Build();
         }
@@ -134,9 +134,9 @@ namespace OnePlusBot
         public static Embed GetMutingSummaryEmbed(ModMailThread thread, int messageCount, SocketUser user, string note, DateTime until)
         {
             StringBuilder description = GetClosingHeader(thread, messageCount, user, note);
-            description.Append($"\n It has been disabled and will be available again at {Extensions.FormatDateTime(until)}.");
+            description.Append($"\n It has been disabled and will be available again on {Extensions.FormatDateTime(until)}.");
             var embed = GetBaseEmbed();
-            embed.WithTitle("Modmail thread has been disabled for user");
+            embed.WithTitle("Modmail thread has been disabled for user.");
             embed.WithDescription(description.ToString());
             return embed.Build();
         }
@@ -165,7 +165,7 @@ namespace OnePlusBot
         {
             var builder = GetBaseEmbed();
             builder.WithAuthor(GetUserAuthor(user));
-            builder.WithTitle("A new modmail thread has been opened");
+            builder.WithTitle("A new modmail thread has been opened.");
             builder.WithDescription($"The thread concerns {Extensions.FormatUserNameDetailed(user)}.");
             builder.AddField("Link", Extensions.GetChannelUrl(Global.ServerID, thread.ChannelId, "Jump!"));
             return builder.Build();
