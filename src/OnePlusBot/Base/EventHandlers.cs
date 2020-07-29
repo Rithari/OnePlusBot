@@ -620,7 +620,6 @@ namespace OnePlusBot.Base
                 {
                     db.ReferralCodes.Add(new ReferralCode
                     {
-                        Code = match.Groups[1].Value,
                         Date = message.CreatedAt.DateTime,
                         Sender = message.Author.Id
                     });

@@ -12,15 +12,9 @@ namespace OnePlusBot.Data.Models
         [Column("id")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public uint ID { get; set; }
-
-        [Column("muted_user")]
-        public string MutedUser { get; set; }
         
         [Column("muted_user_id")]
         public ulong MutedUserID { get; set; }
-        
-        [Column("muted_by")]
-        public string MutedBy { get; set; }
         
         [Column("Muted_by_id")]
         public ulong MutedByID { get; set; }
