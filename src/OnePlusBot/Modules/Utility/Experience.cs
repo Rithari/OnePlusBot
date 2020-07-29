@@ -97,7 +97,7 @@ namespace OnePlusBot.Modules.Utility
             var userInGuild = Context.Guild.GetUser(user.Id);
             var name = userInGuild != null ? Extensions.FormatUserName(userInGuild) : "User left guild " + user.Id;
             description.Append($"[#{rank}] → **{name}**\n");
-            description.Append($"XP: {user.XP} Level: {user.Level}: Messages: {user.MessageCount} \n \n");
+            description.Append($"XP: {user.XP} | Level: {user.Level} | Messages: {user.MessageCount} \n \n");
           }
           description.Append("\n");
         }

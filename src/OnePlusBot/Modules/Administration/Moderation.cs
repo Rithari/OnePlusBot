@@ -212,10 +212,8 @@ namespace OnePlusBot.Modules.Administration
           {
               MuteDate = now,
               UnmuteDate = targetTime,
-              MutedUser = user.Username + '#' + user.Discriminator,
               MutedUserID = user.Id,
               MutedByID = author.Id,
-              MutedBy = author.Username + '#' + author.Discriminator,
               Reason = reason,
               MuteEnded = false
           };

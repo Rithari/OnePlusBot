@@ -286,6 +286,8 @@ namespace OnePlusBot.Base
 
             public static string OPEN_MODMAIL = "OPEN_MODMAIL";
 
+            public static string CLAP = "CLAP";
+
         }
 
         public static DiscordSocketClient Bot { get; set;}
