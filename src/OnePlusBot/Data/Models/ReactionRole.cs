@@ -18,6 +18,9 @@ namespace OnePlusBot.Data.Models
         [Column("level_restriction")]
         public uint MinLevel { get; set; }
 
+        [Column("position")]
+        public uint Position { get; set; }
+
         [ForeignKey("RoleID")]
         public virtual Role RoleReference { get; set; }
 

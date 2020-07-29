@@ -14,9 +14,6 @@ namespace OnePlusBot.Data.Models
         
         [Column("sender")]
         public ulong Sender { get; set; }
-
-        [Column("code")]
-        public string Code { get; set; }
         
         [Column("date")]
         public DateTime Date { get; set; }
