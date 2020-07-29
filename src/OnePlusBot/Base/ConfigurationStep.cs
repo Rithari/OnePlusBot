@@ -68,7 +68,7 @@ namespace OnePlusBot.Base {
             }
             this.deleteMessages = deleteMessages;
         }
-        private string description { get; set; }
+        public string description { get; set; }
 
         public Collection<ReactionAction> Actions = new Collection<ReactionAction>();
 
@@ -277,7 +277,7 @@ namespace OnePlusBot.Base {
 
             forwardAction.Action = (ConfigurationStep a ) => 
             {
-                if(currentPage < (elements.Count - 1) / elementOnPage)
+                if(currentPage < (Math.Ceiling((double) elements.Count) / elementOnPage))
                 {
                     currentPage++;
                 }
@@ -344,16 +344,58 @@ namespace OnePlusBot.Base {
                 a.Result = parent;
                 await Task.CompletedTask;
             };
-          
-            step.Actions.Add(prevAction);
+            var skipPageBoundary = 3;
+            var pageCount = Math.Ceiling((double) elements.Count / elementOnPage);
+            var skipPages = pageCount >= skipPageBoundary;
+            if(!skipPages)
+            {
+                step.Actions.Add(prevAction);
+            }
             step.Actions.Add(firstAction);
             step.Actions.Add(secondAction);
             step.Actions.Add(thirdAction);
             step.Actions.Add(fourthAction);
             step.Actions.Add(fifthAction);
-            step.Actions.Add(forwardAction);
+            if(!skipPages)
+            {
+                step.Actions.Add(forwardAction);
+            }
             step.Actions.Add(abortDeletionAction);
 
+
+            if(skipPages)
+            {
+                var skipPageStep = new ConfigurationStep("", this.interactive, this.context, ConfigurationStep.StepType.Text, step);
+                skipPageStep.beforeTextPosted = async (ConfigurationStep step) => {
+                  // we need to re-render the text, because the page count might change
+                step.description = $"Enter the page you want to skip to. Current page {currentPage + 1}/{pageCount}";
+                await Task.CompletedTask;
+            };
+              skipPageStep.TextCallback = (string text, ConfigurationStep a) =>
+              {
+                  var result = 0;
+                  if(Int32.TryParse(text, out result))
+                  {
+                      currentPage = result - 1;
+                      a.Result = step;
+                  }
+                  else
+                  {
+                      a.Result = skipPageStep;
+                  }
+                  return Task.CompletedTask;
+              };
+
+              var skipPagesAction = new ReactionAction(new Emoji("📇"));
+              skipPagesAction.Action = async (ConfigurationStep a) =>
+              {
+                  a.Result = skipPageStep;
+                  await Task.CompletedTask;
+              };
+
+
+              step.Actions.Add(skipPagesAction);
+            }
             step.beforeTextPosted = async (ConfigurationStep a) => 
             {
                 a.additionalPosts.Clear();
@@ -362,6 +404,7 @@ namespace OnePlusBot.Base {
                     var cmd = elements[i];
                     a.additionalPosts.Add(cmd.display());
                 }
+                a.additionalPosts.Add($"Current page {currentPage + 1}/{pageCount}");
                 await Task.CompletedTask;
             };
         }
