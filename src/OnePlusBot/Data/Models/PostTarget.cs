@@ -34,6 +34,7 @@ namespace OnePlusBot.Data.Models
         public static readonly string STARBOARD = "starboard";
         public static readonly string STARBOARD_LOG = "starboardLog";
         public static readonly string UNBAN_LOG = "unbanlog";
+        public static readonly string MODMAIL_MUTE_LOG = "modmailMuteLog";
         public static readonly string SUGGESTIONS = "suggestions";
         public static readonly string USERNAME_QUEUE = "usernamequeue";
         public static readonly string WARN_LOG = "warnlog";
@@ -51,7 +52,7 @@ namespace OnePlusBot.Data.Models
                                 MUTE_LOG, NEWS, PROFANITY_QUEUE, 
                                 STARBOARD, UNBAN_LOG, SUGGESTIONS, 
                                 USERNAME_QUEUE, WARN_LOG, LEAVE_LOG,
-                                INFO, FEEDBACK
+                                INFO, FEEDBACK, MODMAIL_MUTE_LOG
                               };
       
     }
