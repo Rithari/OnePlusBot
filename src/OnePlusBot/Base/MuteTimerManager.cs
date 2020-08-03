@@ -90,7 +90,29 @@ namespace OnePlusBot.Base
       var user = guild.GetUser(userId);
       if(user == null)
       {
-        UnMuteUserCompletely(userId);
+        using (var db = new Database())
+        {
+          if(muteId == UInt64.MaxValue)
+          {
+            // this is in case we directly unmute a person via a command, just set all of the mutes to ended, in case there are more than one
+            UnMuteUserCompletely(userId, db);
+          }
+          else
+          {
+            UnMuteUserCompletely(userId, db);
+            var muteObj = db.Mutes.AsQueryable().Where(x => x.ID == muteId).ToList().First();
+            var noticeEmbed = new EmbedBuilder();
+            noticeEmbed.Color = Color.LightOrange;
+            noticeEmbed.Title = "User has been unmuted!";
+
+            noticeEmbed.AddField("User Id", userId + " (User left the guild)")
+                        .AddField("Mute Id", muteId)
+                        .AddField("Mute duration", Extensions.FormatTimeSpan(DateTime.Now - muteObj.MuteDate))
+                        .AddField("Muted since", Extensions.FormatDateTime(muteObj.MuteDate));
+            await guild.GetTextChannel(Global.PostTargets[PostTarget.MUTE_LOG]).SendMessageAsync(embed: noticeEmbed.Build());
+          }
+          db.SaveChanges();
+        }
         return CustomResult.FromError("User is not in the server anymore. User was unmuted in the database.");
       }
       var result = await OnePlusBot.Helpers.Extensions.UnMuteUser(user);

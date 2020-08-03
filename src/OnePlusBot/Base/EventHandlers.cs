@@ -862,7 +862,7 @@ namespace OnePlusBot.Base
 
               builder.ThumbnailUrl = message.Author.GetAvatarUrl();
 
-              const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
+              const string discordUrl = "https://discord.com/channels/{0}/{1}/{2}";
               builder.AddField("Muted User", Extensions.FormatUserNameDetailed(guildUser))
                       .AddField("Location of the mute",
                           $"[#{message.Channel.Name}]({string.Format(discordUrl, guildChannel.Guild.Id, guildChannel.Id, message.Id)})");
