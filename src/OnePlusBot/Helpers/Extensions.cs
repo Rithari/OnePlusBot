@@ -168,7 +168,7 @@ namespace OnePlusBot.Helpers
           return builder;
         }
 
-        private static string DiscordChannelUrl = "https://discordapp.com/channels/{0}/{1}";
+        private static string DiscordChannelUrl = "https://discord.com/channels/{0}/{1}";
 
         private static string DiscordMessageUrl = DiscordChannelUrl + "/{2}";
 

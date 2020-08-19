@@ -232,7 +232,7 @@ namespace OnePlusBot.Modules.Administration
           
           builder.ThumbnailUrl = user.GetAvatarUrl();
           
-          const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
+          const string discordUrl = "https://discord.com/channels/{0}/{1}/{2}";
           builder.AddField("Muted User", Extensions.FormatUserNameDetailed(user))
                   .AddField("Muted by", Extensions.FormatUserNameDetailed(author))
                   .AddField("Location of the mute",
@@ -461,7 +461,7 @@ namespace OnePlusBot.Modules.Administration
               .WithIconUrl("https://a.kyot.me/cno0.png");
         });
 
-        const string discordUrl = "https://discordapp.com/channels/{0}/{1}/{2}";
+        const string discordUrl = "https://discord.com/channels/{0}/{1}/{2}";
         builder.AddField("Warned User", Extensions.FormatMentionDetailed(user))
             .AddField("Warned by", Extensions.FormatMentionDetailed(monitor))
             .AddField(
