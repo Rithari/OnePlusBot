@@ -27,7 +27,7 @@ namespace OnePlusBot.Modules.Administration
       [
           Command("banid", RunMode = RunMode.Async),
           Summary("Bans specified user."),
-          RequireRole("staff"),
+          RequireRole(new string[]{"staff", "trialmod"}),
           CommandDisabledCheck
       ]
       public async Task<RuntimeResult> OBanAsync(ulong name, [Remainder] string reason = null)
@@ -67,7 +67,7 @@ namespace OnePlusBot.Modules.Administration
       [
           Command("ban", RunMode = RunMode.Async),
           Summary("Bans specified user."),
-          RequireRole("staff"),
+          RequireRole(new string[]{"staff", "trialmod"}),
           RequireBotPermission(GuildPermission.BanMembers),
           CommandDisabledCheck
       ]
@@ -129,7 +129,7 @@ namespace OnePlusBot.Modules.Administration
       [
         Command("kick", RunMode = RunMode.Async),
         Summary("Kicks specified user."),
-        RequireRole("staff"),
+        RequireRole(new string[]{"staff", "trialmod"}),
         RequireBotPermission(GuildPermission.KickMembers),
         CommandDisabledCheck
       ]
@@ -158,7 +158,7 @@ namespace OnePlusBot.Modules.Administration
       [
           Command("mute", RunMode=RunMode.Async),
           Summary("Mutes a specified user for a set amount of time. Example: `mute @Username#1234 5d2h1m3s mute reason`"),
-          RequireRole("staff"),
+          RequireRole(new string[]{"staff", "trialmod"}),
           RequireBotPermission(GuildPermission.ManageRoles),
           CommandDisabledCheck
       ]
@@ -261,7 +261,7 @@ namespace OnePlusBot.Modules.Administration
       [
           Command("unmute", RunMode=RunMode.Async),
           Summary("Unmutes a specified user"),
-          RequireRole("staff"),
+          RequireRole(new string[]{"staff", "trialmod"}),
           RequireBotPermission(GuildPermission.ManageRoles),
           CommandDisabledCheck
       ]
@@ -296,7 +296,7 @@ namespace OnePlusBot.Modules.Administration
       [
         Command("slowmode"),
         Summary("Changes the slowmode configuration of the current channel, 'off' to turn off slowmode"),
-        RequireRole("staff"),
+        RequireRole(new string[]{"staff", "trialmod"}),
         CommandDisabledCheck
       ]
       public async Task<RuntimeResult> SetSlowModeTo(string slowModeConfig)
@@ -321,7 +321,7 @@ namespace OnePlusBot.Modules.Administration
       [
         Command("purge", RunMode = RunMode.Async),
         Summary("Deletes specified amount of messages."),
-        RequireRole("staff"),
+        RequireRole(new string[]{"staff", "trialmod"}),
         RequireBotPermission(GuildPermission.ManageMessages),
         CommandDisabledCheck
       ]
@@ -400,7 +400,7 @@ namespace OnePlusBot.Modules.Administration
       [
           Command("warn"),
           Summary("Warn someone."),
-          RequireRole("staff"),
+          RequireRole(new string[]{"staff", "trialmod"}),
           RequireBotPermission(GuildPermission.Administrator),
           CommandDisabledCheck
       ]
@@ -622,7 +622,7 @@ namespace OnePlusBot.Modules.Administration
       [
         Command("warnings"),
         Summary("Gets all warnings of given user"),
-        RequireRole("staff"),
+        RequireRole(new string[]{"staff", "trialmod"}),
         CommandDisabledCheck
       ]
       public async Task GetWarnings([Optional] IGuildUser user)
