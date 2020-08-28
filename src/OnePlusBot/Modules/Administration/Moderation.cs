@@ -27,7 +27,7 @@ namespace OnePlusBot.Modules.Administration
       [
           Command("banid", RunMode = RunMode.Async),
           Summary("Bans specified user."),
-          RequireRole(new string[]{"staff", "trialmod"}),
+          RequireRole("staff"),
           CommandDisabledCheck
       ]
       public async Task<RuntimeResult> OBanAsync(ulong name, [Remainder] string reason = null)
@@ -67,7 +67,7 @@ namespace OnePlusBot.Modules.Administration
       [
           Command("ban", RunMode = RunMode.Async),
           Summary("Bans specified user."),
-          RequireRole(new string[]{"staff", "trialmod"}),
+          RequireRole("staff"),
           RequireBotPermission(GuildPermission.BanMembers),
           CommandDisabledCheck
       ]
