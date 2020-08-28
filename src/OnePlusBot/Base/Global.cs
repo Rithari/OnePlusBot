@@ -62,6 +62,8 @@ namespace OnePlusBot.Base
         public static Dictionary<string, StoredEmote> Emotes { get; set; }
         public static Dictionary<string, StoredEmote> TrackedEmotes { get; set; }
 
+        public static List<Category> Categories { get; set; }
+
         public static List<FilteredUDWord> FilteredUdWords { get; set; }
 
         public static bool XPGainDisabled { get; set; }
@@ -128,6 +130,7 @@ namespace OnePlusBot.Base
             Commands = new  List<Command>();
             UserNameNotifications = new Dictionary<ulong, ulong>();
             FilteredUdWords = new List<FilteredUDWord>();
+            Categories = new List<Category>();
             LoadGlobal();
         }
 
@@ -232,6 +235,15 @@ namespace OnePlusBot.Base
                     foreach(var post in db.StarboardMessages.ToList())
                     {
                         StarboardPosts.Add(post);
+                    }
+                }
+
+                Categories.Clear();
+                if(db.Categories.Any())
+                {
+                    foreach(var category in db.Categories.ToList())
+                    {
+                        Categories.Add(category);
                     }
                 }
 
