@@ -11,6 +11,7 @@ namespace OnePlusBot.Data
     public class Database : DbContext
     {
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Category> Categories { get; set; }
         public DbSet<Channel> Channels { get; set; }
         public DbSet<AuthToken> AuthTokens { get; set; }
         public DbSet<PersistentData> PersistentData { get; set; }

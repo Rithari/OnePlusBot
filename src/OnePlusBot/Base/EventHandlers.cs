@@ -395,6 +395,15 @@ namespace OnePlusBot.Base
 
                 var channel = (SocketTextChannel)socketChannel;
 
+                var potentialCategory = Global.Categories.Where(category => category.ID == channel.CategoryId);
+                if(potentialCategory.Any())
+                {
+                  if(potentialCategory.First().LogDisabled)
+                  {
+                    return;
+                  }
+                }
+
                 var embed = new EmbedBuilder();
                 embed.WithDescription($":bulb: Message from '{Extensions.FormatUserNameDetailed(author)}' edited in {channel.Mention}");
                 embed.WithColor(Color.Blue);
@@ -432,6 +441,14 @@ namespace OnePlusBot.Base
           if(deletedMessage == null)
           {
             return;
+          }
+          var potentialCategory = Global.Categories.Where(category => category.ID == channel.CategoryId);
+          if(potentialCategory.Any())
+          {
+            if(potentialCategory.First().LogDisabled)
+             {
+              return;
+            }
           }
 
           if(channel.Id == Global.Channels[Channel.STARBOARD])
