@@ -373,8 +373,7 @@ namespace OnePlusBot.Base
             if(socketChannel is SocketTextChannel){
                 if(Global.NewsPosts.ContainsKey(message.Id))
                 {
-                  var split = message.Content.Split("news");
-                  if(split.Length > 0)
+                  if(message.Content.Contains("news"))
                   {
                     var guild = Global.Bot.GetGuild(Global.ServerID);
                     var newsChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.NEWS]);
@@ -383,8 +382,9 @@ namespace OnePlusBot.Base
                     var newsRole = guild.GetRole(Global.Roles["news"]);
                     try
                     {
+                      var newText = message.Content.Substring(message.Content.IndexOf("news") + "news".Length);
                       await newsRole.ModifyAsync(x => x.Mentionable = true);
-                      await existingMessage.ModifyAsync(x => x.Content = split[1] + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + author);
+                      await existingMessage.ModifyAsync(x => x.Content = newText + Environment.NewLine + Environment.NewLine + newsRole.Mention + Environment.NewLine + "- " + author);
                     }
                     finally
                     {
