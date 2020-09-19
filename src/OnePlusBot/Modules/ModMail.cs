@@ -19,10 +19,10 @@ namespace OnePlusBot.Modules
 
         [
           Command("reply", RunMode = RunMode.Async),
+          Alias("r"),
           Summary("Reply to a modmail thread"),
           RequireRole("staff"),
-          RequireModMailContext,
-          Alias("r")
+          RequireModMailContext
         ]
         public async Task<RuntimeResult> ReplyToModMail([Remainder] string message)
         {
@@ -124,10 +124,10 @@ namespace OnePlusBot.Modules
         /// <returns>Result whether or not the closing was succesful</returns>
         [
           Command("closeSilently", RunMode = RunMode.Async),
+          Alias("silentlyclose","sclose"),
           Summary("Closes the thread without notifying the user"),
           RequireRole("staff"),
-          RequireModMailContext,
-          Alias("silentlyclose","sclose")
+          RequireModMailContext
         ]
         public async Task<RuntimeResult> CloseThreadSilently([Optional] [Remainder] string note)
         {
@@ -267,10 +267,10 @@ namespace OnePlusBot.Modules
 
         [
           Command("nicknameRequest"),
+          Alias("nickRe"),
           Summary("Responds in a modmail thread with a defined response and start a timer for a defined duration."),
           RequireRole("staff"),
-          RequireModMailContext,
-          Alias("nickRe")
+          RequireModMailContext
         ]
         public async Task<RuntimeResult> PostNicknameResponse() {
 
