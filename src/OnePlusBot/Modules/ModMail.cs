@@ -21,7 +21,8 @@ namespace OnePlusBot.Modules
           Command("reply", RunMode = RunMode.Async),
           Summary("Reply to a modmail thread"),
           RequireRole("staff"),
-          RequireModMailContext
+          RequireModMailContext,
+          Alias("r")
         ]
         public async Task<RuntimeResult> ReplyToModMail([Remainder] string message)
         {
@@ -125,7 +126,8 @@ namespace OnePlusBot.Modules
           Command("closeSilently", RunMode = RunMode.Async),
           Summary("Closes the thread without notifying the user"),
           RequireRole("staff"),
-          RequireModMailContext
+          RequireModMailContext,
+          Alias("silentlyclose","sclose")
         ]
         public async Task<RuntimeResult> CloseThreadSilently([Optional] [Remainder] string note)
         {
