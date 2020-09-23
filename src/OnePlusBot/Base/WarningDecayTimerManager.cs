@@ -81,7 +81,8 @@ namespace OnePlusBot.Base
         {
           userText = warning.WarnedUserID + "";
         }
-        var warnText = $"Warning towards {userText} on {Extensions.FormatDateTime(warning.Date)} with the reason '{warning.Reason}' by staff member {Extensions.FormatUserName(staff)}. \n \n";
+        var staffMemberText = staff != null ? Extensions.FormatUserName(staff) : warning.WarnedByID.ToString();
+        var warnText = $"Warning towards {userText} on {Extensions.FormatDateTime(warning.Date)} with the reason '{warning.Reason}' by staff member {staffMemberText}. \n \n";
         if((builder.ToString() + warnText).Length > EmbedBuilder.MaxDescriptionLength)
         {
           texts.Add(builder.ToString());
