@@ -5,6 +5,8 @@ using OnePlusBot.Data.Models;
 using OnePlusBot.Helpers;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using OnePlusBot.Data;
+using System.Linq;
 
 namespace OnePlusBot.Modules.Utility
 {
@@ -104,6 +106,15 @@ namespace OnePlusBot.Modules.Utility
       if(user.JoinedAt.HasValue)
       {
         embedBuilder.AddField("Joined", Extensions.FormatDateTime(user.JoinedAt.Value.DateTime), true);
+      }
+
+      using(var db = new Database())
+      {
+          var dbUser = db.Users.AsQueryable().Where(us => us.Id == user.Id);
+          if(dbUser.Any()) 
+          {
+            embedBuilder.AddField("Messages", dbUser.First().MessageCount);
+          }
       }
 
       embedBuilder.AddField("Registered", Extensions.FormatDateTime(user.CreatedAt.DateTime), true);
