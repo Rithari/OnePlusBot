@@ -169,7 +169,7 @@ namespace OnePlusBot.Modules
             }
           }
           var embedBuilder = new EmbedBuilder().WithTitle("Available entries in this channel").WithDescription(stringBuilder.ToString());
-          embedBuilder.WithFooter("You can access them by typing 'faq <entryName>'.");
+          embedBuilder.WithFooter("You can access them by typing 'faq <entryName>'. Please be aware the availability of entries depends on the channel.");
           await Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
         }
       }

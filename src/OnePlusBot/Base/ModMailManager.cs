@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Security.AccessControl;
 using System.Text;
 using System;
@@ -102,7 +103,13 @@ namespace OnePlusBot.Base
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
         var modmailCategory = guild.GetCategoryChannel(Global.ModmailCategoryId);
-        var channel = await guild.CreateTextChannelAsync(targetUser.Username + targetUser.Discriminator, (TextChannelProperties prop) => {
+        var timeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var md5 = new MD5CryptoServiceProvider();
+        byte[] textToHash = Encoding.Default.GetBytes(timeStamp.ToString());
+        byte[] result = md5.ComputeHash(textToHash);
+
+        var hashAsText = System.BitConverter.ToString(result).Replace("-", string.Empty);
+        var channel = await guild.CreateTextChannelAsync(hashAsText.Substring(0, 6), (TextChannelProperties prop) => {
             prop.CategoryId = modmailCategory.Id;
         });
         var thread = new ModMailThread();
