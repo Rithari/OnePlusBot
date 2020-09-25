@@ -43,7 +43,7 @@ namespace OnePlusBot.Base
     }  
 
     /// <summary>
-    /// Goes over the past minutes, and stores the used emotes in the heatmap. This removes the old entires from the runtime.
+    /// Goes over the past minutes, and stores the used emotes in the heatmap. This removes the old entries from the runtime.
     /// </summary>
     /// <returns></returns>
     public async Task PersistEmotes()
