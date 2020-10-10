@@ -20,9 +20,9 @@ namespace OnePlusBot.Modules.Channels
         /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
             Command("createChannelGroup", RunMode = RunMode.Async),
+            Alias("createChGrp"),
             Summary("Creates a channel group to be used in other areas"),
             RequireRole("staff"),
-            Alias("createChGrp"),
             CommandDisabledCheck
         ]
         public async Task<RuntimeResult> CreateChannelGroup(string groupName)
@@ -59,9 +59,9 @@ namespace OnePlusBot.Modules.Channels
 
         [
             Command("addGroupChannels"),
+            Alias("addGrpCh"),
             Summary("Adds the mentioned channels to the given channel group"),
             RequireRole("staff"),
-            Alias("addGrpCh"),
             CommandDisabledCheck
         ]
         public async Task<RuntimeResult> AddToChannelGroup(string groupName, [Remainder] string text)
@@ -78,9 +78,9 @@ namespace OnePlusBot.Modules.Channels
 
         [
             Command("removeGroupChannels"),
+            Alias("rmGrpCh"),
             Summary("Removes the mentioned channels from the given channel group"),
             RequireRole("staff"),
-            Alias("rmGrpCh"),
             CommandDisabledCheck
         ]
         public async Task<RuntimeResult> RemoveFromChannelGroup(string groupName, [Remainder] string text)
@@ -97,9 +97,9 @@ namespace OnePlusBot.Modules.Channels
 
         [
             Command("channelGroupAttributes"),
+            Alias("chGrpAtt"),
             Summary("Enables/disables the attribues in a certain channel group"),
             RequireRole(new string[]{"admin", "founder"}),
-            Alias("chGrpAtt"),
             CommandDisabledCheck
         ]
         public async Task<RuntimeResult> ToggleChannelGroupAttributes(string groupName, bool xpGain, [Optional] bool? profanityCheck, [Optional] Boolean? inviteCheck)
@@ -111,9 +111,9 @@ namespace OnePlusBot.Modules.Channels
 
         [
             Command("disableChannelGroup"),
+            Alias("disableChGrp"),
             Summary("Enables/disables the profanity/invitecheck/xpgain flags for a group"),
             RequireRole(new string[]{"admin", "founder"}),
-            Alias("disableChGrp"),
             CommandDisabledCheck
         ]
         public async Task<RuntimeResult> ToggleGroupDisabled(string groupName, bool newValue){
@@ -125,9 +125,9 @@ namespace OnePlusBot.Modules.Channels
 
         [
             Command("renameChannelGroup"),
+            Alias("rnChGrp"),
             Summary("Sets the target of a certain post"),
             RequireRole("staff"),
-            Alias("rnChGrp"),
             CommandDisabledCheck
         ]
         public async Task<RuntimeResult> RenameChannelGroup(string oldName, string newName)
@@ -139,9 +139,9 @@ namespace OnePlusBot.Modules.Channels
 
         [
             Command("listChannelGroups", RunMode=RunMode.Async),
+            Alias("listChGrp"),
             Summary("Prints all the channel groups of the server (optional type: COMMANDS, CHECKS, FAQ)"),
             RequireRole("staff"),
-            Alias("listChGrp"),
             CommandDisabledCheck
         ]
         public async Task<RuntimeResult> ListChannelGroups([Optional] string type)
@@ -152,9 +152,9 @@ namespace OnePlusBot.Modules.Channels
 
         [
             Command("showChannelConfig"),
+            Alias("shChCfg"),
             Summary("Show the configuration (disableXP/invitecheck/profanity) of the given or current channel"),
             RequireRole("staff"),
-            Alias("shChCfg"),
             CommandDisabledCheck
         ]
         public async Task<RuntimeResult> ShowChannelConfig([Optional] ISocketMessageChannel channel)
@@ -175,9 +175,9 @@ namespace OnePlusBot.Modules.Channels
 
         [
             Command("removeChannelGroup"),
+            Alias("rmChGrp"),
             Summary("Deletes a channel group (will fail if the group is used anywhere)"),
             RequireRole("staff"),
-            Alias("rmChGrp"),
             CommandDisabledCheck
         ]
         public async Task<RuntimeResult> RemoveChannelGroup(string name)
@@ -193,9 +193,9 @@ namespace OnePlusBot.Modules.Channels
         /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
             Command("listGroupCommands"),
+            Alias("lsGrpCmd"),
             Summary("Lists the groups which have specific commands defined for them"),
             RequireRole("staff"),
-            Alias("lsGrpCmd"),
             CommandDisabledCheck
         ]
         public async Task<RuntimeResult> ListCommandsWithGroups()
@@ -211,9 +211,9 @@ namespace OnePlusBot.Modules.Channels
         /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [
             Command("changeGroupType", RunMode = RunMode.Async),
+            Alias("chGrpTyp"),
             Summary("Changes the type of a group"),
             RequireRole("staff"),
-            Alias("chGrpTyp"),
             CommandDisabledCheck
         ]
         public async Task<RuntimeResult> ChangeGropTypeTo(string groupName)
