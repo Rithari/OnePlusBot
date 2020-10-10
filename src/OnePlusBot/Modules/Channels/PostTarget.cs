@@ -14,9 +14,9 @@ namespace OnePlusBot.Modules.Channels
 
       [
         Command("setPostTarget"),
+        Alias("setTarget"),
         Summary("Sets the target of a certain post"),
         RequireRole("staff"),
-        Alias("setTarget"),
         CommandDisabledCheck
       ]
       public async Task<RuntimeResult> SetPostTarget([Optional] string channelName, [Optional] ISocketMessageChannel channel)

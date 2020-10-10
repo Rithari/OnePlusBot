@@ -23,7 +23,7 @@ namespace OnePlusBot.Base
       embedBuilder.WithTitle("__Assignable Roles__");
       embedBuilder.WithColor(15258703);
       embedBuilder.WithDescription("You can assign yourself one of the following roles by reacting to its corresponding emote. \n Removing your reaction will remove your role.");
-      embedBuilder.WithFooter(new EmbedFooterBuilder().WithText("For any problems, contact Rithari#0001."));
+      embedBuilder.WithFooter(new EmbedFooterBuilder().WithText("For any problems, contact modmail by DMing this bot."));
 
       using(var db = new Database())
       {

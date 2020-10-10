@@ -161,6 +161,7 @@ namespace OnePlusBot.Modules
 
         [
             Command("define"),
+            Alias("ud"),
             Summary("Grabs the first Urban Dictionary result based on the parameter."),
             CommandDisabledCheck
         ]
@@ -172,7 +173,7 @@ namespace OnePlusBot.Modules
                 var definition = await ReplyAsync("Searching for definitions...");
 
 
-                string json = await _clients.GetStringAsync("http://api.urbandictionary.com/v0/define?term=" + searchquery);
+                string json = await _clients.GetStringAsync("https://api.urbandictionary.com/v0/define?term=" + searchquery);
                 var response = Response.FromJson(json);
                 var text = response.List.FirstOrDefault()?.Definition ?? "No definition found";
                 foreach(var filtered in Global.FilteredUdWords)
