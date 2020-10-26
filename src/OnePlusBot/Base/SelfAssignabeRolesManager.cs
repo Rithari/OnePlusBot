@@ -37,7 +37,8 @@ namespace OnePlusBot.Base
           reactions.Add(emote);
         }
       
-        var oldPostId = Global.InfoRoleManagerMessageId;
+        var oldPostId = Global.InfoRoleMessageIds[0];
+        var secondOldPost = Global.InfoRoleMessageIds[1];
         var infoChannel = guild.GetTextChannel(infoChannelId);
         var oldMeessage = await infoChannel.GetMessageAsync(oldPostId);
         if(oldMeessage != null) 
@@ -45,10 +46,34 @@ namespace OnePlusBot.Base
           await oldMeessage.DeleteAsync();
         }
         var message = await infoChannel.SendMessageAsync(embed: embedBuilder.Build());
-        Global.InfoRoleManagerMessageId = message.Id;
-        // TODO refactor
         db.PersistentData.AsQueryable().Where(dt => dt.Name == "rolemanager_message_id").First().Value = message.Id;
+        Global.InfoRoleMessageIds.Clear();
+        Global.InfoRoleMessageIds.Add(message.Id);
         await message.AddReactionsAsync(reactions.ToArray());
+
+        embedBuilder = new EmbedBuilder();
+        embedBuilder.WithColor(15258703);
+
+        var secondRoles = db.ReactionRoles.Include(ro => ro.EmoteReference).Include(ro => ro.RoleReference).Where(ro => ro.Area == "info_2").OrderBy(ro => ro.Position).ToList();
+        var secondReactions = new List<IEmote>();
+        foreach(var role in secondRoles)
+        {
+          var roleInGuild = guild.GetRole(role.RoleReference.RoleID);
+          var emote = role.EmoteReference.GetAsEmote();
+          embedBuilder.AddField(emote + " " + roleInGuild.Name, "\u200B", true);
+          secondReactions.Add(emote);
+        }
+      
+        
+        var secondOldMessage = await infoChannel.GetMessageAsync(secondOldPost);
+        if(secondOldMessage != null) 
+        {
+          await secondOldMessage.DeleteAsync();
+        }
+        var secondMessage = await infoChannel.SendMessageAsync(embed: embedBuilder.Build());
+        Global.InfoRoleMessageIds.Add(secondMessage.Id);
+        db.PersistentData.AsQueryable().Where(dt => dt.Name == "rolemanager_message_id_2").First().Value = secondMessage.Id;
+        await secondMessage.AddReactionsAsync(secondReactions.ToArray());
         db.SaveChanges();
       }
     }
