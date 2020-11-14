@@ -100,7 +100,7 @@ namespace OnePlusBot.Base
           {
             remainingWarnings = db.Warnings.AsQueryable().Where(w => w.WarnedUserID == user.Id && !w.Decayed).Count();
           }
-          var message = $"Your warning from {Extensions.FormatDateTime(warning.Date)} with the reason '{warning.Reason}' has been cleared. You have {remainingWarnings} warning(s) left.";
+          var message = $"Your warning from {Extensions.FormatDateTime(warning.Date)} with the reason '{warning.Reason}' has been cleared. You have {remainingWarnings} warning(s).";
           try 
           {
             await user.SendMessageAsync(message);

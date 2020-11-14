@@ -3,7 +3,6 @@ using Discord;
 using OnePlusBot.Data;
 using Discord.WebSocket;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using OnePlusBot.Data.Models;
@@ -21,7 +20,7 @@ namespace OnePlusBot.Base
         /// <returns>boolean whether or not this action should be executed</returns>
         public Boolean ActionApplies(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction)
         {
-            return reaction.MessageId == Global.InfoRoleManagerMessageId;
+            return Global.InfoRoleMessageIds.Contains(reaction.MessageId);
         }
 
         /// <summary>
@@ -74,7 +73,7 @@ namespace OnePlusBot.Base
         /// <returns>boolean whether or not this action should be executed</returns>
         public Boolean ActionApplies(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction)
         {
-            return reaction.MessageId == Global.InfoRoleManagerMessageId;
+            return Global.InfoRoleMessageIds.Contains(reaction.MessageId);
         }
 
         /// <summary>
