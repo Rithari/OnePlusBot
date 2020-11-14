@@ -264,9 +264,9 @@ namespace OnePlusBot.Base
        
     }
 
-    private async Task LogClosingHeader(ModMailThread modMailThread, int messageCount, string note, SocketTextChannel modMailLogChannel, SocketUser modmailUser){
+    private async Task LogClosingHeader(ModMailThread modMailThread, int messageCount, string note, SocketTextChannel modMailLogChannel, SocketUser modmailUser, Boolean silent){
        
-        var closingEmbed = ModMailEmbedHandler.GetClosingSummaryEmbed(modMailThread, messageCount, modmailUser, note);       
+        var closingEmbed = ModMailEmbedHandler.GetClosingSummaryEmbed(modMailThread, messageCount, modmailUser, note, silent);
         await modMailLogChannel.SendMessageAsync(embed: closingEmbed);
     }
 
@@ -282,8 +282,9 @@ namespace OnePlusBot.Base
     /// <param name="closedThread">The <see cref"OnePlusBot.Data.Models.ModMailThread"/> object of the thread being closed</param>
     /// <param name="channel">The <see cref"Discord.WebSocket.ISocketMessageChannel"/> object in which the modmail interactions happened</param>
     /// <param name="note">Optional note used when closing the thread</param>
+    /// <param name="silent">Whether or not the thread was closed silently</param>
     /// <returns>Task containing the number of logged messages.</returns>
-    private async Task<int> DeleteChannelAndLogThread(ModMailThread closedThread, ISocketMessageChannel channel, string note){
+    private async Task<int> DeleteChannelAndLogThread(ModMailThread closedThread, ISocketMessageChannel channel, string note, Boolean silent){
       var bot = Global.Bot;
       var guild = bot.GetGuild(Global.ServerID);
       SocketGuildUser userObj = guild.GetUser(closedThread.UserId);
@@ -293,7 +294,7 @@ namespace OnePlusBot.Base
           messagesToLog = db.ThreadMessages.AsQueryable().Where(ch => ch.ChannelId == closedThread.ChannelId).ToList();
       }
       var modMailLogChannel = guild.GetTextChannel(Global.PostTargets[PostTarget.MODMAIL_LOG]);
-      await LogClosingHeader(closedThread, messagesToLog.Count(), note, modMailLogChannel, userObj);
+      await LogClosingHeader(closedThread, messagesToLog.Count(), note, modMailLogChannel, userObj, silent);
 
       await LogModMailThreadMessagesToModmailLog(closedThread, messagesToLog, modMailLogChannel);
       await (channel as SocketTextChannel).DeleteAsync();
@@ -321,7 +322,7 @@ namespace OnePlusBot.Base
     public async Task CloseThread(ISocketMessageChannel channel, string note)
     { 
         var closedThread = CloseThreadInDb(channel);  
-        int messagesToLogCount = await DeleteChannelAndLogThread(closedThread, channel, note);
+        int messagesToLogCount = await DeleteChannelAndLogThread(closedThread, channel, note, false);
         var bot = Global.Bot;
         var guild = bot.GetGuild(Global.ServerID);
         SocketGuildUser userObj = guild.GetUser(closedThread.UserId);
@@ -341,7 +342,7 @@ namespace OnePlusBot.Base
     public async Task CloseThreadSilently(ISocketMessageChannel channel, string note)
     { 
       var closedThread = CloseThreadInDb(channel);  
-      await DeleteChannelAndLogThread(closedThread, channel, note);
+      await DeleteChannelAndLogThread(closedThread, channel, note, true);
     }
 
     

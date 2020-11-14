@@ -114,10 +114,11 @@ namespace OnePlusBot
             return descriptionBuilder;
         }
 
-        public static Embed GetClosingSummaryEmbed(ModMailThread thread, int messageCount, SocketUser user, string note)
+        public static Embed GetClosingSummaryEmbed(ModMailThread thread, int messageCount, SocketUser user, string note, Boolean silent)
         {
             var embed = GetBaseEmbed();
-            embed.WithTitle("Modmail thread has been closed.");
+            var silentSuffix = silent ? " (silently)" : "";
+            embed.WithTitle($"Modmail thread has been closed{silentSuffix}.");
             embed.WithDescription(GetClosingHeader(thread, messageCount, user, note).ToString());
             return embed.Build();
         }
