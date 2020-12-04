@@ -47,6 +47,10 @@ namespace OnePlusBot.Base
         public static ulong Level3Stars { get; set; }
         public static ulong Level4Stars { get; set; }
 
+        public static ulong ModModeRoleId { get; set; }
+
+        public static uint ModModeRoleColor {get; set; }
+
         public static ulong ModmailCategoryId { get; set; }
 
         public static ulong DecayDays { get; set; }
@@ -187,6 +191,10 @@ namespace OnePlusBot.Base
                 Level2Stars = PersistentData.GetConfiguredInt("level_2_stars", db);
 
                 Level3Stars = PersistentData.GetConfiguredInt("level_3_stars", db);
+
+                ModModeRoleId = PersistentData.GetConfiguredInt("mod_mode_role_id", db);
+
+                ModModeRoleColor = Convert.ToUInt32(PersistentData.GetConfiguredString("mod_mode_role_color", db), 16);
 
                 Level4Stars = PersistentData.GetConfiguredInt("level_4_stars", db);
                 

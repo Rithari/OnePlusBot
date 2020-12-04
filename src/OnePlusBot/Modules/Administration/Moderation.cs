@@ -797,6 +797,26 @@ namespace OnePlusBot.Modules.Administration
         return CustomResult.FromSuccess();
       }
 
+
+      [
+        Command("modMode"),
+        Summary("Activates the modmode, changing the color of the staff role."),
+        RequireRole("staff")
+      ]
+      public async Task<RuntimeResult> ChangeModMode(String newState)
+      {
+          var role = Context.Guild.GetRole(Global.ModModeRoleId);
+          if(newState == "on")
+          {
+            await role.ModifyAsync(role => role.Color = new Color(Global.ModModeRoleColor));
+          }
+          else
+          {
+            await role.ModifyAsync(role => role.Color = new Color(0));
+          }
+          return CustomResult.FromSuccess();
+      }
+
       /// <summary>
       /// Creates the embed necessary to display the emotes from the given start date and the given type.
       /// </summary>
