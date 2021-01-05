@@ -14,7 +14,7 @@ namespace OnePlusBot.Modules.Channels
     public partial class Channels : InteractiveBase<SocketCommandContext>
     {
        /// <summary>
-        /// Command responsibel for creating a channel group
+        /// Command responsible for creating a channel group
         /// </summary>
         /// <param name="groupName">The name of the channel group to create</param>
         /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
