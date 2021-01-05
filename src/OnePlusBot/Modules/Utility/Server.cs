@@ -148,7 +148,7 @@ namespace OnePlusBot.Modules.Utility
                 foreach(var emote in guild.Emotes)
                 {
                     var emoteText = emote.ToString();
-                    // doesnt seem to have a constant for that, exception message indicated the max length is 1024
+                    // doesn't seem to have a constant for that, exception message indicated the max length is 1024
                     if((currentStringBuilder.ToString() + emoteText).Length > 1024)
                     {
                         currentStringBuilder = new StringBuilder();
@@ -176,7 +176,7 @@ namespace OnePlusBot.Modules.Utility
         }
 
           /// <summary>
-        /// Command used to show the currently availble commands for the current channel, or for the given channel
+        /// Command used to show the currently available commands for the current channel, or for the given channel
         /// </summary>
         /// <returns><see ref="Discord.RuntimeResult"> containing the result of the command</returns>
         [

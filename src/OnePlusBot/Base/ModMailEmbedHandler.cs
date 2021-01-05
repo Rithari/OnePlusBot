@@ -22,7 +22,7 @@ namespace OnePlusBot
         /// <summary>
         /// Builds an embed containing the header of a newly (externally) created modmail thread (amount of threads and username)
         /// </summary>
-        /// <param name="pastThreadCount">The amoun tof threads in the past</param>
+        /// <param name="pastThreadCount">The amount of threads in the past</param>
         /// <param name="user">The <see cref="Discord.WebSocket.SocketUser"> for which this thread was created</param>
         /// <returns><see cref="Discord.Embed"> object containing the information</returns>
         public static Embed GetUserInformation(int pastThreadCount, SocketUser user)
@@ -75,7 +75,7 @@ namespace OnePlusBot
         /// <summary>
         /// Creates the final embed sent to the user
         /// </summary>
-        /// <returns><see cref="Discord.Embed"> object conainting the final message to the user</returns>
+        /// <returns><see cref="Discord.Embed"> object containing the final message to the user</returns>
         public static Embed GetClosingEmbed()
         {
             var embed = GetBaseEmbed();
@@ -85,7 +85,7 @@ namespace OnePlusBot
         }
 
         /// <summary>
-        /// Creates the embed send to the user when an open thread was disabled for a certain time period.
+        /// Creates the embed sent to the user when an open thread was disabled for a certain time period.
         /// </summary>
         /// <param name="date">The <see cref="System.DateTime"> date at which modmail will be available for the user again</param>
         /// <returns>The <see cref="Discord.Embed"> object sent to the user containing the information about when the user can contact modmail again</returns>
@@ -107,8 +107,8 @@ namespace OnePlusBot
         private static StringBuilder GetClosingHeader(ModMailThread thread, int messageCount, SocketUser user, string note){
             var descriptionBuilder = new StringBuilder();
             string defaultedNote = note ?? "No note";
-            descriptionBuilder.Append($"A modmail thread has been closed with the note '{ defaultedNote }' \n ");
-            descriptionBuilder.Append($"There were {messageCount} interactions with the user {Extensions.FormatUserName(user)} ({thread.UserId}). \n");
+            descriptionBuilder.Append($"A modmail thread has been closed with the note '**{ defaultedNote }**' \n ");
+            descriptionBuilder.Append($"There were {messageCount} interactions with the user **{Extensions.FormatUserName(user)}** ({thread.UserId}). \n");
             descriptionBuilder.Append($"It has been opened on {Extensions.FormatDateTime(thread.CreateDate)}");
             descriptionBuilder.Append($" and lasted {Extensions.FormatTimeSpan(DateTime.Now - thread.CreateDate)}.");
             return descriptionBuilder;
@@ -161,7 +161,7 @@ namespace OnePlusBot
         /// </summary>
         /// <param name="user"><see cref="Discord.WebSocket.SocketUser"> object containing information about the user iniating the modmail thread</param>
         /// <param name="thread"><see cref="OnePlusBot.Data.Models.ModMailThread"> object containing information about the modmail thread which has been opened</param>
-        /// <returns><see cref="Discord.Embed"> object representing the notificatoin sent to the moderators</returns>
+        /// <returns><see cref="Discord.Embed"> object representing the notification sent to the moderators</returns>
         public static Embed GetModqueueNotificationEmbed(SocketUser user, ModMailThread thread)
         {
             var builder = GetBaseEmbed();
