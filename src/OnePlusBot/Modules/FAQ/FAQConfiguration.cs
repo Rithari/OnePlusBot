@@ -464,7 +464,7 @@ namespace OnePlusBot.Modules.FAQ
                     }
                 }
 
-                // run this in parallel, so it doesnt block, should be fast enough in order for any additional configuration to not happen yet from the user
+                // run this in parallel, so it doesn't block, should be fast enough in order for any additional configuration to not happen yet from the user
                 await Task.Run(() => 
                 {
                     foreach(var entry in entries){
