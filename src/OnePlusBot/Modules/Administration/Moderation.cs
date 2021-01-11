@@ -801,7 +801,7 @@ namespace OnePlusBot.Modules.Administration
       [
         Command("modMode"),
         Summary("Activates the modmode, changing the color of the staff role."),
-        RequireRole("staff")
+        RequireRole(new string[]{"admin", "founder"})
       ]
       public async Task<RuntimeResult> ChangeModMode(String newState)
       {
