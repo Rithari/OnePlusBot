@@ -677,7 +677,7 @@ namespace OnePlusBot.Base
             }
             var guild = Global.Bot.GetGuild(Global.ServerID);
             var builder = new EmbedBuilder();
-            builder.Title = "Profanity has been used!";
+            builder.Title = "Profanity may have been used!";
             builder.Color = Color.DarkBlue;
             
             builder.Timestamp = message.Timestamp;
