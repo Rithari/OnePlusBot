@@ -122,6 +122,7 @@ namespace OnePlusBot.Base
                   }
                   else 
                   {
+                    await message.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
                     return;
                   }
                 }
