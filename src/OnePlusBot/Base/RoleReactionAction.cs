@@ -120,6 +120,11 @@ namespace OnePlusBot.Base
                       return;
                     }
                   }
+                  else 
+                  {
+                    await message.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
+                    return;
+                  }
                 }
                 var role = guildChannel.Guild.GetRole(roleToGive.RoleID);
                 await user.AddRoleAsync(role);
