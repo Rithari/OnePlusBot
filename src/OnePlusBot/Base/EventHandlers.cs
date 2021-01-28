@@ -898,6 +898,13 @@ namespace OnePlusBot.Base
           }
         }
 
+        private static bool isFromImmuneUser(SocketMessage message) 
+        {
+          var guild = Global.Bot.GetGuild(Global.ServerID);
+          var guildUser = guild.GetUser(message.Author.Id);
+          return guildUser != null && guildUser.Roles.Where(ro => ro.Id == Global.Roles["staff"]).Any();
+        }
+
         /// <summary>
         /// Checks if the message content contains a link to message and if so (and the channel is in a guild) embeds the message in the context channel
         /// </summary>
@@ -947,13 +954,14 @@ namespace OnePlusBot.Base
 
         private static async Task OnMessageReceived(SocketMessage message)
         {
-            if (ViolatesRule(message))
+            bool immuneAuthor = isFromImmuneUser(message);
+            if (ViolatesRule(message) && !immuneAuthor)
             {
                 await message.DeleteAsync();
             }
 
             var channel = Extensions.GetChannelById(message.Channel.Id);
-            if(channel != null)
+            if(channel != null && !immuneAuthor)
             {
                 if(!channel.ProfanityExempt())
                 {
