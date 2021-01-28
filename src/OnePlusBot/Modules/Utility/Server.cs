@@ -33,11 +33,18 @@ namespace OnePlusBot.Modules.Utility
 
             if (suggestion.Contains("@everyone") || suggestion.Contains("@here"))
                 return;
-
-            var oldmessage = await suggestionsChannel.EmbedAsync(new EmbedBuilder()
+              
+            var embed = new EmbedBuilder()
                 .WithColor(9896005)
                 .WithDescription(suggestion)
-                .WithFooter(user.ToString()));
+                .WithFooter(user.ToString());
+              
+            if(Context.Message.Attachments.Count > 0) 
+            {
+              embed.WithImageUrl(Context.Message.Attachments.ToList()[0].ProxyUrl);
+            }
+
+            var oldmessage = await suggestionsChannel.EmbedAsync(embed);
 
             await oldmessage.AddReactionsAsync(new IEmote[]
             {

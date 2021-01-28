@@ -36,6 +36,12 @@ namespace OnePlusBot.Base
             }
             else 
             {
+              var guild = Global.Bot.GetGuild(Global.ServerID);
+              var guildUser = guild.GetUser(context.User.Id);
+              if(guildUser != null && guildUser.Roles.Where(ro => ro.Id == Global.Roles["staff"]).Any())
+              {
+                return Task.FromResult(PreconditionResult.FromSuccess());
+              }
               return Task.FromResult(PreconditionResult.FromError("Command disabled in this channel"));
             }
         }
