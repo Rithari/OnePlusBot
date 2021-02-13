@@ -52,7 +52,7 @@ namespace OnePlusBot.Modules.Utility
               StoredEmote.GetEmote(Global.OnePlusEmote.OP_YES)
             });
             
-            await Context.Message.DeleteAsync();
+
         }
 
         [
