@@ -18,7 +18,7 @@ namespace OnePlusBot.Base
         protected bool RelationAdded = false;
         public bool ActionApplies(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction)
         {
-            return reaction.Emote.Equals(StoredEmote.GetEmote(Global.OnePlusEmote.STAR)) && message.Author.Id != reaction.UserId;
+            return reaction.Emote.Equals(StoredEmote.GetEmote(Global.OnePlusEmote.STAR)) && message.Author.Id != reaction.UserId && CommandHandler.FeatureFlagEnabled(FeatureFlag.STARBOARD);
         }
         public virtual async Task Execute(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction) 
         {

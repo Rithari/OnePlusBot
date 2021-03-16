@@ -59,6 +59,8 @@ namespace OnePlusBot.Data
 
         public DbSet<StoredEmote> Emotes { get; set; }
 
+        public DbSet<FeatureFlag> FeatureFlags { get; set; }
+
         public DbSet<ReactionRole> ReactionRoles { get; set; }
 
         public DbSet<Command> Commands { get; set; }

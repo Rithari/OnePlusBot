@@ -21,6 +21,10 @@ namespace OnePlusBot.Base
     /// </summary>
     public async Task<RuntimeResult> SetupTimers()
     {
+      if(CommandHandler.FeatureFlagDisabled(FeatureFlag.EMOTE_TRACKING)) 
+      {
+        return CustomResult.FromSuccess();
+      }
       TimeSpan sinceMidnight = DateTime.Now.TimeOfDay;
       TimeSpan nextMinute = TimeSpan.FromMinutes(Math.Ceiling(sinceMidnight.TotalMinutes));
       TimeSpan timeSpanToDelay = (nextMinute - sinceMidnight);

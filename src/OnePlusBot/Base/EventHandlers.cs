@@ -126,6 +126,16 @@ namespace OnePlusBot.Base
           }
         }
 
+        public static Boolean FeatureFlagEnabled(String name) 
+        {
+          return Global.FeatureFlags.ContainsKey(name) && Global.FeatureFlags[name].Enabled;
+        }
+
+        public static Boolean FeatureFlagDisabled(String name) 
+        {
+          return !FeatureFlagEnabled(name);
+        }
+
         /// <summary>
         /// Builds the embed posted in case a user changes the username/nickname.
         /// </summary>
@@ -226,6 +236,10 @@ namespace OnePlusBot.Base
 
         private async Task OnUserLeft(SocketGuildUser socketGuildUser)
         {
+          if(FeatureFlagDisabled(FeatureFlag.JOIN_LEAVE)) 
+          {
+            return;
+          }
           var leaveLog = socketGuildUser.Guild.GetTextChannel(Global.PostTargets[PostTarget.LEAVE_LOG]);
           var message = Extensions.FormatMentionDetailed(socketGuildUser) + " left the guild";
           await leaveLog.SendMessageAsync(message);
@@ -249,7 +263,10 @@ namespace OnePlusBot.Base
         /// <returns>Task</returns>
         private async Task OnuserUserJoined(SocketGuildUser socketGuildUser)
         {
-          
+            if(FeatureFlagDisabled(FeatureFlag.JOIN_LEAVE)) 
+            {
+              return;
+            }
             var joinlog = socketGuildUser.Guild.GetTextChannel(Global.PostTargets[PostTarget.JOIN_LOG]);
             string name = socketGuildUser.Username;
             if(IllegalUserName(name))
@@ -284,6 +301,10 @@ namespace OnePlusBot.Base
 
         private async Task OnUserJoinedMuteCheck(SocketGuildUser user)
         {
+            if(FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+            {
+              return;
+            }
             using (var db = new Database())
             {
                 if(db.Mutes.AsQueryable().Where(us => us.MutedUserID == user.Id && !us.MuteEnded).Any())
@@ -295,6 +316,10 @@ namespace OnePlusBot.Base
 
         private async Task OnUserJoinedRole(SocketGuildUser user)
         {
+          if(FeatureFlagDisabled(FeatureFlag.EXPERIENCE)) 
+          {
+            return;
+          }
             using (var db = new Database())
             {
                 var dbUser = db.Users.AsQueryable().Where(us => us.Id == user.Id).Include(us => us.ExperienceRoleReference).FirstOrDefault();
@@ -310,6 +335,10 @@ namespace OnePlusBot.Base
 
         private async Task OnUserUnbanned(SocketUser socketUser, SocketGuild socketGuild)
         {
+            if(FeatureFlagDisabled(FeatureFlag.LOGGING)) 
+            {
+              return;
+            }
             var unBanlogChannel = socketGuild.GetTextChannel(Global.PostTargets[PostTarget.UNBAN_LOG]);
 
             var restAuditLogs = await socketGuild.GetAuditLogsAsync(10).FlattenAsync();
@@ -352,7 +381,7 @@ namespace OnePlusBot.Base
 
             var fullChannel = Extensions.GetChannelById(message.Channel.Id);
             if(fullChannel != null){
-                if(!fullChannel.ProfanityExempt()){
+                if(!fullChannel.ProfanityExempt() && FeatureFlagEnabled(FeatureFlag.PROFANITY)){
                     var profanityChecks = Global.ProfanityChecks;
                     var lowerMessage = message.Content.ToLower();
                     foreach (var profanityCheck in profanityChecks)
@@ -403,6 +432,10 @@ namespace OnePlusBot.Base
                     return;
                   }
                 }
+                if(FeatureFlagDisabled(FeatureFlag.LOGGING)) 
+                {
+                  return;
+                }
 
                 var embed = new EmbedBuilder();
                 embed.WithDescription($":bulb: Message from '{Extensions.FormatUserNameDetailed(author)}' edited in {channel.Mention}");
@@ -451,7 +484,7 @@ namespace OnePlusBot.Base
             }
           }
 
-          if(channel.Id == Global.Channels[Channel.STARBOARD])
+          if(channel.Id == Global.Channels[Channel.STARBOARD] && FeatureFlagEnabled(FeatureFlag.STARBOARD))
           {
             var starPost = Global.StarboardPosts.Where(po => po.StarboardMessageId == deletedMessage.Id).DefaultIfEmpty(null).First();
             if(starPost != null)
@@ -463,6 +496,11 @@ namespace OnePlusBot.Base
                 db.SaveChanges();
               }
             }
+          }
+
+          if(FeatureFlagDisabled(FeatureFlag.LOGGING)) 
+          {
+            return;
           }
 
           List<EmbedFieldBuilder> fields = new List<EmbedFieldBuilder>();
@@ -739,6 +777,10 @@ namespace OnePlusBot.Base
 
         private static bool ContainsIllegalInvite(string message)
         {
+            if(FeatureFlagDisabled(FeatureFlag.INVITE_CHECK)) 
+            {
+              return false;
+            }
             MatchCollection groups =  Regex.Matches(message, @"discord(?:app)?(?:.gg|.com/invite)/[\w-]+");
             foreach(Group gr in groups){
                 CaptureCollection captures =  gr.Captures;
@@ -773,6 +815,11 @@ namespace OnePlusBot.Base
             {
                 return;
             }
+
+            if(FeatureFlagDisabled(FeatureFlag.EXPERIENCE)) 
+            {
+              return;
+            }
             var channelObj = Global.FullChannels.Where(ch => ch.ChannelID == message.Channel.Id).FirstOrDefault();
             bool ignoredChannel = channelObj != null && channelObj.ExperienceGainExempt();
             if(ignoredChannel)
@@ -802,6 +849,10 @@ namespace OnePlusBot.Base
 
         private static async Task OnMessageEmoteCheck(SocketMessage message) 
         {
+          if(FeatureFlagDisabled(FeatureFlag.EMOTE_TRACKING)) 
+          {
+            return;
+          }
           var emoteTags = message.Tags.Where(t => t.Type == TagType.Emoji);
           if(!emoteTags.Any()) 
           {
@@ -851,6 +902,10 @@ namespace OnePlusBot.Base
 
         private static async Task OnMessageMassPingCheck(SocketMessage message)
         {
+          if(FeatureFlagDisabled(FeatureFlag.MASS_PING)) 
+          {
+            return;
+          }
           if(message.Channel is SocketGuildChannel)
           {
             if(Convert.ToUInt64(message.MentionedUsers.Count + message.MentionedRoles.Count) > Global.AutoMutePingCount)
@@ -912,6 +967,10 @@ namespace OnePlusBot.Base
         /// <returns>Task</returns>
         private static async Task OnMessageReceivedEmbed(SocketMessage message)
         {
+          if(FeatureFlagDisabled(FeatureFlag.LINK_EMBEDS)) 
+          {
+            return;
+          }
           if(message.Channel is SocketGuildChannel)
           {
             var messageContent = message.Content;
@@ -963,7 +1022,7 @@ namespace OnePlusBot.Base
             var channel = Extensions.GetChannelById(message.Channel.Id);
             if(channel != null && !immuneAuthor)
             {
-                if(!channel.ProfanityExempt())
+                if(!channel.ProfanityExempt() && FeatureFlagEnabled(FeatureFlag.PROFANITY))
                 {
                     var profanityChecks = Global.ProfanityChecks;
                     var lowerMessage = message.Content.ToLower();
@@ -995,27 +1054,31 @@ namespace OnePlusBot.Base
                 }
                 else
                 {
-                    var modmailThread = ModMailThreadForUserExists(message.Author);
+                    if(FeatureFlagEnabled(FeatureFlag.MODMAIL))
+                    {
+                      var modmailThread = ModMailThreadForUserExists(message.Author);
 
-                    if(modmailThread && message.Channel is IDMChannel)
-                    {
-                        await new ModMailManager().HandleModMailUserReply(message);
+                      if(modmailThread && message.Channel is IDMChannel)
+                      {
+                          await new ModMailManager().HandleModMailUserReply(message);
+                      }
+                      else if(message.Channel is IDMChannel)
+                      {
+                          await new ModMailManager().CreateModmailThread(message);
+                      }
                     }
-                    else if(message.Channel is IDMChannel)
-                    {
-                        await new ModMailManager().CreateModmailThread(message);
-                    }
+                    
                 }
             }
 
          
             var channelId = message.Channel.Id;
 
-            if (channelId == Global.Channels[Channel.SETUPS])
+            if (channelId == Global.Channels[Channel.SETUPS] && FeatureFlagEnabled(FeatureFlag.SETUPS))
             {
                 await ValidateSetupsMessage(message);
             }
-            else if (channelId == Global.Channels[Channel.REFERRAL])
+            else if (channelId == Global.Channels[Channel.REFERRAL] && FeatureFlagEnabled(FeatureFlag.REFERRAL))
             {
                 if (message.Author.IsBot)
                     return;
@@ -1049,7 +1112,10 @@ namespace OnePlusBot.Base
 
         private async Task UserChangedVoiceState(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
         {
-
+            if(FeatureFlagDisabled(FeatureFlag.CONTEXT_VOICE_CHANNEL)) 
+            {
+              return;
+            }
             if(oldState.VoiceChannel != null && newState.VoiceChannel != null)
             {
                 if(oldState.VoiceChannel.Id == newState.VoiceChannel.Id)
