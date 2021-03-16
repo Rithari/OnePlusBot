@@ -33,6 +33,10 @@ namespace OnePlusBot.Modules.Administration
         ]
         public async Task<RuntimeResult> SetStars(string input)
         {
+            if(CommandHandler.FeatureFlagDisabled(FeatureFlag.STARBOARD)) 
+            {
+                return CustomResult.FromIgnored();
+            }
             ulong amount = 0;
             await Task.Delay(25);
             if(ulong.TryParse(input, out amount) && amount > 0){
@@ -113,6 +117,10 @@ namespace OnePlusBot.Modules.Administration
         ]
         public async Task<RuntimeResult> SetupInfoPost()
         {
+            if(CommandHandler.FeatureFlagDisabled(FeatureFlag.ASSIGNABLE_ROLES)) 
+            {
+                return CustomResult.FromIgnored();
+            }
             await new SelfAssignabeRolesManager().SetupInfoPost();
             return CustomResult.FromSuccess();
         }
@@ -173,6 +181,10 @@ namespace OnePlusBot.Modules.Administration
         ]
         public async Task<RuntimeResult> SetTrackingStatus(string name, Boolean value)
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.EMOTE_TRACKING)) 
+          {
+             return CustomResult.FromIgnored();
+          }
             using(var db = new Database())
             {
               var sameKey = db.Emotes.AsQueryable().Where(e => e.Key == name);

@@ -33,6 +33,10 @@ namespace OnePlusBot.Modules.Utility
     ]
     public async Task Avatar(IGuildUser user = null)
     {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.UTILITY)) 
+        {
+            return;
+        }
         if (user == null)
           user = (IGuildUser) Context.User;
 
@@ -81,6 +85,10 @@ namespace OnePlusBot.Modules.Utility
     ]
     public async Task UserInfo([Optional] IGuildUser user)
     {
+      if(CommandHandler.FeatureFlagDisabled(FeatureFlag.UTILITY)) 
+      {
+          return;
+      }
       user = user ?? (IGuildUser) Context.User;
       
       var embedBuilder = new EmbedBuilder();

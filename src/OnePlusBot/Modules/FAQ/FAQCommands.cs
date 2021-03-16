@@ -26,6 +26,10 @@ namespace OnePlusBot.Modules.FAQ
         ]
         public async Task ListFAQCommands()
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.FAQ)) 
+          {
+            return;
+          }
           Collection<Embed> embedsToPost = new Collection<Embed>();
           using(var db = new Database())
           {

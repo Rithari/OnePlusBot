@@ -4,6 +4,7 @@ using OnePlusBot.Base;
 using System;
 using System.Linq;
 using System.Text;
+using OnePlusBot.Data.Models;
 using System.Threading.Tasks;
 using OnePlusBot.Helpers;
 using Discord.WebSocket;
@@ -22,6 +23,10 @@ namespace OnePlusBot.Modules.FAQ
     ]
     public async Task FAQAsync([Optional] [Remainder] string parameter)
     {
+      if(CommandHandler.FeatureFlagDisabled(FeatureFlag.FAQ)) 
+      {
+          return;
+      }
       var contextChannel = Context.Channel;
       if(parameter == null || parameter == string.Empty)
       {

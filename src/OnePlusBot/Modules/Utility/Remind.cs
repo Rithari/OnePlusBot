@@ -19,6 +19,10 @@ namespace OnePlusBot.Modules.Utility
     ]
     public async Task<RuntimeResult> HandleRemindInput(params string[] arguments)
     {
+      if(CommandHandler.FeatureFlagDisabled(FeatureFlag.REMINDER)) 
+      {
+          return CustomResult.FromIgnored();
+      }
       if(arguments.Length < 1)
         return CustomResult.FromError("The correct usage is `;remind <duration> <text>`");
 
@@ -82,6 +86,10 @@ namespace OnePlusBot.Modules.Utility
     ]
     public async Task<RuntimeResult> HandleUnRemindInput(ulong reminderId)
     {
+      if(CommandHandler.FeatureFlagDisabled(FeatureFlag.REMINDER)) 
+      {
+          return CustomResult.FromIgnored();
+      }
       await Task.CompletedTask;
       using(var db = new Database())
       {
@@ -108,6 +116,10 @@ namespace OnePlusBot.Modules.Utility
     ]
     public async Task<RuntimeResult> ShowActiveReminders()
     {
+      if(CommandHandler.FeatureFlagDisabled(FeatureFlag.REMINDER)) 
+      {
+          return CustomResult.FromIgnored();
+      }
       using(var db = new Database())
       {
         var activeReminders = db.Reminders.AsQueryable().Where(r => !r.Reminded && r.RemindedUserId == Context.User.Id).ToList();

@@ -32,6 +32,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> OBanAsync(ulong name, [Remainder] string reason = null)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return CustomResult.FromIgnored();
+        }
         var banLogChannel = Context.Guild.GetTextChannel(Global.PostTargets[PostTarget.BAN_LOG]);
         await Context.Guild.AddBanAsync(name, 0, reason);
 
@@ -73,6 +77,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> BanAsync(IGuildUser user, [Remainder] string reason = null)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return CustomResult.FromIgnored();
+        }
         if (user.IsBot)
         {
             return CustomResult.FromError("You can't ban bots.");
@@ -135,6 +143,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> KickAsync(IGuildUser user, [Remainder] string reason = null)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return CustomResult.FromIgnored();
+        }
         if (user.IsBot)
             return CustomResult.FromError("You can't kick bots.");
 
@@ -164,6 +176,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> MuteUser(IGuildUser user, string duration, [Optional] [Remainder] string reason)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return CustomResult.FromIgnored();
+        }
           if (user.IsBot)
               return CustomResult.FromError("You can't mute bots.");
 
@@ -267,6 +283,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> UnMuteUser(IGuildUser user)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return CustomResult.FromIgnored();
+        }
           return await MuteTimerManager.UnMuteUser(user.Id, ulong.MaxValue);
       }
 
@@ -284,6 +304,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> SetNicknameTo(IGuildUser user, [Optional] [Remainder] string newNickname)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return CustomResult.FromIgnored();
+        }
         await user.ModifyAsync((user) => user.Nickname = newNickname);
         return CustomResult.FromSuccess();
       }
@@ -301,6 +325,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> SetSlowModeTo(string slowModeConfig)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return CustomResult.FromIgnored();
+        }
         var channelObj = Context.Guild.GetTextChannel(Context.Channel.Id);
         if(slowModeConfig == "off")
         {
@@ -327,6 +355,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> PurgeAsync([Remainder] double delmsg)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return CustomResult.FromIgnored();
+        }
         if (delmsg > 100 || delmsg <= 0)
             return CustomResult.FromError("Use a number between 1-100");
 
@@ -367,6 +399,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> ShowProfanities(IGuildUser user)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.PROFANITY)) 
+        {
+           return CustomResult.FromIgnored();
+        }
         using(var db = new Database()){
           var allProfanities = db.Profanities.AsQueryable().Where(pro => pro.UserId == user.Id);
           var actualProfanities = allProfanities.AsQueryable().Where(pro => pro.Valid == true).Count();
@@ -406,6 +442,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> WarnAsync(IGuildUser user, [Optional] [Remainder] string reason)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return CustomResult.FromIgnored();
+        }
         var warningsChannel = Context.Guild.GetTextChannel(Global.PostTargets[PostTarget.WARN_LOG]);
 
         var monitor = Context.Message.Author;
@@ -484,6 +524,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> ClearwarnAsync(uint index)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return CustomResult.FromIgnored();
+        }
         var monitor = Context.Message.Author;
 
         using (var db = new Database())
@@ -606,6 +650,10 @@ namespace OnePlusBot.Modules.Administration
         CommandDisabledCheck
       ]
       public async Task<RuntimeResult> DisplayMyWarnings() {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return CustomResult.FromIgnored();
+        }
         var requestee = Context.User as SocketGuildUser;
         using (var db = new Database())
         {
@@ -627,6 +675,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task GetWarnings([Optional] IGuildUser user)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return;
+        }
         var requestee = Context.User as SocketGuildUser;
         _user = user;
         Global.CommandExecutorId = Context.User.Id;
@@ -675,6 +727,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> AddUserNote(IGuildUser user, [Remainder] String text)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return CustomResult.FromIgnored();
+        }
         using(var db = new Database())
         {
           var note = new UserNote()
@@ -702,6 +758,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> RemoveUserNote(ulong id)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return CustomResult.FromIgnored();
+        }
         using(var db = new Database())
         {
           var note = db.UserNotes.AsQueryable().Where(u => u.ID == id);
@@ -731,6 +791,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> RemoveUserNote(IGuildUser user)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return CustomResult.FromIgnored();
+        }
         StringBuilder currentBuilder = new StringBuilder("");
         var texts = new Collection<string>();
         using(var db = new Database())
@@ -773,6 +837,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> ShowEmoteStats([Optional] string range)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.EMOTE_TRACKING)) 
+        {
+           return CustomResult.FromIgnored();
+        }
         TimeSpan fromWhere;
         DateTime startDate;
         if(range != null)
@@ -805,6 +873,10 @@ namespace OnePlusBot.Modules.Administration
       ]
       public async Task<RuntimeResult> ChangeModMode(String newState)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+        {
+           return CustomResult.FromIgnored();
+        }
           var role = Context.Guild.GetRole(Global.ModModeRoleId);
           if(newState == "on")
           {

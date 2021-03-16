@@ -45,5 +45,13 @@ namespace OnePlusBot.Data.Models
         public static String ASSIGNABLE_ROLES = "assignableRole";
 
         public static String REMINDER = "reminder";
+
+        public static String UTILITY = "utility";
+
+        public static String FAQ = "faq";
+
+        public static String SUGGEST = "suggest";
+
+        public static String NEWS = "news";
     }
 }

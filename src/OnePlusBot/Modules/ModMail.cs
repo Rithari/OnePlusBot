@@ -26,6 +26,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> ReplyToModMail([Remainder] string message)
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODMAIL)) 
+          {
+            return CustomResult.FromIgnored();
+          }
           await new ModMailManager().CreateModeratorReply(Context.Message, Context.Channel, Context.User, message, false, true);
           return CustomResult.FromIgnored();
         }
@@ -38,6 +42,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> ReplyToModMailAnonymously([Remainder] string message)
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODMAIL)) 
+          {
+            return CustomResult.FromIgnored();
+          }
           await new ModMailManager().CreateModeratorReply(Context.Message, Context.Channel, Context.User, message, true, true);
           return CustomResult.FromIgnored();
         }
@@ -50,6 +58,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> SubscribeToThread()
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODMAIL)) 
+          {
+            return CustomResult.FromIgnored();
+          }
           var bot = Global.Bot;
           using(var db = new Database())
           {
@@ -79,6 +91,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> UnsubscribeFromThread()
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODMAIL)) 
+          {
+            return CustomResult.FromIgnored();
+          }
           var bot = Global.Bot;
           using(var db = new Database())
           {
@@ -113,6 +129,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> CloseThread([Optional] [Remainder] string note)
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODMAIL)) 
+          {
+            return CustomResult.FromIgnored();
+          }
           await new ModMailManager().CloseThread(Context.Channel, note);
           return CustomResult.FromIgnored();
         }
@@ -131,6 +151,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> CloseThreadSilently([Optional] [Remainder] string note)
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODMAIL)) 
+          {
+            return CustomResult.FromIgnored();
+          }
             await new ModMailManager().CloseThreadSilently(Context.Channel, note);
             return CustomResult.FromIgnored();
         }
@@ -144,6 +168,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> EditMessage(params string[] parameters)
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODMAIL)) 
+          {
+            return CustomResult.FromIgnored();
+          }
           if(parameters.Length < 2){
               return CustomResult.FromError("Required parameters: <messageId> <new text>");
           }
@@ -174,6 +202,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> DisableCurrentThread(string duration, [Remainder] [Optional] string note)
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODMAIL)) 
+          {
+            return CustomResult.FromIgnored();
+          }
           TimeSpan mutedTime = Extensions.GetTimeSpanFromString(duration);
           var until = DateTime.Now + mutedTime;
           var manager = new ModMailManager();
@@ -197,6 +229,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> DisableModMailForUser(IGuildUser user, [Remainder] string duration)
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODMAIL)) 
+          {
+            return CustomResult.FromIgnored();
+          }
           if(duration is null)
           {
             return CustomResult.FromError("You need to provide a duration.");
@@ -216,6 +252,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> EnableModmailForUser(IGuildUser user)
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODMAIL)) 
+          {
+            return CustomResult.FromIgnored();
+          }
           new  ModMailManager().EnableModmailForUser(user);
           await new ModMailManager().SendModmailUnmutedNotification(user, Context.User);
           await Task.CompletedTask;
@@ -236,6 +276,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> ContactUser(IGuildUser user)
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODMAIL)) 
+          {
+            return CustomResult.FromIgnored();
+          }
           var existing = ModMailManager.GetOpenModmailForUser(user);
           if(existing != null)
           {
@@ -257,6 +301,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> DeleteMessage(params string[] parameters)
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODMAIL)) 
+          {
+            return CustomResult.FromIgnored();
+          }
           if(parameters.Length < 1){
             return CustomResult.FromError("Required parameter: <messageId>");
           }
@@ -273,7 +321,10 @@ namespace OnePlusBot.Modules
           RequireModMailContext
         ]
         public async Task<RuntimeResult> PostNicknameResponse() {
-
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODMAIL)) 
+          {
+            return CustomResult.FromIgnored();
+          }
           await new ModMailManager().RespondWithUsernameTemplateAndSetReminder(Context.Channel, Context.User, Context.Message);
           return CustomResult.FromSuccess();
         }

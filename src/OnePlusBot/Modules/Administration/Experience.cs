@@ -17,6 +17,10 @@ namespace OnePlusBot.Modules.Administration
         ]
         public async Task<RuntimeResult> UpdateLevels([Optional] IGuildUser user)
         {
+            if(CommandHandler.FeatureFlagDisabled(FeatureFlag.EXPERIENCE)) 
+            {
+                return CustomResult.FromIgnored();
+            }
             if(user == null)
             {
                 await Context.Channel.SendMessageAsync("DO NOT execute commands changing the role experience configuration while this is processing. Especially do not start another one, while one is running.");
@@ -39,6 +43,10 @@ namespace OnePlusBot.Modules.Administration
         ]
         public async Task<RuntimeResult> SetRoleToLevel([Optional] uint level, [Optional] ulong roleId)
         {
+            if(CommandHandler.FeatureFlagDisabled(FeatureFlag.EXPERIENCE)) 
+            {
+                return CustomResult.FromIgnored();
+            }
             if(level == 0 && roleId == 0)
             {
                 await new ExpManager().ShowLevelconfiguration(Context.Channel);
@@ -60,6 +68,10 @@ namespace OnePlusBot.Modules.Administration
         ]
         public async Task<RuntimeResult> SetExpGainEnabled(IGuildUser user, bool newValue)
         {
+            if(CommandHandler.FeatureFlagDisabled(FeatureFlag.EXPERIENCE)) 
+            {
+                return CustomResult.FromIgnored();
+            }
             new ExpManager().SetXPDisabledTo(user, newValue);
             await Task.CompletedTask;
             return CustomResult.FromSuccess();

@@ -21,6 +21,10 @@ namespace OnePlusBot.Modules.Utility
     ]
     public async Task<RuntimeResult> ShowLevels([Optional] IGuildUser user)
     {
+      if(CommandHandler.FeatureFlagDisabled(FeatureFlag.EXPERIENCE)) 
+      {
+          return CustomResult.FromIgnored();
+      }
       IUser userToUse = null;
       if(user != null)
       {
@@ -68,6 +72,10 @@ namespace OnePlusBot.Modules.Utility
     ]
     public async Task<RuntimeResult> ShowLeaderboard([Optional] int page)
     {
+      if(CommandHandler.FeatureFlagDisabled(FeatureFlag.EXPERIENCE)) 
+      {
+          return CustomResult.FromIgnored();
+      }
       var embedBuilder = new EmbedBuilder();
       using(var db = new Database())
       {
