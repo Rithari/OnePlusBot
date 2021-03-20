@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Commands;
 using OnePlusBot.Base;
+using OnePlusBot.Data.Models;
 using System;
 using System.Linq;
 using System.Text;
@@ -81,6 +82,10 @@ namespace OnePlusBot.Modules
       ]
       public async Task FAQAsync([Optional] string parameter, [Optional] ISocketMessageChannel channel)
       {
+        if(CommandHandler.FeatureFlagDisabled(FeatureFlag.FAQ)) 
+        {
+          return;
+        }
         var contextChannel = channel ?? Context.Channel;
         if(parameter == null || parameter == string.Empty)
         {

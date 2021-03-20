@@ -22,6 +22,10 @@ namespace OnePlusBot.Modules.Utility
     ]
     public async Task Showemojis([Remainder] string _) // need to have the parameter so that the message.tags gets populated
     {
+      if(CommandHandler.FeatureFlagDisabled(FeatureFlag.UTILITY)) 
+      {
+          return;
+      }
       var tags = Context.Message.Tags.Where(t => t.Type == TagType.Emoji).Select(t => (Emote)t.Value);
         
       var result = string.Join("\n", tags.Select(m => "**Name:** " + m + " **Link:** " + m.Url));
@@ -45,6 +49,10 @@ namespace OnePlusBot.Modules.Utility
     ]
     public Task EchoAsync([Remainder] string text)
     {
+      if(CommandHandler.FeatureFlagDisabled(FeatureFlag.UTILITY)) 
+      {
+          return Task.CompletedTask;
+      }
       return ReplyAsync(text);
     }
 

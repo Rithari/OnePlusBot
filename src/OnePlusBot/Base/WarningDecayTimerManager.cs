@@ -17,6 +17,10 @@ namespace OnePlusBot.Base
       // TODO refactor this and MuteTimerManager to have a common abstract class or at least an interface
     public async Task<RuntimeResult> SetupTimers()
     {
+      if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+      {
+        return CustomResult.FromSuccess();
+      }
       TimeSpan thisMidnight = DateTime.Today.AddDays(1) - DateTime.Now;
       int secondsToDelay = (int) thisMidnight.TotalSeconds;
       await Task.Delay(secondsToDelay * 1000);

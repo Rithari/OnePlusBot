@@ -28,6 +28,9 @@ namespace OnePlusBot.Base
         public static Dictionary<string, ulong> PostTargets { get; }
 
         public static Dictionary<ulong, ulong> NewsPosts { get; }
+
+        public static Dictionary<String, FeatureFlag> FeatureFlags { get; }
+
         public static List<Channel> FullChannels { get; }
 
         public static List<FAQCommandChannel> FAQCommandChannels { get; set;}
@@ -135,6 +138,7 @@ namespace OnePlusBot.Base
             UserNameNotifications = new Dictionary<ulong, ulong>();
             FilteredUdWords = new List<FilteredUDWord>();
             Categories = new List<Category>();
+            FeatureFlags = new Dictionary<string, FeatureFlag>();
             LoadGlobal();
         }
 
@@ -236,6 +240,14 @@ namespace OnePlusBot.Base
                     foreach(var post in db.Emotes.AsQueryable().Where(e => !e.TrackingDisabled).ToList())
                     {
                       TrackedEmotes.Add(post.Key, post);
+                    }
+                }
+                FeatureFlags.Clear();
+                if(db.FeatureFlags.Any())
+                {
+                    foreach(var featureFlag in db.FeatureFlags.AsQueryable().ToList())
+                    {
+                      FeatureFlags.Add(featureFlag.FeatureName, featureFlag);
                     }
                 }
 

@@ -28,6 +28,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> ChooseAsync(params string[] argArray)
         {
+            if(CommandHandler.FeatureFlagDisabled(FeatureFlag.UTILITY)) 
+            {
+                return CustomResult.FromIgnored();
+            }
             if (argArray == null || argArray.Length == 0)
             {
                 return CustomResult.FromError("I can't choose nothingness.");
@@ -51,6 +55,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task MagicBallAsync([Remainder] string search)
         {
+            if(CommandHandler.FeatureFlagDisabled(FeatureFlag.UTILITY)) 
+            {
+                return;
+            }
             var answers = Get8BallAnswers();
             var answer = answers[Global.Random.Next(answers.Length)];
 
@@ -65,6 +73,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task CoinFlip()
         {
+            if(CommandHandler.FeatureFlagDisabled(FeatureFlag.UTILITY)) 
+            {
+                return;
+            }
             var answers = GetCoinFlip();
             var answer = answers[Global.Random.Next(answers.Length)];
 
@@ -78,6 +90,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task DiceRoll()
         {
+            if(CommandHandler.FeatureFlagDisabled(FeatureFlag.UTILITY)) 
+            {
+                return;
+            }
             var number = Global.Random.Next(1, 7);
 
             await ReplyAsync($"🎲 You rolled {number}!");
@@ -111,6 +127,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task LoveCalcAsync(string subjectA, [Remainder] string subjectB)
         {
+            if(CommandHandler.FeatureFlagDisabled(FeatureFlag.UTILITY)) 
+            {
+                return;
+            }
             int rand = Global.Random.Next(0, 101);
             await ReplyAsync($":cupid: Love Chance between {subjectA} and {subjectB} is {rand}%.");
         }
@@ -122,6 +142,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task RouletteAsync()
         {
+            if(CommandHandler.FeatureFlagDisabled(FeatureFlag.UTILITY)) 
+            {
+                return;
+            }
             var answers = new[]
             {
                 ":gun: *click*, no bullet in there for you this round.\r\n",
@@ -139,6 +163,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task YouTubeAsync([Remainder] string parameter)
         {
+            if(CommandHandler.FeatureFlagDisabled(FeatureFlag.UTILITY)) 
+            {
+                return;
+            }
             try
             {
                 string html = new WebClient().DownloadString("https://www.youtube.com/results?search_query=" + Regex.Replace(Regex.Split(" " + Context.Message.Content, @"\;yt\s+")[1], @"\s+", "+"));
@@ -167,6 +195,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task DefineAsync([Remainder] string searchquery)
         {
+            if(CommandHandler.FeatureFlagDisabled(FeatureFlag.UTILITY)) 
+            {
+                return;
+            }
             try
             {
 
@@ -202,6 +234,10 @@ namespace OnePlusBot.Modules
         ]
         public async Task<RuntimeResult> PrintStarStats()
         {
+            if(CommandHandler.FeatureFlagDisabled(FeatureFlag.STARBOARD)) 
+            {
+                return CustomResult.FromIgnored();
+            }
             var mostStars = new Dictionary<ulong, ulong>();
             using(var db = new Database())
             {

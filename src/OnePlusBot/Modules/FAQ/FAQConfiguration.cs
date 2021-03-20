@@ -26,6 +26,10 @@ namespace OnePlusBot.Modules.FAQ
         ]
         public async Task ConfigureFAQ()
         {
+            if(CommandHandler.FeatureFlagDisabled(FeatureFlag.FAQ)) 
+            {
+                return;
+            }
             var guild = Global.Bot.GetGuild(Global.ServerID);
             var configurationStep = new ConfigurationStep("What do you want to do? (➕ add command, ➖ remove command in channel group, ☠ delete command)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
             configurationStep.additionalPosts.Add("To exit react with 🆘 or type exit, depending on the type of step you are in");

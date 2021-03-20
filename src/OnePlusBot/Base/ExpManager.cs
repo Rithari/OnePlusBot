@@ -18,6 +18,10 @@ namespace OnePlusBot.Base
 
     public async Task<RuntimeResult> SetupTimers()
     {
+      if(CommandHandler.FeatureFlagDisabled(FeatureFlag.EXPERIENCE)) 
+      {
+        return CustomResult.FromSuccess();
+      }
       TimeSpan sinceMidnight = DateTime.Now.TimeOfDay;
       TimeSpan nextMinute = TimeSpan.FromMinutes(Math.Ceiling(sinceMidnight.TotalMinutes));
       TimeSpan timeSpanToDelay = (nextMinute - sinceMidnight);

@@ -28,6 +28,10 @@ namespace OnePlusBot.Modules.Utility
         ]
         public async Task SuggestAsync([Remainder] string suggestion)
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.SUGGEST)) 
+          {
+              return;
+          }
             var suggestionsChannel = Context.Guild.GetTextChannel(Global.PostTargets[PostTarget.SUGGESTIONS]);
             var user = Context.Message.Author;
 
@@ -63,6 +67,10 @@ namespace OnePlusBot.Modules.Utility
         ]
         public async Task<RuntimeResult> NewsAsync([Remainder] string news)
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.NEWS)) 
+          {
+              return CustomResult.FromIgnored();
+          }
           var guild = Context.Guild;
 
           var user = (SocketGuildUser)Context.Message.Author;
@@ -114,6 +122,10 @@ namespace OnePlusBot.Modules.Utility
         ]
         public async Task sinfo(string guildName = null)
         {
+          if(CommandHandler.FeatureFlagDisabled(FeatureFlag.UTILITY)) 
+          {
+              return;
+          }
             var channel = (ITextChannel)Context.Channel;
             guildName = guildName?.ToUpperInvariant();
             SocketGuild guild;

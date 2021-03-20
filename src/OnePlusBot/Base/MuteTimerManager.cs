@@ -15,6 +15,10 @@ namespace OnePlusBot.Base
   {
     public async Task<RuntimeResult> SetupTimers()
     {
+      if(CommandHandler.FeatureFlagDisabled(FeatureFlag.MODERATION)) 
+      {
+        return CustomResult.FromSuccess();
+      }
       await ExecuteMuteLogic(true);
       await Extensions.DelayUntilNextFullHour();
       await ExecuteMuteLogic(false);

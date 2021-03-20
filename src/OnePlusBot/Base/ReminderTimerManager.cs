@@ -16,6 +16,10 @@ namespace OnePlusBot.Base
       // TODO refactor this and MuteTimerManager to have a common abstract class or at least an interface
     public async Task<RuntimeResult> SetupTimers()
     {
+      if(CommandHandler.FeatureFlagDisabled(FeatureFlag.REMINDER)) 
+      {
+        return CustomResult.FromSuccess();
+      }
       await ExecuteReminderLogic(true);
       await Extensions.DelayUntilNextFullHour();
       await ExecuteReminderLogic(false);

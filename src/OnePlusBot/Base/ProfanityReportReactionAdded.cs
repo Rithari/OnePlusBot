@@ -21,7 +21,7 @@ namespace OnePlusBot.Base
         /// <returns>boolean whether or not this action should be executed</returns>
         public Boolean ActionApplies(IUserMessage message, ISocketMessageChannel channel, SocketReaction reaction)
         {
-          return Global.ReportedProfanities.Where(prof => prof.ReportMessageId == message.Id).Any();
+          return Global.ReportedProfanities.Where(prof => prof.ReportMessageId == message.Id).Any() && CommandHandler.FeatureFlagEnabled(FeatureFlag.PROFANITY);
         }
         
         /// <summary>
