@@ -46,9 +46,9 @@ namespace OnePlusBot.Modules.FAQ
             var embedTextStep = new ConfigurationStep("Please enter the text you want to give your embed", Interactive, Context, ConfigurationStep.StepType.Text, embedStep);
             var embedColorStep = new ConfigurationStep("Please choose a color you want to use for the embed", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
             var authorStep = new ConfigurationStep("Do you want to be marked as author? (✅ yes, ❌ no)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
-            var deletionStep = new ConfigurationStep("React to the command in the channel you want to remove (❌ go back, 📇 select page or ◀ seek backward, ▶ seek forward)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
+            var deletionStep = new ConfigurationStep("React to the command in the channel you want to remove (❌ go back, 📇 select page)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
             var skipStep = new ConfigurationStep("Which page do you want to jump to? Enter the number alone.", Interactive, Context, ConfigurationStep.StepType.Text, deletionStep);
-            var commandDeletionStep = new ConfigurationStep("React to the command you want to completely remove (❌ go back, 📇 select page or ◀ seek backward, ▶ seek forward)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
+            var commandDeletionStep = new ConfigurationStep("React to the command you want to completely remove (❌ go back, 📇 select page)", Interactive, Context, ConfigurationStep.StepType.Reaction, null);
             var chooseExistingEntryStep = new ConfigurationStep("Which post do you want to use?", Interactive, Context, ConfigurationStep.StepType.Text, addStep);
 
             var existingCommands = Global.FAQCommands.ToList();
